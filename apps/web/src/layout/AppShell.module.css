@@ -1,0 +1,93 @@
+/*
+ * App shell layout with CSS Grid template areas.
+ *
+ *   Phone (< 900px)              Wide screen (≥ 900px)
+ *   ┌──────────────┐             ┌──────┬──────────────┐
+ *   │     top      │             │      │              │
+ *   ├──────────────┤             │ side │     main     │
+ *   │     main     │             │      │              │
+ *   ├──────────────┤             │      │              │
+ *   │     nav      │             └──────┴──────────────┘
+ *   └──────────────┘
+ */
+.shell {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'top'
+    'main'
+    'nav';
+}
+
+.top {
+  grid-area: top;
+}
+
+.side {
+  grid-area: side;
+  display: none;
+}
+
+.main {
+  grid-area: main;
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding: var(--space-4) var(--space-4) var(--space-7);
+}
+
+.main:focus {
+  outline: none;
+}
+
+.bottom {
+  grid-area: nav;
+}
+
+@media (min-width: 900px) {
+  .shell {
+    grid-template-columns: var(--sidenav-width) minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    grid-template-areas: 'side main';
+  }
+
+  .top,
+  .bottom {
+    display: none;
+  }
+
+  .side {
+    display: flex;
+  }
+
+  .main {
+    padding: var(--space-6) var(--space-6) var(--space-8);
+  }
+}
+
+@media (min-width: 1200px) {
+  .shell {
+    --sidenav-width: 17rem;
+  }
+}
+
+/* Hidden until focused with the keyboard; then it appears at the top left. */
+.skipLink {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-semibold);
+  transform: translateY(-200%);
+}
+
+.skipLink:focus {
+  transform: none;
+  color: var(--color-on-primary);
+}

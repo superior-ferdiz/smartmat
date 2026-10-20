@@ -1,0 +1,285 @@
+{
+  "app": {
+    "name": "SmartMat",
+    "skipToContent": "Skip to main content"
+  },
+  "common": {
+    "loading": "Loading …",
+    "retry": "Try again",
+    "close": "Close",
+    "sampleData": "Sample data"
+  },
+  "languages": {
+    "nb-NO": "Norsk (bokmål)",
+    "en": "English"
+  },
+  "nav": {
+    "mainLabel": "Main menu",
+    "bottomLabel": "Shortcuts",
+    "more": "More",
+    "comingLater": "Coming later",
+    "comingLaterShort": "Later",
+    "sections": {
+      "overview": "Overview",
+      "inventory": "Pantry",
+      "scan": "Scan",
+      "recipes": "Recipes",
+      "shoppingList": "Shopping list",
+      "budget": "Purchases & budget",
+      "mealPlan": "Meal plan",
+      "household": "Household",
+      "settings": "Settings"
+    }
+  },
+  "form": {
+    "optional": "optional",
+    "errorPrefix": "Error:",
+    "summaryTitle_one": "There is {{count}} problem with the form",
+    "summaryTitle_other": "There are {{count}} problems with the form"
+  },
+  "alert": {
+    "info": "Information",
+    "success": "Done",
+    "warning": "Warning",
+    "error": "Error"
+  },
+  "toast": {
+    "regionLabel": "Notifications"
+  },
+  "states": {
+    "error": {
+      "title": "Something went wrong",
+      "description": "We could not load the content. Check your connection and try again."
+    }
+  },
+  "validation": {
+    "unknown": "The value is not valid.",
+    "ore": {
+      "required": "Enter an amount.",
+      "empty": "Enter an amount.",
+      "integer": "The amount must be in whole øre.",
+      "negative": "The amount cannot be negative.",
+      "invalid_format": "Enter the amount as a number, for example 49,90.",
+      "too_many_decimals": "The amount can have at most two decimals, for example 49,90.",
+      "out_of_range": "The amount is too large."
+    },
+    "displayName": {
+      "required": "Enter a name.",
+      "tooLong": "The name can be at most 50 characters."
+    },
+    "itemName": {
+      "required": "Enter the name of the item."
+    },
+    "category": {
+      "required": "Choose a category."
+    },
+    "date": {
+      "invalid": "Enter a valid date."
+    }
+  },
+  "pages": {
+    "overview": {
+      "title": "Overview",
+      "lead": "What matters in your kitchen right now.",
+      "sampleNoticeTitle": "This is sample data",
+      "sampleNoticeText": "The app is not connected to a database yet. The items and numbers below are made up to show how the overview will look.",
+      "expiring": {
+        "title": "Expiring soon",
+        "seeAll": "See the whole pantry",
+        "items": {
+          "chicken": {
+            "name": "Chicken breast",
+            "meta": "400 g · Fridge",
+            "status": "Use by today",
+            "advice": "Use it today, or freeze it before the day is over."
+          },
+          "mince": {
+            "name": "Minced beef",
+            "meta": "400 g · Fridge",
+            "status": "Use-by date passed",
+            "advice": "Do not eat. A use-by date is about food safety."
+          },
+          "milk": {
+            "name": "Semi-skimmed milk",
+            "meta": "1 l · Fridge",
+            "status": "Best before tomorrow",
+            "advice": "Best before often means good after. Look, smell and taste."
+          },
+          "yoghurt": {
+            "name": "Natural yoghurt",
+            "meta": "500 g · Fridge · Opened",
+            "status": "Best before 2 days ago",
+            "advice": "Often still fine. Look, smell and taste before throwing it out."
+          }
+        }
+      },
+      "budget": {
+        "title": "Food budget this month",
+        "spent": "Spent",
+        "remaining": "Left",
+        "monthly": "Budget",
+        "usedPercent": "{{percent}} % of the monthly budget is used",
+        "open": "See purchases and budget"
+      },
+      "actions": {
+        "title": "Quick actions",
+        "scan": "Scan an item",
+        "addItem": "Add item",
+        "addPurchase": "Register purchase"
+      },
+      "dinner": {
+        "title": "Dinner suggestion",
+        "recipe": "Chicken stir-fry with vegetables",
+        "reason": "Uses the chicken breast that must be used today. You have 4 of 6 ingredients."
+      },
+      "waste": {
+        "title": "Thrown out this month",
+        "text_one": "{{count}} item thrown out (estimated value)",
+        "text_other": "{{count}} items thrown out (estimated value)"
+      }
+    },
+    "inventory": {
+      "lead": "Everything in your fridge, freezer and cupboards, with dates.",
+      "emptyTitle": "The pantry arrives in phase 3",
+      "emptyText": "Here you will add items, see what expires soon, and record what you use and throw out."
+    },
+    "scan": {
+      "lead": "Add items quickly using the barcode.",
+      "emptyTitle": "Scanning arrives in phase 7",
+      "emptyText": "Here you will scan a barcode with the camera or type it in. You always confirm before anything is saved."
+    },
+    "recipes": {
+      "lead": "Dinner ideas based on what you already have.",
+      "emptyTitle": "Recipes arrive in phase 5",
+      "emptyText": "Here you will find Norwegian recipes, ranked by what you have at home and what must be used first."
+    },
+    "shoppingList": {
+      "lead": "What to buy next time you shop.",
+      "emptyTitle": "The shopping list arrives in phase 6",
+      "emptyText": "Here you will keep a shopping list, add missing ingredients from a recipe, and move items straight into the pantry."
+    },
+    "budget": {
+      "lead": "What you spend on food, and how much is left this month.",
+      "emptyTitle": "Purchases and budget arrive in phase 4",
+      "emptyText": "Here you will register purchases, set a monthly food budget and see spending per category."
+    },
+    "mealPlan": {
+      "lead": "Plan the week's dinners.",
+      "emptyTitle": "The meal plan comes later",
+      "emptyText": "The meal plan is planned as an optional extension after the first submission."
+    },
+    "household": {
+      "lead": "Share the pantry and shopping list with the people you live with.",
+      "emptyTitle": "Households come later",
+      "emptyText": "Sharing with others is planned after the first submission. Until then, each user has their own household."
+    },
+    "more": {
+      "lead": "More parts of SmartMat.",
+      "navLabel": "More sections",
+      "descriptions": {
+        "overview": "What matters right now",
+        "inventory": "Items and dates",
+        "scan": "Add with a barcode",
+        "recipes": "Dinner from what you have",
+        "shoppingList": "What you need to buy",
+        "budget": "Food budget and registered purchases",
+        "mealPlan": "The week's dinners",
+        "household": "Sharing with others",
+        "settings": "Language, theme and account"
+      }
+    },
+    "settings": {
+      "lead": "Adjust SmartMat to suit you.",
+      "saved": "Setting saved",
+      "appearance": "Language and appearance",
+      "language": "Language",
+      "languageHint": "Only applies to this browser.",
+      "theme": "Theme",
+      "themeHint": "Automatic follows your device setting.",
+      "themes": {
+        "system": "Automatic",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "account": "Account",
+      "accountLater": "Login, profile and account deletion arrive in phase 2.",
+      "developer": "For developers",
+      "developerText": "Overview of the colours, typography and components used in SmartMat."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "emptyTitle": "This page does not exist",
+      "text": "The link may be wrong, or the page may have moved.",
+      "home": "Go to the overview"
+    },
+    "designSystem": {
+      "title": "Design system",
+      "lead": "Colours, typography and components used in SmartMat.",
+      "colours": "Colours",
+      "typography": "Typography",
+      "typeSample": "Blueberries, sour cream and fårikål",
+      "tabularNums": "Equal-width numbers:",
+      "buttons": "Buttons",
+      "buttonLabels": {
+        "primary": "Save",
+        "secondary": "Cancel",
+        "accent": "Scan item",
+        "ghost": "Show more",
+        "danger": "Delete",
+        "loading": "Saving",
+        "disabled": "Not available"
+      },
+      "tags": "Tags",
+      "tagLabels": {
+        "useByPassed": "Use-by date passed",
+        "bestBeforeSoon": "Best before in 2 days",
+        "fresh": "Keeps well",
+        "noDate": "No date"
+      },
+      "form": {
+        "title": "Example form",
+        "name": "Item name",
+        "price": "Price",
+        "priceHint": "For example 49,90",
+        "category": "Category",
+        "categoryPlaceholder": "Choose category",
+        "categories": {
+          "dairy": "Dairy",
+          "meat": "Meat and fish",
+          "vegetables": "Fruit and vegetables",
+          "dryGoods": "Dry goods"
+        },
+        "bestBefore": "Best before",
+        "bestBeforeHint": "The date printed on the package",
+        "opened": "The package is opened",
+        "openedHint": "Opened items often keep for a shorter time.",
+        "submit": "Check the form",
+        "reset": "Clear the form",
+        "valid": "The form is valid. {{price}} is stored as {{ore}} øre. Nothing was saved – this is an example.",
+        "validNoPrice": "The form is valid. Nothing was saved – this is an example."
+      },
+      "alerts": "Alerts",
+      "alertLabels": {
+        "infoTitle": "Did you know?",
+        "infoText": "Best before often means good after. Use-by dates must be taken seriously.",
+        "successTitle": "The item was added to the pantry",
+        "warningTitle": "3 items expire within two days",
+        "warningText": "See the dinner suggestions that use them.",
+        "errorTitle": "Could not save",
+        "errorText": "Check your connection and try again."
+      },
+      "showToast": "Show message",
+      "showErrorToast": "Show error message",
+      "toastSuccess": "The item was added",
+      "toastError": "Could not save the item",
+      "states": "States",
+      "stateLabels": {
+        "emptyTitle": "The pantry is empty",
+        "emptyText": "Add your first item and we will keep track of the dates for you.",
+        "emptyAction": "Add item",
+        "loading": "Loading the pantry …"
+      },
+      "retried": "Trying again (example)"
+    }
+  }
+}

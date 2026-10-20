@@ -1,0 +1,35 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.logo:hover {
+  color: var(--color-text);
+}
+
+.mark {
+  width: 2rem;
+  height: 2rem;
+}
+
+.markBg {
+  fill: var(--color-primary);
+}
+
+.markJar {
+  fill: var(--color-bg);
+}
+
+.markLeaf {
+  fill: var(--color-accent);
+}
+
+.wordmark {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}

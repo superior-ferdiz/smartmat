@@ -1,0 +1,114 @@
+$ npx playwright test --reporter=list
+# Kjørt 2026-10-20 11:56:58 UTC, Node v22.14.0, npm 11.1.0
+
+[WebServer] ../../node_modules/zod/v4/core/regexes.js (74:0): A comment
+[WebServer] 
+[WebServer] "/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+[WebServer]  * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+[WebServer]  * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+[WebServer] 
+[WebServer] in "../../node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+[WebServer] ../../node_modules/zod/v4/core/util.js (400:0): A comment
+[WebServer] 
+[WebServer] "// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `Number`, so the bare object literal survived into every bundle."
+[WebServer] 
+[WebServer] in "../../node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+[WebServer] 
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+Running 86 tests using 10 workers
+
+  ✓   5 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   2 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   1 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓   4 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   8 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   7 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓   9 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   6 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   3 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓  10 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓  14 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.6s)
+  ✓  12 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  15 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.7s)
+  ✓  17 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.8s)
+  ✓  19 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.7s)
+  ✓  18 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.8s)
+  ✓  13 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓  11 [mobil-360] › e2e/app-shell.spec.ts:50:7 › light theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓  16 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  -  28 [mobil-360] › e2e/app-shell.spec.ts:103:3 › FR-UI-001 navigation per viewport › desktop: side menu works with the keyboard alone
+  ✓  20 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  26 [mobil-360] › e2e/app-shell.spec.ts:78:3 › FR-UI-001 navigation per viewport › phone: bottom menu labels are not cut off at 360 px (747ms)
+  ✓  25 [mobil-360] › e2e/app-shell.spec.ts:65:3 › FR-UI-001 navigation per viewport › phone shows the bottom menu, desktop the side menu (762ms)
+  ✓  30 [mobil-360] › e2e/app-shell.spec.ts:142:3 › FR-UI-003 overview grid › one column at 360 px, three at 1280 px (≥ 1200 px breakpoint) (592ms)
+  -  34 [mobil-360] › e2e/screenshots.spec.ts:22:7 › light › oversikt
+  -  35 [mobil-360] › e2e/screenshots.spec.ts:22:7 › light › mer
+  -  36 [mobil-360] › e2e/screenshots.spec.ts:22:7 › light › matlager
+  -  37 [mobil-360] › e2e/screenshots.spec.ts:22:7 › light › innstillinger
+  -  38 [mobil-360] › e2e/screenshots.spec.ts:22:7 › light › designsystem
+  -  39 [mobil-360] › e2e/screenshots.spec.ts:22:7 › dark › oversikt
+  -  40 [mobil-360] › e2e/screenshots.spec.ts:22:7 › dark › mer
+  -  41 [mobil-360] › e2e/screenshots.spec.ts:22:7 › dark › matlager
+  -  42 [mobil-360] › e2e/screenshots.spec.ts:22:7 › dark › innstillinger
+  -  43 [mobil-360] › e2e/screenshots.spec.ts:22:7 › dark › designsystem
+  ✓  29 [mobil-360] › e2e/app-shell.spec.ts:127:3 › FR-UI-001 navigation per viewport › focus is clearly visible on keyboard focus (outline present) (865ms)
+  ✓  27 [mobil-360] › e2e/app-shell.spec.ts:91:3 › FR-UI-001 navigation per viewport › phone: all sections are reachable through "Mer" (1.0s)
+  ✓  31 [mobil-360] › e2e/app-shell.spec.ts:158:3 › FR-UI-004 / FR-UI-005 settings survive a reload › dark theme is applied before the app starts (no white flash) (740ms)
+  ✓  21 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  32 [mobil-360] › e2e/app-shell.spec.ts:168:3 › FR-UI-004 / FR-UI-005 settings survive a reload › English is remembered and sets <html lang> (820ms)
+  ✓  22 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  23 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  24 [mobil-360] › e2e/app-shell.spec.ts:50:7 › dark theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  33 [mobil-360] › e2e/app-shell.spec.ts:179:3 › FR-UI-006 form on a real browser › invalid submit focuses the error summary; the link moves focus to the field (2.7s)
+  ✓  45 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓  44 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓  46 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓  48 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓  49 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓  50 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓  47 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓  51 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓  52 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓  55 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.8s)
+  ✓  54 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓  58 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.7s)
+  ✓  53 [desktop] › e2e/app-shell.spec.ts:50:7 › light theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.5s)
+  ✓  57 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  56 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓  59 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓  61 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓  60 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  -  69 [desktop] › e2e/app-shell.spec.ts:78:3 › FR-UI-001 navigation per viewport › phone: bottom menu labels are not cut off at 360 px
+  -  70 [desktop] › e2e/app-shell.spec.ts:91:3 › FR-UI-001 navigation per viewport › phone: all sections are reachable through "Mer"
+  ✓  62 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  68 [desktop] › e2e/app-shell.spec.ts:65:3 › FR-UI-001 navigation per viewport › phone shows the bottom menu, desktop the side menu (703ms)
+  ✓  72 [desktop] › e2e/app-shell.spec.ts:127:3 › FR-UI-001 navigation per viewport › focus is clearly visible on keyboard focus (outline present) (788ms)
+  ✓  73 [desktop] › e2e/app-shell.spec.ts:142:3 › FR-UI-003 overview grid › one column at 360 px, three at 1280 px (≥ 1200 px breakpoint) (795ms)
+  -  77 [desktop] › e2e/screenshots.spec.ts:22:7 › light › oversikt
+  -  78 [desktop] › e2e/screenshots.spec.ts:22:7 › light › mer
+  -  79 [desktop] › e2e/screenshots.spec.ts:22:7 › light › matlager
+  -  80 [desktop] › e2e/screenshots.spec.ts:22:7 › light › innstillinger
+  -  81 [desktop] › e2e/screenshots.spec.ts:22:7 › light › designsystem
+  -  82 [desktop] › e2e/screenshots.spec.ts:22:7 › dark › oversikt
+  -  83 [desktop] › e2e/screenshots.spec.ts:22:7 › dark › mer
+  -  84 [desktop] › e2e/screenshots.spec.ts:22:7 › dark › matlager
+  -  85 [desktop] › e2e/screenshots.spec.ts:22:7 › dark › innstillinger
+  -  86 [desktop] › e2e/screenshots.spec.ts:22:7 › dark › designsystem
+  ✓  74 [desktop] › e2e/app-shell.spec.ts:158:3 › FR-UI-004 / FR-UI-005 settings survive a reload › dark theme is applied before the app starts (no white flash) (855ms)
+  ✓  63 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓  71 [desktop] › e2e/app-shell.spec.ts:103:3 › FR-UI-001 navigation per viewport › desktop: side menu works with the keyboard alone (1.3s)
+  ✓  64 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  65 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  75 [desktop] › e2e/app-shell.spec.ts:168:3 › FR-UI-004 / FR-UI-005 settings survive a reload › English is remembered and sets <html lang> (924ms)
+  ✓  67 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓  66 [desktop] › e2e/app-shell.spec.ts:50:7 › dark theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓  76 [desktop] › e2e/app-shell.spec.ts:179:3 › FR-UI-006 form on a real browser › invalid submit focuses the error summary; the link moves focus to the field (1.8s)
+
+  23 skipped
+  63 passed (23.0s)
+
+# exit code: 0

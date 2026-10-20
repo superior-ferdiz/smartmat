@@ -1,0 +1,150 @@
+/*
+ * Dashboard grid (FR-UI-003, KURS-02).
+ *
+ * Phone: one column, cards in source order (most urgent first).
+ * ≥ 600px: two columns with named areas.
+ * ≥ 1200px: three columns; "Går ut snart" takes two columns and two rows.
+ *
+ * grid-area is only set inside the media queries: outside them there is no template with these names,
+ * and an unknown area name would create extra implicit columns.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+@media (min-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'expiring expiring'
+      'budget   actions'
+      'dinner   waste';
+  }
+
+  .expiring {
+    grid-area: expiring;
+  }
+
+  .budget {
+    grid-area: budget;
+  }
+
+  .actions {
+    grid-area: actions;
+  }
+
+  .dinner {
+    grid-area: dinner;
+  }
+
+  .waste {
+    grid-area: waste;
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      'expiring expiring budget'
+      'expiring expiring actions'
+      'dinner   waste    actions';
+    gap: var(--space-5);
+  }
+}
+
+/* Item rows: name/meta on the left, status tag on the right, advice underneath. */
+.itemList {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'text   tag'
+    'advice advice';
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding-block: var(--space-3);
+}
+
+.item + .item {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.itemText {
+  grid-area: text;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.itemName {
+  font-weight: var(--font-weight-semibold);
+}
+
+.itemMeta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.itemAdvice {
+  grid-area: advice;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Figures: definition list laid out as a small grid. */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.figures > div:first-child {
+  grid-column: 1 / -1;
+}
+
+.figures dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.figures dd {
+  font-weight: var(--font-weight-semibold);
+}
+
+.bigNumber {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.bar {
+  height: 0.75rem;
+  margin-top: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-sunken);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+}
+
+.barText {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.actionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

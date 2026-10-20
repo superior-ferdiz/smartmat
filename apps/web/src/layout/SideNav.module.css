@@ -1,0 +1,79 @@
+/* The aside fills the whole grid column (background and border all the way down);
+   only the inner content sticks to the top while the page scrolls. */
+.side {
+  flex-direction: column;
+  border-right: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-height: 100dvh;
+  padding: var(--space-5) var(--space-3);
+  overflow-y: auto;
+}
+
+.logo {
+  padding-inline: var(--space-2);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Icon | label | optional "later" tag. */
+.link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.link:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+/* Active page: background, colour, weight and a bar on the left – more than colour alone. */
+.link[aria-current='page'] {
+  position: relative;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--space-2);
+  bottom: var(--space-2);
+  width: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+}
+
+.label {
+  min-width: 0;
+}
+
+.later {
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}

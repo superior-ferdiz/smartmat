@@ -1,0 +1,104 @@
+/*
+ * Fixed above the bottom navigation on phones, bottom right on wide screens.
+ * The region itself ignores the pointer so it never blocks the page; each toast takes it back.
+ */
+.region {
+  position: fixed;
+  inset-inline: var(--space-4);
+  bottom: calc(var(--bottomnav-height) + env(safe-area-inset-bottom) + var(--space-3));
+  z-index: 50;
+  pointer-events: none;
+}
+
+@media (min-width: 900px) {
+  .region {
+    inset-inline: auto var(--space-5);
+    bottom: var(--space-5);
+    width: min(24rem, 100%);
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.toast {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border-left: 6px solid;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-2);
+  pointer-events: auto;
+  animation: slide-in var(--duration-normal) var(--ease-out);
+}
+
+.info {
+  border-color: var(--color-info-text);
+}
+
+.info svg {
+  color: var(--color-info-text);
+}
+
+.success {
+  border-color: var(--color-success-text);
+}
+
+.success svg {
+  color: var(--color-success-text);
+}
+
+.warning {
+  border-color: var(--color-warning-border);
+}
+
+.warning svg {
+  color: var(--color-warning-text);
+}
+
+.error {
+  border-color: var(--color-danger);
+}
+
+.error svg {
+  color: var(--color-danger-text);
+}
+
+.message {
+  min-width: 0;
+}
+
+.dismiss {
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.dismiss svg {
+  color: inherit;
+}
+
+.dismiss:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}

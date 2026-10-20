@@ -1,0 +1,81 @@
+.nav {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  border-top: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Five equal columns. At 360px each item is 72px wide – enough for "Oppskrifter" at 12px. */
+.list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-height: var(--bottomnav-height);
+}
+
+.link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 100%;
+  padding: var(--space-1) 2px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--color-text);
+}
+
+.label {
+  max-width: 100%;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 1.75rem;
+  border-radius: var(--radius-pill);
+}
+
+/* Active: filled pill behind the icon, bold label, primary colour. */
+.link[aria-current='page'],
+.link[data-active] {
+  color: var(--color-primary);
+}
+
+.link[aria-current='page'] .label,
+.link[data-active] .label {
+  font-weight: var(--font-weight-bold);
+}
+
+.link[aria-current='page'] .icon,
+.link[data-active] .icon {
+  background: var(--color-primary-soft);
+}
+
+/* The scan button: a raised cloudberry circle in the middle. */
+.scan .icon {
+  width: 3rem;
+  height: 3rem;
+  margin-top: calc(var(--space-5) * -1);
+  border: 3px solid var(--color-surface);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: var(--shadow-2);
+}
+
+.scan[aria-current='page'] .icon {
+  background: var(--color-accent-hover);
+  color: var(--color-on-accent);
+}

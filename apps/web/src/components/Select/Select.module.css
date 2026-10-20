@@ -1,0 +1,23 @@
+.wrapper {
+  position: relative;
+}
+
+.select {
+  appearance: none;
+  padding-right: var(--space-7);
+  cursor: pointer;
+}
+
+/* Chevron drawn with two borders so it follows the text colour in both themes. */
+.wrapper::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid var(--color-text);
+  border-bottom: 2px solid var(--color-text);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}

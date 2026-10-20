@@ -1,0 +1,6 @@
+$ npm audit
+# Kjørt 2026-10-20 11:56:58 UTC, Node v22.14.0, npm 11.1.0
+
+found 0 vulnerabilities
+
+# exit code: 0

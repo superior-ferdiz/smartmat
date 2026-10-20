@@ -1,0 +1,225 @@
+/*
+ * SmartMat design tokens (ADR-0004).
+ *
+ * All colours, sizes and spacing used by components come from here. Components never use raw hex values,
+ * so the dark theme only has to redefine the colour tokens below.
+ *
+ * Palette: "Nordic kitchen" – oat-white background, spruce green as the main colour, cloudberry orange as accent.
+ * Contrast ratios (WCAG 2.x formula, calculated – see docs/academic/09-design-og-brukervennlighet.md):
+ *
+ *   Light                                         Dark
+ *   text on bg            13.9 : 1                text on bg            15.2 : 1
+ *   text-muted on bg       6.1 : 1                text-muted on surface  7.4 : 1
+ *   white on primary       6.4 : 1                on-primary on primary  8.2 : 1
+ *   text on accent         5.5 : 1                accent on bg           8.6 : 1
+ *   warning-text on soft   6.9 : 1                warning on soft        8.4 : 1
+ *   danger-text on soft    6.6 : 1                danger on soft         9.1 : 1
+ *   control-border on bg   3.9 : 1  (≥ 3 : 1)     control-border         4.4 : 1
+ *   focus on bg            5.9 : 1  (≥ 3 : 1)     focus on bg            8.4 : 1
+ *
+ * Breakpoints (CSS custom properties cannot be used inside @media, so the numbers are written out
+ * in each media query – keep them in sync with this list):
+ *   --bp-sm:  600px   large phones / small tablets: two-column card grid
+ *   --bp-md:  900px   side navigation replaces the bottom navigation
+ *   --bp-lg: 1200px   wide screens: three-column card grid, wider side navigation
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- Colour: light theme ---------- */
+  --color-bg: #faf7f2; /* havre (oat) */
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f1ece3;
+  --color-surface-raised: #ffffff;
+  --color-border: #ddd5c8; /* decorative lines only */
+  --color-control-border: #857b6c; /* form controls need ≥ 3:1 */
+
+  --color-text: #1f2a24;
+  --color-text-muted: #56605a;
+
+  --color-primary: #1f6b4a; /* granskog (spruce) */
+  --color-primary-hover: #17573c;
+  --color-primary-soft: #e3f0e8;
+  --color-on-primary: #ffffff;
+
+  --color-accent: #e8833a; /* multe (cloudberry) – use as a fill, not as text */
+  --color-accent-hover: #d9742b;
+  --color-on-accent: #1f2a24;
+  --color-accent-text: #9a4a12;
+
+  /* "Best før" passed / expiring soon. Deliberately not red: food past best-before may still be fine. */
+  --color-warning-soft: #f8e7c2;
+  --color-warning-text: #6e4400;
+  --color-warning-border: #c98a1a;
+
+  /* "Siste forbruksdag" passed, errors, destructive actions. */
+  --color-danger: #b3261e;
+  --color-danger-hover: #931f18;
+  --color-danger-soft: #fbe4e1;
+  --color-danger-text: #9c1f18;
+  --color-on-danger: #ffffff;
+
+  --color-success-soft: #e3f0e8;
+  --color-success-text: #17573c;
+
+  --color-info-soft: #e2edf6;
+  --color-info-text: #1d5e8c;
+
+  --color-focus: #1a5fb4;
+
+  /* ---------- Typography ---------- */
+  --font-family-base:
+    'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  /* Scale: 16px base, ratio 1.2 (minor third). The largest step grows with the viewport. */
+  --font-size-xs: 0.75rem; /* 12px – navigation labels, tags */
+  --font-size-sm: 0.875rem; /* 14px – hints, secondary text */
+  --font-size-md: 1rem; /* 16px – body, inputs (16px also stops iOS from zooming on focus) */
+  --font-size-lg: 1.2rem; /* 19.2px – card titles */
+  --font-size-xl: 1.44rem; /* 23px – section headings */
+  --font-size-2xl: clamp(1.6rem, 1.3rem + 1.5vw, 2.074rem); /* page title */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-body: 1.5;
+  --line-height-tight: 1.2;
+
+  /* ---------- Spacing (4px base) ---------- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px – also the side gutter on phones */
+  --space-5: 1.5rem; /* 24px */
+  --space-6: 2rem; /* 32px */
+  --space-7: 3rem; /* 48px */
+  --space-8: 4rem; /* 64px */
+
+  /* ---------- Shape ---------- */
+  --radius-sm: 6px; /* inputs, tags */
+  --radius-md: 12px; /* cards, buttons */
+  --radius-pill: 999px;
+
+  --border-width: 1px;
+  --control-border-width: 1.5px;
+
+  /* Warm, low shadows (tinted with the text colour instead of pure black). */
+  --shadow-1: 0 1px 2px rgb(31 42 36 / 0.06), 0 1px 3px rgb(31 42 36 / 0.08);
+  --shadow-2: 0 4px 12px rgb(31 42 36 / 0.1), 0 2px 4px rgb(31 42 36 / 0.06);
+
+  /* ---------- Sizing ---------- */
+  --tap-target: 44px; /* minimum touch target (WCAG 2.5.5 / Apple HIG) */
+  --content-max-width: 72rem;
+  --sidenav-width: 15rem;
+  --bottomnav-height: 4rem;
+
+  --focus-ring: 3px solid var(--color-focus);
+  --focus-offset: 2px;
+
+  /* ---------- Motion ---------- */
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/*
+ * Dark theme. It applies when
+ *   1) the operating system prefers dark and the user has not chosen "light", or
+ *   2) the user has chosen "dark" in the settings (data-theme="dark" on <html>).
+ * The two blocks must stay identical – plain CSS has no way to share them.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --color-bg: #141a17;
+    --color-surface: #1c2420;
+    --color-surface-sunken: #0f1412;
+    --color-surface-raised: #243029;
+    --color-border: #33403a;
+    --color-control-border: #7d8a83;
+
+    --color-text: #ecefe9;
+    --color-text-muted: #a9b3ac;
+
+    --color-primary: #6cc59a;
+    --color-primary-hover: #86d3ad;
+    --color-primary-soft: #1f3a2d;
+    --color-on-primary: #0f1f17;
+
+    --color-accent: #f2a365;
+    --color-accent-hover: #f5b57f;
+    --color-on-accent: #1f1408;
+    --color-accent-text: #f2a365;
+
+    --color-warning-soft: #3a2e14;
+    --color-warning-text: #f4c76b;
+    --color-warning-border: #a77a23;
+
+    --color-danger: #ff8a80;
+    --color-danger-hover: #ffa49c;
+    --color-danger-soft: #3d1a18;
+    --color-danger-text: #ffb4ab;
+    --color-on-danger: #2b0d0a;
+
+    --color-success-soft: #1f3a2d;
+    --color-success-text: #8fd6b1;
+
+    --color-info-soft: #172a3a;
+    --color-info-text: #7db8e8;
+
+    --color-focus: #8ab4f8;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #141a17;
+  --color-surface: #1c2420;
+  --color-surface-sunken: #0f1412;
+  --color-surface-raised: #243029;
+  --color-border: #33403a;
+  --color-control-border: #7d8a83;
+
+  --color-text: #ecefe9;
+  --color-text-muted: #a9b3ac;
+
+  --color-primary: #6cc59a;
+  --color-primary-hover: #86d3ad;
+  --color-primary-soft: #1f3a2d;
+  --color-on-primary: #0f1f17;
+
+  --color-accent: #f2a365;
+  --color-accent-hover: #f5b57f;
+  --color-on-accent: #1f1408;
+  --color-accent-text: #f2a365;
+
+  --color-warning-soft: #3a2e14;
+  --color-warning-text: #f4c76b;
+  --color-warning-border: #a77a23;
+
+  --color-danger: #ff8a80;
+  --color-danger-hover: #ffa49c;
+  --color-danger-soft: #3d1a18;
+  --color-danger-text: #ffb4ab;
+  --color-on-danger: #2b0d0a;
+
+  --color-success-soft: #1f3a2d;
+  --color-success-text: #8fd6b1;
+
+  --color-info-soft: #172a3a;
+  --color-info-text: #7db8e8;
+
+  --color-focus: #8ab4f8;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 4px 12px rgb(0 0 0 / 0.45);
+}

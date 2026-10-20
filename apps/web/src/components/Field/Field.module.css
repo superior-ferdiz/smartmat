@@ -1,0 +1,59 @@
+/* Label, hint, error and input stacked vertically. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* A bar on the left marks the whole field as wrong, not only the red text. */
+.hasError {
+  padding-left: var(--space-3);
+  border-left: 4px solid var(--color-danger);
+}
+
+.label {
+  font-weight: var(--font-weight-semibold);
+}
+
+.optional {
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-muted);
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Shared look for text, number, date and select controls. */
+.control {
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-3);
+  border: var(--control-border-width) solid var(--color-control-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.control:hover {
+  border-color: var(--color-text);
+}
+
+.control:focus-visible {
+  border-color: var(--color-focus);
+}
+
+.control[aria-invalid='true'] {
+  border-color: var(--color-danger);
+  border-width: 2px;
+}
+
+.control:disabled {
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}

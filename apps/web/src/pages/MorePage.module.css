@@ -1,0 +1,67 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.list li + li {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* Icon | text | (later) | chevron */
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 4rem;
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.row:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+/* Inset focus ring, since the list clips anything outside it. */
+.row:focus-visible {
+  outline-offset: -3px;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-weight: var(--font-weight-semibold);
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.later {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.chevron {
+  color: var(--color-text-muted);
+}

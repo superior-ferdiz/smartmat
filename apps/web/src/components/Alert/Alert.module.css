@@ -1,0 +1,71 @@
+/* Icon | text | close button, laid out with a three-column grid. */
+.alert {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid;
+  border-left-width: 6px;
+  border-radius: var(--radius-md);
+}
+
+.icon {
+  margin-top: 1px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  font-weight: var(--font-weight-bold);
+}
+
+.info {
+  background: var(--color-info-soft);
+  border-color: var(--color-info-text);
+  color: var(--color-info-text);
+}
+
+.success {
+  background: var(--color-success-soft);
+  border-color: var(--color-success-text);
+  color: var(--color-success-text);
+}
+
+.warning {
+  background: var(--color-warning-soft);
+  border-color: var(--color-warning-border);
+  color: var(--color-warning-text);
+}
+
+.error {
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger);
+  color: var(--color-danger-text);
+}
+
+.content div {
+  color: var(--color-text);
+}
+
+.dismiss {
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  margin: calc(var(--space-2) * -1) calc(var(--space-3) * -1) 0 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  background: rgb(0 0 0 / 0.06);
+}

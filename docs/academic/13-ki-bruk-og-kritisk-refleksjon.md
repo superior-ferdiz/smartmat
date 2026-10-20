@@ -1,0 +1,16 @@
+# KI-bruk og kritisk refleksjon
+
+> **Status: UTKAST / MAL.** Dette kapittelet er ikke skrevet ennå. Innholdet skal bygge på det som faktisk er implementert,
+> testet og besluttet, og oppdateres underveis i fasene. Offisielle APP2000-krav til rapporten er ikke verifisert.
+
+## Hva kapittelet skal dekke
+
+- Hvordan KI ble brukt (fra KI-loggen)
+- hva teamet gjennomgikk og endret
+- feil KI gjorde
+- begrensninger
+- læring
+
+## Kilder i prosjektet
+
+<!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->

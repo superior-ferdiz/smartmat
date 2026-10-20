@@ -1,0 +1,285 @@
+{
+  "app": {
+    "name": "SmartMat",
+    "skipToContent": "Hopp til hovedinnhold"
+  },
+  "common": {
+    "loading": "Laster …",
+    "retry": "Prøv igjen",
+    "close": "Lukk",
+    "sampleData": "Eksempeldata"
+  },
+  "languages": {
+    "nb-NO": "Norsk (bokmål)",
+    "en": "English"
+  },
+  "nav": {
+    "mainLabel": "Hovedmeny",
+    "bottomLabel": "Snarveier",
+    "more": "Mer",
+    "comingLater": "Kommer senere",
+    "comingLaterShort": "Senere",
+    "sections": {
+      "overview": "Oversikt",
+      "inventory": "Matlager",
+      "scan": "Skann",
+      "recipes": "Oppskrifter",
+      "shoppingList": "Handleliste",
+      "budget": "Kjøp og budsjett",
+      "mealPlan": "Måltidsplan",
+      "household": "Husholdning",
+      "settings": "Innstillinger"
+    }
+  },
+  "form": {
+    "optional": "valgfritt",
+    "errorPrefix": "Feil:",
+    "summaryTitle_one": "Det er {{count}} feil i skjemaet",
+    "summaryTitle_other": "Det er {{count}} feil i skjemaet"
+  },
+  "alert": {
+    "info": "Informasjon",
+    "success": "Fullført",
+    "warning": "Advarsel",
+    "error": "Feil"
+  },
+  "toast": {
+    "regionLabel": "Varsler"
+  },
+  "states": {
+    "error": {
+      "title": "Noe gikk galt",
+      "description": "Vi fikk ikke hentet innholdet. Sjekk nettforbindelsen og prøv igjen."
+    }
+  },
+  "validation": {
+    "unknown": "Verdien er ikke gyldig.",
+    "ore": {
+      "required": "Skriv inn et beløp.",
+      "empty": "Skriv inn et beløp.",
+      "integer": "Beløpet må være i hele øre.",
+      "negative": "Beløpet kan ikke være negativt.",
+      "invalid_format": "Skriv beløpet som et tall, for eksempel 49,90.",
+      "too_many_decimals": "Beløpet kan ha høyst to desimaler, for eksempel 49,90.",
+      "out_of_range": "Beløpet er for stort."
+    },
+    "displayName": {
+      "required": "Skriv inn et navn.",
+      "tooLong": "Navnet kan være høyst 50 tegn."
+    },
+    "itemName": {
+      "required": "Skriv inn navnet på varen."
+    },
+    "category": {
+      "required": "Velg en kategori."
+    },
+    "date": {
+      "invalid": "Skriv inn en gyldig dato."
+    }
+  },
+  "pages": {
+    "overview": {
+      "title": "Oversikt",
+      "lead": "Det viktigste på kjøkkenet akkurat nå.",
+      "sampleNoticeTitle": "Dette er eksempeldata",
+      "sampleNoticeText": "Appen er ikke koblet til noen database ennå. Varene og tallene under er oppdiktet for å vise hvordan forsiden skal se ut.",
+      "expiring": {
+        "title": "Går ut snart",
+        "seeAll": "Se hele matlageret",
+        "items": {
+          "chicken": {
+            "name": "Kyllingfilet",
+            "meta": "400 g · Kjøleskap",
+            "status": "Siste forbruksdag i dag",
+            "advice": "Bruk i dag, eller frys ned før dagen er omme."
+          },
+          "mince": {
+            "name": "Kjøttdeig",
+            "meta": "400 g · Kjøleskap",
+            "status": "Siste forbruksdag passert",
+            "advice": "Bør ikke spises. Siste forbruksdag handler om mattrygghet."
+          },
+          "milk": {
+            "name": "Lettmelk",
+            "meta": "1 l · Kjøleskap",
+            "status": "Best før i morgen",
+            "advice": "Best før betyr ofte god lenger. Se, lukt og smak."
+          },
+          "yoghurt": {
+            "name": "Yoghurt naturell",
+            "meta": "500 g · Kjøleskap · Åpnet",
+            "status": "Best før for 2 dager siden",
+            "advice": "Kan ofte fortsatt brukes. Se, lukt og smak før du kaster."
+          }
+        }
+      },
+      "budget": {
+        "title": "Matbudsjett denne måneden",
+        "spent": "Brukt",
+        "remaining": "Igjen",
+        "monthly": "Budsjett",
+        "usedPercent": "{{percent}} % av månedsbudsjettet er brukt",
+        "open": "Se kjøp og budsjett"
+      },
+      "actions": {
+        "title": "Hurtighandlinger",
+        "scan": "Skann en vare",
+        "addItem": "Legg til vare",
+        "addPurchase": "Registrer kjøp"
+      },
+      "dinner": {
+        "title": "Forslag til middag",
+        "recipe": "Kyllingwok med grønnsaker",
+        "reason": "Bruker kyllingfileten som må brukes i dag. Du har 4 av 6 ingredienser."
+      },
+      "waste": {
+        "title": "Kastet denne måneden",
+        "text_one": "{{count}} vare kastet (estimert verdi)",
+        "text_other": "{{count}} varer kastet (estimert verdi)"
+      }
+    },
+    "inventory": {
+      "lead": "Alt du har i kjøleskap, fryser og skap, med holdbarhetsdatoer.",
+      "emptyTitle": "Matlageret kommer i fase 3",
+      "emptyText": "Her skal du kunne legge til varer, se hva som går ut snart, og registrere forbruk og svinn."
+    },
+    "scan": {
+      "lead": "Legg til varer raskt med strekkoden.",
+      "emptyTitle": "Skanning kommer i fase 7",
+      "emptyText": "Her skal du kunne skanne strekkoden med kameraet eller skrive den inn selv. Du bekrefter alltid før noe lagres."
+    },
+    "recipes": {
+      "lead": "Middagsforslag basert på det du allerede har.",
+      "emptyTitle": "Oppskrifter kommer i fase 5",
+      "emptyText": "Her skal du finne norske oppskrifter, rangert etter hva du har hjemme og hva som må brukes først."
+    },
+    "shoppingList": {
+      "lead": "Det du skal kjøpe neste gang du handler.",
+      "emptyTitle": "Handlelisten kommer i fase 6",
+      "emptyText": "Her skal du kunne føre handleliste, legge til det som mangler fra en oppskrift, og flytte varer rett inn i matlageret."
+    },
+    "budget": {
+      "lead": "Hva du bruker på mat, og hvor mye som er igjen denne måneden.",
+      "emptyTitle": "Kjøp og budsjett kommer i fase 4",
+      "emptyText": "Her skal du kunne registrere kjøp, sette et månedlig matbudsjett og se forbruket per kategori."
+    },
+    "mealPlan": {
+      "lead": "Planlegg ukens middager.",
+      "emptyTitle": "Måltidsplanen kommer senere",
+      "emptyText": "Måltidsplan er planlagt som en valgfri utvidelse etter første innlevering."
+    },
+    "household": {
+      "lead": "Del matlager og handleliste med dem du bor med.",
+      "emptyTitle": "Husholdning kommer senere",
+      "emptyText": "Deling med andre i husstanden er planlagt etter første innlevering. Frem til da har hver bruker sin egen husholdning."
+    },
+    "more": {
+      "lead": "Flere deler av SmartMat.",
+      "navLabel": "Flere seksjoner",
+      "descriptions": {
+        "overview": "Det viktigste akkurat nå",
+        "inventory": "Varer og holdbarhet",
+        "scan": "Legg til med strekkode",
+        "recipes": "Middag fra det du har",
+        "shoppingList": "Det du skal kjøpe",
+        "budget": "Matbudsjett og registrerte kjøp",
+        "mealPlan": "Ukens middager",
+        "household": "Deling med andre",
+        "settings": "Språk, tema og konto"
+      }
+    },
+    "settings": {
+      "lead": "Tilpass SmartMat.",
+      "saved": "Innstillingen er lagret",
+      "appearance": "Språk og utseende",
+      "language": "Språk",
+      "languageHint": "Gjelder bare denne nettleseren.",
+      "theme": "Tema",
+      "themeHint": "Automatisk følger innstillingen på enheten din.",
+      "themes": {
+        "system": "Automatisk",
+        "light": "Lyst",
+        "dark": "Mørkt"
+      },
+      "account": "Konto",
+      "accountLater": "Innlogging, profil og sletting av konto kommer i fase 2.",
+      "developer": "For utviklere",
+      "developerText": "Oversikt over farger, typografi og komponenter i SmartMat."
+    },
+    "notFound": {
+      "title": "Fant ikke siden",
+      "emptyTitle": "Denne siden finnes ikke",
+      "text": "Lenken kan være feil, eller siden kan ha blitt flyttet.",
+      "home": "Gå til oversikten"
+    },
+    "designSystem": {
+      "title": "Designsystem",
+      "lead": "Farger, typografi og komponenter som brukes i SmartMat.",
+      "colours": "Farger",
+      "typography": "Typografi",
+      "typeSample": "Blåbær, rømme og fårikål",
+      "tabularNums": "Tall med lik bredde:",
+      "buttons": "Knapper",
+      "buttonLabels": {
+        "primary": "Lagre",
+        "secondary": "Avbryt",
+        "accent": "Skann vare",
+        "ghost": "Vis mer",
+        "danger": "Slett",
+        "loading": "Lagrer",
+        "disabled": "Ikke tilgjengelig"
+      },
+      "tags": "Merkelapper",
+      "tagLabels": {
+        "useByPassed": "Siste forbruksdag passert",
+        "bestBeforeSoon": "Best før om 2 dager",
+        "fresh": "God holdbarhet",
+        "noDate": "Mangler dato"
+      },
+      "form": {
+        "title": "Eksempelskjema",
+        "name": "Navn på vare",
+        "price": "Pris",
+        "priceHint": "For eksempel 49,90",
+        "category": "Kategori",
+        "categoryPlaceholder": "Velg kategori",
+        "categories": {
+          "dairy": "Meieri",
+          "meat": "Kjøtt og fisk",
+          "vegetables": "Frukt og grønt",
+          "dryGoods": "Tørrvarer"
+        },
+        "bestBefore": "Best før",
+        "bestBeforeHint": "Datoen som står på pakken",
+        "opened": "Pakken er åpnet",
+        "openedHint": "Åpnede varer holder seg ofte kortere.",
+        "submit": "Kontroller skjemaet",
+        "reset": "Tøm skjemaet",
+        "valid": "Skjemaet er gyldig. {{price}} blir lagret som {{ore}} øre. Ingenting ble lagret – dette er et eksempel.",
+        "validNoPrice": "Skjemaet er gyldig. Ingenting ble lagret – dette er et eksempel."
+      },
+      "alerts": "Varsler",
+      "alertLabels": {
+        "infoTitle": "Visste du?",
+        "infoText": "Best før betyr ofte god lenger. Siste forbruksdag må tas på alvor.",
+        "successTitle": "Varen er lagt til i matlageret",
+        "warningTitle": "3 varer går ut i løpet av to dager",
+        "warningText": "Se forslagene til middag som bruker dem.",
+        "errorTitle": "Kunne ikke lagre",
+        "errorText": "Sjekk nettforbindelsen og prøv igjen."
+      },
+      "showToast": "Vis melding",
+      "showErrorToast": "Vis feilmelding",
+      "toastSuccess": "Varen er lagt til",
+      "toastError": "Kunne ikke lagre varen",
+      "states": "Tilstander",
+      "stateLabels": {
+        "emptyTitle": "Matlageret er tomt",
+        "emptyText": "Legg til den første varen, så holder vi styr på datoene for deg.",
+        "emptyAction": "Legg til vare",
+        "loading": "Henter matlageret …"
+      },
+      "retried": "Prøver igjen (eksempel)"
+    }
+  }
+}

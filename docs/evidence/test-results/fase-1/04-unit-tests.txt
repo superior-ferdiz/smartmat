@@ -1,0 +1,246 @@
+$ npx vitest run --reporter=verbose
+# Kjørt 2026-10-20 11:56:26 UTC, Node v22.14.0, npm 11.1.0
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,90" as 4990 øre 3ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49.90" as 4990 øre 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49" as 4900 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,9" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "0,05" as 5 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "0" as 0 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,-" as 4900 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "1 234,50" as 123450 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "1 234,50" as 123450 øre 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "1 234,50" as 123450 øre 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "12 345 678,00" as 1234567800 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "  49,90  " as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "007,50" as 750 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,90 kr" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "kr 49,90" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,90kr" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "-12,5" as -1250 øre 3ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "−12,50" as -1250 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "- 12,50" as -1250 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > returns 0, not -0, for a negative zero 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "" with empty 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "   " with empty 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "kr" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "abc" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "49,90,10" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "49," with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects ",50" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "1e3" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "0x10" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "1234 567" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "1 23,00" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "+5" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "49,999" with too_many_decimals 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "0,001" with too_many_decimals 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "90071992547409,92" with out_of_range 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "99999999999999999999" with out_of_range 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > is exact where floating point is not (0,10 + 0,20) 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > handles the largest safe amount 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 4990 øre as "49,90 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 0 øre as "0,00 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 5 øre as "0,05 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 100 øre as "1,00 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 123450 øre as "1 234,50 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats -1250 øre as "−12,50 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats -5 øre as "−0,05 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > can leave out the currency 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats the largest safe amount exactly 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for 0.5, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for 49.9, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for NaN, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for Infinity, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for 9007199254740992, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(0)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(1)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(99)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(100)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(4990)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(123450)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(1234567800)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(-1250)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(9007199254740991)) gives the same number back 2ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > accepts non-negative integers 3ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects 49.9 with validation.ore.integer 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects -1 with validation.ore.negative 0ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects 9007199254740992 with validation.ore.out_of_range 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects "4990" with validation.ore.required 0ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > turns typed text into øre 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "" with validation.ore.empty 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "abc" with validation.ore.invalid_format 0ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "1,999" with validation.ore.too_many_decimals 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "-5" with validation.ore.negative 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > trims whitespace 1ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > rejects "" 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > rejects "   " 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > rejects "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > accepts Norwegian letters 0ms
+ ✓ |shared| src/schemas/common.test.ts > localeSchema > accepts only the supported languages 0ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > Norwegian and English have exactly the same keys 4ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > no translation is empty 1ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > every validation key produced by @smartmat/shared has a translation 1ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > the display-name message matches the limit in the shared schema 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > the two dark-theme blocks are identical 3ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on bg ≥ 4.5:1 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text-muted on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text-muted on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text-muted on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: primary on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: primary on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: primary on primary-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-primary on primary ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-primary on primary-hover ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-accent on accent ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: accent-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: warning-text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: danger-text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: danger-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-danger on danger ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: success-text on success-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: info-text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on surface-raised ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: control-border on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: control-border on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: focus on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: focus on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text-muted on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text-muted on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text-muted on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: primary on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: primary on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: primary on primary-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-primary on primary ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-primary on primary-hover ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-accent on accent ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: accent-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: warning-text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: danger-text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: danger-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-danger on danger ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: success-text on success-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: info-text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on surface-raised ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: control-border on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: control-border on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: focus on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: focus on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text-muted on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text-muted on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text-muted on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): primary on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): primary on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): primary on primary-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-primary on primary ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-primary on primary-hover ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-accent on accent ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): accent-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): warning-text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): danger-text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): danger-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-danger on danger ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): success-text on success-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): info-text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on surface-raised ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): control-border on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): control-border on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): focus on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): focus on surface ≥ 3:1 0ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > has a polite live region from the start, so later messages are announced 215ms
+ ✓ |web| src/components/FormError/FormError.test.tsx > FR-UI-006 FormErrorSummary > renders nothing without errors 22ms
+ ✓ |web| src/components/FormError/FormError.test.tsx > FR-UI-006 FormErrorSummary > takes focus, counts the errors and links to each field 282ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > shows a message and closes it with the close button 98ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > disappears by itself after a few seconds 30ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > does not disappear while the pointer is on it 24ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > keeps at most three messages 40ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > connects label, hint and error to the input 53ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > has no aria-invalid and no error reference without an error 7ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > marks optional fields in the label instead of required ones 7ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > LoadingState is announced as a status with a default text 203ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > ErrorState explains the problem and offers "Prøv igjen" 80ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > ErrorState has no retry button when there is nothing to retry 6ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > has no axe violations, with and without an error 301ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 NumberField > uses a text input with a decimal keyboard, not type="number" 7ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > defaults to automatic (no data-theme, follows prefers-color-scheme) 126ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > EmptyState shows title, description and action 42ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > submitting an empty form shows a focused summary and marks the invalid fields 352ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > have no axe violations 138ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 Alert > says the variant in text, not only with colour 6ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 Alert > is only a live region when it appears as a reaction (live) 15ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 Alert > can be dismissed with a labelled button 28ms
+ ✓ |web| src/components/states.test.tsx > Card > is a named region when it has a title and id 15ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > choosing "Mørkt" sets data-theme and remembers it 330ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > going back to "Automatisk" removes the override 1ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > ignores unknown stored values 0ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > still works when localStorage is blocked 3ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > has nine sections with unique paths 5ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 NumberField > accepts a Norwegian decimal comma as typed 79ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 NumberField > includes the unit in the description 5ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > Select renders a native select with a placeholder and options 47ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > DateField is a native date input 6ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > Checkbox can be toggled with the keyboard (space) 32ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > rejects a price with three decimals with a Norwegian message 165ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > has no axe violations 134ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Button > is reachable with Tab and activated with Enter 37ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Button > defaults to type="button" so it never submits a form by accident 9ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Button > while loading: announces busy, stays focusable and ignores clicks 23ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > is Norwegian by default 85ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > side menu lists all nine sections 432ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > switching to English changes the UI and <html lang>, and is remembered 125ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > ignores an unsupported stored language 1ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > a valid form turns "49,90" into 4990 øre 240ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > bottom menu has Oversikt, Matlager, Skann, Oppskrifter and Mer, in that order 97ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > can be filled in and submitted with the keyboard only 209ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > marks the current page with aria-current in both menus 217ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > the first Tab reaches the skip link, which points at the main content 258ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > moves focus to the new page heading after navigating 186ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > highlights "Mer" in the bottom menu on a section listed under it 96ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > / renders a page with one h1 62ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /matlager renders a page with one h1 44ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /skann renders a page with one h1 46ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /oppskrifter renders a page with one h1 43ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /handleliste renders a page with one h1 45ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /budsjett renders a page with one h1 39ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /maltidsplan renders a page with one h1 44ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /husholdning renders a page with one h1 37ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /innstillinger renders a page with one h1 50ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > marks later sections as "Kommer senere" 36ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > "Mer" lists the five sections that are not in the bottom menu 80ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > unknown URLs show a 404 page with a way back 166ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > / has no axe violations (structure, names, ARIA) 620ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /matlager has no axe violations (structure, names, ARIA) 338ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /mer has no axe violations (structure, names, ARIA) 435ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /innstillinger has no axe violations (structure, names, ARIA) 386ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /designsystem has no axe violations (structure, names, ARIA) 743ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /finnes-ikke has no axe violations (structure, names, ARIA) 310ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-003 overview > labels the sample content as sample data 63ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-003 overview > formats money from øre in Norwegian format 70ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-003 overview > uses different wording for "best før" and "siste forbruksdag" 52ms
+
+ Test Files  11 passed (11)
+      Tests  233 passed (233)
+   Start at  11:56:19
+   Duration  7.31s (transform 2.53s, setup 4.88s, import 4.15s, tests 8.72s, environment 5.32s)
+
+# exit code: 0

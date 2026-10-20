@@ -1,0 +1,41 @@
+$ npm run build
+# Kjørt 2026-10-20 11:56:33 UTC, Node v22.14.0, npm 11.1.0
+
+
+> smartmat@0.1.0 build
+> npm run build -w @smartmat/web
+
+
+> @smartmat/web@0.1.0 build
+> tsc -p tsconfig.json --noEmit && vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+../../node_modules/zod/v4/core/util.js (400:0): A comment
+
+"// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `Number`, so the bare object literal survived into every bundle."
+
+in "../../node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+../../node_modules/zod/v4/core/regexes.js (74:0): A comment
+
+"/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+ * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+ * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+
+in "../../node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+✓ 274 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                             1.30 kB │ gzip:   0.66 kB
+dist/assets/figtree-latin-ext-wght-normal-DCwSJGxG.woff2   10.28 kB
+dist/assets/figtree-latin-wght-normal-D_ZTVpCC.woff2       20.16 kB
+dist/assets/index-BBlD-sOy.css                             24.86 kB │ gzip:   5.77 kB
+dist/assets/index-D-w_CKlh.js                             517.00 kB │ gzip: 162.67 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.12s
+
+# exit code: 0

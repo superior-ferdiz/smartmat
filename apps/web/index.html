@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="nb-NO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="SmartMat hjelper deg å holde oversikt over matlageret, kaste mindre mat og styre matbudsjettet."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>SmartMat</title>
+    <script>
+      // Apply the saved theme before the first paint, so dark mode does not flash white.
+      // Kept tiny and inline on purpose; the same logic lives in src/app/theme.ts.
+      try {
+        var theme = localStorage.getItem('smartmat.theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+        var lang = localStorage.getItem('smartmat.language');
+        if (lang === 'nb-NO' || lang === 'en') document.documentElement.lang = lang;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <noscript>SmartMat trenger JavaScript for å fungere.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

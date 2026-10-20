@@ -1,0 +1,29 @@
+/* Input and unit side by side; the input takes the remaining width. */
+.wrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.wrapper:has(.suffix) .input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.suffix {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border: var(--control-border-width) solid var(--color-control-border);
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+}

@@ -1,0 +1,46 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.neutral {
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+}
+
+.info {
+  background: var(--color-info-soft);
+  color: var(--color-info-text);
+}
+
+.success {
+  background: var(--color-success-soft);
+  color: var(--color-success-text);
+}
+
+.warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning-text);
+  border-color: var(--color-warning-border);
+}
+
+.danger {
+  background: var(--color-danger-soft);
+  color: var(--color-danger-text);
+  border-color: var(--color-danger);
+}
+
+/* "Eksempeldata": dashed border so it reads as "not real" even in greyscale. */
+.sample {
+  background: transparent;
+  color: var(--color-accent-text);
+  border: 1.5px dashed currentColor;
+}
