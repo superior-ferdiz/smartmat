@@ -21,6 +21,7 @@ import { NewPurchasePage } from '../pages/budget/NewPurchasePage';
 import { PurchasePage } from '../pages/budget/PurchasePage';
 import { RecipePage } from '../pages/recipes/RecipePage';
 import { RecipesPage } from '../pages/recipes/RecipesPage';
+import { ShoppingListPage } from '../pages/shopping/ShoppingListPage';
 import {
   BUDGET_PATH,
   DESIGN_SYSTEM_PATH,
@@ -32,6 +33,7 @@ import {
   PROFILE_PATH,
   RECIPES_PATH,
   REGISTER_PATH,
+  SHOPPING_LIST_PATH,
 } from './navigation';
 
 /** All routes, shared by the browser router (main.tsx) and the memory router in tests. */
@@ -73,7 +75,7 @@ export const routes: RouteObject[] = [
           { path: 'skann', element: <SectionPage section="scan" /> },
           { path: RECIPES_PATH.slice(1), element: <RecipesPage /> },
           { path: 'oppskrifter/:recipeId', element: <RecipePage /> },
-          { path: 'handleliste', element: <SectionPage section="shoppingList" /> },
+          { path: SHOPPING_LIST_PATH.slice(1), element: <ShoppingListPage /> },
           { path: BUDGET_PATH.slice(1), element: <BudgetPage /> },
           { path: NEW_PURCHASE_PATH.slice(1), element: <NewPurchasePage /> },
           { path: 'budsjett/kjop/:purchaseId', element: <PurchasePage /> },

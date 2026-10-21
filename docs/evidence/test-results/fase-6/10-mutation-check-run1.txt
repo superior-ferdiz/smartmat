@@ -1,0 +1,208 @@
+1. Handlelisterutene uten householdAccess (bare innlogging)
+    endret: apps/api/src/modules/shopping/routes.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  36 failed | 158 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > adds a line with a quantity in base units, linked to the ingredient its text matches
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > a second line for an ingredient already open is added unlinked, pointing to the first
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > a text that matches no ingredient is saved without a link, and without a quantity
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > checks and unchecks by setting the value; the same request twice changes nothing more
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > corrects the text and quantity, and null removes the quantity; the link stays
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > lists open lines first (oldest first), then checked ones (last checked first)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > NFR-DATA-002: the same clientRequestId at the same moment still gives one line
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > NFR-DATA-002: the same clientRequestId twice gives one line (200 the second time)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > refuses invalid input on the server (NFR-SEC-002)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > removes one line (204, then 404), and "clear checked" removes only checked lines
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > unchecking when another open line has the ingredient is 409, and nothing changes
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > a checked line is not merged into: a new open line is made
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > adds the chosen lines with the ingredient name, amount and base unit, and records the recipe
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > an ingredient that is not in the recipe is 400, and nothing is added
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > an open line without an amount keeps having none; the recipe share is still recorded
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > an unknown recipe is 404
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > merges into an open line for the same ingredient: same unit adds up
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > spec 06 seed rule: an ingredient used by a shopping line is kept when it leaves the seed files
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > the same recipe again changes nothing (no doubled amounts)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > the same recipe sent twice at the same moment gives one line per ingredient, not doubled
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > two recipes add to the same line
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > a new item from a recipe line matches the recipe again, and the recipe ranks higher
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > a new item whose name matches by itself keeps the automatic link
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > an open (unchecked) line is refused with 409
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > onto an existing item: a new batch, the item is not changed
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > sent at the same moment from two places: exactly one wins, one batch, one item
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > sent twice: the second is 409 and there is still one batch
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > several lines in one request; everything or nothing
+      feilet: |api-db| test/shopping.api.test.ts > NFR-SEC-004 logging > line texts never end up in the log
+      feilet: |api-db| test/shopping.api.test.ts > spec 06 decision 1: one list per household > a new household has one, empty list
+      feilet: |api-db| test/shopping.api.test.ts > spec 06 decision 1: one list per household > deleting the account deletes the list and its lines (cascade)
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > A) Kari's household id in the URL: 404 on every endpoint, and nothing changes
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > B) Ola's own household with Kari's line id: 404 / 409, and nothing changes
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > C) Ola's own checked line with Kari's place or item: 400, and nothing changes
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > D) Ola's own clear-checked and recipe merge never touch Kari's lines
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > E) every endpoint needs a session; changes need the CSRF token
+2. Retting av en linje filtrerer ikke på husholdning
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > B) Ola's own household with Kari's line id: 404 / 409, and nothing changes
+3. Sletting av en linje filtrerer ikke på husholdning
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > B) Ola's own household with Kari's line id: 404 / 409, and nothing changes
+4. «Fjern avhukede» fjerner avhukede linjer i alle husholdninger
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > D) Ola's own clear-checked and recipe merge never touch Kari's lines
+5. Til lageret: linjene slettes uten krav om at de er avhuket
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  194 passed (194)
+6. Til lageret: ingen kontroll av hvor mange linjer som ble slettet (dobbel innsending)
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > sent at the same moment from two places: exactly one wins, one batch, one item
+7. Samme oppskrift kan legge til på samme linje to ganger
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  2 failed | 192 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > the same recipe again changes nothing (no doubled amounts)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > the same recipe sent twice at the same moment gives one line per ingredient, not doubled
+8. Listen låses ikke ved sammenslåing (samtidige forespørsler)
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > the same recipe sent twice at the same moment gives one line per ingredient, not doubled
+9. Ny linje: clientRequestId sjekkes ikke før lagring
+    endret: apps/api/src/modules/shopping/service.ts
+    enhetstester: Tests  2 failed | 706 passed (708)
+    API-tester:   Tests  194 passed (194)
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-001 create > a lost race on the dedupe key answers with the line that won
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-001 create > the same clientRequestId again answers with the saved line and creates nothing
+10. Ingrediens som ikke er i oppskriften, godtas
+    endret: apps/api/src/modules/shopping/service.ts
+    enhetstester: Tests  1 failed | 707 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > an ingredient that is not in the recipe is 400, and nothing is added
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-002 addFromRecipe > an ingredient that is not in the recipe is refused, and nothing is written
+11. Sted fra en annen husholdning godtas i «Legg i matlageret»
+    endret: apps/api/src/modules/shopping/service.ts
+    enhetstester: Tests  1 failed | 707 passed (708)
+    API-tester:   Tests  2 failed | 192 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > several lines in one request; everything or nothing
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > C) Ola's own checked line with Kari's place or item: 400, and nothing changes
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-003 toInventory > a place or item from another household is a field error
+12. Vare fra en annen husholdning godtas i «Legg i matlageret»
+    endret: apps/api/src/modules/shopping/service.ts
+    enhetstester: Tests  1 failed | 707 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > C) Ola's own checked line with Kari's place or item: 400, and nothing changes
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-003 toInventory > a place or item from another household is a field error
+13. Avhuking lagrer ikke tidspunktet
+    endret: apps/api/src/modules/shopping/service.ts
+    enhetstester: Tests  1 failed | 707 passed (708)
+    API-tester:   Tests  12 failed | 182 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > checks and unchecks by setting the value; the same request twice changes nothing more
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > lists open lines first (oldest first), then checked ones (last checked first)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > removes one line (204, then 404), and "clear checked" removes only checked lines
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-001 manual list > unchecking when another open line has the ingredient is 409, and nothing changes
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > a checked line is not merged into: a new open line is made
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > a new item from a recipe line matches the recipe again, and the recipe ranks higher
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > a new item whose name matches by itself keeps the automatic link
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > onto an existing item: a new batch, the item is not changed
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > sent at the same moment from two places: exactly one wins, one batch, one item
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > sent twice: the second is 409 and there is still one batch
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > several lines in one request; everything or nothing
+      feilet: |api-db| test/shopping.security.api.test.ts > NFR-SEC-001 shopping list: no access to another household > C) Ola's own checked line with Kari's place or item: 400, and nothing changes
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-001 update > sets checked with a time, and clears the time when unchecked
+14. Sammenslåing legger sammen ulike enheter
+    endret: packages/shared/src/shopping/list.ts
+    enhetstester: Tests  287 passed (287)
+    API-tester:   
+      feilet: |api| src/modules/auth/service.test.ts [ apps/api/src/modules/auth/service.test.ts ]
+      feilet: |api| src/modules/budget/service.test.ts [ apps/api/src/modules/budget/service.test.ts ]
+      feilet: |api| src/modules/inventory/service.test.ts [ apps/api/src/modules/inventory/service.test.ts ]
+      feilet: |api| src/modules/profile/service.test.ts [ apps/api/src/modules/profile/service.test.ts ]
+      feilet: |api| src/modules/purchases/service.test.ts [ apps/api/src/modules/purchases/service.test.ts ]
+      feilet: |api| src/modules/recipes/seed.test.ts [ apps/api/src/modules/recipes/seed.test.ts ]
+      feilet: |api| src/modules/shopping/service.test.ts [ apps/api/src/modules/shopping/service.test.ts ]
+      feilet: |shared| src/shopping/list.test.ts [ packages/shared/src/shopping/list.test.ts ]
+      feilet: |web| src/api/client.test.ts [ apps/web/src/api/client.test.ts ]
+      feilet: |web| src/app/navigation.test.tsx [ apps/web/src/app/navigation.test.tsx ]
+      feilet: |web| src/auth/RequireAuth.test.tsx [ apps/web/src/auth/RequireAuth.test.tsx ]
+      feilet: |web| src/auth/safeNextPath.test.ts [ apps/web/src/auth/safeNextPath.test.ts ]
+      feilet: |web| src/components/Dialog/Dialog.test.tsx [ apps/web/src/components/Dialog/Dialog.test.tsx ]
+      feilet: |web| src/components/formControls.test.tsx [ apps/web/src/components/formControls.test.tsx ]
+      feilet: |web| src/components/FormError/FormError.test.tsx [ apps/web/src/components/FormError/FormError.test.tsx ]
+      feilet: |web| src/components/states.test.tsx [ apps/web/src/components/states.test.tsx ]
+      feilet: |web| src/components/Toast/Toast.test.tsx [ apps/web/src/components/Toast/Toast.test.tsx ]
+      feilet: |web| src/i18n/locales.test.ts [ apps/web/src/i18n/locales.test.ts ]
+      feilet: |web| src/inventory/batchForm.test.ts [ apps/web/src/inventory/batchForm.test.ts ]
+      feilet: |web| src/inventory/filter.test.ts [ apps/web/src/inventory/filter.test.ts ]
+      feilet: |web| src/pages/auth/LoginPage.test.tsx [ apps/web/src/pages/auth/LoginPage.test.tsx ]
+      feilet: |web| src/pages/auth/RegisterPage.test.tsx [ apps/web/src/pages/auth/RegisterPage.test.tsx ]
+      feilet: |web| src/pages/budget/BudgetPage.test.tsx [ apps/web/src/pages/budget/BudgetPage.test.tsx ]
+      feilet: |web| src/pages/budget/PurchasePages.test.tsx [ apps/web/src/pages/budget/PurchasePages.test.tsx ]
+      feilet: |web| src/pages/ExampleItemForm.test.tsx [ apps/web/src/pages/ExampleItemForm.test.tsx ]
+      feilet: |web| src/pages/inventory/InventoryPage.test.tsx [ apps/web/src/pages/inventory/InventoryPage.test.tsx ]
+      feilet: |web| src/pages/inventory/ItemPage.test.tsx [ apps/web/src/pages/inventory/ItemPage.test.tsx ]
+      feilet: |web| src/pages/inventory/NewItemPage.test.tsx [ apps/web/src/pages/inventory/NewItemPage.test.tsx ]
+      feilet: |web| src/pages/OverviewPage.test.tsx [ apps/web/src/pages/OverviewPage.test.tsx ]
+      feilet: |web| src/pages/ProfilePage.test.tsx [ apps/web/src/pages/ProfilePage.test.tsx ]
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx [ apps/web/src/pages/recipes/RecipePage.test.tsx ]
+      feilet: |web| src/pages/recipes/RecipesPage.test.tsx [ apps/web/src/pages/recipes/RecipesPage.test.tsx ]
+      feilet: |web| src/pages/SettingsPage.test.tsx [ apps/web/src/pages/SettingsPage.test.tsx ]
+      feilet: |web| src/pages/shopping/ShoppingListPage.test.tsx [ apps/web/src/pages/shopping/ShoppingListPage.test.tsx ]
+      feilet: |web| src/purchases/purchaseForm.test.ts [ apps/web/src/purchases/purchaseForm.test.ts ]
+      feilet: |web| src/recipes/filter.test.ts [ apps/web/src/recipes/filter.test.ts ]
+      feilet: |web| src/shopping/forms.test.ts [ apps/web/src/shopping/forms.test.ts ]
+      feilet: |web| src/styles/tokens.test.ts [ apps/web/src/styles/tokens.test.ts ]
+15. En linje uten mengde får oppskriftens mengde
+    endret: packages/shared/src/shopping/list.ts
+    enhetstester: Tests  1 failed | 707 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > an open line without an amount keeps having none; the recipe share is still recorded
+      feilet: |shared| src/shopping/list.test.ts > FR-SHOP-002 mergeQuantity > a line without an amount stays without one
+16. Basisvarer og valgfrie krysses av i forslagene
+    endret: packages/shared/src/shopping/list.ts
+    enhetstester: Tests  2 failed | 706 passed (708)
+    API-tester:   Tests  194 passed (194)
+      feilet: |shared| src/shopping/list.test.ts > FR-SHOP-002 suggestFromRecipe > staples, optional ingredients and unknown amounts are shown unticked
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > FR-SHOP-002 add what is missing to the shopping list > ticks what is missing, leaves staples, optional and items already on the list unticked
+17. «Litt for lite» foreslår hele mengden i stedet for det som mangler
+    endret: packages/shared/src/shopping/list.ts
+    enhetstester: Tests  2 failed | 706 passed (708)
+    API-tester:   Tests  194 passed (194)
+      feilet: |shared| src/shopping/list.test.ts > FR-SHOP-002 suggestFromRecipe > ticks only what is missing, with the missing amount
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > FR-SHOP-002 add what is missing to the shopping list > ticks what is missing, leaves staples, optional and items already on the list unticked
+18. Ny vare fra linjen kobles aldri til ingrediensen
+    endret: packages/shared/src/shopping/list.ts
+    enhetstester: Tests  2 failed | 706 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-003 checked lines into the inventory > a new item from a recipe line matches the recipe again, and the recipe ranks higher
+      feilet: |api| src/modules/shopping/service.test.ts > FR-SHOP-003 toInventory > a new item with another name is linked by hand, so the recipe matches it again
+      feilet: |shared| src/shopping/list.test.ts > FR-SHOP-001/003 ingredient links > otherwise the ingredient is set by hand, so the item still matches the recipe
+19. Seed sletter ingredienser som en handlelistelinje bruker
+    endret: apps/api/src/modules/recipes/seed.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  1 failed | 193 passed (194)
+      feilet: |api-db| test/shopping.api.test.ts > FR-SHOP-002 from a recipe > spec 06 seed rule: an ingredient used by a shopping line is kept when it leaves the seed files
+20. Avhukingen rulles ikke tilbake ved feil
+    endret: apps/web/src/shopping/api.ts
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  194 passed (194)
+21. Avkrysningsboksene bygges ikke på nytt etter tilbakerulling
+    endret: apps/web/src/pages/shopping/ShoppingListPage.tsx
+    enhetstester: Tests  1 failed | 707 passed (708)
+    API-tester:   Tests  194 passed (194)
+      feilet: |web| src/pages/shopping/ShoppingListPage.test.tsx > FR-SHOP-001 ticking off (optimistic, KURS-03 delegated events) > if the server refuses, the line goes back and the user is told
+22. Den delegerte change-lytteren legges ikke til
+    endret: apps/web/src/shopping/listEvents.ts
+    enhetstester: Tests  3 failed | 705 passed (708)
+    API-tester:   Tests  194 passed (194)
+      feilet: |web| src/pages/shopping/ShoppingListPage.test.tsx > FR-SHOP-001 ticking off (optimistic, KURS-03 delegated events) > if the server refuses, the line goes back and the user is told
+      feilet: |web| src/pages/shopping/ShoppingListPage.test.tsx > FR-SHOP-001 ticking off (optimistic, KURS-03 delegated events) > the line moves to "Huket av" before the server has answered, and PATCH sets checked
+      feilet: |web| src/pages/shopping/ShoppingListPage.test.tsx > FR-SHOP-001 ticking off (optimistic, KURS-03 delegated events) > unticking a checked line sends checked: false
+23. Uendret kode (kontroll: ingen tester skal feile)
+    enhetstester: Tests  708 passed (708)
+    API-tester:   Tests  194 passed (194)

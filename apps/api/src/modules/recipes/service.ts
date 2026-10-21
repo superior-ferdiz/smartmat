@@ -45,12 +45,13 @@ export class RecipeService {
 
   async ingredients(): Promise<IngredientResponse[]> {
     const catalog = await this.deps.repo.catalog();
-    return catalog.map(({ id, key, name, baseUnit, isStaple, aliases }) => ({
+    return catalog.map(({ id, key, name, baseUnit, isStaple, categoryKey, aliases }) => ({
       id,
       key,
       name,
       baseUnit,
       isStaple,
+      categoryKey,
       aliases,
     }));
   }

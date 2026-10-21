@@ -47,7 +47,10 @@ export interface SeedSummary {
   recipes: number;
   removedRecipes: number;
   removedIngredients: number;
-  /** Ingredients no longer in the files that are kept because an inventory item is linked to them. */
+  /**
+   * Ingredients no longer in the files that are kept because an inventory item or a shopping list line
+   * (spec 06) is linked to them.
+   */
   keptIngredients: string[];
 }
 
@@ -144,9 +147,10 @@ export async function applySeed(db: Db, seed: ResolvedSeed): Promise<SeedSummary
       });
       const stale = await tx.ingredient.findMany({
         where: { id: { notIn: ids } },
-        select: { id: true, key: true, _count: { select: { items: true } } },
+        select: { id: true, key: true, _count: { select: { items: true, shoppingItems: true } } },
       });
-      const unused = stale.filter((i) => i._count.items === 0);
+      const inUse = (i: (typeof stale)[number]) => i._count.items + i._count.shoppingItems > 0;
+      const unused = stale.filter((i) => !inUse(i));
       await tx.ingredient.deleteMany({ where: { id: { in: unused.map((i) => i.id) } } });
 
       return {
@@ -154,7 +158,7 @@ export async function applySeed(db: Db, seed: ResolvedSeed): Promise<SeedSummary
         recipes: seed.recipes.length,
         removedRecipes: removedRecipes.count,
         removedIngredients: unused.length,
-        keptIngredients: stale.filter((i) => i._count.items > 0).map((i) => i.key),
+        keptIngredients: stale.filter(inUse).map((i) => i.key),
       };
     },
     { timeout: 60_000 },

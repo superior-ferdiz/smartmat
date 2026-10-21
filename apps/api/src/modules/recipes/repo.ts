@@ -1,4 +1,4 @@
-import type { Allergen, BaseUnit, Conversion, RecipeSource } from '@smartmat/shared';
+import type { Allergen, BaseUnit, CategoryKey, Conversion, RecipeSource } from '@smartmat/shared';
 import type { Db } from '../../db';
 import type { Prisma } from '../../generated/prisma/client';
 
@@ -14,6 +14,7 @@ export interface CatalogIngredient {
   name: string;
   baseUnit: BaseUnit;
   isStaple: boolean;
+  categoryKey: CategoryKey | null;
   aliases: string[];
   allergens: Allergen[];
   conversions: Conversion[];
@@ -94,6 +95,7 @@ export function createRecipeRepo(db: Db): RecipeRepo {
           name: true,
           baseUnit: true,
           isStaple: true,
+          categoryKey: true,
           aliases: { select: { alias: true }, orderBy: { alias: 'asc' } },
           allergens: { select: { allergen: true } },
           conversions: { select: { unit: true, unitQty: true, baseQty: true } },
@@ -101,6 +103,7 @@ export function createRecipeRepo(db: Db): RecipeRepo {
       });
       return rows.map((row) => ({
         ...row,
+        categoryKey: row.categoryKey as CategoryKey | null,
         aliases: row.aliases.map((a) => a.alias),
         allergens: row.allergens.map((a) => a.allergen),
       }));

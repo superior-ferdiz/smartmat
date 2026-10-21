@@ -52,6 +52,7 @@ export const LOCATIONS_PATH = '/matlager/steder';
 export const itemPath = (itemId: string) => `/matlager/${itemId}`;
 export const RECIPES_PATH = '/oppskrifter';
 export const recipePath = (recipeId: string) => `/oppskrifter/${recipeId}`;
+export const SHOPPING_LIST_PATH = '/handleliste';
 export const BUDGET_PATH = '/budsjett';
 export const NEW_PURCHASE_PATH = '/budsjett/kjop/ny';
 export const purchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}`;

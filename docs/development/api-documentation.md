@@ -200,7 +200,7 @@ RecipeLine = { position, ingredientId, ingredientName, displayText, quantityBase
                approximate, itemNames, expiring: { itemName, expiryKind, daysLeft }|null, excludedUseByItems,
                allergens: Allergen[] }
 RecipeDetail = RecipeSummary & { steps, license, authors, lines: RecipeLine[], userAllergens: Allergen[] }
-Ingredient = { id, key, name, baseUnit, isStaple, aliases: string[] }
+Ingredient = { id, key, name, baseUnit, isStaple, categoryKey|null /* fra fase 6 */, aliases: string[] }
 ```
 
 ### Endepunkter
@@ -219,3 +219,41 @@ Ingredient = { id, key, name, baseUnit, isStaple, aliases: string[] }
   gjøres i nettleseren (som i matlageret), fordi listen er liten. Planen nevnte spørreparametere for dette. Se
   «Avvik» i spesifikasjon 05.
 - Partier med passert siste forbruksdag regnes aldri med. De står i `excludedUseByItems`.
+
+## Handleliste (fase 6)
+
+Én liste per husholdning (spesifikasjon 06, avgjørelse 1). Alle ruter ligger under
+`/households/:householdId/shopping-list` med `requireAuth` og `householdAccess`. Linjer, varer og steder slås opp
+innenfor husholdningen. En id fra en annen husholdning gir 404 (eller 409/400 i `to-inventory`), og ingenting endres.
+
+### Typer
+
+```ts
+ShoppingQuantity = { quantityBase: number /* heltall > 0 i grunnenhet */, unit: 'g'|'ml'|'stk' } | null
+ShoppingItem = { id, text, ingredientId|null, quantityBase|null, unit|null, checked, checkedAt|null, createdAt,
+                 recipes: { recipeId, title, quantityBase|null }[] /* oppskriftsbidrag */ }
+StockTarget = { kind: 'existing', itemId } | { kind: 'new', name, categoryKey, unit }
+StockLine = { shoppingItemId, target: StockTarget, quantityBase /* i målvarens enhet */, locationId,
+              expiry?: { kind: 'best_before'|'use_by', date } | null }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/shopping-list` | – | `{ items: ShoppingItem[] }` (åpne først, så avhukede) | 404 |
+| POST | `/households/:h/shopping-list/items` | `{ text, quantity?: ShoppingQuantity, clientRequestId?: uuid }` | 201 `{ item, similarItemId\|null }`, 200 ved gjentatt `clientRequestId` | 400 `validation.shoppingText.*`, `validation.quantity.*` |
+| PATCH | `/households/:h/shopping-list/items/:itemId` | minst ett av `{ text, quantity (null fjerner), checked }` | `ShoppingItem` | 400, 404, 409 `errors.shopping.alreadyOnList` |
+| DELETE | `/households/:h/shopping-list/items/:itemId` | – | 204 | 404 |
+| POST | `/households/:h/shopping-list/clear-checked` | – | `{ removed }` | 404 |
+| POST | `/households/:h/shopping-list/from-recipe/:recipeId` | `{ lines: { ingredientId, quantityBase\|null }[] }` (1–100, ingen ingrediens to ganger) | `{ created, merged, skipped }` | 400 `lines.N.ingredientId: validation.shopping.notInRecipe`, 404 |
+| POST | `/households/:h/shopping-list/to-inventory` | `{ lines: StockLine[] }` (1–100) | `{ added, itemIds }` | 400 `lines.N.locationId` / `lines.N.target.itemId`, 409 `errors.shopping.changedMeanwhile` |
+
+- `checked` **settes** (sann eller usann), og byttes aldri. Samme forespørsel to ganger gir samme resultat.
+- `from-recipe`: teksten blir ingrediensens navn og enheten ingrediensens grunnenhet. En åpen linje for samme
+  ingrediens får bidraget (mengder i samme enhet legges sammen). Er oppskriften allerede registrert på linjen,
+  telles linjen som `skipped`.
+- `to-inventory`: én transaksjon. Linjene slettes først med krav om at de er avhuket. Blir det slettet færre enn
+  sendt, rulles alt tilbake (409). Partiene får ingen pris og ingen kjøpskobling (ADR-0007, avgjørelse 4). En ny vare
+  får `ingredient_match = manual` når navnet ikke selv treffer linjens ingrediens.
+

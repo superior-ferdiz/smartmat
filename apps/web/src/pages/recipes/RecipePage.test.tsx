@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { RecipeDetail } from '@smartmat/shared';
 import { renderApp } from '../../test/renderApp';
 import { mockApi } from '../../test/mockApi';
 import { expectNoAxeViolations } from '../../test/axe';
 import { recipeDetail, recipeLine } from '../../test/recipeFixtures';
+import { shoppingItem } from '../../test/shoppingFixtures';
 
 const DISCLAIMER = /Allergeninformasjonen er veiledende/;
 
@@ -196,5 +198,91 @@ describe('NFR-UX-003 states', () => {
       await screen.findByRole('heading', { level: 1, name: 'Fant ikke oppskriften' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Tilbake til oppskriftene' })).toBeInTheDocument();
+  });
+});
+
+describe('FR-SHOP-002 add what is missing to the shopping list', () => {
+  it('ticks what is missing, leaves staples, optional and items already on the list unticked', async () => {
+    const user = userEvent.setup();
+    const onList = recipe.lines.find((l) => l.ingredientName === 'Løk')!;
+    const requests = mockApi((r) => {
+      if (r.path.endsWith(`/recipes/${recipe.id}`)) return { status: 200, body: recipe };
+      if (r.method === 'GET' && r.path.endsWith('/shopping-list'))
+        return {
+          status: 200,
+          body: { items: [shoppingItem('Løk', { ingredientId: onList.ingredientId })] },
+        };
+      if (r.method === 'POST' && r.path.includes('/from-recipe/'))
+        return { status: 200, body: { created: 1, merged: 1, skipped: 0 } };
+      return undefined;
+    });
+    renderApp(`/oppskrifter/${recipe.id}`);
+    await user.click(await screen.findByRole('button', { name: 'Legg manglende i handlelisten' }));
+    const dialog = screen.getByRole('dialog', { name: 'Legg i handlelisten' });
+
+    // Kyllingfilet and Løk are "enough" in this recipe, so only the rest is suggested.
+    const boxes = within(dialog).getAllByRole('checkbox');
+    expect(boxes).toHaveLength(4);
+    expect(within(dialog).getByRole('checkbox', { name: 'Fløte' })).toBeChecked();
+    expect(within(dialog).getByRole('checkbox', { name: 'Ris' })).toBeChecked();
+    expect(within(dialog).getByRole('checkbox', { name: 'Karri' })).not.toBeChecked();
+    expect(within(dialog).getByRole('checkbox', { name: 'Salt' })).not.toBeChecked();
+    expect(within(dialog).getByText('Basisvare – sjekk at du har')).toBeInTheDocument();
+    expect(within(dialog).getByText('Valgfri')).toBeInTheDocument();
+
+    // Fløte: the 50 ml that is missing, shown in a unit the user can change.
+    const amounts = within(dialog).getAllByRole('textbox', { name: /Mengde/ });
+    expect(amounts[0]).toHaveValue('50');
+    await user.clear(amounts[0]!);
+    await user.type(amounts[0]!, '1');
+    await user.selectOptions(within(dialog).getAllByRole('combobox', { name: 'Enhet' })[0]!, 'dl');
+    await user.click(within(dialog).getByRole('button', { name: 'Legg i handlelisten' }));
+
+    expect(
+      await screen.findByText('Lagt i handlelisten: 1 nye, 1 slått sammen med linjer som var der.'),
+    ).toBeInTheDocument();
+    const fløte = recipe.lines.find((l) => l.ingredientName === 'Fløte')!;
+    const ris = recipe.lines.find((l) => l.ingredientName === 'Ris')!;
+    expect(requests.find((r) => r.path.includes('/from-recipe/'))?.body).toEqual({
+      lines: [
+        { ingredientId: fløte.ingredientId, quantityBase: 100 },
+        { ingredientId: ris.ingredientId, quantityBase: 100 },
+      ],
+    });
+  });
+
+  it('marks an ingredient that is already on the list and leaves it unticked', async () => {
+    const user = userEvent.setup();
+    const ris = recipe.lines.find((l) => l.ingredientName === 'Ris')!;
+    mockApi((r) => {
+      if (r.path.endsWith(`/recipes/${recipe.id}`)) return { status: 200, body: recipe };
+      if (r.method === 'GET' && r.path.endsWith('/shopping-list'))
+        return {
+          status: 200,
+          body: {
+            items: [
+              shoppingItem('Ris', {
+                ingredientId: ris.ingredientId,
+                checked: true,
+                checkedAt: '2026-10-21T09:00:00.000Z',
+              }),
+            ],
+          },
+        };
+      return undefined;
+    });
+    renderApp(`/oppskrifter/${recipe.id}`);
+    await user.click(await screen.findByRole('button', { name: 'Legg manglende i handlelisten' }));
+    const dialog = screen.getByRole('dialog', { name: 'Legg i handlelisten' });
+    expect(within(dialog).getByRole('checkbox', { name: 'Ris' })).not.toBeChecked();
+    expect(within(dialog).getByText('Står allerede på listen')).toBeInTheDocument();
+  });
+
+  it('a recipe with everything in stock says so instead of offering the button', async () => {
+    show(recipeDetail('Alt i boks', [recipeLine('Ris', { status: 'enough', haveBase: 500 })]));
+    expect(await screen.findByText('Du har alt oppskriften trenger.')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Legg manglende i handlelisten' }),
+    ).not.toBeInTheDocument();
   });
 });

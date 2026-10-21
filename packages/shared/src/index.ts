@@ -17,3 +17,6 @@ export * from './recipes/matching';
 export * from './recipes/scoring';
 export * from './recipes/seed';
 export * from './api/recipes';
+export * from './schemas/shopping';
+export * from './api/shopping';
+export * from './shopping/list';

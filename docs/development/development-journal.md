@@ -283,3 +283,51 @@ hans erklæring om en felles gjennomgang. Det er ikke oppgitt hvem som deltok, o
 også fase 1–4, eller hva som ble sett på (plan, kode eller den kjørende appen), og ingen funn er meldt. Fasen er ikke
 satt til «Ferdig», fordi teamets oppskrifter og kontrollen av ingredienslisten fortsatt mangler. `fase-5` er ikke
 committet. Ferdinand ba om prompten til fase 6.
+
+---
+
+## 2026-10-21 – Fase 6: handleliste
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 6 i en ny chat med en detaljert prompt. To linjer var ikke fylt ut: om `fase-5` var
+  committet, og hvem som deltok i gjennomgangen. Claude påpekte at `fase-5` ikke var committet, og ventet.
+- Ferdinand svarte: «Ja vennligst comitte og pushe. Jeg godkjenner plannen. Begge har gjennomgått.» Claude committet
+  `fase-5` (3197771), pushet den og laget `fase-6` fra den. Anbefalingene i de seks åpne spørsmålene gjelder (se
+  [spesifikasjon 06](requirements/06-handleliste.md)).
+- **Om gjennomgangen:** «Begge har gjennomgått» er registrert som Ferdinands erklæring om at han og Linus har gått
+  gjennom. Hva som ble gjennomgått (fase 5 alene eller også fase 1–4, og plan, kode eller app), og eventuelle funn,
+  er ikke oppgitt. Linus har ikke bekreftet det selv i en økt.
+- Spesifikasjon 06 ble skrevet **før** koden. **All kode i fasen er skrevet av KI.**
+
+**Avvik og funn underveis** (detaljer i kapittel 8, 10 og 11)
+- En avkrysningsboks kunne vise hake etter en avvist avhuking. Komponenttesten fant det.
+- Claude så på sine egne skjermbilder og rettet tre ting: et felt som brøt linjen på 360 px, mengden vist to ganger
+  på linjer fra én oppskrift, og to felt som begge het «Enhet» i dialogen for ny vare.
+- **Kontrollen av testene fant to hull i første kjøring** (kappløp i repoet ved «Legg i matlageret», og
+  tilbakerullingen ved feil), og én ugyldig mutasjon. Etter rettingene ble alle 22 endringer fanget i andre kjøring.
+  Begge kjøringene er lagret.
+- Kjent fallgruve igjen: et usynlig hardt mellomrom i en testfil.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 708 |
+| API-tester mot database | 195 |
+| Bygg | Vellykket |
+| Playwright-tester | 135 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-6/`, skjermbilder i `docs/evidence/screenshots/fase-6/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 6 (pull request)
+- test av handlelisten på ekte telefon i butikk, og med skjermleser
+- commit og push av `fase-6` (ikke bedt om ennå)
+- fortsatt utestående fra fase 5: teamets oppskrifter og kontroll av `prisma/seed/ingredients.json`
+
+**Neste:** Teamet går gjennom fasen og ber om commit og push. Deretter fase 7 (strekkodeskanning), helst i en ny chat.
+

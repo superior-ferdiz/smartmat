@@ -379,6 +379,55 @@ for seg. Teksten sier alltid hva som er *registrert*, aldri at noe er *fritt for
 én komponent (`AllergenDisclaimer`), og en test i `locales.test.ts` stopper ord som «allergenfri» og «free from» i
 begge språkfilene.
 
+## Fase 6: handleliste
+
+Handlelisten er laget for å brukes med én hånd i butikken: store rader (minst 44 px), hele teksten er etiketten til
+avkrysningsboksen, og avhukingen vises med en gang. Logikken (sammenslåing, forslag fra oppskrift, rekkefølge og
+kobling til ingrediens) ligger som rene funksjoner i `packages/shared/src/shopping/list.ts`, som brukes av både API-et
+og nettleseren.
+
+## Eksempel 23: én lytter for hele listen (KURS-03, antatt)
+
+`useDelegatedListEvents` (`apps/web/src/shopping/listEvents.ts`) legger **én** `change`-lytter og **én**
+`click`-lytter på listen med `addEventListener`, i stedet for én per rad. Hendelsen bobler opp fra avkrysningsboksen
+eller knappen som ble brukt, og `event.target.closest('[data-item-id]')` finner raden. Det virker også for rader som
+legges til eller flyttes senere, uten at lyttere må legges til eller fjernes. React gjør i praksis det samme internt
+(alle `onChange` samles på roten), men her står mekanismen i vår egen kode, så den kan forklares.
+
+Etter en endring flyttes fokus med DOM-API-et: til raden som tok plassen til den som forsvant (`nextElementSibling`
+eller `previousElementSibling`), eller til hurtigfeltet når listen er tom. Et skjult `aria-live`-område melder
+«Melk er huket av». Avkrysningsboksene er ukontrollerte (`defaultChecked`) og har en nøkkel som endres med
+tilstanden, så DOM-en bygges på nytt fra dataene når de endrer seg.
+
+## Eksempel 24: avhuking uten forsinkelse (optimistisk oppdatering)
+
+`useToggleChecked` endrer den bufrede listen i TanStack Query før forespørselen er sendt (`onMutate`). Feiler
+forespørselen, settes den gamle listen tilbake (`onError`), og brukeren får en melding. API-et *setter* `checked` til
+verdien som sendes, og bytter den aldri, så et nytt forsøk kan ikke snu haken feil vei.
+
+*Funnet under testingen:* Når serveren avviste avhukingen så raskt at React aldri tegnet den optimistiske tilstanden,
+var dataene like før og etter. Nøkkelen endret seg da ikke, og den ukontrollerte boksen beholdt haken i DOM-en.
+Komponenttesten for tilbakerulling fanget det. Nå får boksene en ny nøkkel (`version`) ved hver tilbakerulling.
+
+## Eksempel 25: fra handleliste til matlager uten doble partier (FR-SHOP-003)
+
+Alt skjer i én databasetransaksjon. Første steg er å slette linjene med en betingelse:
+`deleteMany({ where: { householdId, checked: true, id: { in: [...] } } })`. Blir antallet slettet mindre enn antallet
+sendt, kastes en feil og alt rulles tilbake (409). Trykker brukeren to ganger, eller sender to telefoner samtidig,
+finner den andre forespørselen ingen linjer å slette og lager ingen partier. Deretter lages eventuelle nye varer og
+partiene med `insertBatchWithEvent`, slik at de får hendelsen `add` som alle andre partier. Partiene får ingen pris og
+ingen kjøpskobling (ADR-0007): handlelisten registrerer ikke utgifter, og dialogen lenker til «Registrer kjøp».
+
+En ny vare fra en linje som kom fra en oppskrift, får ingrediensen satt manuelt (`ingredient_match = manual`) hvis
+navnet brukeren valgte, ikke selv treffer ingrediensen. Da matcher varen oppskriften igjen, og oppskriften rangeres
+høyere. Det er testet hele veien i Playwright.
+
+## Eksempel 26: sammenslåing uten avrunding (FR-SHOP-002)
+
+`mergeQuantity` legger sammen mengder bare når enheten er den samme. En linje uten mengde («melk») forblir uten
+mengde, og en linje i en annen enhet beholder sin mengde. Ingenting regnes om, så ingenting rundes. Oppskriftens
+bidrag vises under linjen («Pannekaker: 500 ml»), så brukeren ser hva som trengs.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
@@ -387,7 +436,7 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
 ## Kjente begrensninger
 
-- **Bundle på 690 kB** (210 kB gzip) i én fil etter fase 5, opp fra 658 kB i fase 4, 619 kB i fase 3, 566 kB i
+- **Bundle på 720 kB** (217 kB gzip) i én fil etter fase 6, opp fra 690 kB i fase 5, 658 kB i fase 4, 619 kB i fase 3, 566 kB i
   fase 2 og 517 kB i fase 1. Vite advarer om dette. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Bør sjekkes på nytt i fase 13.

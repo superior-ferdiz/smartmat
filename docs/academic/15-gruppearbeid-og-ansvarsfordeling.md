@@ -35,7 +35,13 @@ Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
   fiktive testoppskrifter som bare finnes i test-databasene. Hvem som skriver oppskriftene, er ikke avtalt.
 - **Gjennomgang av fase 5:** Ferdinand skrev 2026-10-21: «Vi har gått igjennom det i plenum.» Det er registrert som
   hans erklæring. Deltakere, omfang og eventuelle funn er ikke oppgitt.
-- Ingen gjennomgang fra Linus Saxe Huseby er registrert med navn ennå.
+- **Gjennomgang før fase 6:** Claude spurte hvem som deltok i gjennomgangen og hva den omfattet. Ferdinand svarte
+  2026-10-21: «Begge har gjennomgått.» Det er registrert som Ferdinands erklæring om at både han og Linus Saxe
+  Huseby har gått gjennom. Hva gjennomgangen omfattet (fase 5 alene eller også fase 1–4, plan, kode eller kjørende
+  app), og eventuelle funn, er ikke oppgitt. Linus har ikke selv bekreftet det i en økt.
+- **Fase 6 (2026-10-21):** All kode er skrevet av KI. Ferdinand godkjente planen («Jeg godkjenner plannen») og ba om
+  commit og push av `fase-5`. Arbeidsfordelingen var som i fase 4–5: KI implementerer, teamet gjennomgår via pull
+  request og prøver listen på en ekte telefon i butikk.
 
 ## Kilder i prosjektet
 

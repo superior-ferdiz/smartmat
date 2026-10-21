@@ -32,6 +32,9 @@ import { createRecipeRepo } from './modules/recipes/repo';
 import { recipeRoutes } from './modules/recipes/routes';
 import { RecipeService } from './modules/recipes/service';
 import { purchaseRoutes } from './modules/purchases/routes';
+import { createShoppingRepo } from './modules/shopping/repo';
+import { shoppingRoutes } from './modules/shopping/routes';
+import { ShoppingService } from './modules/shopping/service';
 import { PurchaseService } from './modules/purchases/service';
 import { profileRoutes } from './modules/profile/routes';
 import { ProfileService } from './modules/profile/service';
@@ -117,6 +120,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     now,
   });
   const budgetService = new BudgetService({ repo: createBudgetRepo(db), now });
+  const shoppingService = new ShoppingService({
+    repo: createShoppingRepo(db),
+    locations: locationRepo,
+    recipes: recipeRepo,
+    now,
+  });
 
   await app.register(
     async (api) => {
@@ -148,6 +157,11 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       });
       await api.register(budgetRoutes, { service: budgetService, requireAuth, householdAccess });
       await api.register(recipeRoutes, { service: recipeService, requireAuth, householdAccess });
+      await api.register(shoppingRoutes, {
+        service: shoppingService,
+        requireAuth,
+        householdAccess,
+      });
     },
     { prefix: API_PREFIX },
   );

@@ -2,6 +2,26 @@
 
 ## [Ikke utgitt]
 
+### Fase 6 – 2026-10-21 (grenen `fase-6`)
+- **Handleliste** (`/handleliste`), én per husholdning:
+  - føre listen for hånd: legge til (Enter i hurtigfeltet), rette, fjerne, huke av og fjerne hake, fjerne avhukede
+  - avhuking vises med en gang (optimistisk) og rulles tilbake ved feil
+  - én delegert DOM-lytter for hele listen, fokusflytting og `aria-live`-meldinger (KURS-03)
+- **Fra oppskrift:** «Legg manglende i handlelisten» foreslår det som mangler, med manglende mengde. Basisvarer,
+  valgfrie ingredienser og det som står på listen, er ikke krysset av. Samme ingrediens slås sammen med den åpne
+  linjen, og samme oppskrift telles aldri to ganger.
+- **Til matlageret:** avhukede linjer legges inn som partier (eksisterende eller ny vare) i én transaksjon. Ingen
+  doble partier ved dobbel innsending. Ny vare kobles til ingrediensen, så oppskriften rangeres høyere. Ingen utgift
+  registreres (ADR-0007).
+- **Forsiden:** hurtighandlingen «Handleliste» viser antall åpne linjer.
+- **Migrering:** `shopping_list` (3 tabeller, sammensatte fremmednøkler, CHECK, delvis unik indeks, én liste for hver
+  husholdning).
+- **API:** 7 nye endepunkter under `/households/:householdId/shopping-list`. `GET /ingredients` har `categoryKey`.
+  Nye feilkoder `errors.shopping.changedMeanwhile` og `errors.shopping.alreadyOnList`.
+- **`packages/shared`:** skjemaer og svar for handlelisten, `mergeQuantity`, `suggestFromRecipe`,
+  `sortShoppingItems`, `newItemIngredientLink`, `textIngredientId`.
+- **Seed:** ingredienser som en handlelistelinje bruker, fjernes ikke.
+
 ### Fase 5 – 2026-10-21 (grenen `fase-5`)
 - **Oppskrifter:**
   - bla i og åpne oppskrifter, med søk (tittel og ingrediens) og tagg i URL-en

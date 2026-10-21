@@ -133,6 +133,20 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   `Pick<T,'a'> & Pick<T,'b'>`.
 - URL-controlled checkboxes update a tick after the click: in Playwright use `click()` + `toBeChecked()`, not `check()`.
 
+## Code conventions (added in phase 6)
+
+- Shopping list: one per household (`shopping_lists.household_id` unique, created at registration). A partial unique
+  index allows one OPEN line per ingredient; writes that merge lock the list row (`lockList`, `FOR UPDATE`).
+  Pure rules in `packages/shared/src/shopping/list.ts`. `checked` is always *set*, never toggled.
+- "To inventory" deletes the checked lines first with a condition and rolls back if the count differs – that is the
+  double-submit guard. Shopping batches have no price and no purchase (ADR-0007).
+- Shopping queries live under `['household', id, 'shopping-list']`; list edits refetch only the list, stocking
+  refetches the whole household.
+- The list rows use one delegated native listener (`shopping/listEvents.ts`) and uncontrolled checkboxes keyed on
+  their state plus a `version` bumped on rollback. Playwright: tick with `click()`, not `check()`.
+- Testing Library normalises `\u00A0` in the DOM but not in the matcher: write plain spaces in `getByText`.
+  Bash heredocs/python edits have produced literal U+00A0 three times now – grep the files you wrote.
+
 ## Integrity rules (non-negotiable)
 
 - Never fabricate dates, meetings, tests, test results, screenshots, user feedback, sources or authorship.

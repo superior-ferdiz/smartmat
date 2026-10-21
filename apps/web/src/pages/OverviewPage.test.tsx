@@ -5,6 +5,7 @@ import { mockApi } from '../test/mockApi';
 import { batch, inDays, item } from '../test/inventoryFixtures';
 import { summary } from '../test/purchaseFixtures';
 import { recipeSummary } from '../test/recipeFixtures';
+import { shoppingItem } from '../test/shoppingFixtures';
 
 describe('FR-DASH-001 overview with real inventory data', () => {
   it('"Går ut snart" lists passed, today and soon (≤ 3 days), earliest first, max 5', async () => {
@@ -155,5 +156,39 @@ describe('FR-DASH-001 dinner suggestion from the recipes (phase 5)', () => {
     expect(
       await within(card()).findByText(/Ingen oppskrifter passer det du har ennå/),
     ).toBeInTheDocument();
+  });
+});
+
+describe('FR-DASH-001 shopping list shortcut (phase 6)', () => {
+  it('shows how many lines are still open, and links to the list', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/shopping-list')
+        ? {
+            status: 200,
+            body: {
+              items: [
+                shoppingItem('Melk'),
+                shoppingItem('Egg'),
+                shoppingItem('Brød', { checked: true, checkedAt: '2026-10-21T09:00:00.000Z' }),
+              ],
+            },
+          }
+        : undefined,
+    );
+    renderApp('/');
+    expect(await screen.findByRole('link', { name: 'Handleliste (2 varer)' })).toHaveAttribute(
+      'href',
+      '/handleliste',
+    );
+  });
+
+  it('without open lines it just says "Handleliste"', async () => {
+    renderApp('/');
+    await screen.findByRole('heading', { name: 'Hurtighandlinger' });
+    const actions = document.getElementById('card-actions') as HTMLElement;
+    expect(within(actions).getByRole('link', { name: 'Handleliste' })).toHaveAttribute(
+      'href',
+      '/handleliste',
+    );
   });
 });

@@ -12,6 +12,7 @@ import { RECIPES_PATH } from '../../app/navigation';
 import { useFormatQuantity } from '../../inventory/formatHooks';
 import { Page } from '../../layout/Page';
 import { AllergenBox } from '../../recipes/AllergenNotice';
+import { AddToShoppingList } from '../../recipes/AddToShoppingList';
 import { useRecipe } from '../../recipes/api';
 import { useFormatMinutes, useJoinList, useReasonText } from '../../recipes/formatHooks';
 import { LINE_GROUPS, lineGroup, type LineGroup } from '../../recipes/lines';
@@ -122,6 +123,7 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
               </div>
             );
           })}
+          <AddToShoppingList recipe={recipe} />
         </section>
 
         <section aria-labelledby="score-title" className={styles.section}>

@@ -211,6 +211,41 @@ valgt. Fremmednøkkelen er `RESTRICT`: seed-skriptet fjerner bare ingredienser s
   minutter 0–1440, omregningstall 1–100 000, mengder 1–100 000 000.
 - `RESTRICT` fra `recipe_ingredients` til `ingredients`: en ingrediens som brukes i en oppskrift, kan ikke slettes.
 
+## Handleliste (fase 6)
+
+```mermaid
+erDiagram
+  households ||--|| shopping_lists : har
+  shopping_lists ||--o{ shopping_list_items : inneholder
+  ingredients |o--o{ shopping_list_items : "koblet til"
+  shopping_list_items ||--o{ shopping_list_item_recipes : "lagt til av"
+  recipes ||--o{ shopping_list_item_recipes : bidrar
+```
+
+### Én liste, sammensatte fremmednøkler (ADR-0008)
+`shopping_lists.household_id` er unik: hver husholdning har én liste (avgjørelse 1 i spesifikasjon 06). Listen lages
+ved registreringen, og migreringen laget lister for husholdninger som fantes fra før. Linjene har `household_id` og
+peker til listen med `(list_id, household_id)`. Bidragene peker til linjen med `(item_id, household_id)`. Databasen
+kan derfor ikke koble en linje til en annen husholdnings liste.
+
+### Én åpen linje per ingrediens
+Den viktigste regelen er en **delvis unik indeks**: `UNIQUE (list_id, ingredient_id) WHERE NOT checked AND
+ingredient_id IS NOT NULL`. Avhukede linjer og linjer uten ingrediens er ikke begrenset. Indeksen gjør at to
+forespørsler som slår sammen samme oppskrift samtidig, aldri kan gi to åpne linjer for «melk». Koden låser i tillegg
+listeraden (`SELECT … FOR UPDATE`), så sammenslåingen skjer én om gangen per husholdning. Prisma kan ikke uttrykke
+delvise indekser, så den står som rå SQL i migreringen.
+
+### Hvem la til hva
+`shopping_list_item_recipes` har primærnøkkel `(item_id, recipe_id)`. Samme oppskrift kan derfor bare legge til én
+gang på samme linje. Planen hadde én `source_recipe_id` på linjen, men da kunne ikke to oppskrifter dele en linje.
+En oppskrift som fjernes av seed-skriptet, tar bidragene med seg (`CASCADE`). Linjen blir stående.
+
+### Regler i databasen
+- CHECK: mengde og enhet er satt sammen eller ikke i det hele tatt, mengden er 1–100 000 000, `checked_at` er satt
+  når og bare når linjen er avhuket, og teksten er ikke tom.
+- `dedupe_key` er unik per husholdning: samme skjema sendt to ganger gir én linje (NFR-DATA-002).
+- `RESTRICT` fra linje til ingrediens. Seed-skriptet teller nå også handlelistelinjer før det fjerner en ingrediens.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -248,6 +283,7 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261021115500_inventory_event_seq` | Løpenummer på hendelser (se under) |
 | `20261021124836_purchases_budget` | Kjøp, linjer og matbudsjett: 3 tabeller, 2 enums, `purchase_line_id` på partier, sammensatte fremmednøkler og CHECK |
 | `20261021153638_recipes` | Oppskrifter: 7 tabeller, 3 enums, `ingredient_match`/`ingredient_id` på varer, CHECK. Innholdet legges inn med `npm run db:seed`, ikke av migreringen. |
+| `20261021200000_shopping_list` | Handleliste: 3 tabeller, sammensatte fremmednøkler, CHECK, delvis unik indeks (én åpen linje per ingrediens) og én liste for hver husholdning som fantes |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

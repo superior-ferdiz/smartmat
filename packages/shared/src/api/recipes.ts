@@ -4,6 +4,7 @@ import { BASE_UNITS } from '../quantity/quantity';
 import { ALLERGENS } from '../recipes/allergens';
 import { LINE_STATUSES } from '../recipes/scoring';
 import { RECIPE_SEED_SOURCES } from '../recipes/seed';
+import { CATEGORY_KEYS } from '../schemas/inventory';
 
 /* Request and response shapes for recipes and allergens (phase 5, spec 05). */
 
@@ -23,6 +24,8 @@ export const ingredientResponseSchema = z.object({
   name: z.string(),
   baseUnit: z.enum(BASE_UNITS),
   isStaple: z.boolean(),
+  /** Suggested category for a new inventory item made from a shopping line (spec 06). */
+  categoryKey: z.enum(CATEGORY_KEYS).nullable(),
   aliases: z.array(z.string()),
 });
 export type IngredientResponse = z.infer<typeof ingredientResponseSchema>;

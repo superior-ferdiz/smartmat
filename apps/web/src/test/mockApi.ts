@@ -30,7 +30,7 @@ export const EMPTY_SUMMARY = {
 
 /**
  * Answers for the read requests most pages make (empty inventory, the three default places, no waste,
- * no purchases and no budget, no recipes, no allergies),
+ * no purchases and no budget, no recipes, no allergies, an empty shopping list),
  * so a test only has to describe the requests it is about.
  */
 export const defaultApi: Handler = (request) => {
@@ -51,6 +51,8 @@ export const defaultApi: Handler = (request) => {
   if (/^\/households\/[^/]+\/recipes$/.test(request.path))
     return { status: 200, body: { recipes: [], userAllergens: [] } };
   if (request.path === '/me/allergens') return { status: 200, body: { allergens: [] } };
+  if (/^\/households\/[^/]+\/shopping-list$/.test(request.path))
+    return { status: 200, body: { items: [] } };
   if (request.path === '/ingredients') return { status: 200, body: [] };
   if (/^\/households\/[^/]+\/inventory\/waste-summary$/.test(request.path)) {
     return {

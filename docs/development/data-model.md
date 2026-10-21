@@ -41,11 +41,24 @@ er ikke lagt til ennå, fordi ingenting bruker den før fase 4. `AuditEvent` er 
 - Allergier er en egen tabell `user_allergens` knyttet til brukeren, som planen sa.
 - `InventoryItem` fikk `ingredient_match` (`auto`/`manual`/`none`) og `ingredient_id` (bare ved `manual`, CHECK).
 
+**Implementert i fase 6 (2026-10-21):** `ShoppingList`, `ShoppingListItem` og i tillegg `ShoppingListItemRecipe`.
+Avvik fra planen:
+- `ShoppingList` har bare `household_id` (unik): én liste per husholdning (avgjørelse 1 i spesifikasjon 06). Lister
+  for husholdninger som fantes fra før, lages av migreringen.
+- `ShoppingListItem` har `quantity_base` + `unit` (begge eller ingen, CHECK), `checked_at` (CHECK: satt når og bare
+  når linjen er avhuket), `dedupe_key` (unik per husholdning) og `created_by`. `product_id` er utelatt (ingen
+  produktkatalog før fase 7). `source_recipe_id` er erstattet av tabellen `ShoppingListItemRecipe`, fordi flere
+  oppskrifter kan legge til på samme linje.
+- En **delvis unik indeks** tillater bare én åpen linje per ingrediens (`WHERE NOT checked AND ingredient_id IS NOT
+  NULL`). Sammenslåing fra oppskrifter bygger på den.
+- `ShoppingListItemRecipe` (`item_id`, `recipe_id`, `quantity_base`) har primærnøkkel `(item_id, recipe_id)`, så
+  samme oppskrift aldri teller to ganger på en linje.
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–5)
+## Kjernemodell (fase 2–6)
 
 ```mermaid
 erDiagram
@@ -69,6 +82,11 @@ erDiagram
   Ingredient ||--o{ Product : tilsvarer
   Recipe ||--o{ RecipeIngredient : krever
   Ingredient ||--o{ RecipeIngredient : brukes_i
+  Household ||--|| ShoppingList : har
+  ShoppingList ||--o{ ShoppingListItem : inneholder
+  Ingredient ||--o{ ShoppingListItem : kobles_til
+  ShoppingListItem ||--o{ ShoppingListItemRecipe : fra
+  Recipe ||--o{ ShoppingListItemRecipe : bidrar
 ```
 
 ## Entiteter
@@ -95,7 +113,7 @@ erDiagram
 | `UnitConversion` | ingredient_id?, from_unit, to_base_factor | f.eks. 1 dl melk = 100 ml, 1 egg ≈ 60 g | 5 |
 | `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image? | Frødata fra teamet | 5 |
 | `RecipeIngredient` | recipe_id, ingredient_id, quantity_base, display_text, optional | | 5 |
-| `ShoppingList` / `ShoppingListItem` | household_id / list_id, text, product_id?, ingredient_id?, quantity?, checked, source_recipe_id? | | 6 |
+| `ShoppingList` / `ShoppingListItem` / `ShoppingListItemRecipe` | household_id (unik) / household_id, list_id, text, ingredient_id?, quantity_base?, unit?, checked, checked_at?, dedupe_key? / item_id, recipe_id, quantity_base? | Én liste per husholdning; én åpen linje per ingrediens | 6 |
 
 ## Senere
 

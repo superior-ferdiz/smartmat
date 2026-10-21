@@ -3,19 +3,13 @@ import { apiAs, test, type Account } from './fixtures';
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
  * Only runs when asked for:  SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 5 pages, with a seeded inventory, purchases, budget and one registered allergen. The recipes are
- * the fictional test recipes the e2e API is seeded with (marked "Testdata"). (The phase 1–4 screenshots in
- * docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
+ * Phase 6 pages (shopping list), with a seeded inventory, purchases, budget and one registered allergen. The
+ * recipes are the fictional test recipes the e2e API is seeded with (marked "Testdata"). (The phase 1–5
+ * screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-5';
-const LOGGED_IN_PAGES = [
-  ['oversikt', '/'],
-  ['oppskrifter', '/oppskrifter'],
-  ['oppskrifter-med-allergener', '/oppskrifter?allergener=vis'],
-  ['profil-allergier', '/profil'],
-] as const;
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-6';
 
 function inDays(days: number) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date());
@@ -93,59 +87,49 @@ async function seed(
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  const suffix = colorScheme === 'light' ? 'lys' : 'mork';
-
-  test.describe(`${colorScheme} – logged in`, () => {
+  test.describe(`${colorScheme} – shopping list`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    for (const [name, path] of LOGGED_IN_PAGES) {
-      test(name, async ({ page, playwright, account }, testInfo) => {
-        await seed(playwright, account);
-        await page.goto(path);
-        await page.getByRole('heading', { level: 1 }).waitFor();
-        if (path === '/') {
-          await page
-            .getByRole('region', { name: 'Forslag til middag' })
-            .getByRole('link')
-            .first()
-            .waitFor();
-        } else if (path.startsWith('/oppskrifter')) {
-          await page.getByRole('list', { name: 'Oppskrifter, best egnet først' }).waitFor();
-        } else {
-          await page.getByRole('region', { name: 'Allergier' }).getByLabel('egg').waitFor();
-        }
-        await page.evaluate(() => document.fonts.ready);
-        await page.screenshot({
-          path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
-          // Phones: just the screen (a full-page capture draws the sticky bottom menu mid-page).
-          fullPage: !testInfo.project.name.startsWith('mobil'),
-        });
-      });
-    }
-  });
-}
-
-for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – a recipe and the item's ingredient link`, () => {
-    test.use({ colorScheme, isolatedAccount: true });
-    test('oppskrift-og-vare', async ({ page, playwright, account }, testInfo) => {
-      const { created } = await seed(playwright, account);
+    test('handleliste', async ({ page, playwright, account }, testInfo) => {
+      await seed(playwright, account);
+      const api = await apiAs(playwright, account);
+      await api.addShoppingItem({ text: 'Bananer', quantity: { quantityBase: 6, unit: 'stk' } });
+      const { item } = await api.addShoppingItem({ text: 'Tannkrem' });
+      await api.setShoppingItemChecked(item.id, true);
+      await api.dispose();
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
-      const full = !testInfo.project.name.startsWith('mobil');
-      await page.goto('/oppskrifter');
-      await page.getByRole('link', { name: 'Testrett: kylling og ris' }).click();
-      await page.getByRole('heading', { level: 2, name: 'Ingredienser' }).waitFor();
+      const shot = (name: string, fullPage = false) =>
+        page.screenshot({
+          path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
+          fullPage,
+        });
+
+      // FR-SHOP-002: the dialog on the recipe page.
+      await page.goto('/oppskrifter?allergener=vis');
+      await page.getByRole('link', { name: 'Testrett: pannekaker' }).click();
+      await page.getByRole('button', { name: 'Legg manglende i handlelisten' }).click();
+      const suggestions = page.getByRole('dialog', { name: 'Legg i handlelisten' });
+      await suggestions.getByRole('checkbox').first().waitFor();
       await page.evaluate(() => document.fonts.ready);
-      await page.screenshot({
-        path: `${OUT}/oppskrift-${testInfo.project.name}-${suffix}.png`,
-        fullPage: full,
-      });
-      await page.goto(`/matlager/${created[0]!.id}`);
-      await page.getByText('Kyllingfilet (automatisk, fra navnet)').waitFor();
-      await page.getByRole('button', { name: 'Endre ingrediens' }).click();
-      await page.getByRole('dialog').waitFor();
-      await page.screenshot({
-        path: `${OUT}/vare-ingrediens-dialog-${testInfo.project.name}-${suffix}.png`,
-      });
+      await shot('oppskrift-legg-i-handleliste');
+      await suggestions.getByRole('button', { name: 'Legg i handlelisten' }).click();
+      await page.getByText('Lagt i handlelisten').waitFor();
+
+      // FR-SHOP-001: the list itself.
+      await page.goto('/handleliste');
+      await page.getByRole('heading', { name: /Skal kjøpes/ }).waitFor();
+      await page.evaluate(() => document.fonts.ready);
+      await shot('handleliste', !testInfo.project.name.startsWith('mobil'));
+
+      // FR-SHOP-003: the dialog that puts checked lines in the inventory.
+      await page.getByRole('checkbox', { name: /^Egg/ }).click();
+      await page.getByRole('region', { name: /Huket av \(2\)/ }).waitFor();
+      await page.getByRole('button', { name: 'Legg i matlageret' }).click();
+      await page
+        .getByRole('dialog', { name: 'Legg i matlageret' })
+        .getByRole('group')
+        .first()
+        .waitFor();
+      await shot('handleliste-legg-i-matlageret');
     });
   });
 }

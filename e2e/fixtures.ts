@@ -113,6 +113,21 @@ export async function apiAs(playwright: Playwright, account: Account) {
       });
       expect(response.status(), await response.text()).toBe(200);
     },
+    async addShoppingItem(body: unknown): Promise<{ item: { id: string } }> {
+      const response = await api.post(`/api/v1/households/${householdId}/shopping-list/items`, {
+        data: body,
+        headers,
+      });
+      expect(response.status(), await response.text()).toBe(201);
+      return response.json();
+    },
+    async setShoppingItemChecked(itemId: string, checked: boolean) {
+      const response = await api.patch(
+        `/api/v1/households/${householdId}/shopping-list/items/${itemId}`,
+        { data: { checked }, headers },
+      );
+      expect(response.status(), await response.text()).toBe(200);
+    },
     async setAllergens(allergens: string[]) {
       const response = await api.put('/api/v1/me/allergens', { data: { allergens }, headers });
       expect(response.status(), await response.text()).toBe(200);

@@ -19,6 +19,7 @@ import {
   NEW_PURCHASE_PATH,
   recipePath,
   RECIPES_PATH,
+  SHOPPING_LIST_PATH,
 } from '../app/navigation';
 import { useInventory, useLocations, useWasteSummary } from '../inventory/api';
 import { ExpiryAdvice, ExpiryTag } from '../inventory/ExpiryTag';
@@ -28,6 +29,7 @@ import { useBudgetSummary } from '../purchases/api';
 import { BudgetFigures } from '../purchases/BudgetFigures';
 import { AllergenDisclaimer } from '../recipes/AllergenNotice';
 import { useRecipes } from '../recipes/api';
+import { useShoppingList } from '../shopping/api';
 import { dinnerSuggestion } from '../recipes/filter';
 import { useReasonText } from '../recipes/formatHooks';
 import styles from './OverviewPage.module.css';
@@ -113,6 +115,7 @@ export function OverviewPage() {
             >
               {t('pages.overview.actions.addPurchase')}
             </LinkButton>
+            <ShoppingListAction />
           </div>
         </Card>
 
@@ -271,5 +274,24 @@ function DinnerCard() {
       ))}
       <AllergenDisclaimer />
     </>
+  );
+}
+
+/** FR-DASH-001 (spec 06): the shopping list, with how many lines are still open. */
+function ShoppingListAction() {
+  const { t } = useTranslation();
+  const list = useShoppingList();
+  const open = list.data?.filter((i) => !i.checked).length ?? 0;
+  return (
+    <LinkButton
+      to={SHOPPING_LIST_PATH}
+      variant="secondary"
+      fullWidth
+      icon={<Icon name="shoppingList" size={20} />}
+    >
+      {open > 0
+        ? t('pages.overview.actions.shoppingListCount', { count: open })
+        : t('pages.overview.actions.shoppingList')}
+    </LinkButton>
   );
 }

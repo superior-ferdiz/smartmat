@@ -457,6 +457,107 @@ Feil i testene:
 - `Pick<…, 'a' | 'b'>` i delt kode traff regexen i `locales.test.ts` som ser etter øre-feilkoder
 - `check()` i Playwright leste av en avkrysningsboks før routeren hadde oppdatert den
 
+## Testtyper og sporbarhet (fase 6)
+
+Testene refererer til krav-ID-ene i [06-handleliste.md](../development/requirements/06-handleliste.md). API- og
+ende-til-ende-testene bruker de fiktive testoppskriftene (`source=test`).
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-SHOP-001–003 (regler) | Sammenslåing (samme enhet, linje uten mengde, annen enhet, øvre grense, heltall), forslag fra oppskrift (bare manglende krysset av, basisvarer, valgfrie, ukjent mengde, står på listen), rekkefølge, kobling av tekst og ny vare til ingrediens | `shared/src/shopping/list.test.ts` | 16 |
+| NFR-SEC-002 | Skjemaene: tekst, mengde med enhet, «minst ett felt», ingen ingrediens eller linje to ganger, mål for lageret | `shared/src/schemas/shopping.test.ts` | 8 |
+| FR-SHOP-001–003 | Servicen med fakes: kobling ved ny linje, `clientRequestId` og tapt kappløp, avhuking med tidspunkt, 404/409, ingrediens utenfor oppskriften, parti uten pris og kjøp, kobling av ny vare, andres sted/vare, kappløp under skriving | `api/src/modules/shopping/service.test.ts` | 18 |
+| FR-SHOP-001–003 | Skjemalogikken i nettleseren: mengder til grunnenhet, forslag til API-kropp, første gjetning i lagerdialogen, feltfeil med API-ets navn | `web/src/shopping/forms.test.ts` | 10 |
+| FR-SHOP-001/003, KURS-03 | Siden: tom tilstand, rekkefølge og bidrag, hurtigfelt med Enter og fokus, optimistisk avhuking før svaret, tilbakerulling når også ny henting feiler, fjern/endre/fjern avhukede, fokus til neste rad, lagerdialogen (kropp, 409, enhet fra mengden), axe | `pages/shopping/ShoppingListPage.test.tsx` | 14 |
+| FR-SHOP-002, FR-DASH-001 | Dialogen på oppskriftssiden (hva er krysset av, endret mengde, «står på listen», alt i boks) og antall på forsiden | `RecipePage.test.tsx`, `OverviewPage.test.tsx` | 5 |
+| FR-SHOP-001–003, NFR-DATA-002 | API mot database: én liste, kontosletting, kobling, linje for seg ved åpen ingrediens, `clientRequestId` (også samtidig), avhuking, 409 ved fjernet hake, retting, ugyldig input, sletting, rekkefølge, oppskrift (navn/enhet, samme oppskrift igjen, sammenslåing, to oppskrifter, samtidig, ikke i oppskriften, 404), seed beholder ingrediens, til lageret (kobling, rangering høyere, ingen kjøp, eksisterende vare, alt eller ingenting, ikke avhuket, to ganger, samtidig, kappløp i repoet), logg | `api/test/shopping.api.test.ts` | 32 |
+| NFR-SEC-001 | Andres husholdnings-ID på alle sju endepunkter, andres linje via egen husholdning, andres sted/vare, «fjern avhukede» og sammenslåing rører ikke andre, 401 og CSRF på alle | `api/test/shopping.security.api.test.ts` | 5 |
+| FR-SHOP-001–003, NFR-UX-001/002 | Ende-til-ende: oppskrift → legg manglende i listen → huk av (også etter ny lasting) → legg i lageret → oppskriften får høyere poengsum, ingen kjøp; dobbeltklikk gir ett parti; føring for hånd; 360 px, trykkflater ≥ 44 px og axe i lyst og mørkt tema | `e2e/shopping.spec.ts` | 5 (× 2 skjermstørrelser) |
+
+**Sum etter fase 6:** 708 enhetstester (291 shared, 78 api, 339 web), 195 API-tester mot database, 135
+ende-til-ende-tester.
+
+Eksisterende tester ble ikke endret. `mockApi` svarer nå med en tom handleliste som standard.
+
+### Kontroll av testene (fase 6)
+
+Én regel eller beskyttelse ble slått av i koden om gangen
+([skript](../evidence/test-results/fase-6/10-mutation-check.sh)). Enhetstestene og API-testene ble kjørt.
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-6/10-mutation-check-run1.txt)) viste tre ting:
+- **Runde 5 ble ikke fanget:** kravet `checked: true` i slettingen i repoet kunne fjernes. Servicen sjekker det
+  samme før skrivingen, så kravet i repoet beskytter bare mot at haken fjernes på en annen telefon mellom sjekken og
+  skrivingen. Ingen test dekket det. En ny API-test kaller repoet direkte med en linje som ikke er avhuket.
+- **Runde 20 ble ikke fanget:** tilbakerullingen i `onError` kunne fjernes, fordi hentingen etterpå uansett viste
+  serverens data. Testen lar nå også den nye hentingen feile, så bare tilbakerullingen kan rette visningen.
+- **Runde 14 var ugyldig:** endringen ga en syntaksfeil, så alle testfilene feilet av feil grunn. Mutasjonen er
+  rettet.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-6/10-mutation-check.txt)):
+
+| Endring | Enhet | API |
+|---|---|---|
+| Rutene uten `householdAccess` | 0 | 37 |
+| Retting filtrerer ikke på husholdning | 0 | 1 |
+| Sletting filtrerer ikke på husholdning | 0 | 1 |
+| «Fjern avhukede» i alle husholdninger | 0 | 1 |
+| Til lageret uten krav om avhuket | 0 | 1 |
+| Til lageret uten kontroll av antall slettet | 0 | 2 |
+| Samme oppskrift to ganger på en linje | 0 | 2 |
+| Listen låses ikke | 0 | 1 |
+| `clientRequestId` sjekkes ikke | 2 | 0 |
+| Ingrediens utenfor oppskriften godtas | 1 | 1 |
+| Andres sted godtas | 1 | 2 |
+| Andres vare godtas | 1 | 1 |
+| Avhuking uten tidspunkt | 1 | 12 |
+| Sammenslåing på tvers av enheter | 1 | 0 |
+| Linje uten mengde får oppskriftens mengde | 1 | 1 |
+| Basisvarer og valgfrie krysses av | 2 | 0 |
+| «Litt for lite» foreslår hele mengden | 2 | 0 |
+| Ny vare kobles aldri til ingrediensen | 2 | 1 |
+| Seed sletter ingrediens i bruk | 0 | 1 |
+| Ingen tilbakerulling ved feil | 1 | 0 |
+| Boksene bygges ikke på nytt etter tilbakerulling | 1 | 0 |
+| Den delegerte lytteren legges ikke til | 3 | 0 |
+| *Uendret kode* | *0 (708 av 708)* | *0 (195 av 195)* |
+
+Alle 22 endringer ble fanget, og utdataene viser at det var de riktige testene som feilet. Kontrollen dekker ikke
+CHECK-begrensningene eller den delvise unike indeksen for seg, og ende-til-ende-testene ble ikke kjørt i kontrollen.
+At låsen på listen (runde 8) ble fanget, avhenger av at samtidige forespørsler faktisk overlapper i testen. Det
+gjorde de i begge kjøringene, men det er ikke garantert.
+
+## Resultater fase 6 (kjørt 2026-10-21)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 708 av 708 | `04-unit-tests.txt` |
+| API mot testdatabase | 195 av 195 | `05-api-tests.txt` |
+| Bygg | Vellykket. Advarsel om stor JS-fil (720 kB). | `06-build.txt` |
+| Ende-til-ende | 135 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (6 migreringer) | `09-migrate-status.txt` |
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-6/](../evidence/screenshots/fase-6/).
+
+## Feil funnet i fase 6
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-21.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | En avkrysningsboks kunne vise hake etter at serveren avviste avhukingen (ukontrollert boks, samme nøkkel før og etter) | Komponenttest | Ny nøkkel ved tilbakerulling |
+| 2 | «Mengde (valgfritt)» brøt over to linjer i hurtigfeltet på 360 px, så feltene stod skjevt | Gjennomgang av egne skjermbilder | To kolonner og knapp i full bredde på telefon |
+| 3 | Mengden stod to ganger på linjer fra én oppskrift («150 g» og «Testrett: pannekaker: 150 g») | Gjennomgang av egne skjermbilder | «Fra Testrett: pannekaker» |
+| 4 | To felt het «Enhet» i dialogen for ny vare | Gjennomgang av egne skjermbilder | Ett felt. Grunnenheten følger av enheten ved mengden. |
+| 5 | To hull i testene og en ugyldig mutasjon (se kontrollen over) | Mutasjonskontrollen | Ny API-test og strengere komponenttest |
+
+Feil i testene:
+- én testfil fikk et usynlig hardt mellomrom (kjent fallgruve, tredje gang)
+- testene for innlogging og CSRF sendte tom kropp, og fikk 400 fra valideringen før sjekken de skulle teste
+- skjermbildeskriptet prøvde å huke av melk, som testdataene allerede hadde nok av
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser

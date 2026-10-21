@@ -24,6 +24,8 @@ export const API_ERRORS = {
   nothingToUndo: 'errors.inventory.nothingToUndo',
   cannotUndo: 'errors.inventory.cannotUndo',
   purchaseChangedMeanwhile: 'errors.purchase.changedMeanwhile',
+  shoppingChangedMeanwhile: 'errors.shopping.changedMeanwhile',
+  shoppingAlreadyOnList: 'errors.shopping.alreadyOnList',
   internal: 'errors.internal',
 } as const;
 

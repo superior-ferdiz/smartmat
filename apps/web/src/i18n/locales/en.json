@@ -161,6 +161,18 @@
     },
     "ingredient": {
       "unknown": "Choose an ingredient from the list."
+    },
+    "shoppingText": {
+      "required": "Enter what you need to buy.",
+      "tooLong": "The text can be at most 100 characters."
+    },
+    "shopping": {
+      "nothingSelected": "Choose at least one item.",
+      "tooManyLines": "You can add at most 100 lines at a time.",
+      "duplicateLine": "The same item is listed twice.",
+      "notInRecipe": "The ingredient is not in the recipe. Reload the page.",
+      "itemRequired": "Choose an item.",
+      "itemNotFound": "The item no longer exists. Choose another one."
     }
   },
   "pages": {
@@ -182,7 +194,10 @@
         "title": "Quick actions",
         "scan": "Scan an item",
         "addItem": "Add item",
-        "addPurchase": "Register purchase"
+        "addPurchase": "Register purchase",
+        "shoppingList": "Shopping list",
+        "shoppingListCount_one": "Shopping list ({{count}} item)",
+        "shoppingListCount_other": "Shopping list ({{count}} items)"
       },
       "dinner": {
         "title": "Dinner suggestion",
@@ -429,6 +444,10 @@
     },
     "purchase": {
       "changedMeanwhile": "Something in the purchase changed meanwhile, for example an item or place that was deleted. Reload the page and try again."
+    },
+    "shopping": {
+      "changedMeanwhile": "The shopping list was changed meanwhile, perhaps on another device. Reload the page and try again.",
+      "alreadyOnList": "The list already has a line for this item. Tick it off or remove it first."
     }
   },
   "units": {
@@ -899,6 +918,100 @@
       "sulphites": "sulphites",
       "lupin": "lupin",
       "molluscs": "molluscs"
+    }
+  },
+  "shopping": {
+    "loading": "Loading the shopping list …",
+    "quickAdd": {
+      "title": "Add to the list",
+      "text": "Item",
+      "amount": "Amount",
+      "unit": "Unit",
+      "submit": "Add",
+      "hint": "The amount is optional."
+    },
+    "empty": {
+      "title": "The shopping list is empty",
+      "text": "Type what you need to buy, or add what is missing from a recipe.",
+      "recipes": "See recipes"
+    },
+    "open_one": "To buy ({{count}})",
+    "open_other": "To buy ({{count}})",
+    "checked_one": "Ticked off ({{count}})",
+    "checked_other": "Ticked off ({{count}})",
+    "allChecked": "Everything is ticked off.",
+    "share": "{{title}}: {{amount}}",
+    "shareNoAmount": "{{title}}",
+    "shareFrom": "From {{title}}",
+    "actions": {
+      "edit": "Edit {{text}}",
+      "remove": "Remove {{text}}",
+      "toInventory": "Add to inventory",
+      "clearChecked": "Remove ticked"
+    },
+    "announce": {
+      "added": "{{text}} was added.",
+      "similar": "{{text}} is already on the list. The new line was added separately.",
+      "checked": "{{text}} is ticked off.",
+      "unchecked": "{{text}} is no longer ticked off.",
+      "removed": "{{text}} was removed.",
+      "saved": "The change was saved."
+    },
+    "toast": {
+      "checkFailed": "Could not save the tick. Try again.",
+      "cleared_one": "{{count}} line was removed.",
+      "cleared_other": "{{count}} lines were removed.",
+      "stocked_one": "{{count}} item was added to the inventory.",
+      "stocked_other": "{{count}} items were added to the inventory.",
+      "fromRecipe": "Added to the shopping list: {{created}} new, {{merged}} merged with lines already there.",
+      "fromRecipeNothing": "Everything was already on the shopping list."
+    },
+    "edit": {
+      "title": "Edit line",
+      "hint": "Remove the amount to buy \"some\"."
+    },
+    "clear": {
+      "title": "Remove ticked lines?",
+      "text_one": "{{count}} ticked line will be removed from the list. It is not added to the inventory.",
+      "text_other": "{{count}} ticked lines will be removed from the list. They are not added to the inventory.",
+      "confirm": "Remove"
+    },
+    "stock": {
+      "title": "Add to inventory",
+      "description": "Check the item, amount, place and date for each item before saving.",
+      "notPurchase": "The items are not recorded as a purchase and do not count towards the budget.",
+      "registerPurchase": "Record the purchase",
+      "target": "Item in the inventory",
+      "newItem": "New item",
+      "linkedItems": "Linked to the same ingredient",
+      "otherItems": "Other items",
+      "name": "Name of the new item",
+      "category": "Category",
+      "unit": "Unit",
+      "amount": "Amount",
+      "location": "Place",
+      "expiryKind": "Date",
+      "expiryDate": "Date",
+      "linkedTo": "Matches recipes with {{name}}.",
+      "submit": "Add to inventory"
+    },
+    "recipe": {
+      "button": "Add missing to the shopping list",
+      "title": "Add to the shopping list",
+      "description": "The ticked items are added to the shopping list. You can change the amounts.",
+      "amount": "Amount",
+      "unit": "Unit",
+      "reasons": {
+        "missing": "Missing",
+        "notEnough": "A little short",
+        "unknownAmount": "You have some, but the amount cannot be compared",
+        "staple": "Staple – check that you have it",
+        "optional": "Optional",
+        "onList": "Already on the list"
+      },
+      "nothing": "You have everything the recipe needs.",
+      "submit": "Add to the shopping list",
+      "open": "Go to the shopping list"
     }
   }
 }

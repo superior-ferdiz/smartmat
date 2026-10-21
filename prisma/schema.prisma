@@ -44,6 +44,7 @@ model User {
   inventoryEvents InventoryEvent[]
   purchases       Purchase[]
   allergens       UserAllergen[]
+  shoppingItems   ShoppingListItem[]
 
   @@map("users")
 }
@@ -62,6 +63,9 @@ model Household {
   purchases        Purchase[]
   purchaseLines    PurchaseLine[]
   foodBudgets      FoodBudget[]
+  shoppingList     ShoppingList?
+  shoppingItems    ShoppingListItem[]
+  shoppingShares   ShoppingListItemRecipe[]
 
   @@map("households")
 }
@@ -418,12 +422,13 @@ model Ingredient {
   isStaple    Boolean  @default(false) @map("is_staple")
   categoryKey String?  @map("category_key") @db.VarChar(32)
 
-  category    Category?            @relation(fields: [categoryKey], references: [key], onDelete: SetNull)
-  aliases     IngredientAlias[]
-  allergens   IngredientAllergen[]
-  conversions UnitConversion[]
-  recipes     RecipeIngredient[]
-  items       InventoryItem[]
+  category      Category?            @relation(fields: [categoryKey], references: [key], onDelete: SetNull)
+  aliases       IngredientAlias[]
+  allergens     IngredientAllergen[]
+  conversions   UnitConversion[]
+  recipes       RecipeIngredient[]
+  items         InventoryItem[]
+  shoppingItems ShoppingListItem[]
 
   @@map("ingredients")
 }
@@ -478,7 +483,8 @@ model Recipe {
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  ingredients RecipeIngredient[]
+  ingredients    RecipeIngredient[]
+  shoppingShares ShoppingListItemRecipe[]
 
   @@map("recipes")
 }
@@ -509,4 +515,73 @@ model UserAllergen {
 
   @@id([userId, allergen])
   @@map("user_allergens")
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 6: shopping list (spec 06). Household data (ADR-0008): every row has household_id, and children point
+// to their parent with composite foreign keys.
+
+/// The household's one shopping list (decision 1 in spec 06). Created with the household.
+model ShoppingList {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  householdId String   @unique @map("household_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household Household          @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  items     ShoppingListItem[]
+
+  @@unique([id, householdId])
+  @@map("shopping_lists")
+}
+
+/// One thing to buy. Quantity and unit are both set or both empty (CHECK). A partial unique index (raw SQL in
+/// the migration) allows only one open line per ingredient, so merging can never give two lines.
+model ShoppingListItem {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  householdId  String    @map("household_id") @db.Uuid
+  listId       String    @map("list_id") @db.Uuid
+  text         String    @db.VarChar(100)
+  /// From a recipe, or when the text matched one ingredient. Never changed afterwards.
+  ingredientId String?   @map("ingredient_id") @db.Uuid
+  /// Whole grams / millilitres / pieces (ADR-0006).
+  quantityBase Int?      @map("quantity_base")
+  unit         BaseUnit?
+  checked      Boolean   @default(false)
+  checkedAt    DateTime? @map("checked_at") @db.Timestamptz(3)
+  /// Unique per household: a form sent twice gives one line (NFR-DATA-002).
+  dedupeKey    String?   @map("dedupe_key") @db.VarChar(100)
+  createdById  String?   @map("created_by") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household  Household                @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  list       ShoppingList             @relation(fields: [listId, householdId], references: [id, householdId], onDelete: Cascade)
+  /// RESTRICT: the seed script only removes ingredients that nothing uses (spec 06, "Frødata").
+  ingredient Ingredient?              @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  createdBy  User?                    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  recipes    ShoppingListItemRecipe[]
+
+  @@unique([id, householdId])
+  @@unique([householdId, dedupeKey])
+  @@index([listId])
+  @@index([ingredientId])
+  @@map("shopping_list_items")
+}
+
+/// Which recipe added how much to a line. The key stops the same recipe from adding to a line twice.
+model ShoppingListItemRecipe {
+  itemId       String @map("item_id") @db.Uuid
+  householdId  String @map("household_id") @db.Uuid
+  recipeId     String @map("recipe_id") @db.Uuid
+  /// In the ingredient's base unit; null = no amount.
+  quantityBase Int?   @map("quantity_base")
+
+  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  item      ShoppingListItem @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
+  /// CASCADE: a recipe removed by the seed script takes its shares with it; the lines stay.
+  recipe    Recipe           @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, recipeId])
+  @@index([recipeId])
+  @@map("shopping_list_item_recipes")
 }

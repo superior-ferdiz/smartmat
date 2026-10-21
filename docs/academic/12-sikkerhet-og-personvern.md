@@ -51,11 +51,25 @@
 | Villedende allergeninformasjon | Appen sier at en rett er «allergenfri» | Ordlyden sier bare hva som er *registrert*. Forbeholdet vises alltid. En test stopper slike ord i begge språk. | `locales.test.ts`, side- og e2e-tester |
 | Råd om farlig mat | Oppskriften regner med kylling der siste forbruksdag er passert | Slike partier regnes aldri med, og oppskriften sier at de ikke bør spises | `scoring.test.ts`, `recipes.api.test.ts`, `e2e/recipes.spec.ts` |
 
+### Nytt i fase 6: handleliste
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se eller endre andres handleliste | Bytte husholdnings-ID i URL-en | `householdAccess` på alle sju endepunkter | `shopping.security.api.test.ts` (A) |
+| Endre andres linje via egen husholdning | PATCH/DELETE med en annen husholdnings linje-ID | Linjen slås opp med `household_id` (404) | Samme fil (B) |
+| Legge andres linje i eget lager | `to-inventory` med en annen husholdnings linje-ID | Linjen må finnes, være avhuket og høre til husholdningen (409) | Samme fil (B) |
+| Bruke andres sted eller vare | `to-inventory` med andres `locationId` eller `itemId` | Sjekkes mot husholdningen (400), og sammensatte fremmednøkler | Samme fil (C) |
+| Påvirke andres liste indirekte | «Fjern avhukede» eller sammenslåing fra oppskrift | Alle spørringer filtrerer på `household_id`. Sammenslåing ser bare på egen liste. | Samme fil (D) |
+| Doble partier eller linjer | Dobbeltklikk, to telefoner samtidig | Betinget sletting av linjene i samme transaksjon, `dedupe_key`, delvis unik indeks og lås på listen | `shopping.api.test.ts` (samtidige forespørsler), `e2e/shopping.spec.ts` |
+| Ugyldig ingrediens fra oppskrift | Sende en ingrediens som ikke er i oppskriften | Sjekkes mot oppskriften (400) | `shopping.api.test.ts` |
+| Personopplysninger i logger | Linjetekst («graviditetstest») i loggen | Kropper logges aldri. Testen sjekker loggen. | `shopping.api.test.ts` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
 [fase 4](../evidence/test-results/fase-4/10-mutation-check.txt),
-[fase 5](../evidence/test-results/fase-5/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 5](../evidence/test-results/fase-5/10-mutation-check.txt),
+[fase 6](../evidence/test-results/fase-6/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 

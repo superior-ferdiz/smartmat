@@ -161,6 +161,18 @@
     },
     "ingredient": {
       "unknown": "Velg en ingrediens fra listen."
+    },
+    "shoppingText": {
+      "required": "Skriv inn hva du skal kjøpe.",
+      "tooLong": "Teksten kan være høyst 100 tegn."
+    },
+    "shopping": {
+      "nothingSelected": "Velg minst én vare.",
+      "tooManyLines": "Du kan legge til høyst 100 linjer om gangen.",
+      "duplicateLine": "Samme vare står to ganger.",
+      "notInRecipe": "Ingrediensen finnes ikke i oppskriften. Last inn siden på nytt.",
+      "itemRequired": "Velg en vare.",
+      "itemNotFound": "Varen finnes ikke lenger. Velg en annen."
     }
   },
   "pages": {
@@ -182,7 +194,10 @@
         "title": "Hurtighandlinger",
         "scan": "Skann en vare",
         "addItem": "Legg til vare",
-        "addPurchase": "Registrer kjøp"
+        "addPurchase": "Registrer kjøp",
+        "shoppingList": "Handleliste",
+        "shoppingListCount_one": "Handleliste ({{count}} vare)",
+        "shoppingListCount_other": "Handleliste ({{count}} varer)"
       },
       "dinner": {
         "title": "Forslag til middag",
@@ -429,6 +444,10 @@
     },
     "purchase": {
       "changedMeanwhile": "Noe i kjøpet ble endret i mellomtiden, for eksempel en vare eller et sted som ble slettet. Last inn siden på nytt og prøv igjen."
+    },
+    "shopping": {
+      "changedMeanwhile": "Handlelisten ble endret i mellomtiden, kanskje på en annen enhet. Last inn siden på nytt og prøv igjen.",
+      "alreadyOnList": "Det står allerede en linje for denne varen på listen. Huk av eller fjern den først."
     }
   },
   "units": {
@@ -899,6 +918,100 @@
       "sulphites": "sulfitt",
       "lupin": "lupin",
       "molluscs": "bløtdyr"
+    }
+  },
+  "shopping": {
+    "loading": "Laster handlelisten …",
+    "quickAdd": {
+      "title": "Legg til på listen",
+      "text": "Vare",
+      "amount": "Mengde",
+      "unit": "Enhet",
+      "submit": "Legg til",
+      "hint": "Mengden er valgfri."
+    },
+    "empty": {
+      "title": "Handlelisten er tom",
+      "text": "Skriv inn det du skal kjøpe, eller legg til det som mangler fra en oppskrift.",
+      "recipes": "Se oppskrifter"
+    },
+    "open_one": "Skal kjøpes ({{count}})",
+    "open_other": "Skal kjøpes ({{count}})",
+    "checked_one": "Huket av ({{count}})",
+    "checked_other": "Huket av ({{count}})",
+    "allChecked": "Alt er huket av.",
+    "share": "{{title}}: {{amount}}",
+    "shareNoAmount": "{{title}}",
+    "shareFrom": "Fra {{title}}",
+    "actions": {
+      "edit": "Endre {{text}}",
+      "remove": "Fjern {{text}}",
+      "toInventory": "Legg i matlageret",
+      "clearChecked": "Fjern avhukede"
+    },
+    "announce": {
+      "added": "{{text}} er lagt til.",
+      "similar": "{{text}} står allerede på listen. Den nye linjen er lagt til for seg.",
+      "checked": "{{text}} er huket av.",
+      "unchecked": "Haken er fjernet fra {{text}}.",
+      "removed": "{{text}} er fjernet.",
+      "saved": "Endringen er lagret."
+    },
+    "toast": {
+      "checkFailed": "Kunne ikke lagre avhukingen. Prøv igjen.",
+      "cleared_one": "{{count}} linje er fjernet.",
+      "cleared_other": "{{count}} linjer er fjernet.",
+      "stocked_one": "{{count}} vare er lagt i matlageret.",
+      "stocked_other": "{{count}} varer er lagt i matlageret.",
+      "fromRecipe": "Lagt i handlelisten: {{created}} nye, {{merged}} slått sammen med linjer som var der.",
+      "fromRecipeNothing": "Alt sto allerede på handlelisten."
+    },
+    "edit": {
+      "title": "Endre linje",
+      "hint": "Fjern mengden for å kjøpe «noe»."
+    },
+    "clear": {
+      "title": "Fjerne avhukede linjer?",
+      "text_one": "{{count}} avhuket linje fjernes fra listen. Den legges ikke i matlageret.",
+      "text_other": "{{count}} avhukede linjer fjernes fra listen. De legges ikke i matlageret.",
+      "confirm": "Fjern"
+    },
+    "stock": {
+      "title": "Legg i matlageret",
+      "description": "Sjekk vare, mengde, sted og dato for hver vare før du lagrer.",
+      "notPurchase": "Varene registreres ikke som et kjøp og teller ikke i budsjettet.",
+      "registerPurchase": "Registrer kjøpet",
+      "target": "Vare i matlageret",
+      "newItem": "Ny vare",
+      "linkedItems": "Koblet til samme ingrediens",
+      "otherItems": "Andre varer",
+      "name": "Navn på ny vare",
+      "category": "Kategori",
+      "unit": "Enhet",
+      "amount": "Mengde",
+      "location": "Sted",
+      "expiryKind": "Dato",
+      "expiryDate": "Dato",
+      "linkedTo": "Matcher oppskrifter med {{name}}.",
+      "submit": "Legg i matlageret"
+    },
+    "recipe": {
+      "button": "Legg manglende i handlelisten",
+      "title": "Legg i handlelisten",
+      "description": "Det som er krysset av, legges i handlelisten. Du kan endre mengdene.",
+      "amount": "Mengde",
+      "unit": "Enhet",
+      "reasons": {
+        "missing": "Mangler",
+        "notEnough": "Mangler litt",
+        "unknownAmount": "Du har noe, men mengden kan ikke sammenlignes",
+        "staple": "Basisvare – sjekk at du har",
+        "optional": "Valgfri",
+        "onList": "Står allerede på listen"
+      },
+      "nothing": "Du har alt oppskriften trenger.",
+      "submit": "Legg i handlelisten",
+      "open": "Gå til handlelisten"
     }
   }
 }
