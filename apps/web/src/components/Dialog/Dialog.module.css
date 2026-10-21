@@ -1,0 +1,70 @@
+/*
+ * Phone: the dialog is a sheet at the bottom of the screen (easy to reach with a thumb).
+ * ≥ 600px: a centred box. The page behind is dimmed with ::backdrop.
+ */
+.dialog {
+  width: 100%;
+  max-width: 100%;
+  max-height: 90dvh;
+  margin: auto 0 0;
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  border: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-2);
+  overflow-y: auto;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+@media (min-width: 600px) {
+  .dialog {
+    width: min(32rem, calc(100% - 2 * var(--space-4)));
+    margin: auto;
+    padding: var(--space-5) var(--space-5) var(--space-6);
+    border-radius: var(--radius-md);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+}
+
+.close {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) 0 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+.description {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.body {
+  margin-top: var(--space-4);
+}

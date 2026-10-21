@@ -60,6 +60,38 @@ export async function loginAccount(playwright: Playwright, email: string): Promi
   return storageState;
 }
 
+/**
+ * Calls the API as a logged-in account, like the web app does: same origin, session cookie and CSRF token.
+ * Used to set up test data quickly (the UI flows themselves are tested through the UI).
+ */
+export async function apiAs(playwright: Playwright, account: Account) {
+  // Playwright's request context does not send Secure cookies over http (Chromium does for 127.0.0.1),
+  // so the session cookie is set as a header here.
+  const cookie = account.storageState.cookies.find((c) => c.name === 'smartmat_session');
+  const api = await playwright.request.newContext({
+    baseURL: BASE_URL,
+    extraHTTPHeaders: { origin: BASE_URL, cookie: `smartmat_session=${cookie?.value ?? ''}` },
+  });
+  const session = await (await api.get('/api/v1/auth/session')).json();
+  const headers = { 'x-csrf-token': session.csrfToken as string };
+  const householdId = session.user.householdId as string;
+  return {
+    householdId,
+    async locations(): Promise<{ id: string; kind: string }[]> {
+      return (await api.get(`/api/v1/households/${householdId}/locations`)).json();
+    },
+    async createItem(body: unknown): Promise<{ id: string; batches: { id: string }[] }> {
+      const response = await api.post(`/api/v1/households/${householdId}/inventory/items`, {
+        data: body,
+        headers,
+      });
+      expect(response.status(), await response.text()).toBe(201);
+      return response.json();
+    },
+    dispose: () => api.dispose(),
+  };
+}
+
 export const test = base.extend<
   { isolatedAccount: boolean; account: Account },
   { workerAccount: Account }

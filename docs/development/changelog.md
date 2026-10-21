@@ -2,6 +2,26 @@
 
 ## [Ikke utgitt]
 
+### Fase 3 – 2026-10-21 (grenen `fase-3`)
+- **Matlager:**
+  - varer med partier (egen mengde, eget sted, best før *eller* siste forbruksdag, pris, kjøpsdato)
+  - lagringssteder (Kjøleskap/Fryser/Skap og egne), 12 kategorier
+  - forbruk og kassering (helt eller delvis), med årsak og verdi (faktisk, estimert fra pris, ukjent) i svinnloggen
+  - historikk med «Angre siste endring»
+- **Migreringer:** `inventory` (5 tabeller, sammensatte fremmednøkler, CHECK, kategorier, standardsteder) og
+  `inventory_event_seq`. Registrering lager nå tre standardsteder.
+- **API:** 15 nye endepunkter under `/households/:householdId/`, og `GET /categories`.
+- **`packages/shared`:**
+  - mengder i grunnenhet (`parseQuantity`/`formatQuantity`)
+  - holdbarhetsstatus og «i dag» i Europe/Oslo
+  - verdiestimat med BigInt, skjemaer og typer for matlageret
+- **Web:**
+  - `/matlager` med oppsummering, søk, filtre og sortering i URL-en
+  - `/matlager/ny`, `/matlager/:id` med dialoger og historikk, `/matlager/steder`
+  - ny `Dialog`-komponent (`<dialog>`)
+  - forsiden viser ekte «Går ut snart» og «Kastet denne måneden»
+- **Tester:** 426 enhetstester (+95), 81 API-tester (+34), 107 Playwright-tester (+12), og kontroll av testene.
+
 ### Fase 2 – 2026-10-20 (grenen `fase-2`)
 - Docker Compose med PostgreSQL 16 på `127.0.0.1:55432`, med egne databaser for utvikling, API-tester og Playwright.
 - `apps/api`: Fastify + Zod + Prisma 7, REST under `/api/v1`, moduler med routes/service/repo.

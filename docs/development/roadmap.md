@@ -10,8 +10,8 @@ Status: `Ikke startet` · `Pågår` · `Ferdig` (= oppfyller Definition of Done 
 | 0 | Planlegging: beslutninger (ADR), krav, datamodell, dokumentasjonsstruktur | — | Ferdig (2026-10-19) |
 | 1 | Designsystem og app-skall: monorepo, Vite/React, tokens, layout, navigasjon, i18n, skjema-komponenter, tilstander for lasting/feil/tom | MVP | Pågår – implementert og testet 2026-10-20, venter på teamets gjennomgang (eneste punkt i DoD som mangler) |
 | 2 | Database og autentisering: Docker/Postgres, Prisma, registrering, innlogging, sesjoner, profil, husholdning-av-én, autorisasjon | MVP | Pågår – implementert og testet 2026-10-20 på grenen `fase-2`, venter på teamets gjennomgang (pull request) |
-| 3 | Matlager: produkter, partier (batches), lagringssteder, søk/filter/sortering, holdbarhet, forbruk og kassering med svinnlogg | MVP | Ikke startet |
-| — | **Milepæl: første reelt brukbare versjon** | | |
+| 3 | Matlager: produkter, partier (batches), lagringssteder, søk/filter/sortering, holdbarhet, forbruk og kassering med svinnlogg | MVP | Pågår – implementert og testet 2026-10-21 på grenen `fase-3` (fra `fase-2`), venter på teamets gjennomgang. Produktkatalogen er flyttet til fase 7. |
+| — | **Milepæl: første reelt brukbare versjon** – teknisk nådd med fase 3 (2026-10-21), men ikke gjennomgått eller testet av teamet | | |
 | 4 | Budsjett: manuelle kjøp, kategorier, månedsbudsjett, oversikt, kobling kjøp → lager | MVP | Ikke startet |
 | 5 | Oppskrifter: datamodell, egne frøoppskrifter, ingrediensmatching, forklart poengsum, manglende ingredienser | Første innlevering | Ikke startet |
 | 6 | Handleliste (flyttet frem fra fase 9): manuell, fra oppskrift, kjøpt → lager | Første innlevering | Ikke startet |

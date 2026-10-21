@@ -85,6 +85,25 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - E2E: import `test` from `e2e/fixtures.ts` (logged-in worker user); use `isolatedAccount: true` for tests that change
   the account and `storageState: LOGGED_OUT` for logged-out tests.
 
+## Code conventions (added in phase 3)
+
+- Prisma refuses `migrate reset` when run by Claude (data loss) and `migrate dev` fails non-interactively on some
+  changes: write the migration with `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma
+  --script` into a new `prisma/migrations/<timestamp>_<name>/migration.sql`, then `npx prisma migrate deploy`.
+- Child tables of household data repeat `household_id` and use composite FKs `(parent_id, household_id)`; parents
+  need `@@unique([id, householdId])`. Use `onDelete: NoAction` (not Restrict) where a household cascade also deletes
+  the referenced rows. Quantity changes use conditional `updateMany` (`quantityBase: { gte: x }`), never read-then-write.
+- Dates are `YYYY-MM-DD` strings; "today" = `osloDate()` from `packages/shared` (Europe/Oslo). Convert at the DB
+  boundary with `lib/dbDates.ts`. In shared code avoid `| 'x'` string unions (locales.test.ts reads them as øre
+  error codes) – use `as const` arrays.
+- Web: inventory server state in `apps/web/src/inventory/api.ts` (invalidate `['household', id]`); component files
+  export only components (helpers go in `.ts` files, react-refresh rule). Modal UI = `components/Dialog` (native
+  `<dialog>`; jsdom stand-in in `test/setup.ts`). `mockApi` falls back to `defaultApi` (empty inventory etc.).
+- E2E: `apiAs(playwright, account)` seeds data via the API (sets the cookie header itself: Playwright's request context
+  drops Secure cookies over http). On phones run axe with a tall viewport (sticky bottom nav, see chapter 11).
+- After writing files with `\u00A0` in them, check for literal U+00A0 – but only fix files you just wrote (a blanket
+  fix changed a comment in `ore.ts` once).
+
 ## Integrity rules (non-negotiable)
 
 - Never fabricate dates, meetings, tests, test results, screenshots, user feedback, sources or authorship.

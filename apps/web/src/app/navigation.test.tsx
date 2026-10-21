@@ -105,11 +105,11 @@ describe('FR-UI-002 placeholder pages', () => {
 });
 
 describe('FR-UI-003 overview', () => {
-  it('labels the sample content as sample data', () => {
+  it('labels what is still sample content (budget and dinner) as sample data', () => {
     renderApp('/');
-    expect(screen.getByText('Dette er eksempeldata')).toBeInTheDocument();
-    // Every card with numbers or items carries the tag.
-    expect(screen.getAllByText('Eksempeldata').length).toBeGreaterThanOrEqual(4);
+    expect(screen.getByText('Noe er fortsatt eksempeldata')).toBeInTheDocument();
+    // Since phase 3 the expiry and waste cards show real data; budget and dinner are still made up.
+    expect(screen.getAllByText('Eksempeldata')).toHaveLength(2);
   });
 
   it('formats money from øre in Norwegian format', () => {
@@ -119,14 +119,5 @@ describe('FR-UI-003 overview', () => {
     // string we pass, so the query uses ordinary spaces.
     expect(within(budget).getByText('3 245,50 kr')).toBeInTheDocument();
     expect(within(budget).getByText('1 754,50 kr')).toBeInTheDocument();
-  });
-
-  it('uses different wording for "best før" and "siste forbruksdag"', () => {
-    renderApp('/');
-    expect(screen.getByText('Siste forbruksdag passert')).toBeInTheDocument();
-    expect(
-      screen.getByText('Bør ikke spises. Siste forbruksdag handler om mattrygghet.'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Best før for 2 dager siden')).toBeInTheDocument();
   });
 });

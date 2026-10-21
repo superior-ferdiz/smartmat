@@ -1,0 +1,449 @@
+$ npx vitest run --reporter=verbose
+# Kjørt 2026-10-21 12:25:58 UTC, Node v22.14.0, npm 11.1.0
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+ ✓ |api| src/modules/auth/policy.test.ts > ADR-0005 session expiry > is 14 days after last use while that is within 30 days of login 2ms
+ ✓ |api| src/modules/auth/policy.test.ts > ADR-0005 session expiry > is capped at 30 days after login 0ms
+ ✓ |api| src/modules/auth/policy.test.ts > FR-AUTH-003 isLocked > not locked without a date or after the date 0ms
+ ✓ |api| src/modules/auth/policy.test.ts > FR-AUTH-003 isLocked > locked until the date 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 2490, 250 of 1000 → 623 øre 2ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 2490, 1000 of 1000 → 2490 øre 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 1000, 333 of 1000 → 333 øre 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 100, 1 of 3 → 33 øre 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 100, 2 of 3 → 67 øre 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 0, 500 of 1000 → 0 øre 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > price 1, 1 of 2 → 1 øre 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > stays exact for very large numbers (BigInt) 0ms
+ ✓ |shared| src/money/waste.test.ts > FR-INV-007 estimateWasteValueOre (whole øre, half up) > refuses an initial quantity of 0 1ms
+ ✓ |api| src/modules/auth/tokens.test.ts > ADR-0005 session tokens > are 256-bit random values in URL-safe base64, never repeated 18ms
+ ✓ |api| src/modules/auth/tokens.test.ts > ADR-0005 session tokens > are stored as a SHA-256 hash: 64 hex characters, same input gives the same hash 5ms
+ ✓ |api| src/modules/auth/tokens.test.ts > ADR-0005 session tokens > safeEqual compares exactly 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,90" as 4990 øre 3ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49.90" as 4990 øre 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49" as 4900 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,9" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "0,05" as 5 øre 4ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "0" as 0 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,-" as 4900 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "1 234,50" as 123450 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "1 234,50" as 123450 øre 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "1 234,50" as 123450 øre 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "12 345 678,00" as 1234567800 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "  49,90  " as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "007,50" as 750 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,90 kr" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "kr 49,90" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "49,90kr" as 4990 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "-12,5" as -1250 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "−12,50" as -1250 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > parses "- 12,50" as -1250 øre 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > returns 0, not -0, for a negative zero 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "" with empty 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "   " with empty 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "kr" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "abc" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "49,90,10" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "49," with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects ",50" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "1e3" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "0x10" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "1234 567" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "1 23,00" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "+5" with invalid_format 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "49,999" with too_many_decimals 5ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "0,001" with too_many_decimals 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "90071992547409,92" with out_of_range 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > rejects "99999999999999999999" with out_of_range 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > is exact where floating point is not (0,10 + 0,20) 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 parseOre > handles the largest safe amount 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 4990 øre as "49,90 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 0 øre as "0,00 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 5 øre as "0,05 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 100 øre as "1,00 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats 123450 øre as "1 234,50 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats -1250 øre as "−12,50 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats -5 øre as "−0,05 kr" 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > can leave out the currency 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > formats the largest safe amount exactly 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for 0.5, which is not a safe integer 1ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for 49.9, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for NaN, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for Infinity, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 formatOre > throws for 9007199254740992, which is not a safe integer 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(0)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(1)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(99)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(100)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(4990)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(123450)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(1234567800)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(-1250)) gives the same number back 0ms
+ ✓ |shared| src/money/ore.test.ts > FR-SHR-001 round trip > parseOre(formatOre(9007199254740991)) gives the same number back 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > null → none (undefined days) 2ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > 2026-10-20 → passed (-1 days) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > 2026-01-01 → passed (-293 days) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > 2026-10-21 → today (0 days) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > 2026-10-22 → soon (1 days) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > 2026-10-24 → soon (3 days) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > 2026-10-25 → ok (4 days) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > the most severe status wins for an item; no dated batches → none 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > FR-INV-005 expiryStatus (today = 2026-10-21) > needs attention: passed, today and soon 1ms
+ ✓ |shared| src/quantity/expiry.test.ts > dates in Norwegian time > "today" is the date in Oslo, not in UTC 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > dates in Norwegian time > counts calendar days across the summer/winter time change (25 Oct 2026) 0ms
+ ✓ |shared| src/quantity/expiry.test.ts > dates in Norwegian time > month ranges, also over new year 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1,5" kg → 1500 3ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1.5" kg → 1500 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "0,25" l → 250 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "2" dl → 200 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1,5" dl → 150 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "400" g → 400 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1 000" g → 1000 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1 000" ml → 1000 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "6" stk → 6 1ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "0,001" kg → 1 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > " 3 " stk → 3 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "" kg → validation.quantity.required 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "abc" g → validation.quantity.invalid 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "-1" g → validation.quantity.invalid 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1,2,3" g → validation.quantity.invalid 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "0" g → validation.quantity.notPositive 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "0,0" kg → validation.quantity.notPositive 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1,5" g → validation.quantity.notWhole 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1,2345" kg → validation.quantity.notWhole 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "0,5" stk → validation.quantity.notWhole 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "100001" kg → validation.quantity.tooLarge 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > "1234567890123" g → validation.quantity.tooLarge 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > FR-INV-001 parseQuantity (ADR-0006: whole base units, no floating point) > 0,1 + 0,2 kg style inputs stay exact (no 0.30000000000000004) 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > formatQuantity > chooses a readable unit and trims zeros 1ms
+ ✓ |shared| src/quantity/quantity.test.ts > formatQuantity > uses the given decimal separator (English) 0ms
+ ✓ |shared| src/quantity/quantity.test.ts > formatQuantity > round-trips: parse(format(x)) = x 1ms
+ ✓ |shared| src/quantity/quantity.test.ts > formatQuantity > quantityNumber in a given unit (for edit forms) 0ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > accepts non-negative integers 4ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects 49.9 with validation.ore.integer 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects -1 with validation.ore.negative 0ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects 9007199254740992 with validation.ore.out_of_range 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreAmountSchema > rejects "4990" with validation.ore.required 0ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > turns typed text into øre 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "" with validation.ore.empty 5ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "abc" with validation.ore.invalid_format 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "1,999" with validation.ore.too_many_decimals 1ms
+ ✓ |shared| src/schemas/common.test.ts > FR-SHR-001 oreInputSchema > rejects "-5" with validation.ore.negative 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > trims whitespace 1ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > rejects "" 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > rejects "   " 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > rejects "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 0ms
+ ✓ |shared| src/schemas/common.test.ts > displayNameSchema > accepts Norwegian letters 0ms
+ ✓ |shared| src/schemas/common.test.ts > localeSchema > accepts only the supported languages 0ms
+ ✓ |api| src/config.test.ts > config > reads the environment with safe defaults 10ms
+ ✓ |api| src/config.test.ts > config > names missing variables without printing any values 7ms
+ ✓ |api| src/modules/auth/password.test.ts > NFR-SEC-003 password hashing (real argon2) > uses argon2id with the OWASP settings, and a new salt each time 156ms
+ ✓ |api| src/modules/auth/password.test.ts > NFR-SEC-003 password hashing (real argon2) > verifies the right password and rejects a wrong one 174ms
+ ✓ |api| src/modules/auth/password.test.ts > NFR-SEC-003 password hashing (real argon2) > treats a malformed hash as a wrong password instead of throwing 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > trims and lower-cases, so the same address cannot be registered twice 3ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects "" with validation.email.required 1ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects "   " with validation.email.required 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects "kari" with validation.email.invalid 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects "kari@" with validation.email.invalid 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects "@example.no" with validation.email.invalid 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.no" with validation.email.tooLong 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001 emailSchema > rejects a missing value with the "required" key 0ms
+ ✓ |shared| src/schemas/auth.test.ts > NFR-SEC-003 password rules > a new password needs 12–128 characters, nothing else 13ms
+ ✓ |shared| src/schemas/auth.test.ts > NFR-SEC-003 password rules > a password is never trimmed or changed (spaces count) 0ms
+ ✓ |shared| src/schemas/auth.test.ts > NFR-SEC-003 password rules > an existing password (login) only has to be non-empty 0ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001/002 register and login > register: name, e-mail and password are required; language is optional 5ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001/002 register and login > register: unknown fields are dropped (cannot set id, role, etc.) 2ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-001/002 register and login > login: normalises the e-mail the same way as registration 23ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-004/005 profile, password change, delete > profile update needs at least one field 1ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-004/005 profile, password change, delete > password change checks the new password, not the current one 1ms
+ ✓ |shared| src/schemas/auth.test.ts > FR-AUTH-004/005 profile, password change, delete > account deletion needs the password 1ms
+ ✓ |shared| src/schemas/inventory.test.ts > FR-INV-001 createItemSchema > accepts a minimal item and trims the name 5ms
+ ✓ |shared| src/schemas/inventory.test.ts > FR-INV-001 createItemSchema > a date needs its kind (best before or use by), and must be a real date 2ms
+ ✓ |shared| src/schemas/inventory.test.ts > FR-INV-001 createItemSchema > refuses decimals, zero and negative quantities 1ms
+ ✓ |shared| src/schemas/inventory.test.ts > FR-INV-001 createItemSchema > refuses a negative price 0ms
+ ✓ |shared| src/schemas/inventory.test.ts > updates need something to change > item and batch 2ms
+ ✓ |shared| src/schemas/inventory.test.ts > FR-INV-007 discardSchema > needs a known reason 1ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > add 500 → change the quantity by -500 4ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > consume -200 → change the quantity by 200 0ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > discard -300 → change the quantity by 300 0ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > adjust 150 → change the quantity by -150 0ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > adjust -150 → change the quantity by 150 0ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > a move goes back to where it came from 0ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-008 planUndo > cannot undo: an undo, an event whose batch is gone, a move whose old location is gone 9ms
+ ✓ |api| src/modules/inventory/service.test.ts > FR-INV-007 wasteValue > actual if given (also 0), else estimated from the price, else unknown 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-001 register > creates the user, returns the session user with a household, and starts a session 6ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-001 register > stores the password only as a hash 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-001 register > stores only the hash of the session token, never the token (ADR-0005) 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-001 register > keeps the chosen language 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-001 register > refuses an e-mail address that is already registered (409) 10ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > logs in with the right password and starts a new session 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > gives the same error for an unknown e-mail and a wrong password 3ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > does password-hash work even when the e-mail is unknown (no timing difference) 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > logout ends the session 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > unknown or missing tokens are not authenticated 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > a session expires after 14 days without use, and is deleted 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > a session in use lives on, but never beyond 30 days after login 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-002 login, logout and sessions > writes "last used" at most every few minutes 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-003 lockout after repeated failed logins > locks the account after 5 wrong passwords – even the right password is refused 2ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-003 lockout after repeated failed logins > a locked account does not run the real password check, but does the same amount of work 1ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-003 lockout after repeated failed logins > opens again after the lock period 2ms
+ ✓ |api| src/modules/auth/service.test.ts > FR-AUTH-003 lockout after repeated failed logins > a successful login resets the count 1ms
+ ✓ |api| src/modules/profile/service.test.ts > FR-AUTH-004 profile > updates name and language 6ms
+ ✓ |api| src/modules/profile/service.test.ts > FR-AUTH-004 profile > changing the password needs the current one; wrong → 400 on that field 2ms
+ ✓ |api| src/modules/profile/service.test.ts > FR-AUTH-004 profile > a new password logs out other sessions but keeps this one 2ms
+ ✓ |api| src/modules/profile/service.test.ts > FR-AUTH-005 delete account > needs the password; wrong → 400 and nothing is deleted 1ms
+ ✓ |api| src/modules/profile/service.test.ts > FR-AUTH-005 delete account > deletes the user and ends the sessions 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > the two dark-theme blocks are identical 4ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on bg ≥ 4.5:1 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on surface-sunken ≥ 4.5:1 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text-muted on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text-muted on surface ≥ 4.5:1 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text-muted on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: primary on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: primary on surface ≥ 4.5:1 1ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: primary on primary-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-primary on primary ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-primary on primary-hover ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-accent on accent ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: accent-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: warning-text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: danger-text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: danger-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: on-danger on danger ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: success-text on success-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: info-text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: text on surface-raised ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: control-border on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: control-border on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: focus on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > light: focus on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text-muted on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text-muted on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text-muted on surface-sunken ≥ 4.5:1 8ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: primary on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: primary on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: primary on primary-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-primary on primary ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-primary on primary-hover ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-accent on accent ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: accent-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: warning-text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: danger-text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: danger-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: on-danger on danger ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: success-text on success-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: info-text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: text on surface-raised ≥ 4.5:1 7ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: control-border on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: control-border on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: focus on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark: focus on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text-muted on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text-muted on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text-muted on surface-sunken ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): primary on bg ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): primary on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): primary on primary-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-primary on primary ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-primary on primary-hover ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-accent on accent ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): accent-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): warning-text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): danger-text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): danger-text on surface ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): on-danger on danger ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): success-text on success-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): info-text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on info-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on danger-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on warning-soft ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): text on surface-raised ≥ 4.5:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): control-border on surface ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): control-border on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): focus on bg ≥ 3:1 0ms
+ ✓ |web| src/styles/tokens.test.ts > NFR-UX-002 colour contrast in tokens.css > dark (manual): focus on surface ≥ 3:1 0ms
+ ✓ |web| src/api/client.test.ts > apiFetch > sends the CSRF token on changing requests only (NFR-SEC-005) 10ms
+ ✓ |web| src/api/client.test.ts > apiFetch > uses same-origin credentials, so the session cookie goes along 3ms
+ ✓ |web| src/api/client.test.ts > apiFetch > turns an error response into ApiError with the code and field keys 5ms
+ ✓ |web| src/api/client.test.ts > apiFetch > an unexpected error body becomes errors.internal, never raw server text 2ms
+ ✓ |web| src/api/client.test.ts > apiFetch > no connection becomes errors.network 1ms
+ ✓ |web| src/api/client.test.ts > apiFetch > 204 gives undefined 1ms
+ ✓ |web| src/components/FormError/FormError.test.tsx > FR-UI-006 FormErrorSummary > renders nothing without errors 26ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > has a polite live region from the start, so later messages are announced 280ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > shows a message and closes it with the close button 73ms
+ ✓ |web| src/components/FormError/FormError.test.tsx > FR-UI-006 FormErrorSummary > takes focus, counts the errors and links to each field 333ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > keeps paths inside the app, with query and hash 7ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns null into "/" 1ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "https://evil.example" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "//evil.example" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "/\\evil.example" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "\\\\evil.example" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "javascript:alert(1)" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "matlager" into "/" 1ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns "/\tevil" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > turns " /matlager" into "/" 0ms
+ ✓ |web| src/auth/safeNextPath.test.ts > safeNextPath (no open redirect after login) > builds the login link, without ?neste for the front page 0ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > disappears by itself after a few seconds 25ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > does not disappear while the pointer is on it 34ms
+ ✓ |web| src/components/Toast/Toast.test.tsx > FR-UI-007 Toast > keeps at most three messages 55ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > LoadingState is announced as a status with a default text 269ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > connects label, hint and error to the input 75ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > has no aria-invalid and no error reference without an error 7ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > marks optional fields in the label instead of required ones 7ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > ErrorState explains the problem and offers "Prøv igjen" 99ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > ErrorState has no retry button when there is nothing to retry 6ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > EmptyState shows title, description and action 38ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 loading, error and empty states > have no axe violations 178ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 Alert > says the variant in text, not only with colour 6ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 Alert > is only a live region when it appears as a reaction (live) 16ms
+ ✓ |web| src/components/states.test.tsx > FR-UI-007 Alert > can be dismissed with a labelled button 28ms
+ ✓ |web| src/components/states.test.tsx > Card > is a named region when it has a title and id 17ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 TextField > has no axe violations, with and without an error 312ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 NumberField > uses a text input with a decimal keyboard, not type="number" 7ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 NumberField > accepts a Norwegian decimal comma as typed 74ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 NumberField > includes the unit in the description 6ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > Select renders a native select with a placeholder and options 52ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > DateField is a native date input 6ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > Checkbox can be toggled with the keyboard (space) 31ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Select, DateField and Checkbox > has no axe violations 132ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Button > is reachable with Tab and activated with Enter 37ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Button > defaults to type="button" so it never submits a form by accident 10ms
+ ✓ |web| src/components/formControls.test.tsx > FR-UI-006 Button > while loading: announces busy, stays focusable and ignores clicks 22ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > Norwegian and English have exactly the same keys 4ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > no translation is empty 1ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > every validation key produced by @smartmat/shared has a translation 2ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > every error code the API can return (and the network error) has a translation 1ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > the password message matches the minimum length in the shared schema 1ms
+ ✓ |web| src/i18n/locales.test.ts > NFR-UX-004 / FR-UI-005 translations > the display-name message matches the limit in the shared schema 0ms
+ ✓ |web| src/inventory/filter.test.ts > FR-INV-004 filterItems > default: hides empty items, sorts by earliest date, undated last 6ms
+ ✓ |web| src/inventory/filter.test.ts > FR-INV-004 filterItems > search ignores case and matches part of the name 1ms
+ ✓ |web| src/inventory/filter.test.ts > FR-INV-004 filterItems > filters by location, category and status 1ms
+ ✓ |web| src/inventory/filter.test.ts > FR-INV-004 filterItems > sorts by name with Norwegian rules (Æ, Ø, Å last) and by most recently added 1ms
+ ✓ |web| src/inventory/filter.test.ts > FR-INV-004 filterItems > can show empty items 2ms
+ ✓ |web| src/inventory/filter.test.ts > FR-INV-005 summarize > counts items that go out soon, are past their date and have no date 1ms
+ ✓ |web| src/inventory/filter.test.ts > filter ↔ URL > only non-default values go in the URL, and the URL reads back the same 1ms
+ ✓ |web| src/inventory/filter.test.ts > filter ↔ URL > ignores unknown values in the URL 0ms
+ ✓ |web| src/components/Dialog/Dialog.test.tsx > Dialog > is named by its title, described by its description, and renders content only when open 472ms
+ ✓ |web| src/components/Dialog/Dialog.test.tsx > Dialog > the close button calls onClose 108ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > defaults to automatic (no data-theme, follows prefers-color-scheme) 184ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > not logged in: a protected page sends you to login, remembering where you were going 494ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > submitting an empty form shows a focused summary and marks the invalid fields 630ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > has nine sections with unique paths 4ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > choosing "Mørkt" sets data-theme and remembers it 476ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > going back to "Automatisk" removes the override 1ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > ignores unknown stored values 0ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-004 theme > still works when localStorage is blocked 3ms
+ ✓ |web| src/inventory/batchForm.test.ts > FR-INV-001 parseBatchValues (form text → API body) > turns "1,5 kg" into 1500 g and "24,90" kr into 2490 øre 6ms
+ ✓ |web| src/inventory/batchForm.test.ts > FR-INV-001 parseBatchValues (form text → API body) > no kind of date → no date (expiry null) 1ms
+ ✓ |web| src/inventory/batchForm.test.ts > FR-INV-001 parseBatchValues (form text → API body) > collects every error with the same keys as the server 2ms
+ ✓ |web| src/pages/OverviewPage.test.tsx > FR-DASH-001 overview with real inventory data > "Går ut snart" lists passed, today and soon (≤ 3 days), earliest first, max 5 717ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > not logged in: the front page sends you to login without ?neste 130ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > not logged in: the menus are not shown on the login page 89ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > side menu lists all nine sections 592ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > is Norwegian by default 164ms
+ ✓ |web| src/pages/OverviewPage.test.tsx > FR-DASH-001 overview with real inventory data > says so when nothing needs attention 134ms
+ ✓ |web| src/pages/OverviewPage.test.tsx > FR-DASH-001 overview with real inventory data > "Kastet denne måneden" shows the known value and how many had no value 132ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > logged in: the login and register pages send you on to the app 158ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > rejects a price with three decimals with a Norwegian message 291ms
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > has labelled fields with the right autocomplete, and no axe violations 737ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > the design system and the 404 page are public 153ms
+ ✓ |web| src/pages/auth/RegisterPage.test.tsx > FR-AUTH-001 registration page > has no axe violations and tells the password rule up front 867ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > switching to English saves it on the account, changes the UI and <html lang>, and is remembered 238ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > bottom menu has Oversikt, Matlager, Skann, Oppskrifter and Mer, in that order 141ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > if saving the language fails, the language stays and an error is shown 163ms
+ ✓ |web| src/pages/SettingsPage.test.tsx > FR-UI-005 language > ignores an unsupported stored language 1ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > asks the API who is logged in when nothing is cached 137ms
+stderr | src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > lists items with quantity, place and a worded status; no axe violations
+The tag <search> is unrecognized in this browser. If you meant to render a React component, start its name with an uppercase letter.
+
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > a valid form turns "49,90" into 4990 øre 353ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > when the session runs out, the next API answer "not logged in" sends you to login 151ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > marks the current page with aria-current in both menus 281ms
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > empty submit: errors from the shared schema, nothing sent 207ms
+ ✓ |web| src/pages/ExampleItemForm.test.tsx > FR-UI-006 / FR-SHR-001 example form > can be filled in and submitted with the keyboard only 308ms
+ ✓ |web| src/pages/auth/RegisterPage.test.tsx > FR-AUTH-001 registration page > a short password is stopped in the browser with the same rule as the server 504ms
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > wrong password: one general message, the password is cleared 444ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > the first Tab reaches the skip link, which points at the main content 316ms
+ ✓ |web| src/pages/ProfilePage.test.tsx > FR-AUTH-004 profile page > shows the e-mail and current name, and has no axe violations 1463ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-002/005 item page > shows each batch with amount, place and worded expiry – different for use by and best before 1507ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > moves focus to the new page heading after navigating 211ms
+ ✓ |web| src/pages/inventory/NewItemPage.test.tsx > FR-INV-001 new item > empty submit: errors from the shared rules, nothing sent; no axe violations 1644ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-002/005 item page > unknown item → "Fant ikke varen" 77ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-001 navigation > highlights "Mer" in the bottom menu on a section listed under it 100ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > / renders a page with one h1 87ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > lists items with quantity, place and a worded status; no axe violations 1701ms
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > too many attempts: says so 357ms
+ ✓ |web| src/pages/inventory/NewItemPage.test.tsx > FR-INV-001 new item > the date field appears only after choosing best før or siste forbruksdag 143ms
+ ✓ |web| src/pages/ProfilePage.test.tsx > FR-AUTH-004 profile page > saves name and language 357ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /matlager renders a page with one h1 51ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /skann renders a page with one h1 53ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /oppskrifter renders a page with one h1 43ms
+ ✓ |web| src/pages/auth/RegisterPage.test.tsx > FR-AUTH-001 registration page > e-mail already registered: the message is shown at the e-mail field 507ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > summary at the top: 1 soon, 1 passed, 1 without date – each a link that sets the filter 207ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /handleliste renders a page with one h1 57ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /budsjett renders a page with one h1 49ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /maltidsplan renders a page with one h1 47ms
+ ✓ |web| src/auth/RequireAuth.test.tsx > Pages that need login (phase 2) > shows an error with "Prøv igjen" if the login check itself fails 1093ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /husholdning renders a page with one h1 70ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /innstillinger renders a page with one h1 74ms
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > success: goes to the page in ?neste and uses the account language 425ms
+stderr | src/pages/auth/RegisterPage.test.tsx > FR-AUTH-001 registration page > success: sends the chosen language and opens the app
+Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["household","0199f0a0-0000-7000-8000-000000000002","inventory"]
+
+ ✓ |web| src/pages/ProfilePage.test.tsx > FR-AUTH-004 profile page > password change: a wrong current password is shown at that field 485ms
+ ✓ |web| src/pages/auth/RegisterPage.test.tsx > FR-AUTH-001 registration page > success: sends the chosen language and opens the app 500ms
+ ✓ |web| src/pages/auth/RegisterPage.test.tsx > FR-AUTH-001 registration page > the language can be chosen before registering 39ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > search filters as you type and is kept in the URL 252ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-006 consume in a dialog > "Alt" sends the whole batch; a part is converted from dl to ml 785ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > marks later sections as "Kommer senere" 39ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > "Mer" lists the five sections that are not in the bottom menu 88ms
+ ✓ |web| src/pages/ProfilePage.test.tsx > FR-AUTH-005 delete account > needs both the password and the confirmation box 164ms
+stderr | src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > ?neste pointing to another site is ignored
+Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["household","0199f0a0-0000-7000-8000-000000000002","inventory"]
+
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > ?neste pointing to another site is ignored 431ms
+ ✓ |web| src/pages/auth/LoginPage.test.tsx > FR-AUTH-002 login page > links to registration, keeping ?neste 52ms
+ ✓ |web| src/pages/inventory/NewItemPage.test.tsx > FR-INV-001 new item > sends whole base units and øre: "1,5" kg → 1500 g, "89,90" kr → 8990 øre 926ms
+ ✓ |web| src/pages/inventory/NewItemPage.test.tsx > FR-INV-001 new item > a too precise amount is stopped in the browser 219ms
+ ✓ |web| src/pages/ProfilePage.test.tsx > FR-AUTH-005 delete account > deletes, forgets the session and goes to the login page 360ms
+ ✓ |web| src/pages/ProfilePage.test.tsx > FR-AUTH-002 log out > logs out and goes to the login page – also if the request fails 142ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-006 consume in a dialog > more than is left is refused before sending 479ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > opening a URL with filters shows the filtered list (shareable view) 562ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > unknown URLs show a 404 page with a way back 212ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > no match: says so and offers to clear the filters 279ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > empty inventory: explains and links to "Legg til vare" 236ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-007 discard in a dialog > needs a reason; sends the actual value when given 417ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > / has no axe violations (structure, names, ARIA) 581ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-008 history and undo > shows what happened, who and the waste value; undone events are marked 115ms
+ ✓ |web| src/pages/inventory/ItemPage.test.tsx > FR-INV-008 history and undo > "Angre siste endring" calls undo; an error from the API is shown 288ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /matlager has no axe violations (structure, names, ARIA) 333ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /mer has no axe violations (structure, names, ARIA) 397ms
+ ✓ |web| src/pages/inventory/InventoryPage.test.tsx > FR-INV-004/005 inventory page > error: shows "Prøv igjen" 1079ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /innstillinger has no axe violations (structure, names, ARIA) 346ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /designsystem has no axe violations (structure, names, ARIA) 600ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-002 placeholder pages > /finnes-ikke has no axe violations (structure, names, ARIA) 322ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-003 overview > labels what is still sample content (budget and dinner) as sample data 42ms
+ ✓ |web| src/app/navigation.test.tsx > FR-UI-003 overview > formats money from øre in Norwegian format 58ms
+
+ Test Files  36 passed (36)
+      Tests  426 passed (426)
+   Start at  12:25:59
+   Duration  9.77s (transform 18.32s, setup 15.79s, import 32.83s, tests 33.97s, environment 18.08s)
+
+
+# exit code: 0

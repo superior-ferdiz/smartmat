@@ -19,6 +19,8 @@ Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
 - **Arbeidsfordelingen** er ikke avtalt. I fase 2 gjelder planens forslag: KI implementerer, og teamet gjennomgår
   via pull request.
 - **Arbeidsflyt med Git:** én gren per fase. Teamet oppretter og godkjenner pull requesten selv (ADR-0013).
+- **Fase 3 (2026-10-21):** All kode er skrevet av KI. Ferdinand godkjente planen («godkjent») og ba om å starte
+  fase 3 i samme chat som fase 2.
 - Ingen gjennomgang av koden fra teamet er registrert ennå.
 
 ## Kilder i prosjektet

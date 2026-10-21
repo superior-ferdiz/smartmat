@@ -9,6 +9,13 @@ for tabellene som finnes.
 er ikke lagt til ennå, fordi ingenting bruker den før fase 4. `AuditEvent` er utsatt til fase 3. Se
 [kapittel 8](../academic/08-databasemodell.md).
 
+**Implementert i fase 3 (2026-10-21):** `Category`, `StorageLocation`, `InventoryItem`, `InventoryBatch` og
+`InventoryEvent`. Avvik fra planen:
+- `Product` og `ProductBarcode` er utsatt til fase 7, så varen har et fritt navn (beslutning 1 i spesifikasjon 03).
+- `FoodWasteEvent` er slått sammen med `InventoryEvent`. Kassering lagrer årsak og verdi i samme rad, med CHECK.
+- Partiet har én dato med type (`expiry_kind` + `expiry_date`) i stedet for `best_before` og `use_by`.
+- `AuditEvent` droppes; `inventory_events` er historikken (beslutning 5).
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).

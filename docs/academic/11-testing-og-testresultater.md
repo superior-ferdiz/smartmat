@@ -1,8 +1,9 @@
 # Testing og testresultater
 
-> **Status: UTKAST.** Skrevet etter fase 1 og fase 2 (2026-10-20). Testene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20) og 3 (2026-10-21). Testene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Alle resultater under er fra faktiske kjøringer. Utdataene er lagret ordrett i
-> [fase-1/](../evidence/test-results/fase-1/) og [fase-2/](../evidence/test-results/fase-2/).
+> [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/) og
+> [fase-3/](../evidence/test-results/fase-3/).
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Testmiljø
@@ -176,6 +177,79 @@ Feil i selve testene:
 - **Alle 47 API-testene passerte første gang de ble kjørt.** Det var grunnen til at sikkerhetstestene ble kontrollert
   ved å slå av beskyttelsene (se over).
 
+## Testtyper og sporbarhet (fase 3)
+
+Testene refererer til krav-ID-ene i [03-matlager.md](../development/requirements/03-matlager.md).
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-INV-001, ADR-0006 | `parseQuantity`/`formatQuantity`: enheter, desimalkomma, for nøyaktige mengder, tilbake og frem | `shared/src/quantity/quantity.test.ts` | 27 |
+| FR-INV-005 | `expiryStatus`, mest alvorlige status, «i dag» i Oslo, midnatt, nyttår, sommer/vinter | `shared/src/quantity/expiry.test.ts` | 12 |
+| FR-INV-007 | Verdiestimat i hele øre, avrunding, store tall | `shared/src/money/waste.test.ts` | 9 |
+| FR-INV-001/003/007 | Skjemaene for vare, parti og kassering | `shared/src/schemas/inventory.test.ts` | 6 |
+| FR-INV-007/008 | `planUndo` for alle hendelsestyper, `wasteValue` | `api/src/modules/inventory/service.test.ts` | 8 |
+| FR-INV-001–008, FR-DASH-001 | API mot database: kategorier, standardsteder, opprette, partier, validering, CHECK, forbruk (også 10 samtidige), kassering med alle verdityper, svinnoppsummering med tidssone, redigere, flytte, slette, steder, historikk, angre (også samtidig), kontosletting | `api/test/inventory.api.test.ts` | 29 |
+| NFR-SEC-001 | Alle 15 endepunkter med en annen husholdnings ID-er (to varianter), sted fra annen husholdning, sammensatt fremmednøkkel i databasen | `api/test/inventory.security.api.test.ts` | 5 |
+| FR-INV-004/005 | Filtrering, sortering (norsk), oppsummering, URL | `web/src/inventory/filter.test.ts` | 8 |
+| FR-INV-001 | Skjematekst → API-kropp | `web/src/inventory/batchForm.test.ts` | 3 |
+| FR-INV-004/005 | Lagersiden: status med tekst, oppsummering som lenker, søk i URL, tom, feil, axe | `pages/inventory/InventoryPage.test.tsx` | 7 |
+| FR-INV-001 | Ny vare: validering, datofelt, «1,5 kg» → 1500, «89,90» → 8990, axe | `pages/inventory/NewItemPage.test.tsx` | 4 |
+| FR-INV-002/005–008 | Varesiden: ulik ordlyd for datotypene, dialog for forbruk og kassering, historikk, angre, 404, axe | `pages/inventory/ItemPage.test.tsx` | 7 |
+| FR-DASH-001 | Forsiden: «Går ut snart» (rekkefølge, maks 5), tom, svinnkort | `pages/OverviewPage.test.tsx` | 3 |
+| – | Dialog: navn, beskrivelse, lukk | `components/Dialog/Dialog.test.tsx` | 2 |
+| FR-INV-001–008 | Ende-til-ende: hele flyten fra ny vare til angre, filtre i URL, dialog med tastatur, steder, axe og 360 px | `e2e/inventory.spec.ts` | 12 |
+
+**Sum etter fase 3:** 426 enhetstester (148 shared, 42 api, 236 web), 81 API-tester mot database, 107
+ende-til-ende-tester.
+
+### Kontroll av testene (fase 3)
+
+Som i fase 2 ble beskyttelsene slått av i koden én om gangen
+([skript](../evidence/test-results/fase-3/10-mutation-check.sh),
+[utdata](../evidence/test-results/fase-3/10-mutation-check.txt)):
+
+| Endring | Feilende tester |
+|---|---|
+| Parti slås opp uten husholdningsfilter | 1 |
+| Vare slås opp uten husholdningsfilter | 1 |
+| Sletting av vare uten husholdningsfilter | 1 |
+| Forbruk/kassering uten sjekk av mengde | 2 |
+| Lagringssted i forespørselen sjekkes ikke | 2 |
+| Angrede kasseringer telles i svinnet | 1 |
+| Kodesjekken «sted med varer» fjernet | 0 – **forventet**: fremmednøkkelen i databasen stopper slettingen likevel |
+| *Uendret kode* | *0 (81 av 81)* |
+
+I første kjøring fant skriptet ikke koden for endring nr. 2, fordi Prettier hadde delt linjen. Den raden testet
+derfor ingenting. Skriptet ble rettet og kjørt på nytt. Utdataene over er fra den andre kjøringen.
+
+## Resultater fase 3 (kjørt 2026-10-21)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 426 av 426 | `04-unit-tests.txt` |
+| API mot testdatabase | 81 av 81 | `05-api-tests.txt` |
+| Bygg | Vellykket. Advarsel om stor JS-fil (619 kB). | `06-build.txt` |
+| Ende-til-ende | 107 bestått, 23 hoppet over (20 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour | `09-migrate-status.txt` |
+
+## Feil funnet i fase 3
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-21.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | Fremmednøkkelen fra parti til sted var `RESTRICT`. Det kunne stoppet sletting av husholdningen (cascade). | Gjennomlesning av migreringen før den ble kjørt | `NO ACTION` |
+| 2 | Angring trengte en entydig «siste hendelse». To hendelser kan få samme millisekund. | Gjennomlesning | Løpenummer `seq` (egen migrering) |
+| 3 | En velger lå halvveis bak den faste bunnmenyen på 360 px (WCAG 2.5.8) | axe i Playwright | Filtrene legges i en sammenleggbar «Filtrer og sorter» |
+| 4 | Historikken var ikke ferdig lastet på skjermbildet | Gjennomgang av skjermbilder | Skriptet venter på historikken |
+
+Feil i testene: Playwrights request-kontekst sender ikke `Secure`-cookies over http (Chromium gjør det for
+127.0.0.1), så testhjelperen setter cookien som header. En test forventet at Tab aldri forlater en modal dialog;
+med `<dialog>` kan fokus gå til nettleserens eget grensesnitt, og testen sjekker nå at fokus aldri havner på siden
+bak.
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser
@@ -188,11 +262,20 @@ Feil i selve testene:
 - Ende-til-ende-testene kjører mot et API med høye rate limits (alle tester registrerer brukere fra samme adresse).
   Selve grensene er testet i API-testene.
 - Det er ikke gjort noen penetrasjonstest eller ekstern sikkerhetsgjennomgang.
+- **axe på telefon med fast bunnmeny:** axe vurderer bare siden slik den står når den lastes. Et felt som da
+  tilfeldigvis ligger halvveis bak den faste bunnmenyen, blir rapportert som for lite (WCAG 2.5.8), selv om
+  brukeren kan scrolle det fram. I `e2e/inventory.spec.ts` kjøres derfor axe på telefon med et høyt vindu
+  (360 × 2400 px), slik at hele siden får plass. Bredden er fortsatt 360 px. Ved ett tilfelle var funnet reelt nok
+  til at vi endret siden (filtrene, se funn 3), men regelen kan slå ut på andre lange sider også.
+- Testene for forsiden og lagerstatus bruker datoer regnet ut fra dagens dato. De er derfor ikke avhengige av når de
+  kjøres, men en test kjørt nøyaktig ved midnatt kan i teorien se to forskjellige «i dag».
 
 ## Kilder i prosjektet
 
 - [Testbevis fase 1](../evidence/test-results/fase-1/)
 - [Skjermbilder fase 1](../evidence/screenshots/fase-1/)
 - [Testbevis fase 2](../evidence/test-results/fase-2/), [skjermbilder fase 2](../evidence/screenshots/fase-2/)
-- [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md)
+- [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md),
+  [fasespesifikasjon 03](../development/requirements/03-matlager.md)
+- [Testbevis fase 3](../evidence/test-results/fase-3/), [skjermbilder fase 3](../evidence/screenshots/fase-3/)
 - [Fasespesifikasjon 01](../development/requirements/01-designsystem-og-app-skall.md)

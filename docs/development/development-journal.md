@@ -127,3 +127,50 @@ pull requesten. Deretter fase 3 (matlager) i ny chat.
 Han valgte at en gjennomgang skal registreres, men oppga ikke hvem som gikk gjennom eller hva som ble sett på. Derfor
 er ingen gjennomgang av fase 1 eller fase 2 registrert ennå. Den føres inn når detaljene er gitt.
 
+---
+
+## 2026-10-21 – Fase 3: matlager
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med.
+
+**Hva skjedde**
+- Ferdinand ba om å starte fase 3 i **samme chat** som fase 2 («begynn på fase 3 nå»), selv om arbeidsflyten sier
+  én chat per fase. Han sa at registreringen av gjennomgangen kommer senere.
+- Claude svarte med fasemalen og seks åpne spørsmål. Ferdinand svarte «godkjent», og anbefalingene gjelder
+  (se tabellen i [spesifikasjon 03](requirements/03-matlager.md)).
+- Claude laget grenen `fase-3` fra `fase-2`, fordi `fase-2` ikke er merget til `main`. Spesifikasjon 03 ble
+  skrevet **før** koden denne gangen. **All kode i fasen er skrevet av KI.**
+
+**Avvik og funn underveis** (detaljer i kapittel 8, 10 og 11)
+- **`prisma migrate reset` nekter** å kjøre når den startes av et KI-verktøy. Løpenummeret `seq` ble derfor en egen
+  migrering, og ingen data ble slettet.
+- **Feil som ble funnet og rettet før de kom ut:**
+  - `RESTRICT` på fremmednøkkelen fra parti til sted
+  - ingen entydig «siste hendelse» for angring
+  - en velger halvveis bak bunnmenyen på 360 px (axe)
+  - et skjermbilde med historikken ikke ferdig lastet
+- **Kontrollen av testene:** Første kjøring av skriptet testet ikke det ene tilfellet, fordi søketeksten ikke
+  traff. Det ble oppdaget, rettet og kjørt på nytt.
+- **Kjent fallgruve igjen:** Skript gjorde `\u00A0` om til usynlige tegn. Et rydde-skript endret i tillegg en
+  kommentar i fase 1-koden (`ore.ts`). Den ble satt tilbake.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 426 |
+| API-tester mot database | 81 |
+| Bygg | Vellykket |
+| Playwright-tester | 107 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-3/`, skjermbilder i `docs/evidence/screenshots/fase-3/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 1–3
+- commit og push av `fase-3` (ikke bedt om ennå)
+- manuell test med skjermleser og på ekte telefon
+
+**Neste:** Teamet går gjennom fasen. Deretter fase 4 (kjøp og budsjett), helst i en ny chat.
+

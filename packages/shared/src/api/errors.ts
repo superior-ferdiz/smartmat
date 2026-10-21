@@ -17,6 +17,12 @@ export const API_ERRORS = {
   invalidCsrf: 'errors.security.invalidCsrf',
   rateLimited: 'errors.rateLimited',
   notFound: 'errors.notFound',
+  notEnough: 'errors.inventory.notEnough',
+  locationNotEmpty: 'errors.inventory.locationNotEmpty',
+  lastLocation: 'errors.inventory.lastLocation',
+  changedMeanwhile: 'errors.inventory.changedMeanwhile',
+  nothingToUndo: 'errors.inventory.nothingToUndo',
+  cannotUndo: 'errors.inventory.cannotUndo',
   internal: 'errors.internal',
 } as const;
 

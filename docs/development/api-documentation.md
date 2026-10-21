@@ -76,3 +76,53 @@ HouseholdResponse = { id: uuid, name: string, role: 'owner' | 'member', memberCo
 
 ### `GET /health`
 - **Svar:** `200 { "status": "ok" }` når databasen svarer.
+
+## Matlager (fase 3)
+
+**Status:** Fase 3 (2026-10-21). Skrevet av KI (Claude), ikke gjennomgått av teamet. Se
+[fasespesifikasjon 03](requirements/03-matlager.md).
+
+Alle ruter under `/households/:householdId/` krever innlogging og medlemskap i husholdningen. Vare-, parti- og
+steds-ID-er slås opp *innenfor* husholdningen. En ID fra en annen husholdning gir 404 (eller 400 som feltfeil
+når den står i forespørselens kropp), og ingenting blir endret.
+
+### Typer
+
+```ts
+LocationResponse = { id, kind: 'fridge'|'freezer'|'pantry'|'other', name: string | null, batchCount }
+BatchResponse = { id, quantityBase, initialQuantityBase, locationId, expiryKind: 'best_before'|'use_by'|null,
+                  expiryDate: 'YYYY-MM-DD'|null, priceOre|null, purchasedOn|null, createdAt }
+ItemResponse = { id, name, categoryKey, unit: 'g'|'ml'|'stk', createdAt, batches: BatchResponse[] }  // bare partier med noe igjen
+HistoryEvent = { id, type, deltaBase, batchId|null, fromLocationId|null, toLocationId|null, actorName|null, createdAt,
+                 revertsEventId|null, revertedType|null, wasteReason|null, wasteValueOre|null, wasteValueBasis|null, undone }
+```
+
+Mengder er alltid heltall i grunnenhet (g, ml, stk) og beløp er heltall i øre (ADR-0006).
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/categories` (offentlig) | – | `[{ key }]` | – |
+| GET | `/households/:h/locations` | – | `LocationResponse[]` | |
+| POST | `/households/:h/locations` | `{ name, kind? }` | 201 `LocationResponse` | 400 |
+| PATCH | `/households/:h/locations/:locationId` | `{ name }` | `LocationResponse` | 404 |
+| DELETE | `/households/:h/locations/:locationId` | – | 204 | 404, 409 `locationNotEmpty`, 409 `lastLocation` |
+| GET | `/households/:h/inventory` | – | `{ items: ItemResponse[] }` | |
+| GET | `/households/:h/inventory/waste-summary` | – | `{ month, count, knownValueOre, unknownValueCount }` | |
+| POST | `/households/:h/inventory/items` | `{ name, categoryKey, unit, batch }` | 201 `ItemResponse` | 400 (også `batch.locationId: validation.location.notFound`) |
+| GET | `/households/:h/inventory/items/:itemId` | – | `ItemResponse` | 404 |
+| PATCH | `/households/:h/inventory/items/:itemId` | `{ name?, categoryKey? }` | `ItemResponse` | 400, 404 |
+| DELETE | `/households/:h/inventory/items/:itemId` | – | 204 | 404 |
+| POST | `/households/:h/inventory/items/:itemId/batches` | `{ quantityBase, locationId, expiry?, priceOre?, purchasedOn? }` | 201 `ItemResponse` | 400, 404 |
+| GET | `/households/:h/inventory/items/:itemId/history` | – | `{ events: HistoryEvent[], undoableEventId }` | 404 |
+| POST | `/households/:h/inventory/items/:itemId/undo` | – | `ItemResponse` | 404, 409 `nothingToUndo`, 409 `cannotUndo` |
+| PATCH | `/households/:h/inventory/batches/:batchId` | `{ quantityBase?, locationId?, expiry?, priceOre?, purchasedOn? }` | `ItemResponse` | 400, 404, 409 `changedMeanwhile` |
+| DELETE | `/households/:h/inventory/batches/:batchId` | – | `ItemResponse` | 404 |
+| POST | `/households/:h/inventory/batches/:batchId/consume` | `{ quantityBase }` | `ItemResponse` | 404, 409 `notEnough` |
+| POST | `/households/:h/inventory/batches/:batchId/discard` | `{ quantityBase, reason, valueOre? }` | `ItemResponse` | 404, 409 `notEnough` |
+
+- `expiry` er `{ kind: 'best_before'|'use_by', date: 'YYYY-MM-DD' }` eller `null`.
+- `reason` er en av `expired`, `spoiled`, `leftovers`, `tooMuch` og `other`.
+- Ved `PATCH` på et parti gir ny `quantityBase` en hendelse av typen `adjust`, og ny `locationId` en hendelse av
+  typen `move`.

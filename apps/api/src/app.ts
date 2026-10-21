@@ -15,6 +15,12 @@ import { authRoutes } from './modules/auth/routes';
 import { argon2Hasher, type PasswordHasher } from './modules/auth/password';
 import { AuthService } from './modules/auth/service';
 import { healthRoutes } from './modules/health/routes';
+import { createInventoryRepo } from './modules/inventory/repo';
+import { inventoryRoutes } from './modules/inventory/routes';
+import { InventoryService } from './modules/inventory/service';
+import { categoryRoutes } from './modules/locations/categories';
+import { createLocationRepo } from './modules/locations/repo';
+import { locationRoutes } from './modules/locations/routes';
 import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
 import { createProfileRepo } from './modules/profile/repo';
@@ -86,6 +92,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const householdRepo = createHouseholdRepo(db);
   const requireAuth = createRequireAuth(authService, cookies);
   const householdAccess = createHouseholdAccess(householdRepo);
+  const locationRepo = createLocationRepo(db);
+  const inventoryService = new InventoryService({
+    repo: createInventoryRepo(db),
+    locations: locationRepo,
+    now,
+  });
 
   await app.register(
     async (api) => {
@@ -103,6 +115,13 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         rateLimits: config.rateLimits,
       });
       await api.register(householdRoutes, { repo: householdRepo, requireAuth, householdAccess });
+      await api.register(categoryRoutes, { db });
+      await api.register(locationRoutes, { repo: locationRepo, requireAuth, householdAccess });
+      await api.register(inventoryRoutes, {
+        service: inventoryService,
+        requireAuth,
+        householdAccess,
+      });
     },
     { prefix: API_PREFIX },
   );

@@ -1,0 +1,29 @@
+$ bash docs/evidence/test-results/fase-3/10-mutation-check.sh
+# Kjørt 2026-10-21 12:19:11 UTC, Node v22.14.0, npm 11.1.0
+
+1. Parti slås opp uten husholdningsfilter
+    endret: apps/api/src/modules/inventory/repo.ts
+    resultat: Tests  1 failed | 80 passed (81)
+2. Vare slås opp uten husholdningsfilter
+    endret: apps/api/src/modules/inventory/repo.ts
+    resultat: Tests  1 failed | 80 passed (81)
+3. Sletting av vare uten husholdningsfilter
+    endret: apps/api/src/modules/inventory/repo.ts
+    resultat: Tests  1 failed | 80 passed (81)
+4. Forbruk/kassering uten sjekk av hvor mye som er igjen
+    endret: apps/api/src/modules/inventory/repo.ts
+    resultat: Tests  2 failed | 79 passed (81)
+5. Lagringssted i forespørselen sjekkes ikke mot husholdningen
+    endret: apps/api/src/modules/inventory/service.ts
+    resultat: Tests  2 failed | 79 passed (81)
+6. Angrede kasseringer telles med i svinnoppsummeringen
+    endret: apps/api/src/modules/inventory/repo.ts
+    resultat: Tests  1 failed | 80 passed (81)
+7. Kodesjekken for «sted med varer» fjernet. FORVENTET: alle tester passerer, fordi fremmednøkkelen
+   i databasen (NO ACTION) fortsatt stopper slettingen. Viser at regelen har to lag.
+    endret: apps/api/src/modules/locations/repo.ts
+    resultat: Tests  81 passed (81)
+Uendret kode:
+    Tests  81 passed (81)
+
+# exit code: 0

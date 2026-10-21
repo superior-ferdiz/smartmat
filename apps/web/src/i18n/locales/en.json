@@ -7,7 +7,9 @@
     "loading": "Loading …",
     "retry": "Try again",
     "close": "Close",
-    "sampleData": "Sample data"
+    "sampleData": "Sample data",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "languages": {
     "nb-NO": "Norsk (bokmål)",
@@ -68,7 +70,8 @@
       "tooLong": "The name can be at most 50 characters."
     },
     "itemName": {
-      "required": "Enter the name of the item."
+      "required": "Enter the name of the item.",
+      "tooLong": "The name can be at most 100 characters."
     },
     "category": {
       "required": "Choose a category."
@@ -91,43 +94,46 @@
     },
     "deleteAccount": {
       "confirmRequired": "Tick the box to confirm that you understand the account is deleted for good."
+    },
+    "nothingToUpdate": "There is nothing to save.",
+    "unit": {
+      "required": "Choose a unit."
+    },
+    "location": {
+      "required": "Choose a storage place.",
+      "notFound": "That storage place no longer exists. Choose another.",
+      "kindRequired": "Choose a kind of place."
+    },
+    "locationName": {
+      "required": "Enter a name.",
+      "tooLong": "The name can be at most 50 characters."
+    },
+    "quantity": {
+      "required": "Enter an amount.",
+      "invalid": "Write the amount as a number, for example 1.5.",
+      "notWhole": "The amount is too precise. Use whole grams, millilitres or pieces.",
+      "notPositive": "The amount must be more than 0.",
+      "tooLarge": "The amount is too large.",
+      "moreThanLeft": "There is not that much left in the batch."
+    },
+    "expiry": {
+      "kindRequired": "Choose whether the date is best before or use by.",
+      "dateRequired": "Enter the date."
+    },
+    "wasteReason": {
+      "required": "Choose why the food was thrown away."
     }
   },
   "pages": {
     "overview": {
       "title": "Overview",
       "lead": "What matters in your kitchen right now.",
-      "sampleNoticeTitle": "This is sample data",
-      "sampleNoticeText": "The app is not connected to a database yet. The items and numbers below are made up to show how the overview will look.",
+      "sampleNoticeTitle": "Some of this is still sample data",
+      "sampleNoticeText": "“Expiring soon” and “Thrown away this month” show your own food. The budget and the dinner suggestion are made up until they arrive in later versions.",
       "expiring": {
         "title": "Expiring soon",
         "seeAll": "See the whole pantry",
-        "items": {
-          "chicken": {
-            "name": "Chicken breast",
-            "meta": "400 g · Fridge",
-            "status": "Use by today",
-            "advice": "Use it today, or freeze it before the day is over."
-          },
-          "mince": {
-            "name": "Minced beef",
-            "meta": "400 g · Fridge",
-            "status": "Use-by date passed",
-            "advice": "Do not eat. A use-by date is about food safety."
-          },
-          "milk": {
-            "name": "Semi-skimmed milk",
-            "meta": "1 l · Fridge",
-            "status": "Best before tomorrow",
-            "advice": "Best before often means good after. Look, smell and taste."
-          },
-          "yoghurt": {
-            "name": "Natural yoghurt",
-            "meta": "500 g · Fridge · Opened",
-            "status": "Best before 2 days ago",
-            "advice": "Often still fine. Look, smell and taste before throwing it out."
-          }
-        }
+        "none": "Nothing expires in the next three days."
       },
       "budget": {
         "title": "Food budget this month",
@@ -150,8 +156,10 @@
       },
       "waste": {
         "title": "Thrown out this month",
-        "text_one": "{{count}} item thrown out (estimated value)",
-        "text_other": "{{count}} items thrown out (estimated value)"
+        "count_one": "{{count}} item thrown away this month",
+        "count_other": "{{count}} items thrown away this month",
+        "unknown_one": "{{count}} of them without a known value",
+        "unknown_other": "{{count}} of them without a known value"
       }
     },
     "inventory": {
@@ -369,6 +377,246 @@
     "rateLimited": "Too many attempts in a short time. Wait a little and try again.",
     "notFound": "We could not find what you were looking for.",
     "internal": "Something went wrong on our side. Try again in a moment.",
-    "network": "Could not reach SmartMat. Check your connection and try again."
+    "network": "Could not reach SmartMat. Check your connection and try again.",
+    "inventory": {
+      "notEnough": "There is not that much left. Reload the page and try again.",
+      "locationNotEmpty": "The place still has food in it. Move or use it up first.",
+      "lastLocation": "You need at least one storage place.",
+      "changedMeanwhile": "The batch was changed meanwhile. Reload the page and try again.",
+      "nothingToUndo": "There is nothing to undo.",
+      "cannotUndo": "This change can no longer be undone."
+    }
+  },
+  "units": {
+    "g": "g",
+    "kg": "kg",
+    "ml": "ml",
+    "dl": "dl",
+    "l": "l",
+    "stk": "pcs"
+  },
+  "inventory": {
+    "loading": "Loading your food …",
+    "addItem": "Add item",
+    "added": "{{name}} was added",
+    "backToList": "Back to food",
+    "itemEmpty": "Empty",
+    "unknownLocation": "Unknown place",
+    "batchCount_one": "{{count}} batch",
+    "batchCount_other": "{{count}} batches",
+    "count_one": "Showing {{shown}} of {{count}} item",
+    "count_other": "Showing {{shown}} of {{count}} items",
+    "empty": {
+      "title": "Nothing here yet",
+      "text": "Add what you have in the fridge, freezer and cupboard, with the date from the pack. SmartMat can then tell you before something expires."
+    },
+    "noMatch": {
+      "title": "No items match",
+      "text": "Try another search or remove some filters."
+    },
+    "summary": {
+      "label": "Expiry",
+      "soon_one": "expires soon",
+      "soon_other": "expire soon",
+      "passed_one": "is past its date",
+      "passed_other": "are past their date",
+      "noDate_one": "has no date",
+      "noDate_other": "have no date"
+    },
+    "filters": {
+      "search": "Search",
+      "location": "Place",
+      "allLocations": "All places",
+      "category": "Category",
+      "allCategories": "All categories",
+      "status": "Expiry",
+      "sort": "Sort by",
+      "showEmpty": "Also show empty items",
+      "reset": "Clear filters",
+      "more_zero": "Filter and sort",
+      "more_one": "Filter and sort ({{count}} in use)",
+      "more_other": "Filter and sort ({{count}} in use)"
+    },
+    "statusFilters": {
+      "alle": "All",
+      "snart": "Expires soon",
+      "passert": "Past the date",
+      "uten-dato": "No date"
+    },
+    "sortOptions": {
+      "dato": "Earliest date",
+      "navn": "Name (A–Z)",
+      "nylig": "Recently added"
+    },
+    "categories": {
+      "dairy": "Dairy and eggs",
+      "meat": "Meat",
+      "fish": "Fish and seafood",
+      "fruitVeg": "Fruit and vegetables",
+      "bread": "Bread and baked goods",
+      "dryGoods": "Dry goods",
+      "canned": "Tinned food",
+      "frozen": "Frozen food",
+      "spreads": "Spreads and toppings",
+      "spicesSauces": "Spices and sauces",
+      "drinks": "Drinks",
+      "other": "Other"
+    },
+    "locationKinds": {
+      "fridge": "Fridge",
+      "freezer": "Freezer",
+      "pantry": "Cupboard",
+      "other": "Other place"
+    },
+    "baseUnits": {
+      "g": "Weight (g, kg)",
+      "ml": "Volume (ml, dl, l)",
+      "stk": "Count (pcs)"
+    },
+    "expiryKinds": {
+      "none": "No date",
+      "best_before": "Best before",
+      "use_by": "Use by"
+    },
+    "expiry": {
+      "none": "No date",
+      "bestBefore": {
+        "passed": "Best before passed",
+        "today": "Best before today",
+        "soon_one": "Best before tomorrow",
+        "soon_other": "Best before in {{count}} days",
+        "on": "Best before {{date}}"
+      },
+      "useBy": {
+        "passed": "Use-by date passed",
+        "today": "Use by today",
+        "soon_one": "Use by tomorrow",
+        "soon_other": "Use by in {{count}} days",
+        "on": "Use by {{date}}"
+      }
+    },
+    "advice": {
+      "useByPassed": "Should not be eaten. The use-by date is about food safety.",
+      "bestBeforePassed": "Often still fine. Look, smell and taste."
+    },
+    "fields": {
+      "name": "Item name",
+      "nameHint": "For example “Semi-skimmed milk” or “Chicken breast”.",
+      "category": "Category",
+      "categoryPlaceholder": "Choose a category",
+      "baseUnit": "Measured in",
+      "baseUnitHint": "Cannot be changed later.",
+      "amount": "Amount",
+      "unit": "Unit",
+      "location": "Storage place",
+      "locationPlaceholder": "Choose a place",
+      "expiryKind": "Date on the pack",
+      "expiryKindHint": "Use by is about food safety, best before is about quality.",
+      "expiryDate": "Date",
+      "price": "Price",
+      "priceHint": "For the whole pack. Used to estimate the value of food thrown away.",
+      "purchasedOn": "Bought"
+    },
+    "new": {
+      "title": "Add item",
+      "lead": "Enter what it says on the pack.",
+      "submit": "Add"
+    },
+    "item": {
+      "notFoundTitle": "Item not found",
+      "notFoundText": "It may have been deleted.",
+      "edit": "Rename",
+      "editTitle": "Edit item",
+      "delete": "Delete item",
+      "deleteTitle": "Delete {{name}}?",
+      "deleteText": "The item, all batches and the whole history are deleted. Use “Throw away” if the food was thrown away – then it counts as waste.",
+      "deleteConfirm": "Delete item",
+      "deleted": "{{name}} was deleted"
+    },
+    "batch": {
+      "title": "Batches",
+      "none": "No batches left. Add a new batch when you buy it again.",
+      "label": "Batch {{number}}",
+      "add": "Add batch",
+      "addTitle": "New batch of {{name}}",
+      "added": "The batch was added",
+      "consume": "Use",
+      "discard": "Throw away",
+      "edit": "Edit",
+      "editTitle": "Edit batch",
+      "saved": "The batch was saved",
+      "delete": "Delete",
+      "deleteTitle": "Delete this batch?",
+      "deleteText": "The batch and its history are deleted. Use “Throw away” if the food was thrown away.",
+      "deleteConfirm": "Delete batch"
+    },
+    "take": {
+      "all": "All of it ({{quantity}})"
+    },
+    "consume": {
+      "title": "Use {{name}}",
+      "submit": "Record use",
+      "done": "Used: {{quantity}}"
+    },
+    "discard": {
+      "title": "Throw away {{name}}",
+      "description": "What you throw away is recorded in the waste log.",
+      "reason": "Why was it thrown away?",
+      "reasonPlaceholder": "Choose a reason",
+      "value": "Value",
+      "valueHintEstimated": "If left empty, the value is estimated from the price of the pack.",
+      "valueHintUnknown": "The batch has no price. If left empty, the value is recorded as unknown.",
+      "submit": "Record waste",
+      "done": "Thrown away: {{quantity}}"
+    },
+    "wasteReasons": {
+      "expired": "Past its date",
+      "spoiled": "Spoiled or mouldy",
+      "leftovers": "Leftovers",
+      "tooMuch": "Bought too much",
+      "other": "Other"
+    },
+    "history": {
+      "title": "History",
+      "undoLast": "Undo last change",
+      "undone": "The change was undone",
+      "undoneTag": "Undone",
+      "add": "Added {{quantity}}",
+      "consume": "Used {{quantity}}",
+      "discard": "Threw away {{quantity}} ({{reason}})",
+      "move": "Moved from {{from}} to {{to}}",
+      "adjustUp": "Corrected the amount: {{quantity}} more",
+      "adjustDown": "Corrected the amount: {{quantity}} less",
+      "undo": "Undid: {{what}}",
+      "types": {
+        "add": "added",
+        "consume": "used",
+        "discard": "thrown away",
+        "move": "moved",
+        "adjust": "corrected amount",
+        "undo": "undone"
+      },
+      "valueActual": "value {{value}}",
+      "valueEstimated": "estimated value {{value}}",
+      "valueUnknown": "value unknown",
+      "deletedUser": "Deleted user"
+    },
+    "locations": {
+      "manage": "Storage places",
+      "title": "Storage places",
+      "lead": "Where your food is kept. You can add your own places, like “Cellar” or “Shed”.",
+      "add": "New place",
+      "name": "Name",
+      "nameHint": "For example “Cellar”.",
+      "rename": "Rename",
+      "renameTitle": "Rename",
+      "delete": "Delete",
+      "deleteTitle": "Delete {{name}}?",
+      "deleteText": "A place can only be deleted when it is empty. The history of items that were there is kept.",
+      "deleteConfirm": "Delete place",
+      "deleted": "The place was deleted",
+      "batchCount_one": "{{count}} batch",
+      "batchCount_other": "{{count}} batches"
+    }
   }
 }

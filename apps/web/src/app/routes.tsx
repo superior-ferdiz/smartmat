@@ -11,10 +11,16 @@ import { SectionPage } from '../pages/SectionPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
+import { InventoryPage } from '../pages/inventory/InventoryPage';
+import { ItemPage } from '../pages/inventory/ItemPage';
+import { LocationsPage } from '../pages/inventory/LocationsPage';
+import { NewItemPage } from '../pages/inventory/NewItemPage';
 import {
   DESIGN_SYSTEM_PATH,
+  LOCATIONS_PATH,
   LOGIN_PATH,
   MORE_PATH,
+  NEW_ITEM_PATH,
   PROFILE_PATH,
   REGISTER_PATH,
 } from './navigation';
@@ -51,7 +57,10 @@ export const routes: RouteObject[] = [
         element: <RequireAuth />,
         children: [
           { index: true, element: <OverviewPage /> },
-          { path: 'matlager', element: <SectionPage section="inventory" /> },
+          { path: 'matlager', element: <InventoryPage /> },
+          { path: NEW_ITEM_PATH.slice(1), element: <NewItemPage /> },
+          { path: LOCATIONS_PATH.slice(1), element: <LocationsPage /> },
+          { path: 'matlager/:itemId', element: <ItemPage /> },
           { path: 'skann', element: <SectionPage section="scan" /> },
           { path: 'oppskrifter', element: <SectionPage section="recipes" /> },
           { path: 'handleliste', element: <SectionPage section="shoppingList" /> },

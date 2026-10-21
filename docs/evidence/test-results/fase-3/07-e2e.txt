@@ -1,0 +1,161 @@
+$ npx playwright test --reporter=list
+# Kjørt 2026-10-21 12:26:54 UTC, Node v22.14.0, npm 11.1.0
+
+[WebServer] Loaded Prisma config from prisma.config.ts.
+[WebServer] 
+[WebServer] Prisma schema loaded from prisma/schema.prisma.
+[WebServer] ../../node_modules/zod/v4/core/util.js (400:0): A comment
+[WebServer] 
+[WebServer] "// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `Number`, so the bare object literal survived into every bundle."
+[WebServer] 
+[WebServer] in "../../node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+[WebServer] ../../node_modules/zod/v4/core/regexes.js (74:0): A comment
+[WebServer] 
+[WebServer] "/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+[WebServer]  * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+[WebServer]  * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+[WebServer] 
+[WebServer] in "../../node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+[WebServer] 
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+Running 130 tests using 10 workers
+
+  ✓    9 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓    6 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓    4 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   10 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓    2 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓    5 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓    1 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓    7 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓    8 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.4s)
+  ✓    3 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓   12 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.8s)
+  ✓   15 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.8s)
+  ✓   19 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.7s)
+  ✓   14 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   13 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   18 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.8s)
+  ✓   17 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓   16 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓   11 [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  -   28 [mobil-360] › e2e/app-shell.spec.ts:84:3 › FR-UI-001 navigation per viewport › desktop: side menu works with the keyboard alone
+  ✓   20 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   26 [mobil-360] › e2e/app-shell.spec.ts:59:3 › FR-UI-001 navigation per viewport › phone: bottom menu labels are not cut off at 360 px (785ms)
+  ✓   25 [mobil-360] › e2e/app-shell.spec.ts:46:3 › FR-UI-001 navigation per viewport › phone shows the bottom menu, desktop the side menu (868ms)
+  ✓   27 [mobil-360] › e2e/app-shell.spec.ts:72:3 › FR-UI-001 navigation per viewport › phone: all sections are reachable through "Mer" (957ms)
+  ✓   30 [mobil-360] › e2e/app-shell.spec.ts:123:3 › FR-UI-003 overview grid › one column at 360 px, three at 1280 px (≥ 1200 px breakpoint) (751ms)
+  ✓   29 [mobil-360] › e2e/app-shell.spec.ts:108:3 › FR-UI-001 navigation per viewport › focus is clearly visible on keyboard focus (outline present) (1.0s)
+  ✓   31 [mobil-360] › e2e/app-shell.spec.ts:142:3 › FR-UI-004 / FR-UI-005 settings survive a reload › dark theme is applied before the app starts (no white flash) (1.1s)
+  ✓   21 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓   22 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   24 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   32 [mobil-360] › e2e/app-shell.spec.ts:152:3 › FR-UI-004 / FR-UI-005 settings survive a reload › English is remembered and sets <html lang> (1.3s)
+  ✓   23 [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓   35 [mobil-360] › e2e/auth.spec.ts:61:3 › logged out › a protected page leads to login and back there afterwards (1.3s)
+  ✓   36 [mobil-360] › e2e/auth.spec.ts:75:3 › logged out › wrong password: a general message, no hint whether the account exists (1.2s)
+  ✓   38 [mobil-360] › e2e/auth.spec.ts:106:3 › logged out › registering an e-mail that is taken shows it at the field (1.5s)
+  ✓   34 [mobil-360] › e2e/auth.spec.ts:21:3 › logged out › FR-AUTH-001/002: register → log out → log in → log out (2.7s)
+  ✓   41 [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (dark): no horizontal scroll, no axe violations (1.6s)
+  ✓   46 [mobil-360] › e2e/auth.spec.ts:168:3 › logged in › NFR-SEC-005: a request from another origin is refused (134ms)
+  ✓   40 [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /registrer (light): no horizontal scroll, no axe violations (1.8s)
+  ✓   39 [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (light): no horizontal scroll, no axe violations (1.8s)
+  ✓   45 [mobil-360] › e2e/auth.spec.ts:149:3 › logged in › NFR-SEC-005: a request with the cookie but without the CSRF token is refused (968ms)
+  ✓   42 [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /registrer (dark): no horizontal scroll, no axe violations (1.9s)
+  ✓   37 [mobil-360] › e2e/auth.spec.ts:88:3 › logged out › FR-AUTH-003: after five wrong passwords even the right one is refused (2.9s)
+  ✓   33 [mobil-360] › e2e/app-shell.spec.ts:163:3 › FR-UI-006 form on a real browser › invalid submit focuses the error summary; the link moves focus to the field (3.7s)
+  ✓   44 [mobil-360] › e2e/auth.spec.ts:139:5 › logged in › /profil (dark): no horizontal scroll, no axe violations (2.1s)
+  ✓   43 [mobil-360] › e2e/auth.spec.ts:139:5 › logged in › /profil (light): no horizontal scroll, no axe violations (2.4s)
+  -   56 [mobil-360] › e2e/screenshots.spec.ts:68:7 › light – logged in › oversikt
+  -   57 [mobil-360] › e2e/screenshots.spec.ts:68:7 › light – logged in › matlager
+  -   58 [mobil-360] › e2e/screenshots.spec.ts:68:7 › light – logged in › ny-vare
+  -   59 [mobil-360] › e2e/screenshots.spec.ts:68:7 › light – logged in › lagringssteder
+  -   60 [mobil-360] › e2e/screenshots.spec.ts:68:7 › dark – logged in › oversikt
+  -   61 [mobil-360] › e2e/screenshots.spec.ts:68:7 › dark – logged in › matlager
+  -   62 [mobil-360] › e2e/screenshots.spec.ts:68:7 › dark – logged in › ny-vare
+  -   63 [mobil-360] › e2e/screenshots.spec.ts:68:7 › dark – logged in › lagringssteder
+  -   64 [mobil-360] › e2e/screenshots.spec.ts:86:5 › light – item page and dialog › vare-og-dialog
+  -   65 [mobil-360] › e2e/screenshots.spec.ts:86:5 › dark – item page and dialog › vare-og-dialog
+  ✓   49 [mobil-360] › e2e/auth.spec.ts:234:3 › changing the account › FR-AUTH-005: deleting the account removes it – logging in afterwards fails (1.9s)
+  ✓   47 [mobil-360] › e2e/auth.spec.ts:182:3 › changing the account › FR-AUTH-004: name and language are saved on the account (2.1s)
+  ✓   48 [mobil-360] › e2e/auth.spec.ts:205:3 › changing the account › FR-AUTH-004: changing the password logs out other devices (2.6s)
+  ✓   51 [mobil-360] › e2e/inventory.spec.ts:140:3 › inventory › FR-INV-004/005: summary, search and filters, kept in the URL (2.7s)
+  ✓   53 [mobil-360] › e2e/inventory.spec.ts:203:3 › inventory › FR-INV-003: a new storage place, used, then refused deletion while it has food (3.1s)
+  ✓   52 [mobil-360] › e2e/inventory.spec.ts:175:3 › inventory › dialog: Esc closes it and focus goes back to the button; Tab stays inside (3.6s)
+  ✓   50 [mobil-360] › e2e/inventory.spec.ts:66:3 › inventory › FR-INV-001/002/006/007/008: add → second batch → use part → throw away → history → undo (4.8s)
+  ✓   66 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓   67 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓   68 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.7s)
+  ✓   69 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.5s)
+  ✓   70 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓   72 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓   71 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓   74 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   73 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.6s)
+  ✓   54 [mobil-360] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (light) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations (8.2s)
+  ✓   55 [mobil-360] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (dark) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations (8.2s)
+  ✓   75 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.5s)
+  ✓   77 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓   76 [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.9s)
+  ✓   78 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.3s)
+  ✓   79 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.2s)
+  ✓   80 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓   81 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  -   89 [desktop] › e2e/app-shell.spec.ts:59:3 › FR-UI-001 navigation per viewport › phone: bottom menu labels are not cut off at 360 px
+  -   91 [desktop] › e2e/app-shell.spec.ts:72:3 › FR-UI-001 navigation per viewport › phone: all sections are reachable through "Mer"
+  ✓   83 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.7s)
+  ✓   82 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   88 [desktop] › e2e/app-shell.spec.ts:46:3 › FR-UI-001 navigation per viewport › phone shows the bottom menu, desktop the side menu (938ms)
+  ✓   84 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.0s)
+  ✓   85 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.1s)
+  ✓   95 [desktop] › e2e/app-shell.spec.ts:123:3 › FR-UI-003 overview grid › one column at 360 px, three at 1280 px (≥ 1200 px breakpoint) (940ms)
+  ✓   92 [desktop] › e2e/app-shell.spec.ts:84:3 › FR-UI-001 navigation per viewport › desktop: side menu works with the keyboard alone (1.5s)
+  ✓   87 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (1.9s)
+  ✓   94 [desktop] › e2e/app-shell.spec.ts:108:3 › FR-UI-001 navigation per viewport › focus is clearly visible on keyboard focus (outline present) (1.3s)
+  ✓   96 [desktop] › e2e/app-shell.spec.ts:142:3 › FR-UI-004 / FR-UI-005 settings survive a reload › dark theme is applied before the app starts (no white flash) (1.2s)
+  ✓   86 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.9s)
+  ✓   97 [desktop] › e2e/app-shell.spec.ts:152:3 › FR-UI-004 / FR-UI-005 settings survive a reload › English is remembered and sets <html lang> (1.3s)
+  ✓  101 [desktop] › e2e/auth.spec.ts:75:3 › logged out › wrong password: a general message, no hint whether the account exists (1.3s)
+  ✓  100 [desktop] › e2e/auth.spec.ts:61:3 › logged out › a protected page leads to login and back there afterwards (1.4s)
+  ✓   90 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (3.1s)
+  ✓  103 [desktop] › e2e/auth.spec.ts:106:3 › logged out › registering an e-mail that is taken shows it at the field (1.5s)
+  ✓   93 [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002) (2.9s)
+  ✓   99 [desktop] › e2e/auth.spec.ts:21:3 › logged out › FR-AUTH-001/002: register → log out → log in → log out (2.8s)
+  ✓  104 [desktop] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (light): no horizontal scroll, no axe violations (2.2s)
+  ✓  105 [desktop] › e2e/auth.spec.ts:123:7 › logged out › /registrer (light): no horizontal scroll, no axe violations (1.9s)
+  ✓  111 [desktop] › e2e/auth.spec.ts:168:3 › logged in › NFR-SEC-005: a request from another origin is refused (126ms)
+  ✓  102 [desktop] › e2e/auth.spec.ts:88:3 › logged out › FR-AUTH-003: after five wrong passwords even the right one is refused (2.8s)
+  ✓  110 [desktop] › e2e/auth.spec.ts:149:3 › logged in › NFR-SEC-005: a request with the cookie but without the CSRF token is refused (974ms)
+  ✓   98 [desktop] › e2e/app-shell.spec.ts:163:3 › FR-UI-006 form on a real browser › invalid submit focuses the error summary; the link moves focus to the field (3.7s)
+  ✓  106 [desktop] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (dark): no horizontal scroll, no axe violations (2.0s)
+  ✓  107 [desktop] › e2e/auth.spec.ts:123:7 › logged out › /registrer (dark): no horizontal scroll, no axe violations (2.0s)
+  ✓  108 [desktop] › e2e/auth.spec.ts:139:5 › logged in › /profil (light): no horizontal scroll, no axe violations (2.4s)
+  ✓  109 [desktop] › e2e/auth.spec.ts:139:5 › logged in › /profil (dark): no horizontal scroll, no axe violations (2.8s)
+  -  121 [desktop] › e2e/screenshots.spec.ts:68:7 › light – logged in › oversikt
+  -  122 [desktop] › e2e/screenshots.spec.ts:68:7 › light – logged in › matlager
+  -  123 [desktop] › e2e/screenshots.spec.ts:68:7 › light – logged in › ny-vare
+  -  124 [desktop] › e2e/screenshots.spec.ts:68:7 › light – logged in › lagringssteder
+  -  125 [desktop] › e2e/screenshots.spec.ts:68:7 › dark – logged in › oversikt
+  -  126 [desktop] › e2e/screenshots.spec.ts:68:7 › dark – logged in › matlager
+  -  127 [desktop] › e2e/screenshots.spec.ts:68:7 › dark – logged in › ny-vare
+  -  128 [desktop] › e2e/screenshots.spec.ts:68:7 › dark – logged in › lagringssteder
+  -  129 [desktop] › e2e/screenshots.spec.ts:86:5 › light – item page and dialog › vare-og-dialog
+  -  130 [desktop] › e2e/screenshots.spec.ts:86:5 › dark – item page and dialog › vare-og-dialog
+  ✓  114 [desktop] › e2e/auth.spec.ts:234:3 › changing the account › FR-AUTH-005: deleting the account removes it – logging in afterwards fails (2.1s)
+  ✓  112 [desktop] › e2e/auth.spec.ts:182:3 › changing the account › FR-AUTH-004: name and language are saved on the account (2.6s)
+  ✓  116 [desktop] › e2e/inventory.spec.ts:140:3 › inventory › FR-INV-004/005: summary, search and filters, kept in the URL (2.9s)
+  ✓  113 [desktop] › e2e/auth.spec.ts:205:3 › changing the account › FR-AUTH-004: changing the password logs out other devices (3.2s)
+  ✓  118 [desktop] › e2e/inventory.spec.ts:203:3 › inventory › FR-INV-003: a new storage place, used, then refused deletion while it has food (2.9s)
+  ✓  117 [desktop] › e2e/inventory.spec.ts:175:3 › inventory › dialog: Esc closes it and focus goes back to the button; Tab stays inside (3.5s)
+  ✓  115 [desktop] › e2e/inventory.spec.ts:66:3 › inventory › FR-INV-001/002/006/007/008: add → second batch → use part → throw away → history → undo (4.4s)
+  ✓  119 [desktop] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (light) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations (6.3s)
+  ✓  120 [desktop] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (dark) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations (5.8s)
+
+  23 skipped
+  107 passed (46.2s)
+
+# exit code: 0

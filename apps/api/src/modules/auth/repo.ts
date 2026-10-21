@@ -68,7 +68,15 @@ export function createAuthRepo(db: Db): AuthRepo {
     async createUserWithHousehold(user) {
       try {
         const created = await db.$transaction(async (tx) => {
-          const household = await tx.household.create({ data: { name: user.displayName } });
+          // A household of one (ADR-0008) with the three default storage locations (spec 03, FR-INV-003).
+          const household = await tx.household.create({
+            data: {
+              name: user.displayName,
+              storageLocations: {
+                create: [{ kind: 'fridge' }, { kind: 'freezer' }, { kind: 'pantry' }],
+              },
+            },
+          });
           return tx.user.create({
             data: {
               ...user,

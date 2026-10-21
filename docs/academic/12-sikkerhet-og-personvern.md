@@ -1,6 +1,6 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20) og fase 3 (2026-10-21). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -19,8 +19,18 @@
 | Åpen viderekobling | `/logg-inn?neste=https://falsk.side` | Bare stier i appen godtas | `safeNextPath.test.ts`, `LoginPage.test.tsx` |
 | Lekkasje i logger eller feilmeldinger | E-post i en databasefeil som logges | Ingen kropp, IP eller feiltekst i loggen. Faste feilkoder. | `security.api.test.ts` |
 
+### Nytt i fase 3: matlageret
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Lese eller endre andres matlager (IDOR) | Bytte vare-ID i URL-en, eller bruke egen husholdning med en annens vare-ID | `householdAccess` i URL-en, og hver spørring filtrerer på `household_id` | Matrisen i `inventory.security.api.test.ts` (15 endepunkter × 2 varianter) |
+| Koble egne data til andres sted | Sende en annen husholdnings steds-ID i kroppen | Stedet sjekkes mot husholdningen. Sammensatt fremmednøkkel i databasen. | Samme fil |
+| Feil mengder ved samtidige klikk | To faner trykker «Bruk» samtidig | Betinget oppdatering i SQL, og CHECK ≥ 0 | `inventory.api.test.ts` (10 samtidige) |
+| Angre to ganger | Dobbeltklikk på «Angre» | Unik `reverts_event_id` | `inventory.api.test.ts` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen. Minst én test feilet hver gang
-([bevis](../evidence/test-results/fase-2/10-mutation-check.txt)).
+([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
+[fase 3](../evidence/test-results/fase-3/10-mutation-check.txt)).
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -32,6 +42,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen. Mi
 | Språkvalg | Grensesnitt | `users.locale` | Til kontoen slettes |
 | Mislykkede innlogginger | Beskyttelse mot gjetting | `users.failed_login_count`, `login_locked_until` | Nullstilles ved vellykket innlogging |
 | Sesjoner | Holde brukeren innlogget | `sessions` (hash av token, tidspunkter) | Maks 30 dager. Slettes ved utlogging, passordbytte eller kontosletting. |
+| Matlager (varer, mengder, datoer, priser, hva som kastes og hvorfor) | Appens formål | `inventory_*`-tabellene, knyttet til husholdningen | Til varen eller kontoen slettes |
+| Hvem som gjorde en endring | Historikk i husholdningen | `inventory_events.actor_id` | Settes til tom hvis kontoen slettes. Hendelsen blir stående til husholdningen slettes. |
 | IP-adresse | Rate limiting | Bare i minnet i API-prosessen, i 15–60 minutter | Lagres ikke og logges ikke |
 
 Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører lokalt.
@@ -39,7 +51,8 @@ Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører l
 ## Sletting
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
-  Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005).
+  Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005). Fra fase 3 omfatter
+  det hele matlageret og svinnloggen. Dette er testet.
 - Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
 - **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt) og eierskap i delte husholdninger (fase 10).
 

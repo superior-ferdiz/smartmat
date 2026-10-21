@@ -7,7 +7,9 @@
     "loading": "Laster …",
     "retry": "Prøv igjen",
     "close": "Lukk",
-    "sampleData": "Eksempeldata"
+    "sampleData": "Eksempeldata",
+    "cancel": "Avbryt",
+    "save": "Lagre"
   },
   "languages": {
     "nb-NO": "Norsk (bokmål)",
@@ -68,7 +70,8 @@
       "tooLong": "Navnet kan være høyst 50 tegn."
     },
     "itemName": {
-      "required": "Skriv inn navnet på varen."
+      "required": "Skriv inn navnet på varen.",
+      "tooLong": "Navnet kan være høyst 100 tegn."
     },
     "category": {
       "required": "Velg en kategori."
@@ -91,43 +94,46 @@
     },
     "deleteAccount": {
       "confirmRequired": "Kryss av for at du forstår at kontoen slettes for godt."
+    },
+    "nothingToUpdate": "Det er ingenting å lagre.",
+    "unit": {
+      "required": "Velg en enhet."
+    },
+    "location": {
+      "required": "Velg et lagringssted.",
+      "notFound": "Lagringsstedet finnes ikke lenger. Velg et annet.",
+      "kindRequired": "Velg en type sted."
+    },
+    "locationName": {
+      "required": "Skriv inn et navn.",
+      "tooLong": "Navnet kan være høyst 50 tegn."
+    },
+    "quantity": {
+      "required": "Skriv inn en mengde.",
+      "invalid": "Skriv mengden som et tall, for eksempel 1,5.",
+      "notWhole": "Mengden er for nøyaktig. Bruk hele gram, milliliter eller stykk.",
+      "notPositive": "Mengden må være større enn 0.",
+      "tooLarge": "Mengden er for stor.",
+      "moreThanLeft": "Det er ikke så mye igjen i partiet."
+    },
+    "expiry": {
+      "kindRequired": "Velg om datoen er best før eller siste forbruksdag.",
+      "dateRequired": "Skriv inn datoen."
+    },
+    "wasteReason": {
+      "required": "Velg hvorfor maten ble kastet."
     }
   },
   "pages": {
     "overview": {
       "title": "Oversikt",
       "lead": "Det viktigste på kjøkkenet akkurat nå.",
-      "sampleNoticeTitle": "Dette er eksempeldata",
-      "sampleNoticeText": "Appen er ikke koblet til noen database ennå. Varene og tallene under er oppdiktet for å vise hvordan forsiden skal se ut.",
+      "sampleNoticeTitle": "Noe er fortsatt eksempeldata",
+      "sampleNoticeText": "«Går ut snart» og «Kastet denne måneden» viser ditt eget matlager. Budsjettet og middagsforslaget er oppdiktet til de kommer i senere versjoner.",
       "expiring": {
         "title": "Går ut snart",
         "seeAll": "Se hele matlageret",
-        "items": {
-          "chicken": {
-            "name": "Kyllingfilet",
-            "meta": "400 g · Kjøleskap",
-            "status": "Siste forbruksdag i dag",
-            "advice": "Bruk i dag, eller frys ned før dagen er omme."
-          },
-          "mince": {
-            "name": "Kjøttdeig",
-            "meta": "400 g · Kjøleskap",
-            "status": "Siste forbruksdag passert",
-            "advice": "Bør ikke spises. Siste forbruksdag handler om mattrygghet."
-          },
-          "milk": {
-            "name": "Lettmelk",
-            "meta": "1 l · Kjøleskap",
-            "status": "Best før i morgen",
-            "advice": "Best før betyr ofte god lenger. Se, lukt og smak."
-          },
-          "yoghurt": {
-            "name": "Yoghurt naturell",
-            "meta": "500 g · Kjøleskap · Åpnet",
-            "status": "Best før for 2 dager siden",
-            "advice": "Kan ofte fortsatt brukes. Se, lukt og smak før du kaster."
-          }
-        }
+        "none": "Ingenting går ut de neste tre dagene."
       },
       "budget": {
         "title": "Matbudsjett denne måneden",
@@ -150,8 +156,10 @@
       },
       "waste": {
         "title": "Kastet denne måneden",
-        "text_one": "{{count}} vare kastet (estimert verdi)",
-        "text_other": "{{count}} varer kastet (estimert verdi)"
+        "count_one": "{{count}} kassering denne måneden",
+        "count_other": "{{count}} kasseringer denne måneden",
+        "unknown_one": "{{count}} av dem uten kjent verdi",
+        "unknown_other": "{{count}} av dem uten kjent verdi"
       }
     },
     "inventory": {
@@ -369,6 +377,246 @@
     "rateLimited": "For mange forsøk på kort tid. Vent litt og prøv igjen.",
     "notFound": "Fant ikke det du lette etter.",
     "internal": "Noe gikk galt hos oss. Prøv igjen om litt.",
-    "network": "Fikk ikke kontakt med SmartMat. Sjekk nettforbindelsen og prøv igjen."
+    "network": "Fikk ikke kontakt med SmartMat. Sjekk nettforbindelsen og prøv igjen.",
+    "inventory": {
+      "notEnough": "Det er ikke så mye igjen. Last inn siden på nytt og prøv igjen.",
+      "locationNotEmpty": "Stedet har fortsatt varer. Flytt eller bruk dem opp først.",
+      "lastLocation": "Du må ha minst ett lagringssted.",
+      "changedMeanwhile": "Partiet ble endret i mellomtiden. Last inn siden på nytt og prøv igjen.",
+      "nothingToUndo": "Det er ingenting å angre.",
+      "cannotUndo": "Endringen kan ikke angres lenger."
+    }
+  },
+  "units": {
+    "g": "g",
+    "kg": "kg",
+    "ml": "ml",
+    "dl": "dl",
+    "l": "l",
+    "stk": "stk"
+  },
+  "inventory": {
+    "loading": "Henter matlageret …",
+    "addItem": "Legg til vare",
+    "added": "{{name}} er lagt til",
+    "backToList": "Til matlageret",
+    "itemEmpty": "Tom",
+    "unknownLocation": "Ukjent sted",
+    "batchCount_one": "{{count}} parti",
+    "batchCount_other": "{{count}} partier",
+    "count_one": "Viser {{shown}} av {{count}} vare",
+    "count_other": "Viser {{shown}} av {{count}} varer",
+    "empty": {
+      "title": "Matlageret er tomt",
+      "text": "Legg til det du har i kjøleskap, fryser og skap, med datoen fra pakken. Da kan SmartMat si fra før noe går ut."
+    },
+    "noMatch": {
+      "title": "Ingen varer passer",
+      "text": "Prøv et annet søk eller fjern noen filtre."
+    },
+    "summary": {
+      "label": "Holdbarhet",
+      "soon_one": "går ut snart",
+      "soon_other": "går ut snart",
+      "passed_one": "har passert datoen",
+      "passed_other": "har passert datoen",
+      "noDate_one": "mangler dato",
+      "noDate_other": "mangler dato"
+    },
+    "filters": {
+      "search": "Søk",
+      "location": "Sted",
+      "allLocations": "Alle steder",
+      "category": "Kategori",
+      "allCategories": "Alle kategorier",
+      "status": "Holdbarhet",
+      "sort": "Sortering",
+      "showEmpty": "Vis også tomme varer",
+      "reset": "Fjern filtre",
+      "more_zero": "Filtrer og sorter",
+      "more_one": "Filtrer og sorter ({{count}} i bruk)",
+      "more_other": "Filtrer og sorter ({{count}} i bruk)"
+    },
+    "statusFilters": {
+      "alle": "Alle",
+      "snart": "Går ut snart",
+      "passert": "Passert datoen",
+      "uten-dato": "Uten dato"
+    },
+    "sortOptions": {
+      "dato": "Første dato",
+      "navn": "Navn (A–Å)",
+      "nylig": "Sist lagt til"
+    },
+    "categories": {
+      "dairy": "Meieri og egg",
+      "meat": "Kjøtt",
+      "fish": "Fisk og sjømat",
+      "fruitVeg": "Frukt og grønt",
+      "bread": "Brød og bakevarer",
+      "dryGoods": "Tørrvarer",
+      "canned": "Hermetikk",
+      "frozen": "Frossenmat",
+      "spreads": "Pålegg",
+      "spicesSauces": "Krydder og sauser",
+      "drinks": "Drikke",
+      "other": "Annet"
+    },
+    "locationKinds": {
+      "fridge": "Kjøleskap",
+      "freezer": "Fryser",
+      "pantry": "Skap",
+      "other": "Annet sted"
+    },
+    "baseUnits": {
+      "g": "Vekt (g, kg)",
+      "ml": "Volum (ml, dl, l)",
+      "stk": "Antall (stk)"
+    },
+    "expiryKinds": {
+      "none": "Ingen dato",
+      "best_before": "Best før",
+      "use_by": "Siste forbruksdag"
+    },
+    "expiry": {
+      "none": "Uten dato",
+      "bestBefore": {
+        "passed": "Best før passert",
+        "today": "Best før i dag",
+        "soon_one": "Best før i morgen",
+        "soon_other": "Best før om {{count}} dager",
+        "on": "Best før {{date}}"
+      },
+      "useBy": {
+        "passed": "Siste forbruksdag passert",
+        "today": "Siste forbruksdag i dag",
+        "soon_one": "Siste forbruksdag i morgen",
+        "soon_other": "Siste forbruksdag om {{count}} dager",
+        "on": "Siste forbruksdag {{date}}"
+      }
+    },
+    "advice": {
+      "useByPassed": "Bør ikke spises. Siste forbruksdag handler om mattrygghet.",
+      "bestBeforePassed": "Ofte fortsatt god. Se, lukt og smak."
+    },
+    "fields": {
+      "name": "Navn på varen",
+      "nameHint": "For eksempel «Lettmelk» eller «Kyllingfilet».",
+      "category": "Kategori",
+      "categoryPlaceholder": "Velg kategori",
+      "baseUnit": "Måles i",
+      "baseUnitHint": "Kan ikke endres senere.",
+      "amount": "Mengde",
+      "unit": "Enhet",
+      "location": "Lagringssted",
+      "locationPlaceholder": "Velg sted",
+      "expiryKind": "Dato på pakken",
+      "expiryKindHint": "Siste forbruksdag gjelder mattrygghet, best før gjelder kvalitet.",
+      "expiryDate": "Dato",
+      "price": "Pris",
+      "priceHint": "For hele pakken. Brukes til å anslå verdien av mat som kastes.",
+      "purchasedOn": "Kjøpt"
+    },
+    "new": {
+      "title": "Legg til vare",
+      "lead": "Skriv inn det som står på pakken.",
+      "submit": "Legg til"
+    },
+    "item": {
+      "notFoundTitle": "Fant ikke varen",
+      "notFoundText": "Den kan ha blitt slettet.",
+      "edit": "Endre navn",
+      "editTitle": "Endre vare",
+      "delete": "Slett vare",
+      "deleteTitle": "Slette {{name}}?",
+      "deleteText": "Varen, alle partier og hele historikken slettes. Bruk «Kast» hvis maten ble kastet – da telles det som svinn.",
+      "deleteConfirm": "Slett varen",
+      "deleted": "{{name}} er slettet"
+    },
+    "batch": {
+      "title": "Partier",
+      "none": "Ingen partier igjen. Legg til et nytt parti når du kjøper varen igjen.",
+      "label": "Parti {{number}}",
+      "add": "Legg til parti",
+      "addTitle": "Nytt parti av {{name}}",
+      "added": "Partiet er lagt til",
+      "consume": "Bruk",
+      "discard": "Kast",
+      "edit": "Rediger",
+      "editTitle": "Rediger parti",
+      "saved": "Partiet er lagret",
+      "delete": "Slett",
+      "deleteTitle": "Slette partiet?",
+      "deleteText": "Partiet og historikken for det slettes. Bruk «Kast» hvis maten ble kastet.",
+      "deleteConfirm": "Slett partiet"
+    },
+    "take": {
+      "all": "Alt ({{quantity}})"
+    },
+    "consume": {
+      "title": "Bruk {{name}}",
+      "submit": "Registrer bruk",
+      "done": "Brukt: {{quantity}}"
+    },
+    "discard": {
+      "title": "Kast {{name}}",
+      "description": "Det du kaster, føres i svinnloggen.",
+      "reason": "Hvorfor ble det kastet?",
+      "reasonPlaceholder": "Velg årsak",
+      "value": "Verdi",
+      "valueHintEstimated": "Står feltet tomt, anslås verdien ut fra prisen på pakken.",
+      "valueHintUnknown": "Partiet har ingen pris. Står feltet tomt, føres verdien som ukjent.",
+      "submit": "Registrer kassering",
+      "done": "Kastet: {{quantity}}"
+    },
+    "wasteReasons": {
+      "expired": "Gått ut på dato",
+      "spoiled": "Ødelagt eller muggen",
+      "leftovers": "Matrester",
+      "tooMuch": "Kjøpt for mye",
+      "other": "Annet"
+    },
+    "history": {
+      "title": "Historikk",
+      "undoLast": "Angre siste endring",
+      "undone": "Endringen er angret",
+      "undoneTag": "Angret",
+      "add": "La til {{quantity}}",
+      "consume": "Brukte {{quantity}}",
+      "discard": "Kastet {{quantity}} ({{reason}})",
+      "move": "Flyttet fra {{from}} til {{to}}",
+      "adjustUp": "Rettet mengden: {{quantity}} mer",
+      "adjustDown": "Rettet mengden: {{quantity}} mindre",
+      "undo": "Angret: {{what}}",
+      "types": {
+        "add": "lagt til",
+        "consume": "brukt",
+        "discard": "kastet",
+        "move": "flyttet",
+        "adjust": "rettet mengde",
+        "undo": "angret"
+      },
+      "valueActual": "verdi {{value}}",
+      "valueEstimated": "anslått verdi {{value}}",
+      "valueUnknown": "verdi ukjent",
+      "deletedUser": "Slettet bruker"
+    },
+    "locations": {
+      "manage": "Lagringssteder",
+      "title": "Lagringssteder",
+      "lead": "Hvor maten står. Du kan legge til egne steder, som «Kjeller» eller «Bod».",
+      "add": "Nytt sted",
+      "name": "Navn",
+      "nameHint": "For eksempel «Kjeller».",
+      "rename": "Gi nytt navn",
+      "renameTitle": "Gi nytt navn",
+      "delete": "Slett",
+      "deleteTitle": "Slette {{name}}?",
+      "deleteText": "Et sted kan bare slettes når det er tomt. Historikken for varer som har vært der, beholdes.",
+      "deleteConfirm": "Slett stedet",
+      "deleted": "Stedet er slettet",
+      "batchCount_one": "{{count}} parti",
+      "batchCount_other": "{{count}} partier"
+    }
   }
 }

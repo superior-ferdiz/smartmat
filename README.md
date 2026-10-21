@@ -9,9 +9,9 @@ Applikasjonsutvikling for web (USN, 2026/2027), med KI-assistert og spesifikasjo
 
 ## Status
 
-**Fase 2 – database og autentisering** er implementert (2026-10-20, grenen `fase-2`). Appen har registrering,
-innlogging, profil og sletting av konto, mot et eget API og PostgreSQL. Sidene for matlager, budsjett osv. er fortsatt
-plassholdere. Se [veikartet](docs/development/roadmap.md).
+**Fase 3 – matlager** er implementert (2026-10-21, grenen `fase-3`). Appen har innlogging, et ekte matlager
+med partier, holdbarhet, forbruk, kassering (svinnlogg) og angre, og en forside med ekte data. Budsjett, oppskrifter
+osv. er fortsatt plassholdere. Se [veikartet](docs/development/roadmap.md).
 
 ## Dokumentasjon
 

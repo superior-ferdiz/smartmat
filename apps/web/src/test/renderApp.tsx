@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { vi } from 'vitest';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { ReactElement } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
@@ -7,6 +8,7 @@ import { Providers } from '../app/Providers';
 import { createQueryClient } from '../app/queryClient';
 import { routes } from '../app/routes';
 import { setSession } from '../auth/session';
+import { defaultApi, mockApi } from './mockApi';
 
 export const TEST_SESSION: SessionResponse = {
   user: {
@@ -32,6 +34,8 @@ export interface RenderAppOptions {
  * The session is put in the cache up front, so pages render without a real API.
  */
 export function renderApp(path = '/', { session = TEST_SESSION }: RenderAppOptions = {}) {
+  // Pages fetch data now (phase 3). Unless the test mocked the API itself, answer with empty defaults.
+  if (!vi.isMockFunction(globalThis.fetch)) mockApi(defaultApi);
   const queryClient = createQueryClient();
   if (session !== 'ask-api') setSession(queryClient, session);
   const router = createMemoryRouter(routes, { initialEntries: [path] });

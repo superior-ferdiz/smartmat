@@ -4,8 +4,9 @@
 // Conventions:
 // - Table and column names in the database are snake_case (@@map / @map); Prisma models use camelCase.
 // - IDs are UUIDs, so they cannot be guessed or counted.
-// - Every household-owned table gets a household_id (ADR-0008). Phase 2 has no such tables yet,
-//   only the household itself and its members.
+// - Every household-owned table gets a household_id (ADR-0008). Child tables repeat it and point to their
+//   parent with a composite foreign key (id, household_id), so the database itself refuses to link rows
+//   from two different households.
 
 generator client {
   provider = "prisma-client"
@@ -38,8 +39,9 @@ model User {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  sessions    Session[]
-  memberships HouseholdMember[]
+  sessions        Session[]
+  memberships     HouseholdMember[]
+  inventoryEvents InventoryEvent[]
 
   @@map("users")
 }
@@ -50,7 +52,11 @@ model Household {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  members HouseholdMember[]
+  members          HouseholdMember[]
+  storageLocations StorageLocation[]
+  inventoryItems   InventoryItem[]
+  inventoryBatches InventoryBatch[]
+  inventoryEvents  InventoryEvent[]
 
   @@map("households")
 }
@@ -87,4 +93,174 @@ model Session {
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+// ─── Phase 3: inventory (spec 03) ──────────────────────────────────────────────────────────────
+
+enum LocationKind {
+  fridge
+  freezer
+  pantry
+  other
+
+  @@map("location_kind")
+}
+
+enum ExpiryKind {
+  best_before
+  use_by
+
+  @@map("expiry_kind")
+}
+
+enum InventoryEventType {
+  add
+  consume
+  discard
+  move
+  adjust
+  undo
+
+  @@map("inventory_event_type")
+}
+
+enum WasteReason {
+  expired
+  spoiled
+  leftovers
+  tooMuch   @map("too_much")
+  other
+
+  @@map("waste_reason")
+}
+
+enum WasteValueBasis {
+  actual
+  estimated
+  unknown
+
+  @@map("waste_value_basis")
+}
+
+enum BaseUnit {
+  g
+  ml
+  stk
+
+  @@map("base_unit")
+}
+
+/// Global list, seeded by the migration. The app translates the key ("dairy" → "Meieri og egg").
+model Category {
+  key       String @id @db.VarChar(32)
+  sortOrder Int    @map("sort_order")
+
+  items InventoryItem[]
+
+  @@map("categories")
+}
+
+model StorageLocation {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  householdId String       @map("household_id") @db.Uuid
+  kind        LocationKind
+  /// null for the default locations; the app shows the translated kind instead.
+  name        String?      @db.VarChar(50)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  batches   InventoryBatch[]
+  movedFrom InventoryEvent[] @relation("EventFromLocation")
+  movedTo   InventoryEvent[] @relation("EventToLocation")
+
+  @@unique([id, householdId])
+  @@index([householdId])
+  @@map("storage_locations")
+}
+
+/// What the household has ("Lettmelk"). Free-text name until the product catalogue arrives (phase 7).
+model InventoryItem {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  householdId String   @map("household_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  categoryKey String   @map("category_key") @db.VarChar(32)
+  unit        BaseUnit
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  category  Category         @relation(fields: [categoryKey], references: [key])
+  batches   InventoryBatch[]
+  events    InventoryEvent[]
+
+  @@unique([id, householdId])
+  @@index([householdId])
+  @@map("inventory_items")
+}
+
+/// One physical pack or purchase of an item, with its own quantity, place and date.
+model InventoryBatch {
+  id                  String      @id @default(uuid(7)) @db.Uuid
+  householdId         String      @map("household_id") @db.Uuid
+  itemId              String      @map("item_id") @db.Uuid
+  locationId          String      @map("location_id") @db.Uuid
+  /// Whole grams / millilitres / pieces (ADR-0006). 0 = used up (hidden, kept for history).
+  quantityBase        Int         @map("quantity_base")
+  initialQuantityBase Int         @map("initial_quantity_base")
+  expiryKind          ExpiryKind? @map("expiry_kind")
+  expiryDate          DateTime?   @map("expiry_date") @db.Date
+  /// Price for the whole batch in øre, used to estimate the value of food thrown away.
+  priceOre            Int?        @map("price_ore")
+  purchasedOn         DateTime?   @map("purchased_on") @db.Date
+  createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  item      InventoryItem    @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
+  /// NO ACTION (checked at the end of the statement): deleting a household cascades to both batches and
+  /// locations, and a RESTRICT here could fire before the batches are gone. Deleting a location that still
+  /// has batches is still refused.
+  location  StorageLocation  @relation(fields: [locationId, householdId], references: [id, householdId], onDelete: NoAction)
+  events    InventoryEvent[]
+
+  @@index([householdId])
+  @@index([itemId])
+  @@index([locationId])
+  @@map("inventory_batches")
+}
+
+/// Append-only history of every change to the inventory, and the food-waste log (type = discard).
+model InventoryEvent {
+  id              String             @id @default(uuid(7)) @db.Uuid
+  /// Strict order of events ("the last event" for undo), also when two happen in the same millisecond.
+  seq             BigInt             @unique @default(autoincrement())
+  householdId     String             @map("household_id") @db.Uuid
+  itemId          String             @map("item_id") @db.Uuid
+  /// null if the batch was deleted later (e.g. its location was removed while empty).
+  batchId         String?            @map("batch_id") @db.Uuid
+  type            InventoryEventType
+  /// Change in base units: +added, −used/discarded, ±adjusted, 0 for a move.
+  deltaBase       Int                @map("delta_base")
+  fromLocationId  String?            @map("from_location_id") @db.Uuid
+  toLocationId    String?            @map("to_location_id") @db.Uuid
+  actorId         String?            @map("actor_id") @db.Uuid
+  /// For type = undo: the event it reverted. Unique, so an event can only be undone once.
+  revertsEventId  String?            @unique @map("reverts_event_id") @db.Uuid
+  wasteReason     WasteReason?       @map("waste_reason")
+  wasteValueOre   Int?               @map("waste_value_ore")
+  wasteValueBasis WasteValueBasis?   @map("waste_value_basis")
+  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household    Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  item         InventoryItem    @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
+  batch        InventoryBatch?  @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  fromLocation StorageLocation? @relation("EventFromLocation", fields: [fromLocationId], references: [id], onDelete: SetNull)
+  toLocation   StorageLocation? @relation("EventToLocation", fields: [toLocationId], references: [id], onDelete: SetNull)
+  actor        User?            @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  revertsEvent InventoryEvent?  @relation("Undo", fields: [revertsEventId], references: [id], onDelete: Cascade)
+  revertedBy   InventoryEvent?  @relation("Undo")
+
+  @@index([householdId, createdAt])
+  @@index([itemId, createdAt])
+  @@map("inventory_events")
 }

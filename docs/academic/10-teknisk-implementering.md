@@ -1,6 +1,6 @@
 # Teknisk implementering
 
-> **Status: UTKAST.** Skrevet etter fase 1 og fase 2 (2026-10-20). Koden og teksten er skrevet av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20) og 3 (2026-10-21). Koden og teksten er skrevet av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides i senere faser. Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Oversikt (fase 1)
@@ -211,6 +211,72 @@ valideringsmeldinger. En test sjekker at alle feilkoder API-et kan returnere, fi
 - CSRF-tokenet ligger bare i minnet og sendes med i headeren `X-CSRF-Token` på POST/PATCH/DELETE (`api/client.ts`).
 - Vite videresender `/api` til API-et, både i utvikling (`npm run dev`) og i `vite preview` (Playwright).
 
+## Fase 3: matlageret
+
+```
+apps/api/src/modules/
+├── inventory/   routes, service (regler: angre, verdi av kassert mat), repo (transaksjoner)
+└── locations/   lagringssteder og kategorier
+packages/shared/src/
+├── quantity/    parseQuantity/formatQuantity, expiryStatus
+├── dates/       «i dag» i Europe/Oslo, månedsgrenser
+└── money/waste  verdiestimat med BigInt
+apps/web/src/
+├── inventory/   API-hooks, filtrering, formatering, felt for parti
+├── components/Dialog/
+└── pages/inventory/  Matlager, Ny vare, Vare, Lagringssteder
+```
+
+## Eksempel 10: mengder uten flyttall
+
+`parseQuantity("1,5", "kg")` gir `1500` (gram). Funksjonen regner på sifrene som tekst, slik `parseOre` gjør:
+
+```ts
+// (whole + fraction/scale) × factor must be an integer, i.e. fraction × factor divisible by scale.
+const fractionPart = Number(fraction || '0') * factor;
+if (fractionPart % scale !== 0) return { ok: false, error: 'validation.quantity.notWhole' };
+```
+
+«1,2345 kg» avvises i stedet for å bli rundet av til 1234 g. En test sjekker at hver formaterte mengde kan leses
+tilbake til nøyaktig samme tall.
+
+## Eksempel 11: samtidige forespørsler kan ikke gi negativ mengde
+
+Forbruk og kassering trekker fra med en betingelse i selve SQL-setningen:
+
+```ts
+const { count } = await tx.inventoryBatch.updateMany({
+  where: { id: batch.id, householdId, quantityBase: { gte: quantity } },
+  data: { quantityBase: { decrement: quantity } },
+});
+if (count === 0) return 'notEnough';
+```
+
+Hvis koden først leste mengden og så skrev den nye, kunne to samtidige klikk begge sett «500 igjen». En test
+sender ti forespørsler samtidig mot et parti på 500 g, der hver tar 100 g. Nøyaktig fem lykkes, og mengden ender
+på 0.
+
+## Eksempel 12: «i dag» i Norge
+
+`expiryStatus` sammenligner kalenderdatoer, og «i dag» regnes i tidssonen Europe/Oslo med `Intl.DateTimeFormat`.
+Klokken 01:30 norsk tid er det fortsatt gårsdagen i UTC. Hadde vi brukt UTC, ville en vare med siste forbruksdag
+«i går» blitt vist som «i dag» den første timen etter midnatt. Testene dekker midnatt, nyttår og overgangen
+mellom sommer- og vintertid. Svinnoppsummeringen bruker samme regel i SQL:
+`(dato)::timestamp AT TIME ZONE 'Europe/Oslo'`.
+
+## Eksempel 13: filtrering i nettleseren (KURS-03)
+
+Lageret hentes én gang, og søk, filtre og sortering skjer i nettleseren med rene funksjoner (`inventory/filter.ts`).
+Valgene ligger i URL-en (`?q=melk&status=snart`), slik at visningen kan deles og overlever omlasting. Navn
+sorteres med `Intl.Collator('nb-NO')`, så Æ, Ø og Å kommer sist.
+
+## Eksempel 14: dialog med `<dialog>`
+
+`components/Dialog` bruker HTML-elementet `<dialog>` med `showModal()`. Nettleseren gjør da resten av siden
+utilgjengelig, Esc lukker dialogen, og fokus går tilbake til knappen som åpnet den. Dette er testet i Playwright,
+fordi jsdom ikke har `showModal`. Testoppsettet har en enkel erstatning som bare setter `open`. På telefon vises
+dialogen som et ark nederst på skjermen.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
@@ -219,7 +285,8 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
 ## Kjente begrensninger etter fase 2
 
-- **Bundle på 566 kB** (177 kB gzip) i én fil, opp fra 517 kB i fase 1. Vite advarer om dette. Kodedeling per side, eventuelt `zod/mini`,
+- **Bundle på 619 kB** (191 kB gzip) i én fil, opp fra 566 kB i fase 2 og 517 kB i fase 1. Vite advarer om dette.
+  Kodedeling per side bør vurderes snart. Kodedeling per side, eventuelt `zod/mini`,
   vurderes når appen har ekte sider.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Bør sjekkes på nytt i fase 13.
@@ -238,5 +305,6 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
   [ADR-0003](../development/architecture-decisions/0003-postgresql-prisma.md),
   [ADR-0005](../development/architecture-decisions/0005-sesjoner-og-argon2id.md),
   [ADR-0008](../development/architecture-decisions/0008-husholdning-fra-start.md)
-- [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md)
+- [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md),
+  [fasespesifikasjon 03](../development/requirements/03-matlager.md)
 - [Testbevis fase 1](../evidence/test-results/fase-1/), [testbevis fase 2](../evidence/test-results/fase-2/)
