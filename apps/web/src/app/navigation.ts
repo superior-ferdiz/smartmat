@@ -43,6 +43,9 @@ export const SECTIONS: readonly NavSection[] = [
 
 export const MORE_PATH = '/mer';
 export const DESIGN_SYSTEM_PATH = '/designsystem';
+export const LOGIN_PATH = '/logg-inn';
+export const REGISTER_PATH = '/registrer';
+export const PROFILE_PATH = '/profil';
 
 export const BOTTOM_NAV_SECTIONS = SECTIONS.filter((section) => section.inBottomNav);
 export const MORE_SECTIONS = SECTIONS.filter((section) => !section.inBottomNav);

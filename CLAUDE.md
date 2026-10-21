@@ -6,7 +6,8 @@ It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN
 
 - **Team:** Ferdinand Risan and Linus Saxe Huseby. Never name anyone else as a contributor.
 - **Environment:** local development only (no hosting, no domain yet). Git since 2026-10-20 (ADR-0013): private repo
-  `git@github.com:superior-ferdiz/smartmat.git`, branch `main`. Commits from this server carry Ferdinand's identity, so
+  `git@github.com:superior-ferdiz/smartmat.git`, branch `main`; one branch per phase (`fase-2`), the team opens and
+  approves the pull request on GitHub. Commits from this server carry Ferdinand's identity, so
   AI-written changes must include a `Co-Authored-By: Claude` trailer. Commit/push only when asked; never commit secrets.
 - **Server note:** this machine also hosts other production sites. Never `pkill` by name, never touch other
   projects' containers, check `df -h /` before Docker builds (disk has been full before).
@@ -64,6 +65,25 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - Sections/menus come from `apps/web/src/app/navigation.ts`.
 - Write `\u00A0`/`\u2212` escapes in source, never the literal invisible characters.
 - Evidence: save real output under `docs/evidence/test-results/fase-N/`; screenshots via `SCREENSHOTS=1 npx playwright test screenshots`.
+
+## Code conventions (added in phase 2)
+
+- Local services: Postgres `127.0.0.1:55432` (container `smartmat-postgres`, volume `smartmat_pgdata`, DBs `smartmat`,
+  `smartmat_test`, `smartmat_e2e`), API `127.0.0.1:3100` (Playwright's own API on 3101), web 5173 proxies `/api`.
+  Secrets only in `.env` (see `.env.example`). `npm run db:up` / `db:stop` / `db:migrate`; never `down -v`.
+- Prisma 7.10.1 (`prisma@latest` was an 8.0 RC): `prisma.config.ts` at the root, driver adapter `@prisma/adapter-pg`,
+  client generated to `apps/api/src/generated/` (git-ignored, `postinstall` runs `prisma generate`).
+  CHECK constraints go as raw SQL at the end of a migration.
+- API modules: `routes.ts` (HTTP) / `service.ts` (rules, depends on a repo *interface*) / `repo.ts` (Prisma).
+  Unit-test services with `src/test/fakes.ts`; API tests in `apps/api/test/` use the real test DB (`npm run test:api`).
+- **Household data:** every route uses `preHandler: [requireAuth, householdAccess]` with `:householdId` in the URL and
+  reads `householdOf(request).id`; non-member → 404. Repos take `householdId` as a required argument.
+- Errors: throw `AppError(status, API_ERRORS.x, fields?)`; codes are i18n keys in `packages/shared/src/api/errors.ts`
+  and must exist in both locale files (tested). Never put input values/PII in errors or logs.
+- Web: `apiFetch` (`api/client.ts`) adds the CSRF header; session via `useSession`; pages with user data go under
+  `RequireAuth` in `routes.tsx`. Web unit tests: `renderApp(path, { session })` + `mockApi()` for fetch.
+- E2E: import `test` from `e2e/fixtures.ts` (logged-in worker user); use `isolatedAccount: true` for tests that change
+  the account and `storageState: LOGGED_OUT` for logged-out tests.
 
 ## Integrity rules (non-negotiable)
 

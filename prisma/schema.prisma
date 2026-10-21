@@ -1,0 +1,90 @@
+// SmartMat database schema. This file is the source of truth for the data model
+// (docs/development/data-model.md describes the plan and the reasons).
+//
+// Conventions:
+// - Table and column names in the database are snake_case (@@map / @map); Prisma models use camelCase.
+// - IDs are UUIDs, so they cannot be guessed or counted.
+// - Every household-owned table gets a household_id (ADR-0008). Phase 2 has no such tables yet,
+//   only the household itself and its members.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../apps/api/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum HouseholdRole {
+  owner
+  member
+
+  @@map("household_role")
+}
+
+model User {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  /// Stored trimmed and in lower case, so "Ola@Example.no" and "ola@example.no" are the same account.
+  email            String    @unique @db.VarChar(254)
+  /// argon2id hash (ADR-0005). The password itself is never stored.
+  passwordHash     String    @map("password_hash")
+  displayName      String    @map("display_name") @db.VarChar(50)
+  /// "nb-NO" or "en" (CHECK constraint in the migration).
+  locale           String    @default("nb-NO") @db.VarChar(10)
+  /// FR-AUTH-003: failed logins in a row, and when the account may try again after too many.
+  failedLoginCount Int       @default(0) @map("failed_login_count")
+  loginLockedUntil DateTime? @map("login_locked_until") @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  sessions    Session[]
+  memberships HouseholdMember[]
+
+  @@map("users")
+}
+
+model Household {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  members HouseholdMember[]
+
+  @@map("households")
+}
+
+model HouseholdMember {
+  householdId String        @map("household_id") @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  role        HouseholdRole
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([householdId, userId])
+  @@index([userId])
+  @@map("household_members")
+}
+
+model Session {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  /// SHA-256 of the random session token in the cookie (hex). The token itself is never stored,
+  /// so a copy of the database cannot be used to log in.
+  tokenHash  String   @unique @map("token_hash") @db.Char(64)
+  userId     String   @map("user_id") @db.Uuid
+  /// Sent back by the browser in the X-CSRF-Token header on changing requests.
+  csrfToken  String   @map("csrf_token") @db.VarChar(64)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastSeenAt DateTime @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  /// The earlier of "14 days after last use" and "30 days after login". Moved forward on use.
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}

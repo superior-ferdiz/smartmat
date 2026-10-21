@@ -75,6 +75,22 @@
     },
     "date": {
       "invalid": "Enter a valid date."
+    },
+    "email": {
+      "required": "Enter your email address.",
+      "invalid": "Enter a valid email address, for example name@example.com.",
+      "tooLong": "The email address can be at most 254 characters."
+    },
+    "password": {
+      "required": "Enter the password.",
+      "tooShort": "The password must be at least 12 characters.",
+      "tooLong": "The password can be at most 128 characters."
+    },
+    "profile": {
+      "nothingToUpdate": "There is nothing to save."
+    },
+    "deleteAccount": {
+      "confirmRequired": "Tick the box to confirm that you understand the account is deleted for good."
     }
   },
   "pages": {
@@ -193,7 +209,7 @@
       "saved": "Setting saved",
       "appearance": "Language and appearance",
       "language": "Language",
-      "languageHint": "Only applies to this browser.",
+      "languageHint": "Saved to your account.",
       "theme": "Theme",
       "themeHint": "Automatic follows your device setting.",
       "themes": {
@@ -202,9 +218,11 @@
         "dark": "Dark"
       },
       "account": "Account",
-      "accountLater": "Login, profile and account deletion arrive in phase 2.",
       "developer": "For developers",
-      "developerText": "Overview of the colours, typography and components used in SmartMat."
+      "developerText": "Overview of the colours, typography and components used in SmartMat.",
+      "loggedInAs": "Logged in as {{name}} ({{email}}).",
+      "openProfile": "Profile and account",
+      "saveFailed": "Could not save the setting. Try again."
     },
     "notFound": {
       "title": "Page not found",
@@ -280,6 +298,77 @@
         "loading": "Loading the pantry …"
       },
       "retried": "Trying again (example)"
+    },
+    "profile": {
+      "title": "Profile",
+      "lead": "Name, language, password and account.",
+      "about": "About you",
+      "save": "Save",
+      "saved": "Your profile is saved",
+      "password": {
+        "title": "Change password",
+        "current": "Current password",
+        "new": "New password",
+        "otherDevices": "Changing your password logs you out on all other devices.",
+        "submit": "Change password",
+        "changed": "Password changed. Other devices have been logged out."
+      },
+      "logout": {
+        "title": "Log out",
+        "text": "Ends your login in this browser."
+      },
+      "delete": {
+        "title": "Delete account",
+        "text": "Your account, your household and everything stored in it are deleted for good. This cannot be undone.",
+        "password": "Enter your password to confirm",
+        "confirm": "I understand that everything is deleted and cannot be restored",
+        "submit": "Delete my account for good",
+        "deleted": "Your account has been deleted."
+      }
     }
+  },
+  "auth": {
+    "checkingSession": "Checking your login …",
+    "sessionCheckFailed": "We could not check whether you are logged in. Check your connection and try again.",
+    "logout": "Log out",
+    "fields": {
+      "displayName": "Name",
+      "email": "Email address",
+      "password": "Password"
+    },
+    "login": {
+      "title": "Log in",
+      "lead": "Welcome back to SmartMat.",
+      "submit": "Log in",
+      "noAccount": "No account yet?",
+      "createAccount": "Create an account"
+    },
+    "register": {
+      "title": "Create an account",
+      "lead": "Keep track of your food, throw away less and stay on budget.",
+      "displayNameHint": "Shown in the app. You can change it later.",
+      "passwordHint": "At least {{min}} characters. Tip: a short sentence is easy to remember and hard to guess.",
+      "householdNote": "You get your own household when you create an account. Sharing with others comes in a later version.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in"
+    }
+  },
+  "errors": {
+    "validation": "Something in the form needs fixing.",
+    "auth": {
+      "invalidCredentials": "Wrong email address or password. After five mistakes in a row you have to wait 15 minutes before trying again.",
+      "emailTaken": "There is already an account with this email address. Log in instead.",
+      "wrongPassword": "The password is wrong.",
+      "unauthenticated": "You are no longer logged in. Please log in again."
+    },
+    "security": {
+      "forbiddenOrigin": "The request was blocked for security reasons. Reload the page and try again.",
+      "invalidCsrf": "The request was blocked for security reasons. Reload the page and try again."
+    },
+    "rateLimited": "Too many attempts in a short time. Wait a little and try again.",
+    "notFound": "We could not find what you were looking for.",
+    "internal": "Something went wrong on our side. Try again in a moment.",
+    "network": "Could not reach SmartMat. Check your connection and try again."
   }
 }

@@ -1,6 +1,6 @@
 # Teknisk implementering
 
-> **Status: UTKAST.** Første del skrevet etter fase 1 (2026-10-20). Koden og teksten er skrevet av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1 og fase 2 (2026-10-20). Koden og teksten er skrevet av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides i senere faser. Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Oversikt (fase 1)
@@ -123,20 +123,110 @@ Norsk er alltid standard. Vi gjetter ikke språk fra nettleseren, fordi målgrup
 `apps/web/src/app/navigation.ts` beskriver de 9 seksjonene (sti, ikon, om de står i bunnmenyen, om de kommer
 senere). Sidemenyen, bunnmenyen og «Mer»-siden lages alle fra denne listen. En ny seksjon legges altså til ett sted.
 
+## Fase 2: API, database og innlogging
+
+| Del | Teknologi | Versjon |
+|---|---|---|
+| API | Fastify, fastify-type-provider-zod, @fastify/cookie, @fastify/rate-limit, @fastify/helmet | 5.12 / 7.0 / 11.1 / 11.2 / 13.2 |
+| Database | PostgreSQL i Docker (`postgres:16-alpine`) | 16 |
+| ORM og migreringer | Prisma med driver-adapter for node-postgres | 7.10 |
+| Passord | argon2 (argon2id) | 0.45 |
+| Kjøring | tsx (TypeScript direkte, uten byggesteg) | 4.23 |
+
+```
+apps/api/
+├── src/
+│   ├── app.ts            setter sammen API-et (brukes av server.ts og testene)
+│   ├── server.ts         starter API-et på 127.0.0.1:3100
+│   ├── config.ts         leser og sjekker .env
+│   ├── plugins/          origin.ts, auth.ts (sesjon/CSRF), errors.ts
+│   ├── authz/            household.ts – autorisasjonsmønsteret
+│   └── modules/          auth, profile, households, health – hver med routes/service/repo
+├── test/                 API-tester mot ekte database
+└── scripts/e2e-server.ts API-instans for Playwright
+prisma/                   schema.prisma og migreringer
+docker/compose.yml        Postgres for lokal utvikling
+```
+
+**Versjoner:** `npm install prisma@latest` ville gitt en release-kandidat (8.0.0-rc), fordi Prisma hadde satt den som
+`latest`. Vi bruker siste stabile, 7.10.1. Prisma 7 leser ikke `.env` selv, så `prisma.config.ts` laster filen med
+Node sin innebygde `process.loadEnvFile` (ingen ekstra pakke).
+
+## Eksempel 6: autorisasjon for husholdningsdata
+
+Alle ruter for husholdningsdata bruker det samme mønsteret (`apps/api/src/authz/household.ts`):
+
+```ts
+app.get('/households/:householdId', { preHandler: [requireAuth, householdAccess] }, async (request) => {
+  const access = householdOf(request); // { id, role } – sjekket mot databasen
+  ...
+});
+```
+
+`householdAccess` slår opp om den innloggede brukeren er medlem av husholdningen i URL-en. Er brukeren ikke medlem,
+svarer API-et 404, akkurat som for en husholdning som ikke finnes. Med 403 kunne en angriper lært at ID-en finnes.
+Rutekoden bruker bare `request.household.id`, aldri en ID fra forespørselens kropp.
+
+## Eksempel 7: samme svar ved feil passord, ukjent e-post og sperret konto
+
+```ts
+if (!user || isLocked(user.loginLockedUntil, now)) {
+  await hasher.verify(await this.getDummyHash(), input.password); // like mye arbeid
+  throw new AppError(401, API_ERRORS.invalidCredentials);
+}
+```
+
+argon2id tar merkbar tid med vilje. Hvis API-et svarte raskt for ukjente e-postadresser, kunne man målt svartiden og
+funnet ut hvem som har konto. Derfor sjekkes passordet mot en dummy-hash også da.
+
+## Eksempel 8: sesjoner som kan trekkes tilbake
+
+Nettleseren får et tilfeldig token på 256 bit i en `HttpOnly`-cookie. Databasen lagrer bare SHA-256 av tokenet. Ved
+hver forespørsel hashes cookien og slås opp. Utlogging og passordbytte sletter rader, og da virker sesjonen ikke
+lenger. Det kan ikke gjøres med en JWT som ligger hos klienten (ADR-0005).
+
+Sesjonen utløper 14 dager etter siste bruk. Bruken skrives tilbake til databasen høyst hvert femte minutt. Uansett
+bruk utløper sesjonen 30 dager etter innlogging. Cookien varer til den absolutte grensen på 30 dager. Den skal ikke
+følge grensen for inaktivitet, for da ville nettleseren kastet den mens sesjonen fortsatt var gyldig. Den feilen ble
+funnet i en røyktest under implementeringen (kapittel 11).
+
+## Eksempel 9: feilmeldinger som i18n-nøkler
+
+API-et svarer aldri med ferdig tekst, bare med koder:
+
+```json
+{ "error": { "code": "errors.validation", "fields": { "email": "validation.email.invalid" } } }
+```
+
+Kodene ligger i `packages/shared/src/api/errors.ts`. Web-appen oversetter dem med samme oppslag som for
+valideringsmeldinger. En test sjekker at alle feilkoder API-et kan returnere, finnes på norsk og engelsk.
+
+## Innlogging i web-appen
+
+- `useSession` (TanStack Query) spør `GET /api/v1/auth/session`. `null` betyr «ikke innlogget».
+- `RequireAuth` omslutter alle sider med brukerdata. `GuestOnly` omslutter innlogging og registrering, og sender
+  innloggede brukere videre til `?neste`. Det er også dette som flytter brukeren videre rett etter innlogging.
+- Får en forespørsel svaret «ikke innlogget» (for eksempel fordi sesjonen gikk ut i en annen fane), settes sesjonen
+  til `null` i hurtigbufferen (`queryClient.ts`), og brukeren sendes til innlogging.
+- CSRF-tokenet ligger bare i minnet og sendes med i headeren `X-CSRF-Token` på POST/PATCH/DELETE (`api/client.ts`).
+- Vite videresender `/api` til API-et, både i utvikling (`npm run dev`) og i `vite preview` (Playwright).
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
 (privat modus, strenge personvernvalg). Appen virker da fortsatt, men valget gjelder bare til siden lastes på nytt.
 Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
-## Kjente begrensninger etter fase 1
+## Kjente begrensninger etter fase 2
 
-- **Bundle på 517 kB** (163 kB gzip) i én fil. Vite advarer om dette. Kodedeling per side, eventuelt `zod/mini`,
+- **Bundle på 566 kB** (177 kB gzip) i én fil, opp fra 517 kB i fase 1. Vite advarer om dette. Kodedeling per side, eventuelt `zod/mini`,
   vurderes når appen har ekte sider.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Bør sjekkes på nytt i fase 13.
 - `exactOptionalPropertyTypes` ble prøvd i TypeScript-oppsettet og fjernet igjen, fordi den gjorde det tungvint å
   sende valgfrie props videre i React.
+- API-et kjøres med tsx uten byggesteg. Det holder lokalt. Et produksjonsbygg kommer i fase 13.
+- Den genererte Prisma-klienten (`apps/api/src/generated/`) er ikke i Git. Den lages av `npm install` (`postinstall`).
 
 ## Kilder i prosjektet
 
@@ -144,4 +234,9 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
   [ADR-0004](../development/architecture-decisions/0004-ren-css-uten-tailwind.md),
   [ADR-0006](../development/architecture-decisions/0006-penger-og-mengder-som-heltall.md)
 - [Fasespesifikasjon 01](../development/requirements/01-designsystem-og-app-skall.md)
-- [Testbevis fase 1](../evidence/test-results/fase-1/)
+- [ADR-0002](../development/architecture-decisions/0002-fastify-rest-api.md),
+  [ADR-0003](../development/architecture-decisions/0003-postgresql-prisma.md),
+  [ADR-0005](../development/architecture-decisions/0005-sesjoner-og-argon2id.md),
+  [ADR-0008](../development/architecture-decisions/0008-husholdning-fra-start.md)
+- [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md)
+- [Testbevis fase 1](../evidence/test-results/fase-1/), [testbevis fase 2](../evidence/test-results/fase-2/)

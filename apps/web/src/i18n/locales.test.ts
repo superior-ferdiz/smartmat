@@ -4,7 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import nb from './locales/nb-NO.json';
 import en from './locales/en.json';
-import { DISPLAY_NAME_MAX_LENGTH } from '@smartmat/shared';
+import { API_ERRORS, DISPLAY_NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@smartmat/shared';
+import { NETWORK_ERROR } from '../api/client';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -61,6 +62,18 @@ describe('NFR-UX-004 / FR-UI-005 translations', () => {
     );
     expect(literal.length).toBeGreaterThan(0);
     expect(missing).toEqual([]);
+  });
+
+  it('every error code the API can return (and the network error) has a translation', () => {
+    const missing = [...Object.values(API_ERRORS), NETWORK_ERROR].filter(
+      (key) => !(key in nbKeys) || !(key in enKeys),
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it('the password message matches the minimum length in the shared schema', () => {
+    expect(nbKeys['validation.password.tooShort']).toContain(String(PASSWORD_MIN_LENGTH));
+    expect(enKeys['validation.password.tooShort']).toContain(String(PASSWORD_MIN_LENGTH));
   });
 
   it('the display-name message matches the limit in the shared schema', () => {

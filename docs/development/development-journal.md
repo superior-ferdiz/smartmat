@@ -71,3 +71,59 @@ Deretter fase 2 (database og autentisering) i ny chat. Git bør innføres før f
   `Co-Authored-By: Claude`-linje, fordi innholdet er skrevet av KI.
 - Ikke avklart: arbeidsflyt (direkte på `main` eller via pull requests). Linus skal inviteres som samarbeidspartner.
 
+---
+
+## 2026-10-20 – Fase 2: database og autentisering
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i denne økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 2 med en detaljert prompt. Den bestemte arbeidsflyten med Git: grenen `fase-2`, commit og
+  push bare på forespørsel, og teamet oppretter og godkjenner pull requesten. Prompten satte også omfanget og
+  sikkerhetskravene.
+- Prompten hadde to plassholdere som ikke var fylt ut: om fase 1 er gjennomgått, og arbeidsfordelingen. Claude
+  påpekte dette i planen. Ferdinand svarte «Godkjent vennligst begynn og gjør fase 2» uten å fylle dem ut. Derfor er
+  **fase 1 fortsatt registrert som ikke gjennomgått**, og planens forslag til arbeidsfordeling gjelder: KI
+  implementerer, teamet gjennomgår via pull request.
+- Claude svarte med fasemalen (Postgres på port 55432, API på 3100) og sju åpne spørsmål. Forslagene ble godkjent
+  samlet, ikke hvert for seg (se tabellen i [spesifikasjon 02](requirements/02-database-og-autentisering.md)).
+- Claude laget grenen `fase-2`, startet Postgres-containeren `smartmat-postgres` (ingen andre containere ble rørt)
+  og implementerte fasen. **All kode i fasen er skrevet av KI.** Spesifikasjon 02 ble skrevet i samme økt, ikke før
+  koden, slik CLAUDE.md beskriver.
+
+**Avvik og funn underveis** (detaljer i kapittel 10–12)
+- `prisma@latest` pekte på en release-kandidat (8.0). Vi bruker 7.10.1.
+- **Tre feil i appen ble funnet og rettet:**
+  - cookien utløp etter 14 dager selv om sesjonen ble forlenget ved bruk
+  - `?neste` ble ignorert etter innlogging
+  - språket fra kontoen ble ikke brukt ved ny sidelasting
+- **To feil i testene:** feil rekkefølge på argon2-parametere, og en «annen enhet» som delte sesjon med den første.
+- Alle API-testene passerte første gang. Derfor ble sikkerhetstestene kontrollert ved å slå av hver beskyttelse i
+  koden. Alle seks endringene ble fanget.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 331 |
+| API-tester mot database | 47 |
+| Bygg | Vellykket |
+| Playwright-tester | 95 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-2/`, skjermbilder i `docs/evidence/screenshots/fase-2/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 1 og fase 2
+- commit og push (ikke bedt om ennå)
+- manuell test med skjermleser
+- testing i Firefox og Safari
+
+**Neste:** Teamet går gjennom fasen (se «Til gjennomgang» i spesifikasjon 02), ber om commit og push, og oppretter
+pull requesten. Deretter fase 3 (matlager) i ny chat.
+
+**Oppfølging 2026-10-21:** Ferdinand svarte «Alt er good vennligst fortsett» og ba om commit og push av `fase-2`.
+Han valgte at en gjennomgang skal registreres, men oppga ikke hvem som gikk gjennom eller hva som ble sett på. Derfor
+er ingen gjennomgang av fase 1 eller fase 2 registrert ennå. Den føres inn når detaljene er gitt.
+

@@ -1,7 +1,13 @@
 # Datamodell (utkast, fase 0)
 
 **Status:** UTKAST. Dette er en plan for hvordan dataene henger sammen, ikke det endelige skjemaet. Tabellene opprettes
-i den fasen de trengs (se kolonnen *Fase*), og skjemaet i `prisma/schema.prisma` blir fasiten når det finnes.
+i den fasen de trengs (se kolonnen *Fase*). Skjemaet i [`prisma/schema.prisma`](../../prisma/schema.prisma) er fasiten
+for tabellene som finnes.
+
+**Implementert i fase 2 (2026-10-20):** `User`, `Household`, `HouseholdMember` og `Session`. Avvik fra planen:
+`User` fikk også `failed_login_count` og `login_locked_until` (FR-AUTH-003), og `Session` fikk `csrf_token`. `currency`
+er ikke lagt til ennå, fordi ingenting bruker den før fase 4. `AuditEvent` er utsatt til fase 3. Se
+[kapittel 8](../academic/08-databasemodell.md).
 
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
@@ -41,7 +47,7 @@ erDiagram
 | `Session` | token_hash, user_id, expires_at, last_seen_at | Bare hash av token lagres | 2 |
 | `Household` | name | Én opprettes automatisk ved registrering | 2 |
 | `HouseholdMember` | household_id, user_id, role (`owner`/`member`) | Unik (household_id, user_id) | 2 |
-| `AuditEvent` | actor_id, action, target, created_at | Ingen personopplysninger i fritekst | 2 |
+| `AuditEvent` | actor_id, action, target, created_at | Ingen personopplysninger i fritekst | 3 (utsatt fra 2) |
 | `Category` | name, parent_id | Global, frødata | 3 |
 | `Product` | name, brand, category_id, package_size_base, unit_kind, ingredient_id? | **Katalog** – hva varen er. Globalt eller husholdningsspesifikt (household_id nullable) | 3 |
 | `ProductBarcode` | gtin (unik), product_id, source | Én vare kan ha flere strekkoder | 3 (brukes 7) |

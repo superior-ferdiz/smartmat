@@ -1,0 +1,38 @@
+# Local development database for SmartMat (ADR-0003, ADR-0012).
+# Run from the repo root:  npm run db:up   (reads the password from .env)
+#
+# This machine also runs other projects' containers. Everything here is namespaced "smartmat"
+# (project, container, volume, network), and Postgres listens on 127.0.0.1 only, on a port
+# no other service uses.
+name: smartmat
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartmat-postgres
+    environment:
+      POSTGRES_USER: smartmat
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+      POSTGRES_DB: smartmat
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - smartmat_pgdata:/var/lib/postgresql/data
+      # Runs once, when the volume is empty: creates the test and e2e databases.
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - smartmat
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U smartmat -d smartmat']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # No restart policy: a development database should not start by itself with the server.
+
+volumes:
+  smartmat_pgdata:
+    name: smartmat_pgdata
+
+networks:
+  smartmat:
+    name: smartmat

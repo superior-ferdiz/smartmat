@@ -37,7 +37,7 @@ export const oreInputSchema = z.string().transform((text, ctx): number => {
 
 export const DISPLAY_NAME_MAX_LENGTH = 50;
 
-/** The name shown in the app for a user. Used by the profile form in phase 2. */
+/** The name shown in the app for a user (registration and profile). */
 export const displayNameSchema = z
   .string({ error: 'validation.displayName.required' })
   .trim()

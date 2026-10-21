@@ -1,0 +1,31 @@
+{
+  "name": "@smartmat/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "SmartMat REST API (Fastify + Zod + Prisma)",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "e2e-server": "tsx scripts/e2e-server.ts"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.1.3",
+    "@fastify/helmet": "13.2.0",
+    "@fastify/rate-limit": "11.2.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@smartmat/shared": "0.1.0",
+    "argon2": "0.45.1",
+    "fastify": "5.12.7",
+    "fastify-type-provider-zod": "7.0.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "prisma": "7.10.1",
+    "tsx": "4.23.15",
+    "vitest": "4.1.12"
+  }
+}

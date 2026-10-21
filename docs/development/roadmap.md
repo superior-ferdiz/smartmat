@@ -9,7 +9,7 @@ Status: `Ikke startet` · `Pågår` · `Ferdig` (= oppfyller Definition of Done 
 |---|---|---|---|
 | 0 | Planlegging: beslutninger (ADR), krav, datamodell, dokumentasjonsstruktur | — | Ferdig (2026-10-19) |
 | 1 | Designsystem og app-skall: monorepo, Vite/React, tokens, layout, navigasjon, i18n, skjema-komponenter, tilstander for lasting/feil/tom | MVP | Pågår – implementert og testet 2026-10-20, venter på teamets gjennomgang (eneste punkt i DoD som mangler) |
-| 2 | Database og autentisering: Docker/Postgres, Prisma, registrering, innlogging, sesjoner, profil, husholdning-av-én, autorisasjon | MVP | Ikke startet |
+| 2 | Database og autentisering: Docker/Postgres, Prisma, registrering, innlogging, sesjoner, profil, husholdning-av-én, autorisasjon | MVP | Pågår – implementert og testet 2026-10-20 på grenen `fase-2`, venter på teamets gjennomgang (pull request) |
 | 3 | Matlager: produkter, partier (batches), lagringssteder, søk/filter/sortering, holdbarhet, forbruk og kassering med svinnlogg | MVP | Ikke startet |
 | — | **Milepæl: første reelt brukbare versjon** | | |
 | 4 | Budsjett: manuelle kjøp, kategorier, månedsbudsjett, oversikt, kobling kjøp → lager | MVP | Ikke startet |

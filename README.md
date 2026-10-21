@@ -9,8 +9,9 @@ Applikasjonsutvikling for web (USN, 2026/2027), med KI-assistert og spesifikasjo
 
 ## Status
 
-**Fase 1 – designsystem og app-skall** er implementert (2026-10-20). Appen har navigasjon, plassholdersider og
-grunnkomponenter, men ingen backend eller database ennå. Se [veikartet](docs/development/roadmap.md).
+**Fase 2 – database og autentisering** er implementert (2026-10-20, grenen `fase-2`). Appen har registrering,
+innlogging, profil og sletting av konto, mot et eget API og PostgreSQL. Sidene for matlager, budsjett osv. er fortsatt
+plassholdere. Se [veikartet](docs/development/roadmap.md).
 
 ## Dokumentasjon
 
@@ -26,11 +27,14 @@ grunnkomponenter, men ingen backend eller database ennå. Se [veikartet](docs/de
 
 ## Kjøre appen lokalt
 
-Krever Node 22.12 eller nyere.
+Krever Node 22.12 eller nyere og Docker.
 
 ```bash
-npm install          # installerer alle pakker (rot + apps/web + packages/shared)
-npm run dev          # utviklingsserver på http://127.0.0.1:5173
+cp .env.example .env # fyll inn et eget passord for databasen (to steder: POSTGRES_PASSWORD og URL-ene)
+npm install          # installerer alle pakker og genererer Prisma-klienten
+npm run db:up        # starter PostgreSQL 16 i Docker på 127.0.0.1:55432
+npm run db:migrate   # oppretter tabellene
+npm run dev          # API på 127.0.0.1:3100 og web på http://127.0.0.1:5173
 ```
 
 | Kommando | Hva den gjør |
@@ -38,9 +42,11 @@ npm run dev          # utviklingsserver på http://127.0.0.1:5173
 | `npm run typecheck` | TypeScript-sjekk av alle pakker |
 | `npm run lint` | ESLint (inkl. tilgjengelighet og hardkodet tekst) |
 | `npm run format` | Formaterer koden med Prettier |
-| `npm run test` | Enhets- og komponenttester (Vitest) |
+| `npm run test` | Enhets- og komponenttester (Vitest), uten database |
+| `npm run test:api` | API-tester mot testdatabasen (krever `db:up`) |
+| `npm run db:stop` | Stopper databasecontaineren (dataene beholdes) |
 | `npm run build` | Produksjonsbygg av webappen til `apps/web/dist` |
-| `npm run test:e2e` | Playwright-tester på 360 px og 1280 px med axe (bygger appen selv) |
-| `npm run check` | typecheck + lint + test + build |
+| `npm run test:e2e` | Playwright-tester på 360 px og 1280 px med axe (bygger appen og starter et eget API) |
+| `npm run check` | typecheck + lint + test + test:api + build |
 
 Designsystemet kan ses på `/designsystem` i appen (lenke fra Innstillinger).

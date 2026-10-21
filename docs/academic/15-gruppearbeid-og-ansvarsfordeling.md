@@ -9,6 +9,18 @@
 - hvem gjorde hva (bare dokumentert arbeid)
 - samarbeidsform
 
+## Det som er dokumentert så langt
+
+Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
+
+- **Fase 0–2 (2026-10-19 og 2026-10-20):** All kode og dokumentasjon er skrevet av KI-verktøyet (Claude Code).
+  Ferdinand Risan har gitt promptene, tatt beslutningene og godkjent planene i chat. Linus Saxe Huseby har ikke vært
+  med i øktene.
+- **Arbeidsfordelingen** er ikke avtalt. I fase 2 gjelder planens forslag: KI implementerer, og teamet gjennomgår
+  via pull request.
+- **Arbeidsflyt med Git:** én gren per fase. Teamet oppretter og godkjenner pull requesten selv (ADR-0013).
+- Ingen gjennomgang av koden fra teamet er registrert ennå.
+
 ## Kilder i prosjektet
 
 <!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->

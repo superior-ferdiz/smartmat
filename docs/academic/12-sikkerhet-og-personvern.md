@@ -1,19 +1,69 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST / MAL.** Dette kapittelet er ikke skrevet ennå. Innholdet skal bygge på det som faktisk er implementert,
-> testet og besluttet, og oppdateres underveis i fasene. Offisielle APP2000-krav til rapporten er ikke verifisert.
+> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20). Tiltakene og teksten er laget av KI (Claude) og
+> ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
+> personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
-## Hva kapittelet skal dekke
+## Trusselbilde (fase 2)
 
-- Trusselbilde
-- tiltak
-- personopplysninger som behandles
-- formål
-- lagringstid
-- sletting
-- eksterne databehandlere
-- ingen påstand om juridisk samsvar uten gjennomgang
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Gjetting av passord (brute force) | Skript prøver mange passord på én konto | Kontoen sperres i 15 min etter 5 feil. Grense per IP-adresse. | `security.api.test.ts`, `auth.spec.ts` |
+| Spredt gjetting | Mange IP-adresser eller falsk `X-Forwarded-For` | Sperren er per konto. `X-Forwarded-For` blir ikke trodd. | `security.api.test.ts` |
+| Finne ut hvem som har konto | Sammenligne svar eller svartid ved innlogging | Samme svar og samme hasharbeid for ukjent e-post, feil passord og sperret konto | `service.test.ts`, `auth.api.test.ts` |
+| Stjålet database | Kopi av tabellene kommer på avveie | argon2id for passord, bare SHA-256 av sesjonstokens | `auth.api.test.ts` |
+| XSS stjeler innlogging | Skript leser `document.cookie` | `HttpOnly`-cookie, ingen token i `localStorage` | `auth.spec.ts` |
+| CSRF | En annen nettside sender skjema eller fetch med brukerens cookie | `SameSite=Lax`, Origin-sjekk og CSRF-token | `security.api.test.ts`, `auth.spec.ts` |
+| Tilgang til andres data (IDOR) | Bytte husholdnings-ID i URL-en | Medlemskap sjekkes på serveren. Svaret er 404. | `security.api.test.ts` |
+| Overta en sesjon | En glemt innlogging eller en stjålet cookie | Utløp (14/30 dager). Passordbytte logger ut andre enheter. Ny ID ved innlogging. | `service.test.ts`, `profile.api.test.ts`, `auth.spec.ts` |
+| Åpen viderekobling | `/logg-inn?neste=https://falsk.side` | Bare stier i appen godtas | `safeNextPath.test.ts`, `LoginPage.test.tsx` |
+| Lekkasje i logger eller feilmeldinger | E-post i en databasefeil som logges | Ingen kropp, IP eller feiltekst i loggen. Faste feilkoder. | `security.api.test.ts` |
+
+Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen. Minst én test feilet hver gang
+([bevis](../evidence/test-results/fase-2/10-mutation-check.txt)).
+
+## Personopplysninger som behandles (etter fase 2)
+
+| Opplysning | Formål | Hvor | Lagringstid |
+|---|---|---|---|
+| E-postadresse | Innlogging | `users.email` | Til kontoen slettes |
+| Navn (visningsnavn) | Vises i appen | `users.display_name`, også som navn på husholdningen | Til kontoen slettes |
+| Passord | Innlogging | Bare som argon2id-hash i `users.password_hash` | Til kontoen slettes eller passordet byttes |
+| Språkvalg | Grensesnitt | `users.locale` | Til kontoen slettes |
+| Mislykkede innlogginger | Beskyttelse mot gjetting | `users.failed_login_count`, `login_locked_until` | Nullstilles ved vellykket innlogging |
+| Sesjoner | Holde brukeren innlogget | `sessions` (hash av token, tidspunkter) | Maks 30 dager. Slettes ved utlogging, passordbytte eller kontosletting. |
+| IP-adresse | Rate limiting | Bare i minnet i API-prosessen, i 15–60 minutter | Lagres ikke og logges ikke |
+
+Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører lokalt.
+
+## Sletting
+
+- «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
+  Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005).
+- Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
+- **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt) og eierskap i delte husholdninger (fase 10).
+
+## Kjente svakheter og utsatte tiltak
+
+- **E-post som allerede finnes:** Registrering sier ærlig fra om dette. Da kan noen finne ut om en adresse har konto.
+  Rate limiting begrenser det. Ordentlig løsning (svar «sjekk e-posten din») krever e-postverifisering
+  (FR-AUTH-006, fase 13).
+- **Grensen per IP-adresse** er i praksis felles for alle lokalt, fordi alt går via Vite-proxyen fra 127.0.0.1.
+  Når appen settes opp bak en omvendt proxy (fase 13), må klientens IP-adresse hentes fra en proxy vi stoler på.
+- **Sperre som angrep:** Noen som kjenner en e-postadresse, kan sperre kontoen i 15 minutter om gangen. Sperren er
+  kort med vilje.
+- **Samtidige forsøk:** Forespørsler som allerede er i gang når sperren slår inn, blir fortsatt sjekket. Dette
+  begrenses av grensen per IP-adresse.
+- **Andre forsøk:** Passordbytte og sletting teller ikke mot sperren per konto, bare mot grensen per IP-adresse.
+- **Ikke gjort:** tofaktorinnlogging, varsel om innlogging fra ny enhet, sjekk mot lister over lekkede passord,
+  HTTPS og sikkerhetsheadere for selve nettsiden (fase 13).
 
 ## Kilder i prosjektet
 
-<!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->
+- [ADR-0005](../development/architecture-decisions/0005-sesjoner-og-argon2id.md)
+- [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md) (NFR-SEC-001–005)
+- [API-tester (bevis)](../evidence/test-results/fase-2/05-api-tests.txt),
+  [kontroll av sikkerhetstestene](../evidence/test-results/fase-2/10-mutation-check.txt)
+- OWASP Password Storage Cheat Sheet (argon2id-parametere) og NIST SP 800-63B (passordlengde). Disse er brukt som
+  bakgrunn av KI-verktøyet. Teamet har ikke lest dem i denne fasen, og de må legges inn i kildelisten (kapittel 19)
+  med lenke og dato når de faktisk er sjekket.

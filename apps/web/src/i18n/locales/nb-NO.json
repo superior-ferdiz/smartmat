@@ -75,6 +75,22 @@
     },
     "date": {
       "invalid": "Skriv inn en gyldig dato."
+    },
+    "email": {
+      "required": "Skriv inn e-postadressen din.",
+      "invalid": "Skriv inn en gyldig e-postadresse, for eksempel navn@eksempel.no.",
+      "tooLong": "E-postadressen kan være høyst 254 tegn."
+    },
+    "password": {
+      "required": "Skriv inn passordet.",
+      "tooShort": "Passordet må være minst 12 tegn.",
+      "tooLong": "Passordet kan være høyst 128 tegn."
+    },
+    "profile": {
+      "nothingToUpdate": "Det er ingenting å lagre."
+    },
+    "deleteAccount": {
+      "confirmRequired": "Kryss av for at du forstår at kontoen slettes for godt."
     }
   },
   "pages": {
@@ -193,7 +209,7 @@
       "saved": "Innstillingen er lagret",
       "appearance": "Språk og utseende",
       "language": "Språk",
-      "languageHint": "Gjelder bare denne nettleseren.",
+      "languageHint": "Lagres på kontoen din.",
       "theme": "Tema",
       "themeHint": "Automatisk følger innstillingen på enheten din.",
       "themes": {
@@ -202,9 +218,11 @@
         "dark": "Mørkt"
       },
       "account": "Konto",
-      "accountLater": "Innlogging, profil og sletting av konto kommer i fase 2.",
       "developer": "For utviklere",
-      "developerText": "Oversikt over farger, typografi og komponenter i SmartMat."
+      "developerText": "Oversikt over farger, typografi og komponenter i SmartMat.",
+      "loggedInAs": "Logget inn som {{name}} ({{email}}).",
+      "openProfile": "Profil og konto",
+      "saveFailed": "Fikk ikke lagret innstillingen. Prøv igjen."
     },
     "notFound": {
       "title": "Fant ikke siden",
@@ -280,6 +298,77 @@
         "loading": "Henter matlageret …"
       },
       "retried": "Prøver igjen (eksempel)"
+    },
+    "profile": {
+      "title": "Profil",
+      "lead": "Navn, språk, passord og konto.",
+      "about": "Om deg",
+      "save": "Lagre",
+      "saved": "Profilen er lagret",
+      "password": {
+        "title": "Bytt passord",
+        "current": "Nåværende passord",
+        "new": "Nytt passord",
+        "otherDevices": "Når du bytter passord, blir du logget ut på alle andre enheter.",
+        "submit": "Bytt passord",
+        "changed": "Passordet er byttet. Andre enheter er logget ut."
+      },
+      "logout": {
+        "title": "Logg ut",
+        "text": "Avslutter innloggingen i denne nettleseren."
+      },
+      "delete": {
+        "title": "Slett konto",
+        "text": "Kontoen, husholdningen din og alt som er lagret i den, slettes for godt. Dette kan ikke angres.",
+        "password": "Skriv inn passordet ditt for å bekrefte",
+        "confirm": "Jeg forstår at alt slettes og ikke kan gjenopprettes",
+        "submit": "Slett kontoen for godt",
+        "deleted": "Kontoen din er slettet."
+      }
     }
+  },
+  "auth": {
+    "checkingSession": "Sjekker innloggingen …",
+    "sessionCheckFailed": "Vi fikk ikke sjekket om du er logget inn. Sjekk nettforbindelsen og prøv igjen.",
+    "logout": "Logg ut",
+    "fields": {
+      "displayName": "Navn",
+      "email": "E-postadresse",
+      "password": "Passord"
+    },
+    "login": {
+      "title": "Logg inn",
+      "lead": "Velkommen tilbake til SmartMat.",
+      "submit": "Logg inn",
+      "noAccount": "Har du ikke konto?",
+      "createAccount": "Opprett konto"
+    },
+    "register": {
+      "title": "Opprett konto",
+      "lead": "Hold oversikt over matlageret, kast mindre og styr matbudsjettet.",
+      "displayNameHint": "Navnet vises i appen. Du kan endre det senere.",
+      "passwordHint": "Minst {{min}} tegn. Tips: en kort setning er lett å huske og vanskelig å gjette.",
+      "householdNote": "Du får din egen husholdning når du oppretter konto. Deling med andre kommer i en senere versjon.",
+      "submit": "Opprett konto",
+      "haveAccount": "Har du allerede konto?",
+      "logIn": "Logg inn"
+    }
+  },
+  "errors": {
+    "validation": "Noe i skjemaet må rettes.",
+    "auth": {
+      "invalidCredentials": "Feil e-postadresse eller passord. Etter fem feil på rad må du vente 15 minutter før du kan prøve igjen.",
+      "emailTaken": "Det finnes allerede en konto med denne e-postadressen. Logg inn i stedet.",
+      "wrongPassword": "Passordet er feil.",
+      "unauthenticated": "Du er ikke logget inn lenger. Logg inn igjen."
+    },
+    "security": {
+      "forbiddenOrigin": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen.",
+      "invalidCsrf": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen."
+    },
+    "rateLimited": "For mange forsøk på kort tid. Vent litt og prøv igjen.",
+    "notFound": "Fant ikke det du lette etter.",
+    "internal": "Noe gikk galt hos oss. Prøv igjen om litt.",
+    "network": "Fikk ikke kontakt med SmartMat. Sjekk nettforbindelsen og prøv igjen."
   }
 }

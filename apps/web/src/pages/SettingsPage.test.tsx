@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderApp } from '../test/renderApp';
+import { renderApp, TEST_SESSION } from '../test/renderApp';
+import { mockApi } from '../test/mockApi';
 import { applyThemePreference, readThemePreference, THEME_STORAGE_KEY } from '../app/theme';
 import { LANGUAGE_STORAGE_KEY, readStoredLocale } from '../i18n';
 
@@ -57,13 +58,38 @@ describe('FR-UI-005 language', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Oversikt');
   });
 
-  it('switching to English changes the UI and <html lang>, and is remembered', async () => {
+  it('switching to English saves it on the account, changes the UI and <html lang>, and is remembered', async () => {
+    const requests = mockApi((request) =>
+      request.method === 'PATCH' && request.path === '/me'
+        ? { status: 200, body: { ...TEST_SESSION.user, locale: 'en' } }
+        : undefined,
+    );
     const user = userEvent.setup();
     renderApp('/innstillinger');
     await user.selectOptions(screen.getByLabelText('Språk'), 'English');
     expect(await screen.findByRole('heading', { level: 1, name: 'Settings' })).toBeInTheDocument();
     expect(document.documentElement.lang).toBe('en');
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('en');
+    // FR-AUTH-004: sent to the API with the CSRF token.
+    expect(requests).toEqual([
+      expect.objectContaining({
+        method: 'PATCH',
+        path: '/me',
+        body: { locale: 'en' },
+        headers: expect.objectContaining({ 'x-csrf-token': TEST_SESSION.csrfToken }),
+      }),
+    ]);
+  });
+
+  it('if saving the language fails, the language stays and an error is shown', async () => {
+    mockApi(() => ({ status: 500, body: { error: { code: 'errors.internal' } } }));
+    const user = userEvent.setup();
+    renderApp('/innstillinger');
+    await user.selectOptions(screen.getByLabelText('Språk'), 'English');
+    expect(
+      await screen.findByText('Fikk ikke lagret innstillingen. Prøv igjen.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Innstillinger' })).toBeInTheDocument();
   });
 
   it('ignores an unsupported stored language', () => {

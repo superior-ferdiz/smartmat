@@ -1,0 +1,11 @@
+$ npm run format:check
+# Kjørt 2026-10-20 13:29:19 UTC, Node v22.14.0, npm 11.1.0
+
+
+> smartmat@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+# exit code: 0
