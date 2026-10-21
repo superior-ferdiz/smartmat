@@ -122,6 +122,38 @@
     },
     "wasteReason": {
       "required": "Choose why the food was thrown away."
+    },
+    "purchase": {
+      "dateRequired": "Enter the date of purchase.",
+      "dateTooEarly": "The date cannot be before the year 2000.",
+      "dateInFuture": "The date of purchase cannot be in the future.",
+      "lineTooLarge": "A line can be at most 100 000 kr.",
+      "totalTooLarge": "A purchase can be at most 1 000 000 kr.",
+      "linesOrTotal": "Add at least one line, or enter the total.",
+      "totalWithLines": "A purchase with lines gets its total from the lines. Do not enter a total as well.",
+      "tooManyLines": "A purchase can have at most 100 lines.",
+      "nonFoodCategory": "Non-food has no food category.",
+      "nonFoodInventory": "Only food can go into the inventory.",
+      "itemNotFound": "The item no longer exists. Choose another one.",
+      "unknownLine": "The line no longer exists. Reload the page.",
+      "alreadyInInventory": "This line is already in the inventory."
+    },
+    "storeName": {
+      "tooLong": "The shop name can be at most 100 characters."
+    },
+    "lineDescription": {
+      "required": "Enter what you bought.",
+      "tooLong": "The description can be at most 100 characters."
+    },
+    "lineKind": {
+      "required": "Choose whether the line is food or not."
+    },
+    "month": {
+      "invalid": "Invalid month."
+    },
+    "budget": {
+      "tooSmall": "The budget must be at least 1 kr.",
+      "tooLarge": "The budget can be at most 1 000 000 kr."
     }
   },
   "pages": {
@@ -129,7 +161,7 @@
       "title": "Overview",
       "lead": "What matters in your kitchen right now.",
       "sampleNoticeTitle": "Some of this is still sample data",
-      "sampleNoticeText": "“Expiring soon” and “Thrown away this month” show your own food. The budget and the dinner suggestion are made up until they arrive in later versions.",
+      "sampleNoticeText": "The dinner suggestion is made up until recipes arrive in a later version. The rest of the overview shows your own data.",
       "expiring": {
         "title": "Expiring soon",
         "seeAll": "See the whole pantry",
@@ -137,11 +169,9 @@
       },
       "budget": {
         "title": "Food budget this month",
-        "spent": "Spent",
-        "remaining": "Left",
-        "monthly": "Budget",
-        "usedPercent": "{{percent}} % of the monthly budget is used",
-        "open": "See purchases and budget"
+        "open": "See purchases and budget",
+        "noBudget": "You have not set a budget.",
+        "setBudget": "Set budget"
       },
       "actions": {
         "title": "Quick actions",
@@ -183,9 +213,7 @@
       "emptyText": "Here you will keep a shopping list, add missing ingredients from a recipe, and move items straight into the pantry."
     },
     "budget": {
-      "lead": "What you spend on food, and how much is left this month.",
-      "emptyTitle": "Purchases and budget arrive in phase 4",
-      "emptyText": "Here you will register purchases, set a monthly food budget and see spending per category."
+      "lead": "What you spend on food, and how much is left this month."
     },
     "mealPlan": {
       "lead": "Plan the week's dinners.",
@@ -385,6 +413,9 @@
       "changedMeanwhile": "The batch was changed meanwhile. Reload the page and try again.",
       "nothingToUndo": "There is nothing to undo.",
       "cannotUndo": "This change can no longer be undone."
+    },
+    "purchase": {
+      "changedMeanwhile": "Something in the purchase changed meanwhile, for example an item or place that was deleted. Reload the page and try again."
     }
   },
   "units": {
@@ -548,7 +579,9 @@
       "delete": "Delete",
       "deleteTitle": "Delete this batch?",
       "deleteText": "The batch and its history are deleted. Use “Throw away” if the food was thrown away.",
-      "deleteConfirm": "Delete batch"
+      "deleteConfirm": "Delete batch",
+      "fromPurchase": "From purchase",
+      "openPurchase": "See the purchase"
     },
     "take": {
       "all": "All of it ({{quantity}})"
@@ -617,6 +650,121 @@
       "deleted": "The place was deleted",
       "batchCount_one": "{{count}} batch",
       "batchCount_other": "{{count}} batches"
+    }
+  },
+  "budget": {
+    "addPurchase": "Add purchase",
+    "setBudget": "Set budget",
+    "changeBudget": "Change budget",
+    "loading": "Loading the budget …",
+    "summaryTitle": "Food budget",
+    "noBudget": "You have not set a food budget for this month.",
+    "categoriesTitle": "Spending by category",
+    "unallocated": "Not allocated (total only)",
+    "noSpending": "No food purchases this month.",
+    "nonFood": "Non-food: {{amount}}. Not counted in the food budget.",
+    "purchasesTitle": "Purchases in {{month}}",
+    "emptyTitle": "No purchases this month",
+    "emptyText": "Add a purchase to see what you spend on food.",
+    "month": {
+      "navLabel": "Choose month",
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "figures": {
+      "spent": "Spent on food",
+      "remaining": "Left",
+      "over": "Over budget by",
+      "budget": "Budget",
+      "usedPercent": "{{percent}} % of the monthly budget is used",
+      "overText": "You have used {{percent}} % of the budget and are over."
+    },
+    "dialog": {
+      "title": "Monthly food budget",
+      "description": "Applies from this month on. Earlier months keep the budget they had.",
+      "amount": "Amount per month",
+      "saved": "The budget is saved.",
+      "removed": "The budget is removed.",
+      "remove": "Remove the budget"
+    }
+  },
+  "purchases": {
+    "noStore": "Unknown shop",
+    "onlyTotal": "total only",
+    "onlyTotalText": "This purchase was registered with only a total, without lines.",
+    "lineCount_one": "{{count}} line",
+    "lineCount_other": "{{count}} lines",
+    "batchCount_one": "{{count}} in the inventory",
+    "batchCount_other": "{{count}} in the inventory",
+    "total": "Total: {{amount}}",
+    "notInBudget": "Non-food – not counted in the food budget",
+    "notFoundTitle": "Purchase not found",
+    "notFoundText": "The purchase does not exist, or it has been deleted.",
+    "backToBudget": "Back to the budget",
+    "kinds": {
+      "food": "Food and drink",
+      "nonFood": "Non-food"
+    },
+    "modes": {
+      "lines": "With lines",
+      "linesHint": "Gives spending by category, and the items can go straight into the inventory.",
+      "total": "Total only",
+      "totalHint": "Quickest. Shown as “not allocated” in the overview."
+    },
+    "fields": {
+      "store": "Shop",
+      "storeHint": "For example “Rema 1000 Bø”.",
+      "date": "Date of purchase",
+      "mode": "How do you want to register the purchase?",
+      "total": "Total",
+      "totalHint": "The amount at the bottom of the receipt.",
+      "description": "What",
+      "kind": "Type",
+      "amount": "Amount",
+      "item": "Item in the inventory",
+      "itemHint": "Choose an item you already have, or make a new one with the name from the line.",
+      "newItem": "New item (name from the line)"
+    },
+    "lines": {
+      "title": "Lines",
+      "label": "Line {{number}}",
+      "add": "Add line",
+      "remove": "Remove line {{number}}",
+      "sum": "Total: {{amount}}",
+      "sumIncomplete": "(some amounts are missing or invalid)",
+      "toInventory": "Put into the inventory",
+      "linked": "Put into the inventory as “{{name}}”",
+      "inInventory": "In the inventory: {{name}}"
+    },
+    "new": {
+      "title": "Add purchase",
+      "lead": "Register a food purchase with lines or only a total.",
+      "submit": "Save the purchase",
+      "saved": "The purchase is saved.",
+      "savedWithItems_one": "The purchase is saved, and {{count}} item was put into the inventory.",
+      "savedWithItems_other": "The purchase is saved, and {{count}} items were put into the inventory."
+    },
+    "edit": {
+      "open": "Correct the purchase",
+      "title": "Correct purchase",
+      "lead": "Changes update the budget at once. Quantities in the inventory are not changed from here.",
+      "saved": "The purchase is updated.",
+      "removeUntouched": "Also remove untouched items from the inventory for the lines you removed",
+      "removeUntouchedHint": "Items that have been used, thrown away or moved always stay."
+    },
+    "delete": {
+      "open": "Delete the purchase",
+      "title": "Delete the purchase?",
+      "text": "The purchase disappears from the budget. This cannot be undone.",
+      "removeUntouched_one": "Also remove {{count}} untouched item from the inventory",
+      "removeUntouched_other": "Also remove {{count}} untouched items from the inventory",
+      "removeUntouchedHint": "Untouched means nothing has been used, thrown away, moved or corrected.",
+      "touched_one": "{{count}} item from the purchase has been used or changed and stays in the inventory.",
+      "touched_other": "{{count}} items from the purchase have been used or changed and stay in the inventory.",
+      "confirm": "Delete the purchase",
+      "done": "The purchase is deleted.",
+      "doneWithItems_one": "The purchase is deleted, and {{count}} item was removed from the inventory.",
+      "doneWithItems_other": "The purchase is deleted, and {{count}} items were removed from the inventory."
     }
   }
 }

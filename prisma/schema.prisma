@@ -42,6 +42,7 @@ model User {
   sessions        Session[]
   memberships     HouseholdMember[]
   inventoryEvents InventoryEvent[]
+  purchases       Purchase[]
 
   @@map("users")
 }
@@ -57,6 +58,9 @@ model Household {
   inventoryItems   InventoryItem[]
   inventoryBatches InventoryBatch[]
   inventoryEvents  InventoryEvent[]
+  purchases        Purchase[]
+  purchaseLines    PurchaseLine[]
+  foodBudgets      FoodBudget[]
 
   @@map("households")
 }
@@ -155,7 +159,8 @@ model Category {
   key       String @id @db.VarChar(32)
   sortOrder Int    @map("sort_order")
 
-  items InventoryItem[]
+  items         InventoryItem[]
+  purchaseLines PurchaseLine[]
 
   @@map("categories")
 }
@@ -212,17 +217,23 @@ model InventoryBatch {
   /// Price for the whole batch in øre, used to estimate the value of food thrown away.
   priceOre            Int?        @map("price_ore")
   purchasedOn         DateTime?   @map("purchased_on") @db.Date
+  /// The purchase line the batch came from (phase 4, FR-BUD-002); null when added in the inventory or unlinked.
+  purchaseLineId      String?     @map("purchase_line_id") @db.Uuid
   createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt           DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  item      InventoryItem    @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
+  household    Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  item         InventoryItem    @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
   /// NO ACTION (checked at the end of the statement): deleting a household cascades to both batches and
   /// locations, and a RESTRICT here could fire before the batches are gone. Deleting a location that still
   /// has batches is still refused.
-  location  StorageLocation  @relation(fields: [locationId, householdId], references: [id, householdId], onDelete: NoAction)
-  events    InventoryEvent[]
+  location     StorageLocation  @relation(fields: [locationId, householdId], references: [id, householdId], onDelete: NoAction)
+  /// NO ACTION for the same reason; the app clears the link before it deletes a line (spec 04, FR-BUD-005).
+  /// SET NULL is not an option: on a composite key it would also clear household_id.
+  purchaseLine PurchaseLine?    @relation(fields: [purchaseLineId, householdId], references: [id, householdId], onDelete: NoAction)
+  events       InventoryEvent[]
 
+  @@unique([purchaseLineId, householdId])
   @@index([householdId])
   @@index([itemId])
   @@index([locationId])
@@ -263,4 +274,87 @@ model InventoryEvent {
   @@index([householdId, createdAt])
   @@index([itemId, createdAt])
   @@map("inventory_events")
+}
+
+// ─── Phase 4: purchases and budget (spec 04) ───────────────────────────────────────────────────
+
+enum PurchaseSource {
+  manual
+  receipt
+  barcode
+
+  @@map("purchase_source")
+}
+
+enum PurchaseLineKind {
+  food
+  nonFood @map("non_food")
+
+  @@map("purchase_line_kind")
+}
+
+/// One shopping trip. The single source of spending (ADR-0007): budget figures are always computed from these.
+model Purchase {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  householdId String         @map("household_id") @db.Uuid
+  storeName   String?        @map("store_name") @db.VarChar(100)
+  purchasedOn DateTime       @map("purchased_on") @db.Date
+  /// Sum of the lines, or the amount typed in for a purchase without lines. Whole øre (ADR-0006).
+  totalOre    Int            @map("total_ore")
+  currency    String         @default("NOK") @db.Char(3)
+  source      PurchaseSource @default(manual)
+  /// Unique per household: a form sent twice (or a receipt imported twice, phase 8) gives one purchase.
+  dedupeKey   String?        @map("dedupe_key") @db.VarChar(100)
+  createdById String?        @map("created_by") @db.Uuid
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdBy User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  lines     PurchaseLine[]
+
+  @@unique([id, householdId])
+  @@unique([householdId, dedupeKey])
+  @@index([householdId, purchasedOn])
+  @@map("purchases")
+}
+
+model PurchaseLine {
+  id          String           @id @default(uuid(7)) @db.Uuid
+  householdId String           @map("household_id") @db.Uuid
+  purchaseId  String           @map("purchase_id") @db.Uuid
+  /// Order in the form (0, 1, 2 …).
+  position    Int
+  description String           @db.VarChar(100)
+  kind        PurchaseLineKind
+  /// Required for food, empty for non-food (CHECK).
+  categoryKey String?          @map("category_key") @db.VarChar(32)
+  amountOre   Int              @map("amount_ore")
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household Household       @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  purchase  Purchase        @relation(fields: [purchaseId, householdId], references: [id, householdId], onDelete: Cascade)
+  category  Category?       @relation(fields: [categoryKey], references: [key], onDelete: Restrict)
+  batch     InventoryBatch?
+
+  @@unique([id, householdId])
+  @@index([householdId])
+  @@index([purchaseId])
+  @@map("purchase_lines")
+}
+
+/// The monthly food budget, valid from a month onwards. A month uses the row with the latest valid_from
+/// that is not after it, so changing the budget does not rewrite earlier months (spec 04, decision 4).
+model FoodBudget {
+  householdId String   @map("household_id") @db.Uuid
+  /// Always the first day of a month (CHECK).
+  validFrom   DateTime @map("valid_from") @db.Date
+  /// null = no budget from this month on.
+  amountOre   Int?     @map("amount_ore")
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@id([householdId, validFrom])
+  @@map("food_budgets")
 }

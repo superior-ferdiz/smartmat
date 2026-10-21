@@ -24,6 +24,8 @@ export const batchResponseSchema = z.object({
   expiryDate: z.string().nullable(),
   priceOre: z.number().int().nullable(),
   purchasedOn: z.string().nullable(),
+  /** The purchase the batch came from (phase 4, FR-BUD-002), or null. */
+  purchaseId: z.uuid().nullable(),
   createdAt: z.string(),
 });
 export type BatchResponse = z.infer<typeof batchResponseSchema>;

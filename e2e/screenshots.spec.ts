@@ -3,17 +3,16 @@ import { apiAs, test, type Account } from './fixtures';
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
  * Only runs when asked for:  SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 3 pages, with a seeded inventory. (The phase 1 and 2 screenshots in docs/evidence/screenshots/
- * were made by earlier versions of this file; see Git history.)
+ * Phase 4 pages, with a seeded inventory, purchases and budget. (The phase 1–3 screenshots in
+ * docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-3';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-4';
 const LOGGED_IN_PAGES = [
   ['oversikt', '/'],
-  ['matlager', '/matlager'],
-  ['ny-vare', '/matlager/ny'],
-  ['lagringssteder', '/matlager/steder'],
+  ['budsjett', '/budsjett'],
+  ['nytt-kjop', '/budsjett/kjop/ny'],
 ] as const;
 
 function inDays(days: number) {
@@ -55,8 +54,38 @@ async function seed(
       }),
     );
   }
+  // Phase 4: a budget and three purchases this month (lines into the inventory, non-food, only a total).
+  await api.setBudget(400_000);
+  const purchase = await api.createPurchase({
+    storeName: 'Rema 1000 Bø',
+    purchasedOn: inDays(0),
+    lines: [
+      {
+        description: 'Smør',
+        kind: 'food',
+        categoryKey: 'dairy',
+        amountOre: 4590,
+        toInventory: { unit: 'g', quantityBase: 500, locationId: at('fridge') },
+      },
+      {
+        description: 'Kyllingfilet',
+        kind: 'food',
+        categoryKey: 'meat',
+        amountOre: 11_990,
+        toInventory: {
+          unit: 'g',
+          quantityBase: 800,
+          locationId: at('fridge'),
+          expiry: { kind: 'use_by', date: inDays(3) },
+        },
+      },
+      { description: 'Epler', kind: 'food', categoryKey: 'fruitVeg', amountOre: 3490 },
+      { description: 'Oppvaskmiddel', kind: 'nonFood', amountOre: 3990 },
+    ],
+  });
+  await api.createPurchase({ storeName: 'Kiwi', purchasedOn: inDays(0), totalOre: 64_550 });
   await api.dispose();
-  return created;
+  return { created, purchaseId: purchase.id };
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
@@ -69,6 +98,16 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await seed(playwright, account);
         await page.goto(path);
         await page.getByRole('heading', { level: 1 }).waitFor();
+        if (path === '/budsjett/kjop/ny') {
+          // Show the inventory part of a line, the most involved part of the form.
+          await page.getByLabel('Legg i matlageret').check();
+        } else {
+          await page
+            .getByRole('region', { name: /Matbudsjett/ })
+            .getByText(/kr/)
+            .first()
+            .waitFor();
+        }
         await page.evaluate(() => document.fonts.ready);
         await page.screenshot({
           path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
@@ -81,22 +120,31 @@ for (const colorScheme of ['light', 'dark'] as const) {
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – item page and dialog`, () => {
+  test.describe(`${colorScheme} – purchase page and delete dialog`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('vare-og-dialog', async ({ page, playwright, account }, testInfo) => {
-      const created = await seed(playwright, account);
+    test('kjop-og-dialog', async ({ page, playwright, account }, testInfo) => {
+      const { purchaseId } = await seed(playwright, account);
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
-      await page.goto(`/matlager/${created[1]!.id}`);
+      const full = !testInfo.project.name.startsWith('mobil');
+      await page.goto(`/budsjett/kjop/${purchaseId}`);
       await page.getByRole('heading', { level: 1 }).waitFor();
-      await page.getByRole('region', { name: 'Historikk' }).getByRole('listitem').first().waitFor();
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({
-        path: `${OUT}/vare-${testInfo.project.name}-${suffix}.png`,
-        fullPage: !testInfo.project.name.startsWith('mobil'),
+        path: `${OUT}/kjop-${testInfo.project.name}-${suffix}.png`,
+        fullPage: full,
       });
-      await page.getByRole('button', { name: 'Kast', exact: true }).first().click();
+      await page.goto(`/budsjett/kjop/${purchaseId}/rett`);
+      await page.getByRole('group', { name: 'Linje 1' }).waitFor();
+      await page.screenshot({
+        path: `${OUT}/rett-kjop-${testInfo.project.name}-${suffix}.png`,
+        fullPage: full,
+      });
+      await page.goto(`/budsjett/kjop/${purchaseId}`);
+      await page.getByRole('button', { name: 'Slett kjøpet' }).click();
       await page.getByRole('dialog').waitFor();
-      await page.screenshot({ path: `${OUT}/kast-dialog-${testInfo.project.name}-${suffix}.png` });
+      await page.screenshot({
+        path: `${OUT}/slett-kjop-dialog-${testInfo.project.name}-${suffix}.png`,
+      });
     });
   });
 }

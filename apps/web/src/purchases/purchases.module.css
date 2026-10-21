@@ -1,0 +1,176 @@
+/* Purchase form and budget pages (phase 4). Layout with Grid/Flexbox; colours and sizes only via tokens. */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 48rem;
+}
+
+/* Two fields side by side when there is room, stacked on phones – without a media query. */
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-5) var(--space-4);
+  align-items: start;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.legend {
+  padding: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* "Linjer" or "Bare totalsum": two large radio choices, side by side from 600px. */
+.modes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.modes > .legend {
+  margin-bottom: var(--space-2);
+}
+
+@media (min-width: 600px) {
+  .modes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: var(--space-1) var(--space-3);
+  min-height: var(--tap-target);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-control-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+/* The chosen mode gets a thicker border as well as the checked radio, not only a colour change. */
+.mode:has(input:checked) {
+  border: 2px solid var(--color-primary);
+}
+
+.mode input {
+  /* Above the label's overlay, so the radio itself can still be clicked. */
+  position: relative;
+  z-index: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: var(--space-1) 0 0;
+  accent-color: var(--color-primary);
+}
+
+/* The label stretches over the whole card, so a tap anywhere on it chooses the mode. */
+.mode {
+  position: relative;
+}
+
+.modeTitle {
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.modeTitle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.modeHint {
+  grid-column: 2;
+}
+
+/* Lines: one card per line. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.linesTitle {
+  font-size: var(--font-size-xl);
+}
+
+.lineList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+/*
+ * Fields of a line: one column on phones, then as many 10rem columns as fit. The description and the item
+ * choice span the whole row.
+ */
+.lineGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.inventory {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+
+.linked {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.lineError {
+  color: var(--color-danger-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+.linesFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.total {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}

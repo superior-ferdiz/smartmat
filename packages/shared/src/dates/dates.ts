@@ -36,3 +36,16 @@ export function monthRange(date: string): { start: string; next: string } {
   const pad = (n: number) => String(n).padStart(2, '0');
   return { start: `${y}-${pad(m)}-01`, next: `${nextYear}-${pad(nextMonth)}-01` };
 }
+
+/** "2026-10" → "2026-10-01". */
+export function firstOfMonth(month: string): string {
+  return `${month}-01`;
+}
+
+/** "2026-01" + (−1) → "2025-12". Whole months, no time zones involved. */
+export function addMonths(month: string, count: number): string {
+  const [y = 0, m = 1] = month.split('-').map(Number);
+  const index = y * 12 + (m - 1) + count;
+  const year = Math.floor(index / 12);
+  return `${String(year).padStart(4, '0')}-${String((index % 12) + 1).padStart(2, '0')}`;
+}

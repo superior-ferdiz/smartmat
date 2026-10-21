@@ -15,8 +15,22 @@ export const TEST_LOCATIONS = [
   { id: '0199f0a0-0000-7000-8000-00000000f003', kind: 'pantry', name: null, batchCount: 0 },
 ];
 
+/** A month without purchases or budget (phase 4). */
+export const EMPTY_SUMMARY = {
+  month: '2026-10',
+  budgetOre: null,
+  spentOre: 0,
+  remainingOre: null,
+  usedPercent: null,
+  byCategory: [],
+  unallocatedOre: 0,
+  nonFoodOre: 0,
+  purchaseCount: 0,
+};
+
 /**
- * Answers for the read requests most pages make (empty inventory, the three default places, no waste),
+ * Answers for the read requests most pages make (empty inventory, the three default places, no waste,
+ * no purchases and no budget),
  * so a test only has to describe the requests it is about.
  */
 export const defaultApi: Handler = (request) => {
@@ -25,6 +39,15 @@ export const defaultApi: Handler = (request) => {
     return { status: 200, body: { items: [] } };
   if (/^\/households\/[^/]+\/locations$/.test(request.path))
     return { status: 200, body: TEST_LOCATIONS };
+  if (/^\/households\/[^/]+\/budget\/summary(\?month=[\d-]+)?$/.test(request.path)) {
+    return { status: 200, body: EMPTY_SUMMARY };
+  }
+  if (/^\/households\/[^/]+\/budget$/.test(request.path)) {
+    return { status: 200, body: { amountOre: null, validFrom: null } };
+  }
+  if (/^\/households\/[^/]+\/purchases(\?month=[\d-]+)?$/.test(request.path)) {
+    return { status: 200, body: { month: '2026-10', purchases: [] } };
+  }
   if (/^\/households\/[^/]+\/inventory\/waste-summary$/.test(request.path)) {
     return {
       status: 200,

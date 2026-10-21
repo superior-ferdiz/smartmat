@@ -14,20 +14,20 @@ import { Icon } from '../components/Icon/Icon';
 import { ErrorState } from '../components/ErrorState/ErrorState';
 import { LoadingState } from '../components/LoadingState/LoadingState';
 import { Tag } from '../components/Tag/Tag';
-import { itemPath, NEW_ITEM_PATH } from '../app/navigation';
+import { BUDGET_PATH, itemPath, NEW_ITEM_PATH, NEW_PURCHASE_PATH } from '../app/navigation';
 import { useInventory, useLocations, useWasteSummary } from '../inventory/api';
 import { ExpiryAdvice, ExpiryTag } from '../inventory/ExpiryTag';
 import { useFormatQuantity, useLocationName, useToday } from '../inventory/formatHooks';
 import { Page } from '../layout/Page';
+import { useBudgetSummary } from '../purchases/api';
+import { BudgetFigures } from '../purchases/BudgetFigures';
 import styles from './OverviewPage.module.css';
 
 /*
- * Dashboard (FR-DASH-001, FR-UI-003). Since phase 3 the expiry and waste cards show the household's real
- * inventory. Budget and dinner are still SAMPLE DATA until phases 4 and 5, and are labelled as such.
- * The sample numbers are in øre to show how money is handled (ADR-0006).
+ * Dashboard (FR-DASH-001, FR-UI-003). The expiry and waste cards show the household's real inventory
+ * (phase 3), the budget card its real purchases and budget (phase 4). Dinner is still SAMPLE DATA until
+ * phase 5, and is labelled as such.
  */
-const SAMPLE_SPENT_ORE = 324_550;
-const SAMPLE_BUDGET_ORE = 500_000;
 
 /** How many batches the "Går ut snart" card shows. */
 const EXPIRING_LIMIT = 5;
@@ -35,10 +35,6 @@ const EXPIRING_LIMIT = 5;
 export function OverviewPage() {
   const { t } = useTranslation();
   const sampleTag = <Tag tone="sample">{t('common.sampleData')}</Tag>;
-
-  const remainingOre = SAMPLE_BUDGET_ORE - SAMPLE_SPENT_ORE;
-  // Integer percentage, rounded; no floating-point money is stored anywhere.
-  const usedPercent = Math.round((SAMPLE_SPENT_ORE * 100) / SAMPLE_BUDGET_ORE);
 
   return (
     <Page title={t('pages.overview.title')} lead={t('pages.overview.lead')}>
@@ -69,10 +65,9 @@ export function OverviewPage() {
           id="card-budget"
           className={styles.budget}
           title={t('pages.overview.budget.title')}
-          badge={sampleTag}
           footer={
             <LinkButton
-              to="/budsjett"
+              to={BUDGET_PATH}
               variant="ghost"
               size="sm"
               icon={<Icon name="budget" size={18} />}
@@ -81,27 +76,7 @@ export function OverviewPage() {
             </LinkButton>
           }
         >
-          <dl className={styles.figures}>
-            <div>
-              <dt>{t('pages.overview.budget.spent')}</dt>
-              <dd className={`${styles.bigNumber} tabular-nums`}>{formatOre(SAMPLE_SPENT_ORE)}</dd>
-            </div>
-            <div>
-              <dt>{t('pages.overview.budget.remaining')}</dt>
-              <dd className="tabular-nums">{formatOre(remainingOre)}</dd>
-            </div>
-            <div>
-              <dt>{t('pages.overview.budget.monthly')}</dt>
-              <dd className="tabular-nums">{formatOre(SAMPLE_BUDGET_ORE)}</dd>
-            </div>
-          </dl>
-          {/* The bar is decoration; the same information is in the text below it. */}
-          <div className={styles.bar} aria-hidden="true">
-            <div className={styles.barFill} style={{ width: `${Math.min(usedPercent, 100)}%` }} />
-          </div>
-          <p className={styles.barText}>
-            {t('pages.overview.budget.usedPercent', { percent: usedPercent })}
-          </p>
+          <BudgetCard />
         </Card>
 
         <Card
@@ -127,7 +102,7 @@ export function OverviewPage() {
               {t('pages.overview.actions.addItem')}
             </LinkButton>
             <LinkButton
-              to="/budsjett"
+              to={NEW_PURCHASE_PATH}
               variant="secondary"
               fullWidth
               icon={<Icon name="budget" size={20} />}
@@ -227,6 +202,26 @@ function WasteSummaryCard() {
       {unknownValueCount > 0 && (
         <p className={styles.itemMeta}>
           {t('pages.overview.waste.unknown', { count: unknownValueCount })}
+        </p>
+      )}
+    </>
+  );
+}
+
+/** FR-DASH-001: this month's food spending and budget, from the household's purchases (phase 4). */
+function BudgetCard() {
+  const { t } = useTranslation();
+  const summary = useBudgetSummary();
+  if (summary.isPending) return <LoadingState />;
+  if (summary.isError)
+    return <ErrorState headingLevel={3} onRetry={() => void summary.refetch()} />;
+  return (
+    <>
+      <BudgetFigures summary={summary.data} />
+      {summary.data.budgetOre === null && (
+        <p className={styles.itemMeta}>
+          {t('pages.overview.budget.noBudget')}{' '}
+          <Link to={BUDGET_PATH}>{t('pages.overview.budget.setBudget')}</Link>
         </p>
       )}
     </>

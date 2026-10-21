@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderApp } from '../test/renderApp';
+import { EMPTY_SUMMARY, mockApi } from '../test/mockApi';
 import { SECTIONS } from './navigation';
 import { expectNoAxeViolations } from '../test/axe';
 
@@ -105,19 +106,33 @@ describe('FR-UI-002 placeholder pages', () => {
 });
 
 describe('FR-UI-003 overview', () => {
-  it('labels what is still sample content (budget and dinner) as sample data', () => {
+  it('labels what is still sample content (dinner) as sample data', () => {
     renderApp('/');
     expect(screen.getByText('Noe er fortsatt eksempeldata')).toBeInTheDocument();
-    // Since phase 3 the expiry and waste cards show real data; budget and dinner are still made up.
-    expect(screen.getAllByText('Eksempeldata')).toHaveLength(2);
+    // Since phase 4 only the dinner suggestion is made up (expiry and waste: phase 3, budget: phase 4).
+    expect(screen.getAllByText('Eksempeldata')).toHaveLength(1);
   });
 
-  it('formats money from øre in Norwegian format', () => {
+  it('formats money from øre in Norwegian format', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/budget/summary')
+        ? {
+            status: 200,
+            body: {
+              ...EMPTY_SUMMARY,
+              budgetOre: 500_000,
+              spentOre: 324_550,
+              remainingOre: 175_450,
+              usedPercent: 64,
+            },
+          }
+        : undefined,
+    );
     renderApp('/');
     const budget = screen.getByRole('region', { name: 'Matbudsjett denne måneden' });
     // Testing Library collapses whitespace in the DOM text (formatOre uses no-break spaces) but not in the
     // string we pass, so the query uses ordinary spaces.
-    expect(within(budget).getByText('3 245,50 kr')).toBeInTheDocument();
+    expect(await within(budget).findByText('3 245,50 kr')).toBeInTheDocument();
     expect(within(budget).getByText('1 754,50 kr')).toBeInTheDocument();
   });
 });

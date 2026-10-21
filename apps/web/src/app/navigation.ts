@@ -50,6 +50,12 @@ export const INVENTORY_PATH = '/matlager';
 export const NEW_ITEM_PATH = '/matlager/ny';
 export const LOCATIONS_PATH = '/matlager/steder';
 export const itemPath = (itemId: string) => `/matlager/${itemId}`;
+export const BUDGET_PATH = '/budsjett';
+export const NEW_PURCHASE_PATH = '/budsjett/kjop/ny';
+export const purchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}`;
+export const editPurchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}/rett`;
+/** The budget page for a month ("2026-09"); the month is in the URL so it can be shared and reloaded. */
+export const budgetMonthPath = (month: string) => `${BUDGET_PATH}?maned=${month}`;
 
 export const BOTTOM_NAV_SECTIONS = SECTIONS.filter((section) => section.inBottomNav);
 export const MORE_SECTIONS = SECTIONS.filter((section) => !section.inBottomNav);

@@ -9,9 +9,10 @@ Applikasjonsutvikling for web (USN, 2026/2027), med KI-assistert og spesifikasjo
 
 ## Status
 
-**Fase 3 – matlager** er implementert (2026-10-21, grenen `fase-3`). Appen har innlogging, et ekte matlager
-med partier, holdbarhet, forbruk, kassering (svinnlogg) og angre, og en forside med ekte data. Budsjett, oppskrifter
-osv. er fortsatt plassholdere. Se [veikartet](docs/development/roadmap.md).
+**Fase 4 – kjøp og budsjett** er implementert (2026-10-21, grenen `fase-4`). Appen har innlogging, et ekte
+matlager (partier, holdbarhet, forbruk, kassering og angre), registrering av kjøp som kan legge varene rett i lageret,
+månedlig matbudsjett med forbruk per kategori, og en forside med ekte data. Oppskrifter, handleliste osv. er
+fortsatt plassholdere. Se [veikartet](docs/development/roadmap.md).
 
 ## Dokumentasjon
 

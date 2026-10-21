@@ -87,6 +87,26 @@ describe('FR-INV-002/005 item page', () => {
     await expectNoAxeViolations(container);
   });
 
+  it('FR-BUD-002: a batch from a purchase links to the purchase', async () => {
+    const fromPurchase = item('Smør', {
+      batches: [batch({ purchaseId: '0199f0a0-0000-7000-8000-0000000000d1', priceOre: 4590 })],
+    });
+    mockApi((r) =>
+      r.method === 'GET' && r.path.endsWith(`/items/${fromPurchase.id}`)
+        ? { status: 200, body: fromPurchase }
+        : r.path.endsWith('/history')
+          ? { status: 200, body: { events: [], undoableEventId: null } }
+          : undefined,
+    );
+    renderApp(`/matlager/${fromPurchase.id}`);
+    const card = await screen.findByRole('region', { name: 'Parti 1' });
+    expect(within(card).getByText('Fra kjøp')).toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: 'Se kjøpet' })).toHaveAttribute(
+      'href',
+      '/budsjett/kjop/0199f0a0-0000-7000-8000-0000000000d1',
+    );
+  });
+
   it('unknown item → "Fant ikke varen"', async () => {
     mockApi((r) =>
       r.path.includes('/items/')

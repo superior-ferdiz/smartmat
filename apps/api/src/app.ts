@@ -21,9 +21,15 @@ import { InventoryService } from './modules/inventory/service';
 import { categoryRoutes } from './modules/locations/categories';
 import { createLocationRepo } from './modules/locations/repo';
 import { locationRoutes } from './modules/locations/routes';
+import { createBudgetRepo } from './modules/budget/repo';
+import { budgetRoutes } from './modules/budget/routes';
+import { BudgetService } from './modules/budget/service';
 import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
 import { createProfileRepo } from './modules/profile/repo';
+import { createPurchaseRepo } from './modules/purchases/repo';
+import { purchaseRoutes } from './modules/purchases/routes';
+import { PurchaseService } from './modules/purchases/service';
 import { profileRoutes } from './modules/profile/routes';
 import { ProfileService } from './modules/profile/service';
 import { createRequireAuth, createSessionCookies, registerAuthDecorations } from './plugins/auth';
@@ -98,6 +104,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     locations: locationRepo,
     now,
   });
+  const purchaseService = new PurchaseService({
+    repo: createPurchaseRepo(db),
+    locations: locationRepo,
+    now,
+  });
+  const budgetService = new BudgetService({ repo: createBudgetRepo(db), now });
 
   await app.register(
     async (api) => {
@@ -122,6 +134,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         requireAuth,
         householdAccess,
       });
+      await api.register(purchaseRoutes, {
+        service: purchaseService,
+        requireAuth,
+        householdAccess,
+      });
+      await api.register(budgetRoutes, { service: budgetService, requireAuth, householdAccess });
     },
     { prefix: API_PREFIX },
   );

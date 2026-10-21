@@ -1,7 +1,7 @@
 # Databasemodell
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20) og fase 3 (2026-10-21). Skjemaet og teksten er laget av KI (Claude) og
-> ikke gjennomgått av teamet ennå. Kapittelet utvides med tabellene for kjøp og oppskrifter i senere faser.
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21). Skjemaet og teksten er laget
+> av KI (Claude) og ikke gjennomgått av teamet ennå. Kapittelet utvides med tabellene for oppskrifter i senere faser.
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 Fasiten er [`prisma/schema.prisma`](../../prisma/schema.prisma) og migreringene i
@@ -115,6 +115,64 @@ eller stedet tilhører en annen husholdning. En test prøver dette direkte mot d
 parti til sted er `NO ACTION`, ikke `RESTRICT`. `NO ACTION` sjekkes først når hele SQL-setningen er ferdig, slik
 at cascade fra husholdningen kan slette både partier og steder i samme setning.
 
+## Tabeller for kjøp og budsjett (fase 4)
+
+```mermaid
+erDiagram
+  households ||--o{ purchases : "registrerer"
+  purchases ||--o{ purchase_lines : "inneholder"
+  categories |o--o{ purchase_lines : "grupperer (mat)"
+  purchase_lines |o--o| inventory_batches : "skaper"
+  households ||--o{ food_budgets : "har"
+
+  purchases {
+    uuid id PK
+    uuid household_id FK
+    varchar store_name
+    date purchased_on
+    int total_ore "0–100 000 000"
+    char currency "NOK"
+    purchase_source source
+    varchar dedupe_key UK "(household_id, dedupe_key)"
+  }
+  purchase_lines {
+    uuid id PK
+    uuid household_id FK
+    uuid purchase_id FK "(purchase_id, household_id)"
+    int position
+    varchar description
+    purchase_line_kind kind "food | non_food"
+    varchar category_key FK "påkrevd for mat"
+    int amount_ore "0–10 000 000"
+  }
+  food_budgets {
+    uuid household_id PK
+    date valid_from PK "første i måneden"
+    int amount_ore "null = ikke noe budsjett"
+  }
+```
+
+### Kjøpet er eneste kilde til utgifter (ADR-0007)
+Ingen tabell lagrer «brukt denne måneden». Budsjettoversikten summerer linjene og kjøpene hver gang den vises. Når et
+kjøp rettes eller slettes, er alle summer derfor riktige med en gang, uten noen egen oppdatering som kan glemmes.
+
+### Kobling fra kjøp til lager
+`inventory_batches.purchase_line_id` peker til linjen partiet kom fra. Fremmednøkkelen er sammensatt
+(`(purchase_line_id, household_id)`), som for vare og sted, så et parti kan ikke kobles til et kjøp i en annen
+husholdning. Den er unik, så en linje gir høyst ett parti. Koblingen er `NO ACTION`, ikke `SET NULL`: `SET NULL` på
+en sammensatt nøkkel ville også tømt `household_id`. Koden fjerner derfor koblingen selv før den sletter en linje.
+
+### Regler i databasen
+- CHECK: beløpsgrenser, `currency = 'NOK'`, `(kind = 'food') = (category_key IS NOT NULL)`, og at `valid_from`
+  er den første i måneden.
+- `UNIQUE (household_id, dedupe_key)`: samme skjema sendt to ganger, også samtidig, gir ett kjøp (NFR-DATA-002).
+- Totalsummen for et kjøp med linjer er summen av linjene. Dette sjekkes ikke av databasen (det ville krevd en
+  trigger), men regnes alltid av serveren. En test sjekker at summene stemmer for hver måned.
+
+### Budsjett som gjelder fra en måned
+`food_budgets` har én rad per måned budsjettet ble endret. For en måned brukes raden med senest `valid_from` som ikke
+er etter måneden. Endrer man budsjettet i november, beholder oktober det gamle beløpet.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -132,8 +190,7 @@ CHECK-begrensningene kan ikke uttrykkes i Prisma. De er skrevet som rå SQL nede
 
 ## Husholdningsisolasjon (ADR-0008)
 
-Alle tabeller med brukerdata har `household_id`. Matlageret fra fase 3 er det første eksempelet, og kjøp og
-budsjett følger i fase 4.
+Alle tabeller med brukerdata har `household_id`: matlageret fra fase 3, og kjøp, linjer og budsjett fra fase 4.
 
 - Hver bruker får en husholdning ved registrering, i samme transaksjon som brukeren, sammen med tre standardsteder.
 - Tilgang avgjøres av en rad i `household_members`, ikke av hvem som opprettet noe.
@@ -151,6 +208,7 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261020130340_init_auth` | De fire tabellene, enum `household_role`, indekser, fremmednøkler og CHECK-begrensninger |
 | `20261021114832_inventory` | Matlageret: 5 tabeller, 6 enums, sammensatte fremmednøkler, CHECK, 12 kategorier, standardsteder for eksisterende husholdninger |
 | `20261021115500_inventory_event_seq` | Løpenummer på hendelser (se under) |
+| `20261021124836_purchases_budget` | Kjøp, linjer og matbudsjett: 3 tabeller, 2 enums, `purchase_line_id` på partier, sammensatte fremmednøkler og CHECK |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

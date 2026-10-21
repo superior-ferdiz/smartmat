@@ -1,9 +1,9 @@
 # Testing og testresultater
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20) og 3 (2026-10-21). Testene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21). Testene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Alle resultater under er fra faktiske kjøringer. Utdataene er lagret ordrett i
-> [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/) og
-> [fase-3/](../evidence/test-results/fase-3/).
+> [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/),
+> [fase-3/](../evidence/test-results/fase-3/) og [fase-4/](../evidence/test-results/fase-4/).
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Testmiljø
@@ -249,6 +249,101 @@ Feil i testene: Playwrights request-kontekst sender ikke `Secure`-cookies over h
 127.0.0.1), så testhjelperen setter cookien som header. En test forventet at Tab aldri forlater en modal dialog;
 med `<dialog>` kan fokus gå til nettleserens eget grensesnitt, og testen sjekker nå at fokus aldri havner på siden
 bak.
+
+## Testtyper og sporbarhet (fase 4)
+
+Testene refererer til krav-ID-ene i [04-kjop-og-budsjett.md](../development/requirements/04-kjop-og-budsjett.md).
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| NFR-DATA-001, FR-BUD-004 | `sumOre` (eksakt, avviser desimaler og for store summer), `usedPercent` (rundes ned, BigInt), `monthFigures` (mat, ikke-mat, ikke fordelt, over budsjett, tom måned), måneder over årsskifte og midnatt i Norge | `shared/src/money/budget.test.ts` | 15 |
+| FR-BUD-001/002/003/005 | Skjemaene: linjer eller totalsum, grenser, dato, kategori for mat, lagerdel, ID-er ved retting, budsjett, måned | `shared/src/schemas/purchases.test.ts` | 15 |
+| FR-BUD-001/002/005 | Servicen med falskt repo: pris og dato til partiet, eksisterende vare, alle feltfeil samtidig, dedupe, 409 ved fremmednøkkelfeil, linje-ID-er | `api/src/modules/purchases/service.test.ts` | 10 |
+| FR-BUD-003/004 | Budsjettservice: måned i norsk tid, kalendermåned, fjernet budsjett | `api/src/modules/budget/service.test.ts` | 4 |
+| FR-BUD-001–005, NFR-DATA-001/002 | API mot database: registrering, dato i norsk tid, dobbel innsending (også 5 samtidige), kjøp → lager, tilbakerulling midt i en transaksjon, budsjett med historikk, månedsoversikt og kontrollsum, retting (beløp, dato, linjer, type, totalsum), sletting (urørt/rørt/flyttet), samtidig sletting og forbruk, CHECK, kontosletting | `api/test/purchases.api.test.ts` | 38 |
+| NFR-SEC-001 | Alle 8 endepunkter med en annen husholdnings ID-er (to varianter), vare/sted/linje fra annen husholdning, dedupe-nøkkel, husholdningsfilteret i repoet alene, sammensatt fremmednøkkel, 401, CSRF | `api/test/purchases.security.api.test.ts` | 10 |
+| FR-BUD-001/002/005 | Skjematekst → API-kropp, feltnavn som feilnøkler, løpende sum, fra lagret kjøp til skjema | `web/src/purchases/purchaseForm.test.ts` | 13 |
+| FR-BUD-003/004 | Budsjettsiden: tall, kategorier, over budsjett i tekst, måned i URL, liste, feil, sette og fjerne budsjett, axe | `pages/budget/BudgetPage.test.tsx` | 9 |
+| FR-BUD-001/002/005 | Registrer, vis, rett og slett kjøp: validering, øre og grunnenheter, eksisterende vare, totalsum, feltfeil fra server, slettedialog, 404, axe | `pages/budget/PurchasePages.test.tsx` | 9 |
+| FR-DASH-001, FR-BUD-002 | Budsjettkortet på forsiden med og uten budsjett, hurtighandling, lenke fra parti til kjøp | `OverviewPage.test.tsx`, `ItemPage.test.tsx` | 4 |
+| FR-BUD-001–005, NFR-UX-001/002 | Ende-til-ende: budsjett → kjøp → varer i lageret → oppdatert budsjett og forside; retting og sletting; dobbeltklikk; axe og 360 px på alle nye sider | `e2e/budget.spec.ts` | 4 (× 2 skjermstørrelser) |
+
+**Sum etter fase 4:** 505 enhetstester (178 shared, 56 api, 271 web), 129 API-tester mot database, 115
+ende-til-ende-tester.
+
+Tre eksisterende tester ble endret fordi oppførselen var ment å endres: navigasjonstesten forventet to merker med
+«Eksempeldata» på forsiden (nå ett), testen av pengeformat leste eksempeltall fra budsjettkortet (leser nå tall fra
+et testsvar), og typen `BatchResponse` fikk feltet `purchaseId` i testdataene.
+
+### Kontroll av testene (fase 4)
+
+Beskyttelsene ble slått av i koden én om gangen
+([skript](../evidence/test-results/fase-4/10-mutation-check.sh)).
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-4/10-mutation-check-run1.txt)) avslørte to hull:
+
+- **Retting uten husholdningsfilter i repoet** ble ikke fanget. Servicen slår opp kjøpet med husholdningsfilter før
+  repoet kalles, så API-testene nådde aldri dette laget. Det er et ekstra forsvar, men det var ikke testet.
+- **«Urørt» uten sjekk av hendelser** ble ikke fanget. Ingen test hadde et parti som var flyttet uten at mengden var
+  endret.
+
+To nye tester ble skrevet (repoet kalt direkte med feil husholdning, og sletting av et kjøp med et flyttet parti).
+**Andre kjøring** ([utdata](../evidence/test-results/fase-4/10-mutation-check.txt)):
+
+| Endring | Feilende tester |
+|---|---|
+| Kjøp slås opp uten husholdningsfilter | 2 |
+| Retting av kjøp uten husholdningsfilter (repo) | 1 |
+| Sletting av kjøp uten husholdningsfilter | 2 |
+| Månedsoversikten summerer uten husholdningsfilter | 1 |
+| Linje-ID sjekkes ikke mot kjøpet | 2 |
+| Sted i en linje sjekkes ikke | 2 |
+| Eksisterende vare i en linje sjekkes ikke | 2 |
+| Kjøpsdato frem i tid tillates | 1 |
+| Totalsummen regnes ikke av serveren | 3 |
+| Kjøp, linjer og partier uten transaksjon | 1 |
+| Ingen gjenbruk av `clientRequestId` | 2 |
+| Dedupe-nøkkelen lagres ikke | 2 |
+| «Urørt» uten sjekk av hendelser | 1 |
+| Urørte partier fjernes også når brukeren vil beholde dem | 2 |
+| Partiene låses ikke (`FOR UPDATE` fjernet) | 1 |
+| Feil budsjettrad for måneden | 1 |
+| *Uendret kode* | *0 (129 av 129)* |
+
+**Forbehold om `FOR UPDATE`:** Testen som fanget denne endringen, kjører sletting og forbruk samtidig åtte ganger.
+Den fanget endringen i begge kjøringene, men en test av samtidighet avhenger av hvordan forespørslene tilfeldigvis
+flettes. Den kan i prinsippet gå grønt selv om låsen mangler.
+
+## Resultater fase 4 (kjørt 2026-10-21)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 505 av 505 | `04-unit-tests.txt` |
+| API mot testdatabase | 129 av 129 | `05-api-tests.txt` |
+| Bygg | Vellykket. Advarsel om stor JS-fil (658 kB). | `06-build.txt` |
+| Ende-til-ende | 115 bestått, 19 hoppet over (16 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (4 migreringer) | `09-migrate-status.txt` |
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-4/](../evidence/screenshots/fase-4/).
+
+## Feil funnet i fase 4
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-21.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | Fremmednøkkelen fra kjøpslinje til kategori ble foreslått som `ON DELETE SET NULL` av Prisma. Det ville brutt regelen om at mat alltid har kategori. | Gjennomlesning av den genererte migreringen | `RESTRICT`, som for varer |
+| 2 | Valgknappene «Med linjer / Bare totalsum» hadde ikke en etikett lint-regelen kunne se | ESLint (jsx-a11y) | Egen `<label>` per valg og hint via `aria-describedby` |
+| 3 | Feilkoden for samtidige endringer sa «Partiet ble endret», som er feil for kjøp | Gjennomlesning av teksten | Egen kode `errors.purchase.changedMeanwhile` |
+| 4 | To hull i testene (se kontrollen over) | Mutasjonskontrollen | To nye tester |
+
+Feil i testene: En test flyttet en falsk klokke 20 dager frem og ble logget ut, fordi sesjoner utløper etter 14 dager
+uten bruk. Testen går nå frem i to steg med en forespørsel imellom. To komponenttester sammenlignet tekst uten å ta
+hensyn til hardt mellomrom i beløp, og én ventet ikke lenge nok på feilvisningen etter at en 5xx-feil ble prøvd på
+nytt.
 
 ## Begrensninger
 

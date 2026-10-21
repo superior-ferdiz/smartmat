@@ -2,6 +2,26 @@
 
 ## [Ikke utgitt]
 
+### Fase 4 – 2026-10-21 (grenen `fase-4`)
+- **Kjøp og budsjett:**
+  - registrere kjøp manuelt med linjer (mat med kategori, eller ikke mat) eller bare totalsum
+  - matlinjer kan legges rett i matlageret som partier, på en ny eller eksisterende vare, i samme transaksjon
+  - månedlig matbudsjett som gjelder fra en måned og fremover
+  - månedsoversikt: brukt, gjenstående, andel, per kategori, «ikke fordelt» og ikke-mat for seg
+  - retting og sletting av kjøp. Urørte partier fjernes, brukte beholdes.
+  - samme skjema sendt to ganger gir ett kjøp (`clientRequestId`)
+- **Migrering:** `purchases_budget` (`purchases`, `purchase_lines`, `food_budgets`, `purchase_line_id` på partier,
+  sammensatte fremmednøkler, CHECK).
+- **API:** 8 nye endepunkter under `/households/:householdId/` (`purchases`, `budget`). Partier har nå `purchaseId`.
+- **`packages/shared`:** skjemaer for kjøp og budsjett, `sumOre`, `usedPercent` (BigInt), `monthFigures`,
+  `addMonths`/`firstOfMonth`, ny feilkode `errors.purchase.changedMeanwhile`.
+- **Web:**
+  - `/budsjett` med månedsvelger i URL-en, `/budsjett/kjop/ny`, `/budsjett/kjop/:id` og `/budsjett/kjop/:id/rett`
+  - forsidens budsjettkort viser ekte data. Bare middagsforslaget er fortsatt eksempeldata.
+  - varesiden lenker til kjøpet et parti kom fra
+  - `apiFetch` støtter `PUT`
+- **Tester:** 505 enhetstester (+79), 127 API-tester (+46), 115 Playwright-tester (+8), og kontroll av testene.
+
 ### Fase 3 – 2026-10-21 (grenen `fase-3`)
 - **Matlager:**
   - varer med partier (egen mengde, eget sted, best før *eller* siste forbruksdag, pris, kjøpsdato)

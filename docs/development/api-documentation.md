@@ -91,7 +91,8 @@ når den står i forespørselens kropp), og ingenting blir endret.
 ```ts
 LocationResponse = { id, kind: 'fridge'|'freezer'|'pantry'|'other', name: string | null, batchCount }
 BatchResponse = { id, quantityBase, initialQuantityBase, locationId, expiryKind: 'best_before'|'use_by'|null,
-                  expiryDate: 'YYYY-MM-DD'|null, priceOre|null, purchasedOn|null, createdAt }
+                  expiryDate: 'YYYY-MM-DD'|null, priceOre|null, purchasedOn|null,
+                  purchaseId|null /* fase 4: kjøpet partiet kom fra */, createdAt }
 ItemResponse = { id, name, categoryKey, unit: 'g'|'ml'|'stk', createdAt, batches: BatchResponse[] }  // bare partier med noe igjen
 HistoryEvent = { id, type, deltaBase, batchId|null, fromLocationId|null, toLocationId|null, actorName|null, createdAt,
                  revertsEventId|null, revertedType|null, wasteReason|null, wasteValueOre|null, wasteValueBasis|null, undone }
@@ -126,3 +127,51 @@ Mengder er alltid heltall i grunnenhet (g, ml, stk) og beløp er heltall i øre 
 - `reason` er en av `expired`, `spoiled`, `leftovers`, `tooMuch` og `other`.
 - Ved `PATCH` på et parti gir ny `quantityBase` en hendelse av typen `adjust`, og ny `locationId` en hendelse av
   typen `move`.
+
+## Kjøp og budsjett (fase 4)
+
+**Status:** Fase 4 (2026-10-21). Skrevet av KI (Claude), ikke gjennomgått av teamet. Se
+[fasespesifikasjon 04](requirements/04-kjop-og-budsjett.md).
+
+Samme regler som for matlageret: alle ruter ligger under `/households/:householdId/`, krever innlogging og
+medlemskap, og kjøps-, linje-, vare- og steds-ID-er slås opp innenfor husholdningen. Et kjøp i en annen husholdning
+gir 404. En vare eller et sted fra en annen husholdning i kroppen gir 400 med feltfeil. I begge tilfeller blir
+ingenting endret.
+
+### Typer
+
+```ts
+PurchaseLineInput = { id? /* bare ved retting */, description, kind: 'food'|'nonFood', categoryKey? /* påkrevd for mat */,
+                      amountOre, toInventory?: { itemId? | unit?, quantityBase, locationId, expiry? } | null }
+PurchaseResponse = { id, storeName|null, purchasedOn: 'YYYY-MM-DD', totalOre, source: 'manual', createdAt, updatedAt,
+                     lines: [{ id, position, description, kind, categoryKey|null, amountOre,
+                               batch: { id, itemId, itemName, untouched } | null }] }
+PurchaseListItem = { id, storeName|null, purchasedOn, totalOre, lineCount, batchCount }
+BudgetSummary = { month: 'YYYY-MM', budgetOre|null, spentOre, remainingOre|null, usedPercent|null,
+                  byCategory: [{ categoryKey, amountOre }], unallocatedOre, nonFoodOre, purchaseCount }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/purchases?month=YYYY-MM` | – | `{ month, purchases: PurchaseListItem[] }` | 400 `validation.month.invalid` |
+| POST | `/households/:h/purchases` | `{ storeName?, purchasedOn, lines? \| totalOre?, clientRequestId? }` | 201 `PurchaseResponse` (200 hvis `clientRequestId` er brukt før) | 400, 409 `errors.purchase.changedMeanwhile` |
+| GET | `/households/:h/purchases/:purchaseId` | – | `PurchaseResponse` | 404 |
+| PUT | `/households/:h/purchases/:purchaseId` | `{ storeName?, purchasedOn, lines? \| totalOre?, removeUntouchedBatches? }` | `PurchaseResponse` | 400, 404, 409 |
+| DELETE | `/households/:h/purchases/:purchaseId?removeUntouchedBatches=true\|false` | – | `{ removedBatches, keptBatches }` | 404 |
+| GET | `/households/:h/budget` | – | `{ amountOre\|null, validFrom\|null }` (inneværende måned) | |
+| PUT | `/households/:h/budget` | `{ amountOre: number \| null }` | `{ amountOre, validFrom }` | 400 |
+| GET | `/households/:h/budget/summary?month=YYYY-MM` | – | `BudgetSummary` | 400 |
+
+- Et kjøp har **enten** linjer **eller** `totalOre`. Med linjer regner serveren totalsummen, og en totalsum fra
+  klienten gir 400 (`validation.purchase.totalWithLines`).
+- `purchasedOn` kan ikke være senere enn i dag i norsk tid (`validation.purchase.dateInFuture`).
+- Uten `month` brukes inneværende måned i norsk tid.
+- `toInventory` lager et parti i samme transaksjon som kjøpet: på varen `itemId`, eller på en ny vare med linjens
+  beskrivelse som navn (da kreves `unit`). Partiet får linjens beløp som pris og kjøpsdatoen.
+- Ved retting: linjer med kjent `id` oppdateres, linjer som mangler slettes, og linjer uten `id` er nye. En `id` som
+  ikke hører til kjøpet, gir `lines.N.id: validation.purchase.unknownLine`.
+- `removeUntouchedBatches` (standard `true`) gjelder partier fra linjer som slettes, og fra kjøpet når det slettes.
+  Urørte partier fjernes. Andre partier blir alltid værende, og koblingen til kjøpet blir tom.
+- Budsjettet settes fra den første i inneværende måned. `null` fjerner det fra og med denne måneden.

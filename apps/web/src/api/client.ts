@@ -30,7 +30,7 @@ export function setCsrfToken(token: string | null) {
   csrfToken = token;
 }
 
-type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export async function apiFetch<T>(
   path: string,

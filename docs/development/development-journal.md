@@ -174,3 +174,53 @@ Bevis ligger i `docs/evidence/test-results/fase-3/`, skjermbilder i `docs/eviden
 
 **Neste:** Teamet går gjennom fasen. Deretter fase 4 (kjøp og budsjett), helst i en ny chat.
 
+---
+
+## 2026-10-21 – Fase 4: kjøp og budsjett
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med.
+
+**Hva skjedde**
+- Ferdinand startet fase 4 i en ny chat med en detaljert prompt. Den bestemte omfanget, at grenen `fase-4` skulle
+  lages fra `fase-3`, og at planen skulle vise hva som er KI-ens og hva som er teamets del.
+- Claude påpekte at hele fase 3 ikke var committet. Hadde grenen blitt laget da, ville fase 3 havnet i samme pull
+  request som fase 4.
+- Ferdinand svarte: «Godkjennt du kan committe jeg har gått igjennom alt.» Anbefalingene i de åtte åpne spørsmålene
+  gjelder (se tabellen i [spesifikasjon 04](requirements/04-kjop-og-budsjett.md)).
+- **Om gjennomgangen:** Ferdinand oppga ikke hva «alt» omfatter (planen for fase 4 eller koden i fase 1–3), hvordan
+  gjennomgangen ble gjort, eller om Linus var med. Utsagnet er registrert ordrett, men fase 1–3 er ikke satt til
+  «Ferdig» i veikartet før dette er avklart.
+- Claude committet fase 3 (856e68b, ikke pushet) og laget `fase-4` fra den commiten. Spesifikasjon 04 ble skrevet
+  **før** koden. **All kode i fasen er skrevet av KI.**
+- Arbeidet ble avbrutt én gang (økten ble brutt mens testene kjørte). Ferdinand ba om å fortsette. Filene som var
+  skrevet før avbruddet (blant annet `e2e/budget.spec.ts`), ble lest gjennom igjen før arbeidet gikk videre.
+
+**Avvik og funn underveis** (detaljer i kapittel 8, 10 og 11)
+- Prisma foreslo `SET NULL` på kategorien til kjøpslinjer. Det ble endret til `RESTRICT` før migreringen ble kjørt.
+- **Kontrollen av testene fant to hull** i første kjøring: filteret på husholdning i repoet ved retting, og
+  «urørt»-regelen for flyttede partier. To nye tester ble skrevet, og alle 16 endringer ble fanget i andre kjøring.
+  Begge kjøringene er lagret.
+- En API-test ble logget ut fordi den flyttet klokken 20 dager frem på én gang (sesjoner utløper etter 14 dager).
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 505 |
+| API-tester mot database | 129 |
+| Bygg | Vellykket |
+| Playwright-tester | 115 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-4/`, skjermbilder i `docs/evidence/screenshots/fase-4/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 4 (og en avklaring av hva gjennomgangen av fase 1–3 omfattet)
+- manuell test med skjermleser og på ekte telefon
+
+**Neste:** Teamet går gjennom fasen og ber om commit og push. Deretter fase 5 (oppskrifter), helst i en ny chat.
+
+**Oppfølging 2026-10-21:** Claude spurte hva gjennomgangen omfattet, og om `fase-4` skulle committes og pushes.
+Ferdinand svarte «ja». Det ble tolket som ja til commit og push av `fase-4` og push av `fase-3`. Hva gjennomgangen
+omfattet, er fortsatt ikke avklart.

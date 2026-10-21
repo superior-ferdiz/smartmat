@@ -21,7 +21,14 @@ Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
 - **Arbeidsflyt med Git:** én gren per fase. Teamet oppretter og godkjenner pull requesten selv (ADR-0013).
 - **Fase 3 (2026-10-21):** All kode er skrevet av KI. Ferdinand godkjente planen («godkjent») og ba om å starte
   fase 3 i samme chat som fase 2.
-- Ingen gjennomgang av koden fra teamet er registrert ennå.
+- **Fase 4 (2026-10-21):** All kode er skrevet av KI. Ferdinand godkjente planen og skrev samtidig: «Godkjennt du
+  kan committe jeg har gått igjennom alt.» Han oppga ikke hva «alt» omfatter (planen for fase 4 eller koden i fase
+  1–3), hvordan gjennomgangen ble gjort, eller om Linus var med. Dette er derfor registrert som Ferdinands egen
+  erklæring, ikke som en dokumentert kodegjennomgang med funn.
+- Arbeidsfordelingen i fase 4 ble satt i prompten: KI implementerer, teamet gjennomgår via pull request. Planen
+  skilte mellom KI-ens del (spesifikasjon, kode, tester, dokumentasjon) og teamets del (beslutninger, gjennomgang
+  av pull requesten, manuell test på telefon og med skjermleser, egne refleksjoner i dette kapittelet).
+- Ingen gjennomgang fra Linus Saxe Huseby er registrert ennå.
 
 ## Kilder i prosjektet
 

@@ -134,6 +134,7 @@ const batchSelect = {
   priceOre: true,
   purchasedOn: true,
   createdAt: true,
+  purchaseLine: { select: { purchaseId: true } },
 } satisfies Prisma.InventoryBatchSelect;
 
 type BatchRow = Prisma.InventoryBatchGetPayload<{ select: typeof batchSelect }>;
@@ -148,6 +149,7 @@ function toBatch(row: BatchRow): BatchResponse {
     expiryDate: row.expiryDate ? fromDbDate(row.expiryDate) : null,
     priceOre: row.priceOre,
     purchasedOn: row.purchasedOn ? fromDbDate(row.purchasedOn) : null,
+    purchaseId: row.purchaseLine?.purchaseId ?? null,
     createdAt: row.createdAt.toISOString(),
   };
 }
@@ -191,6 +193,36 @@ function batchData(batch: NewBatch) {
   };
 }
 
+/**
+ * Creates a batch and its "add" event inside the caller's transaction. Also used by purchases
+ * (FR-BUD-002), so a batch from a purchase looks exactly like one added in the inventory.
+ */
+export async function insertBatchWithEvent(
+  tx: Prisma.TransactionClient,
+  householdId: string,
+  actorId: string,
+  itemId: string,
+  batch: NewBatch,
+  purchaseLineId: string | null = null,
+): Promise<string> {
+  const created = await tx.inventoryBatch.create({
+    data: { householdId, itemId, purchaseLineId, ...batchData(batch) },
+    select: { id: true },
+  });
+  await tx.inventoryEvent.create({
+    data: {
+      householdId,
+      itemId,
+      batchId: created.id,
+      type: 'add',
+      deltaBase: batch.quantityBase,
+      toLocationId: batch.locationId,
+      actorId,
+    },
+  });
+  return created.id;
+}
+
 export function createInventoryRepo(db: Db): InventoryRepo {
   return {
     async listItems(householdId) {
@@ -216,21 +248,7 @@ export function createInventoryRepo(db: Db): InventoryRepo {
           data: { householdId, ...item },
           select: { id: true },
         });
-        const newBatch = await tx.inventoryBatch.create({
-          data: { householdId, itemId: created.id, ...batchData(batch) },
-          select: { id: true },
-        });
-        await tx.inventoryEvent.create({
-          data: {
-            householdId,
-            itemId: created.id,
-            batchId: newBatch.id,
-            type: 'add',
-            deltaBase: batch.quantityBase,
-            toLocationId: batch.locationId,
-            actorId,
-          },
-        });
+        await insertBatchWithEvent(tx, householdId, actorId, created.id, batch);
         return created.id;
       });
     },
@@ -256,21 +274,7 @@ export function createInventoryRepo(db: Db): InventoryRepo {
           select: { id: true },
         });
         if (!item) return false;
-        const created = await tx.inventoryBatch.create({
-          data: { householdId, itemId, ...batchData(batch) },
-          select: { id: true },
-        });
-        await tx.inventoryEvent.create({
-          data: {
-            householdId,
-            itemId,
-            batchId: created.id,
-            type: 'add',
-            deltaBase: batch.quantityBase,
-            toLocationId: batch.locationId,
-            actorId,
-          },
-        });
+        await insertBatchWithEvent(tx, householdId, actorId, itemId, batch);
         return true;
       });
     },

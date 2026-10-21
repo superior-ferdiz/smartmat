@@ -1,0 +1,52 @@
+1. Kjøp slås opp uten husholdningsfilter (GET)
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  2 failed | 127 passed (129)
+2. Retting av kjøp uten husholdningsfilter
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  1 failed | 128 passed (129)
+3. Sletting av kjøp uten husholdningsfilter
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  2 failed | 127 passed (129)
+4. Månedsoversikten summerer linjer uten husholdningsfilter
+    endret: apps/api/src/modules/budget/repo.ts
+    resultat: Tests  1 failed | 128 passed (129)
+5. Linje-ID i rettingen sjekkes ikke mot kjøpet
+    endret: apps/api/src/modules/purchases/service.ts
+    resultat: Tests  2 failed | 127 passed (129)
+6. Lagringssted i en linje sjekkes ikke mot husholdningen
+    endret: apps/api/src/modules/purchases/service.ts
+    resultat: Tests  2 failed | 127 passed (129)
+7. Eksisterende vare i en linje sjekkes ikke mot husholdningen
+    endret: apps/api/src/modules/purchases/service.ts
+    resultat: Tests  2 failed | 127 passed (129)
+8. Kjøpsdato frem i tid tillates
+    endret: apps/api/src/modules/purchases/service.ts
+    resultat: Tests  1 failed | 128 passed (129)
+9. Totalsummen regnes ikke av serveren (linjene summeres ikke)
+    endret: apps/api/src/modules/purchases/service.ts
+    resultat: Tests  3 failed | 126 passed (129)
+10. Kjøp, linjer og partier skrives uten transaksjon
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  1 failed | 128 passed (129)
+11. Ingen gjenbruk av clientRequestId (dobbel innsending gir to kjøp)
+    endret: apps/api/src/modules/purchases/service.ts
+    resultat: Tests  2 failed | 127 passed (129)
+12. Dedupe-nøkkelen lagres ikke (bare forhåndssjekken i servicen gjenstår)
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  2 failed | 127 passed (129)
+13. «Urørt» sjekker bare mengden, ikke hendelsene (et flyttet parti regnes som urørt)
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  1 failed | 128 passed (129)
+14. Urørte partier fjernes alltid, også når brukeren vil beholde dem
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  2 failed | 127 passed (129)
+15. Partiene låses ikke (FOR UPDATE fjernet) før urørt-sjekken
+    endret: apps/api/src/modules/purchases/repo.ts
+    resultat: Tests  1 failed | 128 passed (129)
+16. Feil budsjettrad brukes for en måned (eldste i stedet for siste gyldige)
+    endret: apps/api/src/modules/budget/repo.ts
+    resultat: Tests  1 failed | 128 passed (129)
+Uendret kode:
+    Tests  129 passed (129)
+
+# exit code: 0

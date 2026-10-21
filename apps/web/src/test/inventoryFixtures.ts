@@ -28,6 +28,7 @@ export function batch(overrides: Partial<BatchResponse> = {}): BatchResponse {
     expiryDate: null,
     priceOre: null,
     purchasedOn: null,
+    purchaseId: null,
     createdAt: '2026-10-01T10:00:00.000Z',
     ...overrides,
   };

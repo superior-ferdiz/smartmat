@@ -104,6 +104,20 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - After writing files with `\u00A0` in them, check for literal U+00A0 – but only fix files you just wrote (a blanket
   fix changed a comment in `ore.ts` once).
 
+## Code conventions (added in phase 4)
+
+- Spending is never stored: budget figures are summed from `purchases`/`purchase_lines` on every read (ADR-0007).
+  A purchase has lines OR a total; with lines the server computes `total_ore` (`purchaseTotal`). Non-food lines are
+  recorded but not counted as food spending.
+- Writes that span tables go in one `db.$transaction`; reuse `insertBatchWithEvent` (inventory repo) for any new
+  batch so it gets its "add" event. A composite FK on a nullable column (`purchase_line_id`) is `NoAction` and the code
+  clears it before deleting the parent (SET NULL would also clear `household_id`).
+- Idempotent creates: the form sends a random `clientRequestId`, stored as a `dedupe_key` unique per household;
+  a repeat answers 200 with the existing row (P2002 race handled in the repo).
+- Web: `apiFetch` supports PUT; purchase/budget hooks in `apps/web/src/purchases/api.ts`. Form logic lives in `.ts`
+  files and uses the API's field names as error keys (`lines.0.amountOre`) so server errors land on the right field.
+- API tests that move a fake clock more than 14 days must make a request in between (sessions expire after 14 idle days).
+
 ## Integrity rules (non-negotiable)
 
 - Never fabricate dates, meetings, tests, test results, screenshots, user feedback, sources or authorship.

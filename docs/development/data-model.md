@@ -16,6 +16,17 @@ er ikke lagt til ennå, fordi ingenting bruker den før fase 4. `AuditEvent` er 
 - Partiet har én dato med type (`expiry_kind` + `expiry_date`) i stedet for `best_before` og `use_by`.
 - `AuditEvent` droppes; `inventory_events` er historikken (beslutning 5).
 
+**Implementert i fase 4 (2026-10-21):** `Purchase`, `PurchaseLine` og `FoodBudget`, og `purchase_line_id` på
+`InventoryBatch`. Avvik fra planen:
+- `PurchaseLine` har `kind` (`food`/`nonFood`), `category_key` og `amount_ore` i stedet for `product_id`, `quantity`,
+  `unit_price_ore`, `discount_ore`, `is_food` og `is_deposit`. Rabatt og pant føres som nettobeløp (avgjørelse 5 i
+  spesifikasjon 04). Mengden står på partiet, ikke på linjen.
+- `Budget` heter `FoodBudget` og har bare `household_id`, `valid_from` (første dag i måneden) og `amount_ore`
+  (null = ikke noe budsjett). Budsjett per bruker og per kategori er utsatt (avgjørelse 8).
+- Koblingen går fra parti til linje (`inventory_batches.purchase_line_id`, unik, sammensatt fremmednøkkel med
+  `household_id`), ikke fra linje til parti.
+- `dedupe_key` er unik per husholdning, ikke globalt.
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
@@ -30,7 +41,7 @@ erDiagram
   Household ||--o{ StorageLocation : har
   Household ||--o{ InventoryItem : eier
   Household ||--o{ Purchase : registrerer
-  Household ||--o{ Budget : har
+  Household ||--o{ FoodBudget : har
   Product ||--o{ ProductBarcode : identifiseres_av
   Product ||--o{ InventoryItem : beskriver
   Category ||--o{ Product : grupperer
@@ -63,9 +74,9 @@ erDiagram
 | `InventoryBatch` | item_id, location_id, quantity_base, best_before?, use_by?, purchased_at?, price_ore?, price_basis, purchase_line_id?, source | Én fysisk pakke/parti. Ulike datoer per parti. CHECK quantity_base ≥ 0 | 3 |
 | `InventoryEvent` | batch_id, type (`add`/`consume`/`discard`/`move`/`adjust`/`undo`), delta_base, actor_id, created_at | Kun innsetting – gir historikk og angre | 3 |
 | `FoodWasteEvent` | event_id, reason, value_ore?, value_basis (`actual`/`estimated`/`unknown`) | Grunnlag for svinnstatistikk | 3 |
-| `Purchase` | household_id, store_name?, purchased_at, total_ore, source (`manual`/`receipt`/`barcode`), dedupe_key (unik), created_by | **Eneste utgiftskilde** | 4 |
-| `PurchaseLine` | purchase_id, description, product_id?, quantity, unit_price_ore, discount_ore, line_total_ore, is_food, is_deposit | Ikke-mat teller som utgift men gir ikke lagerparti | 4 |
-| `Budget` | household_id eller user_id, period_start, period_end, amount_ore, category_id? | Én av household_id/user_id (CHECK) | 4 |
+| `Purchase` | household_id, store_name?, purchased_on, total_ore, currency, source (`manual`/`receipt`/`barcode`), dedupe_key (unik per husholdning), created_by | **Eneste utgiftskilde** | 4 |
+| `PurchaseLine` | household_id, purchase_id, position, description, kind (`food`/`nonFood`), category_key?, amount_ore | Ikke-mat registreres, men teller ikke i matbudsjettet og gir ikke lagerparti | 4 |
+| `FoodBudget` | household_id, valid_from, amount_ore? | Gjelder fra en måned og fremover | 4 |
 | `Ingredient` / `IngredientAlias` | canonical_name / alias | Normalisering: "lettmelk", "melk 1%" → melk | 5 |
 | `UnitConversion` | ingredient_id?, from_unit, to_base_factor | f.eks. 1 dl melk = 100 ml, 1 egg ≈ 60 g | 5 |
 | `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image? | Frødata fra teamet | 5 |

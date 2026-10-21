@@ -88,6 +88,31 @@ export async function apiAs(playwright: Playwright, account: Account) {
       expect(response.status(), await response.text()).toBe(201);
       return response.json();
     },
+    async createPurchase(body: unknown): Promise<{
+      id: string;
+      lines: { id: string; batch: { id: string; itemId: string } | null }[];
+    }> {
+      const response = await api.post(`/api/v1/households/${householdId}/purchases`, {
+        data: body,
+        headers,
+      });
+      expect(response.status(), await response.text()).toBe(201);
+      return response.json();
+    },
+    async consume(batchId: string, quantityBase: number) {
+      const response = await api.post(
+        `/api/v1/households/${householdId}/inventory/batches/${batchId}/consume`,
+        { data: { quantityBase }, headers },
+      );
+      expect(response.status(), await response.text()).toBe(200);
+    },
+    async setBudget(amountOre: number) {
+      const response = await api.put(`/api/v1/households/${householdId}/budget`, {
+        data: { amountOre },
+        headers,
+      });
+      expect(response.status(), await response.text()).toBe(200);
+    },
     dispose: () => api.dispose(),
   };
 }

@@ -3,6 +3,7 @@ import { screen, within } from '@testing-library/react';
 import { renderApp } from '../test/renderApp';
 import { mockApi } from '../test/mockApi';
 import { batch, inDays, item } from '../test/inventoryFixtures';
+import { summary } from '../test/purchaseFixtures';
 
 describe('FR-DASH-001 overview with real inventory data', () => {
   it('"Går ut snart" lists passed, today and soon (≤ 3 days), earliest first, max 5', async () => {
@@ -64,5 +65,52 @@ describe('FR-DASH-001 overview with real inventory data', () => {
     expect(await within(card).findByText('64,00 kr')).toBeInTheDocument();
     expect(within(card).getByText('3 kasseringer denne måneden')).toBeInTheDocument();
     expect(within(card).getByText('1 av dem uten kjent verdi')).toBeInTheDocument();
+  });
+});
+
+describe('FR-DASH-001 budget card with real data (phase 4)', () => {
+  it('without a budget: shows what was spent and a link to set a budget; not sample data', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/budget/summary')
+        ? { status: 200, body: summary({ spentOre: 12_990 }) }
+        : undefined,
+    );
+    renderApp('/');
+    const card = await screen.findByRole('region', { name: 'Matbudsjett denne måneden' });
+    expect(await within(card).findByText('129,90 kr')).toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: 'Sett budsjett' })).toHaveAttribute(
+      'href',
+      '/budsjett',
+    );
+    expect(within(card).queryByText('Eksempeldata')).not.toBeInTheDocument();
+  });
+
+  it('with a budget: spent, remaining and the percentage used', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/budget/summary')
+        ? {
+            status: 200,
+            body: summary({
+              budgetOre: 400_000,
+              spentOre: 100_000,
+              remainingOre: 300_000,
+              usedPercent: 25,
+            }),
+          }
+        : undefined,
+    );
+    renderApp('/');
+    const card = await screen.findByRole('region', { name: 'Matbudsjett denne måneden' });
+    expect(await within(card).findByText('3 000,00 kr')).toBeInTheDocument();
+    expect(within(card).getByText('25 % av månedsbudsjettet er brukt')).toBeInTheDocument();
+  });
+
+  it('"Registrer kjøp" goes to the purchase form', async () => {
+    renderApp('/');
+    const actions = await screen.findByRole('region', { name: 'Hurtighandlinger' });
+    expect(within(actions).getByRole('link', { name: 'Registrer kjøp' })).toHaveAttribute(
+      'href',
+      '/budsjett/kjop/ny',
+    );
   });
 });

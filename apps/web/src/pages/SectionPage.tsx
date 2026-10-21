@@ -4,7 +4,7 @@ import { Tag } from '../components/Tag/Tag';
 import { SECTIONS, type SectionId } from '../app/navigation';
 import { Page } from '../layout/Page';
 
-type PlaceholderSection = Exclude<SectionId, 'overview' | 'settings'>;
+type PlaceholderSection = Exclude<SectionId, 'overview' | 'settings' | 'budget'>;
 
 /**
  * Placeholder for a section that is built in a later phase (FR-UI-002).

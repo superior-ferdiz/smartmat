@@ -1,6 +1,6 @@
 # Teknisk implementering
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20) og 3 (2026-10-21). Koden og teksten er skrevet av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21). Koden og teksten er skrevet av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides i senere faser. Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Oversikt (fase 1)
@@ -277,17 +277,91 @@ utilgjengelig, Esc lukker dialogen, og fokus går tilbake til knappen som åpnet
 fordi jsdom ikke har `showModal`. Testoppsettet har en enkel erstatning som bare setter `open`. På telefon vises
 dialogen som et ark nederst på skjermen.
 
+## Fase 4: kjøp og budsjett
+
+```
+apps/api/src/modules/
+├── purchases/   routes, service (regler: sum, dato, vare/sted i husholdningen), repo (én transaksjon)
+└── budget/      budsjett per måned og månedsoversikt (SQL-summer)
+packages/shared/src/
+├── schemas/purchases  linjer ELLER totalsum, grenser, lagerdel av en linje
+└── money/budget       sumOre, usedPercent (BigInt), monthFigures
+apps/web/src/
+├── purchases/   API-hooks, skjemalogikk (purchaseForm.ts), PurchaseForm, BudgetFigures
+└── pages/budget/  Budsjett, Registrer kjøp, Kjøp, Rett kjøp
+```
+
+## Eksempel 15: kjøp, linjer og partier i én transaksjon (ADR-0007)
+
+Et kjøp med «Legg i matlageret» skriver i fem tabeller: kjøpet, linjene, nye varer, partier og `add`-hendelser.
+Alt skjer i én `db.$transaction`. Partiet lages med samme hjelpefunksjon som matlageret bruker
+(`insertBatchWithEvent`), så et parti fra et kjøp ser likt ut som et parti lagt inn for hånd.
+
+```ts
+return await db.$transaction(async (tx) => {
+  const created = await tx.purchase.create({ data: { householdId, ..., dedupeKey } });
+  for (const line of purchase.lines) await createLine(tx, householdId, actorId, created.id, line);
+  return created.id;
+});
+```
+
+En test går forbi servicens kontroller og gir den andre linjen et sted som ikke finnes. Databasen avviser partiet
+etter at kjøpet, den første linjen og dens parti allerede er skrevet. Testen sjekker at alle fem tabellene er tomme
+etterpå.
+
+## Eksempel 16: totalsummen regnes alltid av serveren
+
+Et kjøp har linjer **eller** en totalsum. Det delte Zod-skjemaet avviser begge deler samtidig, og servicen setter
+totalsummen selv:
+
+```ts
+export function purchaseTotal(lines: readonly { amountOre: number }[], totalOre?: number | null) {
+  return lines.length > 0 ? sumOre(lines.map((l) => l.amountOre)) : (totalOre ?? 0);
+}
+```
+
+Dermed kan ikke den lagrede summen være uenig med linjene. `sumOre` kaster en feil i stedet for å runde av hvis en
+sum ikke lenger er et trygt heltall. Andelen brukt regnes med `BigInt` og rundes **ned**, så «100 %» vises først når
+budsjettet faktisk er brukt opp.
+
+## Eksempel 17: samme skjema sendt to ganger (NFR-DATA-002)
+
+Skjemaet lager en tilfeldig `clientRequestId` når siden åpnes. Den lagres som `dedupe_key`, som er unik per
+husholdning. Kommer samme ID igjen, svarer API-et med det første kjøpet (200 i stedet for 201). Sendes to
+forespørsler helt samtidig, stopper den unike begrensningen den ene. Transaksjonen dens rulles tilbake, og servicen
+henter det kjøpet som ble lagret. En API-test sender fem like forespørsler samtidig og får ett kjøp, ett parti og
+én vare. En Playwright-test dobbeltklikker på «Lagre kjøpet».
+
+## Eksempel 18: sletting av kjøp uten å miste historikk
+
+Når et kjøp slettes, låses partiene fra kjøpet før koden sjekker om de er urørte:
+
+```sql
+SELECT b.id, (b.quantity_base = b.initial_quantity_base AND NOT EXISTS (
+         SELECT 1 FROM inventory_events e WHERE e.batch_id = b.id AND e.type <> 'add')) AS untouched
+FROM inventory_batches b WHERE b.household_id = $1 AND b.purchase_line_id = ANY($2) FOR UPDATE OF b
+```
+
+Urørte partier slettes, og alle andre beholdes med koblingen tømt. Kommer et forbruk samtidig, venter det til
+slettingen er ferdig (og får da 404), eller så er det ferdig først (og partiet regnes som rørt og beholdes). En test
+kjører sletting og forbruk samtidig åtte ganger og sjekker at partiet aldri forsvinner etter et vellykket forbruk.
+
+## Eksempel 19: skjemafeil fra server og nettleser på samme felt
+
+`purchaseForm.ts` gjør skjemaet om til en API-kropp med de samme delte parserne og samme Zod-skjema som serveren.
+Feilnøklene er API-ets feltnavn (`lines.0.amountOre`, `lines.1.toInventory.locationId`). En feil fra serveren, for
+eksempel en kjøpsdato frem i tid, havner derfor på samme felt som en feil funnet i nettleseren.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
 (privat modus, strenge personvernvalg). Appen virker da fortsatt, men valget gjelder bare til siden lastes på nytt.
 Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
-## Kjente begrensninger etter fase 2
+## Kjente begrensninger
 
-- **Bundle på 619 kB** (191 kB gzip) i én fil, opp fra 566 kB i fase 2 og 517 kB i fase 1. Vite advarer om dette.
-  Kodedeling per side bør vurderes snart. Kodedeling per side, eventuelt `zod/mini`,
-  vurderes når appen har ekte sider.
+- **Bundle på 658 kB** (201 kB gzip) i én fil etter fase 4, opp fra 619 kB i fase 3, 566 kB i fase 2 og 517 kB i
+  fase 1. Vite advarer om dette. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Bør sjekkes på nytt i fase 13.
 - `exactOptionalPropertyTypes` ble prøvd i TypeScript-oppsettet og fjernet igjen, fordi den gjorde det tungvint å

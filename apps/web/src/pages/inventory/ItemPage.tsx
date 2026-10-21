@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
   APP_TIME_ZONE,
@@ -37,7 +37,7 @@ import { Select } from '../../components/Select/Select';
 import { Tag } from '../../components/Tag/Tag';
 import { TextField } from '../../components/TextField/TextField';
 import { useToast } from '../../components/Toast/toastContext';
-import { INVENTORY_PATH } from '../../app/navigation';
+import { INVENTORY_PATH, purchasePath } from '../../app/navigation';
 import { summaryItems, type FieldErrors } from '../../forms/fieldErrors';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
 import {
@@ -205,6 +205,16 @@ function ItemView({ item, locations }: { item: ItemResponse; locations: Location
                       <div>
                         <dt>{t('inventory.fields.price')}</dt>
                         <dd className="tabular-nums">{formatOre(batch.priceOre)}</dd>
+                      </div>
+                    )}
+                    {batch.purchaseId && (
+                      <div>
+                        <dt>{t('inventory.batch.fromPurchase')}</dt>
+                        <dd>
+                          <Link to={purchasePath(batch.purchaseId)}>
+                            {t('inventory.batch.openPurchase')}
+                          </Link>
+                        </dd>
                       </div>
                     )}
                   </dl>

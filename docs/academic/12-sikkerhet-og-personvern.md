@@ -1,6 +1,6 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20) og fase 3 (2026-10-21). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -28,9 +28,21 @@
 | Feil mengder ved samtidige klikk | To faner trykker «Bruk» samtidig | Betinget oppdatering i SQL, og CHECK ≥ 0 | `inventory.api.test.ts` (10 samtidige) |
 | Angre to ganger | Dobbeltklikk på «Angre» | Unik `reverts_event_id` | `inventory.api.test.ts` |
 
-Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen. Minst én test feilet hver gang
+### Nytt i fase 4: kjøp og budsjett
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Lese eller endre andres kjøp og budsjett (IDOR) | Bytte husholdnings- eller kjøps-ID i URL-en | `householdAccess`, og hver spørring (også SQL-summene) filtrerer på `household_id` | Matrisen i `purchases.security.api.test.ts` (8 endepunkter, 2 varianter) |
+| Legge egne kjøp inn i andres lager | Sende en annen husholdnings vare- eller steds-ID i en linje | Sjekkes mot husholdningen (400), og sammensatt fremmednøkkel fra parti til linje | Samme fil |
+| Overta andres kjøpslinje | Sende en annen husholdnings linje-ID ved retting | Linje-ID må høre til kjøpet (400) | Samme fil |
+| Hente andres kjøp via dedupe-nøkkelen | Sende en `clientRequestId` som en annen husholdning har brukt | Nøkkelen er unik per husholdning og slås opp med `household_id` | Samme fil |
+| Feil summer | Klienten sender en totalsum som ikke stemmer med linjene | Serveren regner summen. Totalsum med linjer avvises. | `purchases.api.test.ts` |
+| Tapt historikk ved sletting | Et kjøp slettes mens noen bruker en vare fra det | Partiene låses (`FOR UPDATE`). Brukte partier slettes aldri. | `purchases.api.test.ts` (samtidig sletting og forbruk) |
+
+Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
-[fase 3](../evidence/test-results/fase-3/10-mutation-check.txt)).
+[fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
+[fase 4](../evidence/test-results/fase-4/10-mutation-check.txt)). Resultatet for fase 4 står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -43,6 +55,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen. Mi
 | Mislykkede innlogginger | Beskyttelse mot gjetting | `users.failed_login_count`, `login_locked_until` | Nullstilles ved vellykket innlogging |
 | Sesjoner | Holde brukeren innlogget | `sessions` (hash av token, tidspunkter) | Maks 30 dager. Slettes ved utlogging, passordbytte eller kontosletting. |
 | Matlager (varer, mengder, datoer, priser, hva som kastes og hvorfor) | Appens formål | `inventory_*`-tabellene, knyttet til husholdningen | Til varen eller kontoen slettes |
+| Kjøp (butikk, dato, hva som ble kjøpt, beløp) og matbudsjett | Appens formål (budsjett) | `purchases`, `purchase_lines`, `food_budgets` | Til kjøpet eller kontoen slettes |
+| Hvem som registrerte et kjøp | Historikk i husholdningen | `purchases.created_by` | Settes til tom hvis kontoen slettes |
 | Hvem som gjorde en endring | Historikk i husholdningen | `inventory_events.actor_id` | Settes til tom hvis kontoen slettes. Hendelsen blir stående til husholdningen slettes. |
 | IP-adresse | Rate limiting | Bare i minnet i API-prosessen, i 15–60 minutter | Lagres ikke og logges ikke |
 
@@ -52,7 +66,7 @@ Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører l
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
   Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005). Fra fase 3 omfatter
-  det hele matlageret og svinnloggen. Dette er testet.
+  det hele matlageret og svinnloggen, og fra fase 4 kjøp, linjer og budsjett. Dette er testet.
 - Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
 - **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt) og eierskap i delte husholdninger (fase 10).
 
@@ -68,6 +82,11 @@ Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører l
 - **Samtidige forsøk:** Forespørsler som allerede er i gang når sperren slår inn, blir fortsatt sjekket. Dette
   begrenses av grensen per IP-adresse.
 - **Andre forsøk:** Passordbytte og sletting teller ikke mot sperren per konto, bare mot grensen per IP-adresse.
+- **Kjøpsdata kan si mye om en person.** Butikk, dato og hva som kjøpes, kan avsløre vaner, bosted og helse
+  (for eksempel kosthold). Dataene vises bare for medlemmer av husholdningen, logges ikke og sendes ikke ut av
+  maskinen. En vurdering av behovet for kryptering eller kortere lagringstid hører til fase 13.
+- **Retting av samme kjøp fra to steder:** siste lagring vinner, uten varsel. Betyr lite før husholdninger kan ha
+  flere medlemmer (fase 10).
 - **Ikke gjort:** tofaktorinnlogging, varsel om innlogging fra ny enhet, sjekk mot lister over lekkede passord,
   HTTPS og sikkerhetsheadere for selve nettsiden (fase 13).
 

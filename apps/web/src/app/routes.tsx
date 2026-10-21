@@ -15,12 +15,18 @@ import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { ItemPage } from '../pages/inventory/ItemPage';
 import { LocationsPage } from '../pages/inventory/LocationsPage';
 import { NewItemPage } from '../pages/inventory/NewItemPage';
+import { BudgetPage } from '../pages/budget/BudgetPage';
+import { EditPurchasePage } from '../pages/budget/EditPurchasePage';
+import { NewPurchasePage } from '../pages/budget/NewPurchasePage';
+import { PurchasePage } from '../pages/budget/PurchasePage';
 import {
+  BUDGET_PATH,
   DESIGN_SYSTEM_PATH,
   LOCATIONS_PATH,
   LOGIN_PATH,
   MORE_PATH,
   NEW_ITEM_PATH,
+  NEW_PURCHASE_PATH,
   PROFILE_PATH,
   REGISTER_PATH,
 } from './navigation';
@@ -64,7 +70,10 @@ export const routes: RouteObject[] = [
           { path: 'skann', element: <SectionPage section="scan" /> },
           { path: 'oppskrifter', element: <SectionPage section="recipes" /> },
           { path: 'handleliste', element: <SectionPage section="shoppingList" /> },
-          { path: 'budsjett', element: <SectionPage section="budget" /> },
+          { path: BUDGET_PATH.slice(1), element: <BudgetPage /> },
+          { path: NEW_PURCHASE_PATH.slice(1), element: <NewPurchasePage /> },
+          { path: 'budsjett/kjop/:purchaseId', element: <PurchasePage /> },
+          { path: 'budsjett/kjop/:purchaseId/rett', element: <EditPurchasePage /> },
           { path: 'maltidsplan', element: <SectionPage section="mealPlan" /> },
           { path: 'husholdning', element: <SectionPage section="household" /> },
           { path: 'innstillinger', element: <SettingsPage /> },

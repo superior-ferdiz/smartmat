@@ -122,6 +122,38 @@
     },
     "wasteReason": {
       "required": "Velg hvorfor maten ble kastet."
+    },
+    "purchase": {
+      "dateRequired": "Skriv inn kjøpsdatoen.",
+      "dateTooEarly": "Datoen kan ikke være før år 2000.",
+      "dateInFuture": "Kjøpsdatoen kan ikke være frem i tid.",
+      "lineTooLarge": "En linje kan være høyst 100 000 kr.",
+      "totalTooLarge": "Et kjøp kan være høyst 1 000 000 kr.",
+      "linesOrTotal": "Legg til minst én linje, eller skriv inn totalsummen.",
+      "totalWithLines": "Et kjøp med linjer får summen fra linjene. Ikke skriv inn totalsum i tillegg.",
+      "tooManyLines": "Et kjøp kan ha høyst 100 linjer.",
+      "nonFoodCategory": "Ikke-mat har ingen matkategori.",
+      "nonFoodInventory": "Bare mat kan legges i matlageret.",
+      "itemNotFound": "Varen finnes ikke lenger. Velg en annen.",
+      "unknownLine": "Linjen finnes ikke lenger. Last inn siden på nytt.",
+      "alreadyInInventory": "Denne linjen er allerede lagt i matlageret."
+    },
+    "storeName": {
+      "tooLong": "Butikknavnet kan være høyst 100 tegn."
+    },
+    "lineDescription": {
+      "required": "Skriv hva du kjøpte.",
+      "tooLong": "Beskrivelsen kan være høyst 100 tegn."
+    },
+    "lineKind": {
+      "required": "Velg om linjen er mat eller ikke mat."
+    },
+    "month": {
+      "invalid": "Ugyldig måned."
+    },
+    "budget": {
+      "tooSmall": "Budsjettet må være minst 1 kr.",
+      "tooLarge": "Budsjettet kan være høyst 1 000 000 kr."
     }
   },
   "pages": {
@@ -129,7 +161,7 @@
       "title": "Oversikt",
       "lead": "Det viktigste på kjøkkenet akkurat nå.",
       "sampleNoticeTitle": "Noe er fortsatt eksempeldata",
-      "sampleNoticeText": "«Går ut snart» og «Kastet denne måneden» viser ditt eget matlager. Budsjettet og middagsforslaget er oppdiktet til de kommer i senere versjoner.",
+      "sampleNoticeText": "Middagsforslaget er oppdiktet til oppskriftene kommer i en senere versjon. Resten av forsiden viser dine egne data.",
       "expiring": {
         "title": "Går ut snart",
         "seeAll": "Se hele matlageret",
@@ -137,11 +169,9 @@
       },
       "budget": {
         "title": "Matbudsjett denne måneden",
-        "spent": "Brukt",
-        "remaining": "Igjen",
-        "monthly": "Budsjett",
-        "usedPercent": "{{percent}} % av månedsbudsjettet er brukt",
-        "open": "Se kjøp og budsjett"
+        "open": "Se kjøp og budsjett",
+        "noBudget": "Du har ikke satt et budsjett.",
+        "setBudget": "Sett budsjett"
       },
       "actions": {
         "title": "Hurtighandlinger",
@@ -183,9 +213,7 @@
       "emptyText": "Her skal du kunne føre handleliste, legge til det som mangler fra en oppskrift, og flytte varer rett inn i matlageret."
     },
     "budget": {
-      "lead": "Hva du bruker på mat, og hvor mye som er igjen denne måneden.",
-      "emptyTitle": "Kjøp og budsjett kommer i fase 4",
-      "emptyText": "Her skal du kunne registrere kjøp, sette et månedlig matbudsjett og se forbruket per kategori."
+      "lead": "Hva du bruker på mat, og hvor mye som er igjen denne måneden."
     },
     "mealPlan": {
       "lead": "Planlegg ukens middager.",
@@ -385,6 +413,9 @@
       "changedMeanwhile": "Partiet ble endret i mellomtiden. Last inn siden på nytt og prøv igjen.",
       "nothingToUndo": "Det er ingenting å angre.",
       "cannotUndo": "Endringen kan ikke angres lenger."
+    },
+    "purchase": {
+      "changedMeanwhile": "Noe i kjøpet ble endret i mellomtiden, for eksempel en vare eller et sted som ble slettet. Last inn siden på nytt og prøv igjen."
     }
   },
   "units": {
@@ -548,7 +579,9 @@
       "delete": "Slett",
       "deleteTitle": "Slette partiet?",
       "deleteText": "Partiet og historikken for det slettes. Bruk «Kast» hvis maten ble kastet.",
-      "deleteConfirm": "Slett partiet"
+      "deleteConfirm": "Slett partiet",
+      "fromPurchase": "Fra kjøp",
+      "openPurchase": "Se kjøpet"
     },
     "take": {
       "all": "Alt ({{quantity}})"
@@ -617,6 +650,121 @@
       "deleted": "Stedet er slettet",
       "batchCount_one": "{{count}} parti",
       "batchCount_other": "{{count}} partier"
+    }
+  },
+  "budget": {
+    "addPurchase": "Registrer kjøp",
+    "setBudget": "Sett budsjett",
+    "changeBudget": "Endre budsjett",
+    "loading": "Laster budsjettet …",
+    "summaryTitle": "Matbudsjett",
+    "noBudget": "Du har ikke satt et matbudsjett for denne måneden.",
+    "categoriesTitle": "Forbruk per kategori",
+    "unallocated": "Ikke fordelt (bare totalsum)",
+    "noSpending": "Ingen matkjøp denne måneden.",
+    "nonFood": "Ikke mat: {{amount}}. Teller ikke med i matbudsjettet.",
+    "purchasesTitle": "Kjøp i {{month}}",
+    "emptyTitle": "Ingen kjøp denne måneden",
+    "emptyText": "Registrer et kjøp for å se hva du bruker på mat.",
+    "month": {
+      "navLabel": "Velg måned",
+      "previous": "Forrige måned",
+      "next": "Neste måned"
+    },
+    "figures": {
+      "spent": "Brukt på mat",
+      "remaining": "Igjen",
+      "over": "Over budsjett med",
+      "budget": "Budsjett",
+      "usedPercent": "{{percent}} % av månedsbudsjettet er brukt",
+      "overText": "Du har brukt {{percent}} % av budsjettet og er over."
+    },
+    "dialog": {
+      "title": "Månedlig matbudsjett",
+      "description": "Gjelder fra og med denne måneden. Tidligere måneder beholder budsjettet de hadde.",
+      "amount": "Beløp per måned",
+      "saved": "Budsjettet er lagret.",
+      "removed": "Budsjettet er fjernet.",
+      "remove": "Fjern budsjettet"
+    }
+  },
+  "purchases": {
+    "noStore": "Ukjent butikk",
+    "onlyTotal": "bare totalsum",
+    "onlyTotalText": "Kjøpet er registrert med bare totalsum, uten linjer.",
+    "lineCount_one": "{{count}} linje",
+    "lineCount_other": "{{count}} linjer",
+    "batchCount_one": "{{count}} i matlageret",
+    "batchCount_other": "{{count}} i matlageret",
+    "total": "Sum: {{amount}}",
+    "notInBudget": "Ikke mat – teller ikke i matbudsjettet",
+    "notFoundTitle": "Fant ikke kjøpet",
+    "notFoundText": "Kjøpet finnes ikke, eller det er slettet.",
+    "backToBudget": "Tilbake til budsjettet",
+    "kinds": {
+      "food": "Mat og drikke",
+      "nonFood": "Ikke mat"
+    },
+    "modes": {
+      "lines": "Med linjer",
+      "linesHint": "Gir forbruk per kategori, og varene kan legges rett i matlageret.",
+      "total": "Bare totalsum",
+      "totalHint": "Raskest. Vises som «ikke fordelt» i oversikten."
+    },
+    "fields": {
+      "store": "Butikk",
+      "storeHint": "For eksempel «Rema 1000 Bø».",
+      "date": "Kjøpsdato",
+      "mode": "Hvordan vil du registrere kjøpet?",
+      "total": "Totalsum",
+      "totalHint": "Det som står nederst på kvitteringen.",
+      "description": "Hva",
+      "kind": "Type",
+      "amount": "Beløp",
+      "item": "Vare i matlageret",
+      "itemHint": "Velg en vare du har fra før, eller lag en ny med navnet fra linjen.",
+      "newItem": "Ny vare (navnet fra linjen)"
+    },
+    "lines": {
+      "title": "Linjer",
+      "label": "Linje {{number}}",
+      "add": "Legg til linje",
+      "remove": "Fjern linje {{number}}",
+      "sum": "Sum: {{amount}}",
+      "sumIncomplete": "(noen beløp mangler eller er ugyldige)",
+      "toInventory": "Legg i matlageret",
+      "linked": "Lagt i matlageret som «{{name}}»",
+      "inInventory": "I matlageret: {{name}}"
+    },
+    "new": {
+      "title": "Registrer kjøp",
+      "lead": "Før inn et matinnkjøp med linjer eller bare totalsum.",
+      "submit": "Lagre kjøpet",
+      "saved": "Kjøpet er registrert.",
+      "savedWithItems_one": "Kjøpet er registrert, og {{count}} vare er lagt i matlageret.",
+      "savedWithItems_other": "Kjøpet er registrert, og {{count}} varer er lagt i matlageret."
+    },
+    "edit": {
+      "open": "Rett kjøpet",
+      "title": "Rett kjøp",
+      "lead": "Endringer oppdaterer budsjettet med en gang. Mengder i matlageret endres ikke herfra.",
+      "saved": "Kjøpet er oppdatert.",
+      "removeUntouched": "Fjern også urørte varer fra matlageret for linjene du har tatt bort",
+      "removeUntouchedHint": "Varer som er brukt, kastet eller flyttet, blir alltid liggende."
+    },
+    "delete": {
+      "open": "Slett kjøpet",
+      "title": "Slette kjøpet?",
+      "text": "Kjøpet forsvinner fra budsjettet. Dette kan ikke angres.",
+      "removeUntouched_one": "Fjern også {{count}} urørt vare fra matlageret",
+      "removeUntouched_other": "Fjern også {{count}} urørte varer fra matlageret",
+      "removeUntouchedHint": "Urørt betyr at ingenting er brukt, kastet, flyttet eller rettet.",
+      "touched_one": "{{count}} vare fra kjøpet er brukt eller endret og blir liggende i matlageret.",
+      "touched_other": "{{count}} varer fra kjøpet er brukt eller endret og blir liggende i matlageret.",
+      "confirm": "Slett kjøpet",
+      "done": "Kjøpet er slettet.",
+      "doneWithItems_one": "Kjøpet er slettet, og {{count}} vare er fjernet fra matlageret.",
+      "doneWithItems_other": "Kjøpet er slettet, og {{count}} varer er fjernet fra matlageret."
     }
   }
 }
