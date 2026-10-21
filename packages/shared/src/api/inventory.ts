@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { EXPIRY_KINDS } from '../quantity/expiry';
 import { BASE_UNITS } from '../quantity/quantity';
+import { INGREDIENT_MATCH_MODES } from '../recipes/matching';
 import { CATEGORY_KEYS, LOCATION_KINDS, WASTE_REASONS } from '../schemas/inventory';
 
 /* Response shapes for the inventory API (phase 3). */
@@ -35,6 +36,9 @@ export const itemResponseSchema = z.object({
   name: z.string(),
   categoryKey: z.enum(CATEGORY_KEYS),
   unit: z.enum(BASE_UNITS),
+  /** Spec 05: how the item is linked to a recipe ingredient; ingredientId only for manual. */
+  ingredientMatch: z.enum(INGREDIENT_MATCH_MODES),
+  ingredientId: z.uuid().nullable(),
   createdAt: z.string(),
   /** Only batches with something left. Empty items have an empty list. */
   batches: z.array(batchResponseSchema),

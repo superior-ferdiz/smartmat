@@ -54,6 +54,7 @@ import {
   useUpdateItem,
 } from '../../inventory/api';
 import { BatchFields } from '../../inventory/BatchFields';
+import { IngredientSection } from '../../inventory/IngredientLink';
 import {
   BATCH_FIELD_IDS,
   emptyBatchValues,
@@ -256,6 +257,8 @@ function ItemView({ item, locations }: { item: ItemResponse; locations: Location
           </ul>
         )}
       </section>
+
+      <IngredientSection item={item} />
 
       <History item={item} location={location} />
 

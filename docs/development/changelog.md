@@ -2,6 +2,25 @@
 
 ## [Ikke utgitt]
 
+### Fase 5 – 2026-10-21 (grenen `fase-5`)
+- **Oppskrifter:**
+  - bla i og åpne oppskrifter, med søk (tittel og ingrediens) og tagg i URL-en
+  - rangering etter matlageret med forklart poengsum: dekning (0–100) + «går snart ut» (0–30)
+  - per ingrediens: har, for lite (hvor mye som mangler), usikker mengde, mangler, basisvare. Siste forbruksdag
+    passert regnes aldri med.
+  - kobling vare → ingrediens med aliaser (hele ord), og manuell kobling eller «ikke en ingrediens» på varesiden
+- **Allergier:** 14 allergener på profilen. Oppskrifter med dem skjules som standard eller vises med advarsel.
+  Forbeholdet vises alltid, og ingen tekst sier «allergenfri».
+- **Forsiden:** middagsforslaget viser den best rangerte oppskriften. Ingenting er eksempeldata lenger.
+- **Migrering:** `recipes` (7 tabeller, 3 enums, `ingredient_match`/`ingredient_id` på varer, CHECK).
+- **Frødata:** `npm run db:seed` fra `prisma/seed/` med sjekk av alle filer. KI-utkast til 61 ingredienser (ikke
+  kontrollert). Ingen oppskrifter fra teamet ennå. Tre fiktive testoppskrifter bare i test-databasene.
+- **API:** `GET /households/:h/recipes`, `GET /households/:h/recipes/:id`, `GET /ingredients`,
+  `GET`/`PUT /me/allergens`. `PATCH` av vare tar `ingredient`.
+- **`packages/shared`:** matching, poengsum, frødataskjemaer, allergener, API-skjemaer.
+- **Tester:** 637 enhetstester (+132), 158 API-tester (+29), 125 Playwright-tester (+10), og kontroll av testene.
+  Felles frist på 3 s for `findBy` i webtestene. Axe på telefon med vindu like høyt som siden.
+
 ### Fase 4 – 2026-10-21 (grenen `fase-4`)
 - **Kjøp og budsjett:**
   - registrere kjøp manuelt med linjer (mat med kategori, eller ikke mat) eller bare totalsum

@@ -1,0 +1,274 @@
+/*
+ * Recipe list and recipe page (phase 5, KURS-02).
+ * List: as many card columns as fit (one on phones). Recipe page: ingredients and the score side by side
+ * from 900px, stacked below that.
+ */
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+
+.moreSummary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+/* Inside the folded part: one column on phones, two side by side from 600px. */
+.moreFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: end;
+  padding-top: var(--space-2);
+}
+
+@media (min-width: 600px) {
+  .moreFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.disclaimer svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.disclaimerText {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.allergenList {
+  padding-left: var(--space-5);
+  list-style: disc;
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+}
+
+.card:hover {
+  border-color: var(--color-control-border);
+}
+
+.card:focus-within {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cardTitle {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+}
+
+.cardLink {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.cardLink:focus-visible {
+  outline: none; /* the whole card shows the focus ring (focus-within) */
+}
+
+/* Stretch the link over the whole card, so the card is one big click target. */
+.cardLink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.score {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.status {
+  font-weight: var(--font-weight-semibold);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: auto;
+}
+
+/* Recipe page */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: var(--space-3);
+}
+
+.facts dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+@media (min-width: 900px) {
+  .columns {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-xl);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-md);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.line + .line {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.lineText {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+}
+
+.warningText {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-sm);
+}
+
+.warningText svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.reasons li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.reasons li + li {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.reasonTotal {
+  font-weight: var(--font-weight-bold);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 70ch;
+  padding-left: var(--space-5);
+  list-style: decimal;
+}

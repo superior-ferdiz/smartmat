@@ -4,6 +4,7 @@ import { renderApp } from '../test/renderApp';
 import { mockApi } from '../test/mockApi';
 import { batch, inDays, item } from '../test/inventoryFixtures';
 import { summary } from '../test/purchaseFixtures';
+import { recipeSummary } from '../test/recipeFixtures';
 
 describe('FR-DASH-001 overview with real inventory data', () => {
   it('"Går ut snart" lists passed, today and soon (≤ 3 days), earliest first, max 5', async () => {
@@ -112,5 +113,47 @@ describe('FR-DASH-001 budget card with real data (phase 4)', () => {
       'href',
       '/budsjett/kjop/ny',
     );
+  });
+});
+
+describe('FR-DASH-001 dinner suggestion from the recipes (phase 5)', () => {
+  const card = () => document.getElementById('card-dinner') as HTMLElement;
+  const scored = (title: string, total: number, extra = {}) =>
+    recipeSummary(title, {
+      ...extra,
+      score: {
+        ...recipeSummary(title).score,
+        total,
+        reasons: [{ code: 'coverage', points: total, enough: 3, partial: 0, required: 4 }],
+      },
+    });
+
+  it('shows the best-ranked recipe the user can eat, with its reason and the disclaimer', async () => {
+    const vafler = scored('Vafler', 90, { allergenWarnings: ['milk'] });
+    const wok = scored('Kyllingwok', 75);
+    mockApi((r) =>
+      r.path.endsWith('/recipes')
+        ? { status: 200, body: { recipes: [vafler, wok], userAllergens: ['milk'] } }
+        : undefined,
+    );
+    renderApp('/');
+    const link = await within(card()).findByRole('link', { name: 'Kyllingwok' });
+    expect(link).toHaveAttribute('href', `/oppskrifter/${wok.id}`);
+    expect(within(card()).getByText('75 poeng')).toBeInTheDocument();
+    expect(within(card()).getByText('Du har nok av 3 av 4 ingredienser')).toBeInTheDocument();
+    expect(within(card()).getByText(/Allergeninformasjonen er veiledende/)).toBeInTheDocument();
+    expect(within(card()).queryByText('Vafler')).not.toBeInTheDocument();
+  });
+
+  it('says so when nothing fits what the household has', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/recipes')
+        ? { status: 200, body: { recipes: [scored('Wok', 0)], userAllergens: [] } }
+        : undefined,
+    );
+    renderApp('/');
+    expect(
+      await within(card()).findByText(/Ingen oppskrifter passer det du har ennå/),
+    ).toBeInTheDocument();
   });
 });

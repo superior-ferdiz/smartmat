@@ -154,14 +154,19 @@
     "budget": {
       "tooSmall": "The budget must be at least 1 kr.",
       "tooLarge": "The budget can be at most 1 000 000 kr."
+    },
+    "allergen": {
+      "unknown": "Unknown allergen.",
+      "duplicate": "The same allergen is listed twice."
+    },
+    "ingredient": {
+      "unknown": "Choose an ingredient from the list."
     }
   },
   "pages": {
     "overview": {
       "title": "Overview",
       "lead": "What matters in your kitchen right now.",
-      "sampleNoticeTitle": "Some of this is still sample data",
-      "sampleNoticeText": "The dinner suggestion is made up until recipes arrive in a later version. The rest of the overview shows your own data.",
       "expiring": {
         "title": "Expiring soon",
         "seeAll": "See the whole pantry",
@@ -181,8 +186,9 @@
       },
       "dinner": {
         "title": "Dinner suggestion",
-        "recipe": "Chicken stir-fry with vegetables",
-        "reason": "Uses the chicken breast that must be used today. You have 4 of 6 ingredients."
+        "open": "See all recipes",
+        "noRecipes": "No recipes yet.",
+        "noMatch": "No recipe fits what you have yet. Add food to the inventory to get suggestions."
       },
       "waste": {
         "title": "Thrown out this month",
@@ -203,7 +209,7 @@
       "emptyText": "Here you will scan a barcode with the camera or type it in. You always confirm before anything is saved."
     },
     "recipes": {
-      "lead": "Dinner ideas based on what you already have.",
+      "lead": "Ranked by what you have at home, what needs using first and what is missing.",
       "emptyTitle": "Recipes arrive in phase 5",
       "emptyText": "Here you will find Norwegian recipes, ranked by what you have at home and what must be used first."
     },
@@ -337,7 +343,7 @@
     },
     "profile": {
       "title": "Profile",
-      "lead": "Name, language, password and account.",
+      "lead": "Name, language, allergies, password and account.",
       "about": "About you",
       "save": "Save",
       "saved": "Your profile is saved",
@@ -360,6 +366,13 @@
         "confirm": "I understand that everything is deleted and cannot be restored",
         "submit": "Delete my account for good",
         "deleted": "Your account has been deleted."
+      },
+      "allergies": {
+        "title": "Allergies",
+        "text": "Choose what you cannot eat. It is only used to hide or warn about recipes. It is voluntary, and is deleted together with your account.",
+        "legend": "My allergens",
+        "save": "Save allergies",
+        "saved": "Your allergies are saved"
       }
     }
   },
@@ -650,6 +663,20 @@
       "deleted": "The place was deleted",
       "batchCount_one": "{{count}} batch",
       "batchCount_other": "{{count}} batches"
+    },
+    "ingredient": {
+      "title": "Ingredient in recipes",
+      "auto": "{{name}} (automatic, from the name)",
+      "manual": "{{name}} (chosen by you)",
+      "none": "Not an ingredient (chosen by you)",
+      "ambiguous": "The name fits several ingredients ({{names}}), so the item is not linked. Choose one yourself.",
+      "unmatched": "Not linked to an ingredient.",
+      "help": "The link decides which recipes the item counts in.",
+      "change": "Change ingredient",
+      "dialogTitle": "Ingredient for {{name}}",
+      "field": "Ingredient",
+      "optionAuto": "Automatic (from the name)",
+      "optionNone": "Not an ingredient"
     }
   },
   "budget": {
@@ -765,6 +792,113 @@
       "done": "The purchase is deleted.",
       "doneWithItems_one": "The purchase is deleted, and {{count}} item was removed from the inventory.",
       "doneWithItems_other": "The purchase is deleted, and {{count}} items were removed from the inventory."
+    }
+  },
+  "recipes": {
+    "loading": "Loading recipes …",
+    "listLabel": "Recipes, best fit first",
+    "empty": {
+      "title": "No recipes yet",
+      "text": "The recipes are written by the team and will be added later."
+    },
+    "noMatch": {
+      "title": "No recipe matches the search",
+      "text": "Try another search or another tag."
+    },
+    "notFound": {
+      "title": "Recipe not found",
+      "text": "It may have been removed, or the link may be wrong."
+    },
+    "backToList": "Back to the recipes",
+    "filters": {
+      "search": "Search recipes",
+      "searchHint": "Title or ingredient",
+      "tag": "Tag",
+      "allTags": "All tags",
+      "showAllergens": "Show recipes with my allergens",
+      "reset": "Clear the search",
+      "more": "Filter ({{count}} in use)",
+      "showHidden": "Show them anyway"
+    },
+    "count": "{{shown}} of {{count}} recipes",
+    "hiddenByAllergens_one": "{{count}} recipe is hidden because an ingredient has one of your allergens.",
+    "hiddenByAllergens_other": "{{count}} recipes are hidden because an ingredient has one of your allergens.",
+    "card": {
+      "have": "Have {{enough}} of {{required}}",
+      "missing_one": "{{count}} missing",
+      "missing_other": "{{count}} missing",
+      "expiring_one": "{{count}} going off soon",
+      "expiring_other": "{{count}} going off soon"
+    },
+    "score": "{{points}} points",
+    "points": "+{{points}}",
+    "total": "Total",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "servings_one": "{{count}} serving",
+    "servings_other": "{{count}} servings",
+    "testData": "Test data",
+    "facts": {
+      "time": "Time",
+      "servings": "Servings",
+      "score": "Score"
+    },
+    "ingredients": "Ingredients",
+    "steps": "Method",
+    "whyTitle": "Why it ranks here",
+    "whyText": "Up to 100 points for what you have (enough counts fully, some counts half), and 10 points for each of up to three ingredients that are going off soon. Staples and optional ingredients do not count.",
+    "writtenBy": "Written by {{names}}",
+    "license": "Licence: {{license}}",
+    "groups": {
+      "have": "Have",
+      "short": "Too little or unknown amount",
+      "missing": "Missing",
+      "staple": "Staples"
+    },
+    "line": {
+      "have": "You have {{amount}}",
+      "approx": "about {{amount}}",
+      "notEnough": "You have {{have}}, missing {{missing}}",
+      "unknownAmount": "You have {{items}}, but the amount cannot be compared",
+      "staple": "Staple – check that you have it",
+      "optional": "optional",
+      "fromItems": "From the inventory: {{items}}",
+      "useByExcluded": "You have {{items}} past its use-by date. It is not counted, and should not be eaten."
+    },
+    "reasons": {
+      "coverage": "You have enough of {{enough}} of {{required}} ingredients",
+      "coveragePartial": "You have enough of {{enough}} of {{required}} ingredients, and some of {{partial}}",
+      "nothing": "You have none of the ingredients",
+      "expiring": "{{item}}: {{status}}",
+      "missing": "Missing: {{names}}"
+    },
+    "allergens": {
+      "title": "Allergens",
+      "contains": "Contains {{list}}",
+      "from": "{{allergen}}: {{ingredients}}",
+      "disclaimer": "The allergen information is a guide and may be incomplete. Always check the ingredient list on the products you use.",
+      "noneRegistered": "None of your registered allergens are registered for the ingredients.",
+      "noUserAllergens": "You have not registered any allergens.",
+      "register": "Register allergens"
+    },
+    "allergenNames": {
+      "gluten": "gluten",
+      "crustaceans": "crustaceans",
+      "egg": "egg",
+      "fish": "fish",
+      "peanuts": "peanuts",
+      "soy": "soy",
+      "milk": "milk",
+      "nuts": "nuts",
+      "celery": "celery",
+      "mustard": "mustard",
+      "sesame": "sesame",
+      "sulphites": "sulphites",
+      "lupin": "lupin",
+      "molluscs": "molluscs"
     }
   }
 }

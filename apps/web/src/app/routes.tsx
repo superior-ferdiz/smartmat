@@ -19,6 +19,8 @@ import { BudgetPage } from '../pages/budget/BudgetPage';
 import { EditPurchasePage } from '../pages/budget/EditPurchasePage';
 import { NewPurchasePage } from '../pages/budget/NewPurchasePage';
 import { PurchasePage } from '../pages/budget/PurchasePage';
+import { RecipePage } from '../pages/recipes/RecipePage';
+import { RecipesPage } from '../pages/recipes/RecipesPage';
 import {
   BUDGET_PATH,
   DESIGN_SYSTEM_PATH,
@@ -28,6 +30,7 @@ import {
   NEW_ITEM_PATH,
   NEW_PURCHASE_PATH,
   PROFILE_PATH,
+  RECIPES_PATH,
   REGISTER_PATH,
 } from './navigation';
 
@@ -68,7 +71,8 @@ export const routes: RouteObject[] = [
           { path: LOCATIONS_PATH.slice(1), element: <LocationsPage /> },
           { path: 'matlager/:itemId', element: <ItemPage /> },
           { path: 'skann', element: <SectionPage section="scan" /> },
-          { path: 'oppskrifter', element: <SectionPage section="recipes" /> },
+          { path: RECIPES_PATH.slice(1), element: <RecipesPage /> },
+          { path: 'oppskrifter/:recipeId', element: <RecipePage /> },
           { path: 'handleliste', element: <SectionPage section="shoppingList" /> },
           { path: BUDGET_PATH.slice(1), element: <BudgetPage /> },
           { path: NEW_PURCHASE_PATH.slice(1), element: <NewPurchasePage /> },

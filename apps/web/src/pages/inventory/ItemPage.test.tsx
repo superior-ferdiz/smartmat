@@ -216,3 +216,65 @@ describe('FR-INV-008 history and undo', () => {
     ).toBe(true);
   });
 });
+
+describe('spec 05 ingredient link on the item page', () => {
+  const ingredients = [
+    {
+      id: '0199f0a0-0000-7000-8000-0000000a0001',
+      key: 'melk',
+      name: 'Melk',
+      baseUnit: 'ml',
+      isStaple: false,
+      aliases: ['melk', 'lettmelk'],
+    },
+    {
+      id: '0199f0a0-0000-7000-8000-0000000a0002',
+      key: 'flote',
+      name: 'Fløte',
+      baseUnit: 'ml',
+      isStaple: false,
+      aliases: ['fløte'],
+    },
+  ];
+  const withIngredients = (extra: Parameters<typeof api>[0] = () => undefined) =>
+    api((r) => (r.path === '/ingredients' ? { status: 200, body: ingredients } : extra(r)));
+
+  it('shows the automatic link from the name', async () => {
+    withIngredients();
+    renderApp(`/matlager/${milk.id}`);
+    expect(await screen.findByText('Melk (automatisk, fra navnet)')).toBeInTheDocument();
+  });
+
+  it('the user can choose another ingredient; the server gets a manual link', async () => {
+    const requests = withIngredients((r) =>
+      r.method === 'PATCH' ? { status: 200, body: milk } : undefined,
+    );
+    const user = userEvent.setup();
+    renderApp(`/matlager/${milk.id}`);
+    const section = (
+      await screen.findByRole('heading', { name: 'Ingrediens i oppskrifter' })
+    ).closest('section')!;
+    await user.click(await within(section).findByRole('button', { name: 'Endre ingrediens' }));
+    const dialog = screen.getByRole('dialog');
+    await user.selectOptions(within(dialog).getByLabelText('Ingrediens'), 'Fløte');
+    await user.click(within(dialog).getByRole('button', { name: 'Lagre' }));
+    expect(requests.find((r) => r.method === 'PATCH')).toMatchObject({
+      path: `/households/0199f0a0-0000-7000-8000-000000000002/inventory/items/${milk.id}`,
+      body: { ingredient: { match: 'manual', ingredientId: ingredients[1]!.id } },
+    });
+  });
+
+  it('"Ikke en ingrediens" sends match none', async () => {
+    const requests = withIngredients((r) =>
+      r.method === 'PATCH' ? { status: 200, body: milk } : undefined,
+    );
+    const user = userEvent.setup();
+    renderApp(`/matlager/${milk.id}`);
+    await user.click(await screen.findByRole('button', { name: 'Endre ingrediens' }));
+    await user.selectOptions(screen.getByLabelText('Ingrediens'), 'Ikke en ingrediens');
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Lagre' }));
+    expect(requests.find((r) => r.method === 'PATCH')?.body).toEqual({
+      ingredient: { match: 'none' },
+    });
+  });
+});

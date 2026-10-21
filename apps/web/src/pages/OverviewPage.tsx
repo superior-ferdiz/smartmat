@@ -7,26 +7,35 @@ import {
   type ItemResponse,
   type LocationResponse,
 } from '@smartmat/shared';
-import { Alert } from '../components/Alert/Alert';
 import { LinkButton } from '../components/Button/Button';
 import { Card } from '../components/Card/Card';
 import { Icon } from '../components/Icon/Icon';
 import { ErrorState } from '../components/ErrorState/ErrorState';
 import { LoadingState } from '../components/LoadingState/LoadingState';
-import { Tag } from '../components/Tag/Tag';
-import { BUDGET_PATH, itemPath, NEW_ITEM_PATH, NEW_PURCHASE_PATH } from '../app/navigation';
+import {
+  BUDGET_PATH,
+  itemPath,
+  NEW_ITEM_PATH,
+  NEW_PURCHASE_PATH,
+  recipePath,
+  RECIPES_PATH,
+} from '../app/navigation';
 import { useInventory, useLocations, useWasteSummary } from '../inventory/api';
 import { ExpiryAdvice, ExpiryTag } from '../inventory/ExpiryTag';
 import { useFormatQuantity, useLocationName, useToday } from '../inventory/formatHooks';
 import { Page } from '../layout/Page';
 import { useBudgetSummary } from '../purchases/api';
 import { BudgetFigures } from '../purchases/BudgetFigures';
+import { AllergenDisclaimer } from '../recipes/AllergenNotice';
+import { useRecipes } from '../recipes/api';
+import { dinnerSuggestion } from '../recipes/filter';
+import { useReasonText } from '../recipes/formatHooks';
 import styles from './OverviewPage.module.css';
 
 /*
  * Dashboard (FR-DASH-001, FR-UI-003). The expiry and waste cards show the household's real inventory
- * (phase 3), the budget card its real purchases and budget (phase 4). Dinner is still SAMPLE DATA until
- * phase 5, and is labelled as such.
+ * (phase 3), the budget card its real purchases and budget (phase 4), the dinner card the best-ranked
+ * recipe (phase 5). Nothing on the page is sample data any more.
  */
 
 /** How many batches the "Går ut snart" card shows. */
@@ -34,14 +43,9 @@ const EXPIRING_LIMIT = 5;
 
 export function OverviewPage() {
   const { t } = useTranslation();
-  const sampleTag = <Tag tone="sample">{t('common.sampleData')}</Tag>;
 
   return (
     <Page title={t('pages.overview.title')} lead={t('pages.overview.lead')}>
-      <Alert variant="info" title={t('pages.overview.sampleNoticeTitle')}>
-        {t('pages.overview.sampleNoticeText')}
-      </Alert>
-
       <div className={styles.grid}>
         <Card
           id="card-expiring"
@@ -116,10 +120,18 @@ export function OverviewPage() {
           id="card-dinner"
           className={styles.dinner}
           title={t('pages.overview.dinner.title')}
-          badge={sampleTag}
+          footer={
+            <LinkButton
+              to={RECIPES_PATH}
+              variant="ghost"
+              size="sm"
+              icon={<Icon name="recipes" size={18} />}
+            >
+              {t('pages.overview.dinner.open')}
+            </LinkButton>
+          }
         >
-          <p className={styles.itemName}>{t('pages.overview.dinner.recipe')}</p>
-          <p className={styles.itemMeta}>{t('pages.overview.dinner.reason')}</p>
+          <DinnerCard />
         </Card>
 
         <Card id="card-waste" className={styles.waste} title={t('pages.overview.waste.title')}>
@@ -224,6 +236,40 @@ function BudgetCard() {
           <Link to={BUDGET_PATH}>{t('pages.overview.budget.setBudget')}</Link>
         </p>
       )}
+    </>
+  );
+}
+
+/**
+ * FR-DASH-001: the best-ranked recipe that is not hidden by the user's allergies (phase 5).
+ * Shown only when it scores at all, with its first reason.
+ */
+function DinnerCard() {
+  const { t } = useTranslation();
+  const recipes = useRecipes();
+  const reasonText = useReasonText();
+  if (recipes.isPending) return <LoadingState />;
+  if (recipes.isError)
+    return <ErrorState headingLevel={3} onRetry={() => void recipes.refetch()} />;
+  if (recipes.data.recipes.length === 0)
+    return <p className={styles.itemMeta}>{t('pages.overview.dinner.noRecipes')}</p>;
+
+  const best = dinnerSuggestion(recipes.data.recipes);
+  if (!best) return <p className={styles.itemMeta}>{t('pages.overview.dinner.noMatch')}</p>;
+  return (
+    <>
+      <Link to={recipePath(best.id)} className={styles.itemName}>
+        {best.title}
+      </Link>
+      <p className={`${styles.itemMeta} tabular-nums`}>
+        {t('recipes.score', { points: best.score.total })}
+      </p>
+      {best.score.reasons.slice(0, 2).map((reason, i) => (
+        <p key={i} className={styles.itemMeta}>
+          {reasonText(reason)}
+        </p>
+      ))}
+      <AllergenDisclaimer />
     </>
   );
 }

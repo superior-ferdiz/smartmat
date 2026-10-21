@@ -1,4 +1,4 @@
-import { expectNoAxeViolations, expectNoHorizontalScroll } from './checks';
+import { expectNoAxeViolations, expectNoHorizontalScroll, useTallPhoneViewport } from './checks';
 import {
   BASE_URL,
   expect,
@@ -142,6 +142,7 @@ test.describe('logged in', () => {
       await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
       await expectNoHorizontalScroll(page);
+      await useTallPhoneViewport(page);
       await expectNoAxeViolations(page);
     });
   }

@@ -352,6 +352,33 @@ kjører sletting og forbruk samtidig åtte ganger og sjekker at partiet aldri fo
 Feilnøklene er API-ets feltnavn (`lines.0.amountOre`, `lines.1.toInventory.locationId`). En feil fra serveren, for
 eksempel en kjøpsdato frem i tid, havner derfor på samme felt som en feil funnet i nettleseren.
 
+## Eksempel 20: fra varenavn til ingrediens (spesifikasjon 05)
+
+Varen har et fritt navn («Tine lettmelk 1 l»), og oppskriften bruker ingrediensen «melk». `normalizeWords` gjør navnet
+om til ord (små bokstaver, uten tegnsetting og mengder): `["tine", "lettmelk"]`. Så prøves hver sammenhengende rekke
+av ord mot aliasene. Aliaset med flest ord vinner («rød løk» slår «løk»). Treffer to ulike ingredienser med like mange
+ord, blir det ingen kobling i stedet for en gjetning. Siden det sammenlignes hele ord, er «kokosmelk» ikke «melk».
+Funksjonen ligger i `packages/shared` og brukes både av API-et (rangering) og av varesiden (som viser koblingen).
+
+*Endret under implementeringen:* Først avgjorde flest tegn når antall ord var likt. En test viste at «smør og melk»
+da ble smør bare fordi ordet tilfeldigvis er like langt, og at «Kyllingfilet med løk» ble kylling fordi ordet er
+lengre. Regelen ble fjernet.
+
+## Eksempel 21: poengsum som forklarer seg selv (FR-REC-002)
+
+`scoreRecipe` regner bare med heltall: dekning `floor(100 × poeng / (2 × påkrevde))` (nok = 2, litt = 1) pluss 10 for
+hver av høyst tre påkrevde ingredienser som snart går ut. Funksjonen returnerer ikke bare summen, men også en liste
+med grunner (`{ code: 'coverage', points: 25, enough: 1, partial: 0, required: 4 }` osv.). Nettleseren gjør
+grunnene om til tekst på brukerens språk, så forklaringen og summen kan aldri bli uenige. Omregning mellom enheter
+rundes ned (`Math.floor`), så appen heller sier at det mangler litt enn at det er nok.
+
+## Eksempel 22: allergener uten å love for mye (FR-REC-004)
+
+Oppskriftens allergener regnes ut fra ingrediensene ved hver visning (også valgfrie og basisvarer), og lagres ikke
+for seg. Teksten sier alltid hva som er *registrert*, aldri at noe er *fritt for* et allergen. Forbeholdet ligger i
+én komponent (`AllergenDisclaimer`), og en test i `locales.test.ts` stopper ord som «allergenfri» og «free from» i
+begge språkfilene.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
@@ -360,12 +387,14 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
 ## Kjente begrensninger
 
-- **Bundle på 658 kB** (201 kB gzip) i én fil etter fase 4, opp fra 619 kB i fase 3, 566 kB i fase 2 og 517 kB i
-  fase 1. Vite advarer om dette. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
+- **Bundle på 690 kB** (210 kB gzip) i én fil etter fase 5, opp fra 658 kB i fase 4, 619 kB i fase 3, 566 kB i
+  fase 2 og 517 kB i fase 1. Vite advarer om dette. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Bør sjekkes på nytt i fase 13.
 - `exactOptionalPropertyTypes` ble prøvd i TypeScript-oppsettet og fjernet igjen, fordi den gjorde det tungvint å
   sende valgfrie props videre i React.
+- **Rangeringen regnes ut ved hver visning** for alle oppskrifter (ingen hurtiglager). Med 30–50 oppskrifter og et
+  vanlig matlager er det raskt nok lokalt. Med mange hundre oppskrifter bør det måles.
 - API-et kjøres med tsx uten byggesteg. Det holder lokalt. Et produksjonsbygg kommer i fase 13.
 - Den genererte Prisma-klienten (`apps/api/src/generated/`) er ikke i Git. Den lages av `npm install` (`postinstall`).
 

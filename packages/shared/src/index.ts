@@ -12,3 +12,8 @@ export * from './api/auth';
 export * from './api/errors';
 export * from './api/inventory';
 export * from './api/purchases';
+export * from './recipes/allergens';
+export * from './recipes/matching';
+export * from './recipes/scoring';
+export * from './recipes/seed';
+export * from './api/recipes';

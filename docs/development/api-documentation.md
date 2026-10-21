@@ -175,3 +175,47 @@ BudgetSummary = { month: 'YYYY-MM', budgetOre|null, spentOre, remainingOre|null,
 - `removeUntouchedBatches` (standard `true`) gjelder partier fra linjer som slettes, og fra kjøpet når det slettes.
   Urørte partier fjernes. Andre partier blir alltid værende, og koblingen til kjøpet blir tom.
 - Budsjettet settes fra den første i inneværende måned. `null` fjerner det fra og med denne måneden.
+
+## Oppskrifter og allergier (fase 5)
+
+Oppskrifter og ingredienser er **globale** og bare lesbare: de legges inn med `npm run db:seed` (spesifikasjon 05),
+og det finnes ingen endepunkter som skriver dem. Rangeringen bruker matlageret til husholdningen i URL-en og
+allergiene til den innloggede brukeren, så oppskriftene ligger under `/households/:householdId/` med samme
+autorisasjon som matlageret. En annen husholdnings id gir 404. Allergiene ligger under `/me` og tar alltid brukeren
+fra sesjonen.
+
+### Typer
+
+```ts
+Allergen = 'gluten'|'crustaceans'|'egg'|'fish'|'peanuts'|'soy'|'milk'|'nuts'|'celery'|'mustard'|'sesame'|'sulphites'|'lupin'|'molluscs'
+ScoreReason = { code: 'coverage', points, enough, partial, required } | { code: 'nothing', points: 0 }
+            | { code: 'expiring', points: 10, ingredientName, itemName, expiryKind, daysLeft }
+            | { code: 'missing', points: 0, names: string[] }
+RecipeSummary = { id, slug, title, description, servings, prepMinutes, cookMinutes, tags, source: 'team'|'test',
+                  ingredientNames, allergens: Allergen[], allergenWarnings: Allergen[] /* brukerens */,
+                  score: { total, coverage, expiringBonus, requiredCount, enoughCount, partialCount, missingCount,
+                           reasons: ScoreReason[] } }
+RecipeLine = { position, ingredientId, ingredientName, displayText, quantityBase|null, baseUnit, optional,
+               status: 'enough'|'notEnough'|'unknownAmount'|'missing'|'staple', haveBase|null, missingBase|null,
+               approximate, itemNames, expiring: { itemName, expiryKind, daysLeft }|null, excludedUseByItems,
+               allergens: Allergen[] }
+RecipeDetail = RecipeSummary & { steps, license, authors, lines: RecipeLine[], userAllergens: Allergen[] }
+Ingredient = { id, key, name, baseUnit, isStaple, aliases: string[] }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/recipes` | – | `{ recipes: RecipeSummary[] /* best først */, userAllergens }` | 404 |
+| GET | `/households/:h/recipes/:recipeId` | – | `RecipeDetail` | 400 (ikke UUID), 404 |
+| GET | `/ingredients` | – | `Ingredient[]` | 401 |
+| GET | `/me/allergens` | – | `{ allergens: Allergen[] }` | 401 |
+| PUT | `/me/allergens` | `{ allergens: Allergen[] }` | `{ allergens }` (fast rekkefølge) | 400 `validation.allergen.unknown` / `.duplicate` |
+| PATCH | `/households/:h/inventory/items/:itemId` | `{ ingredient: { match: 'auto' } \| { match: 'none' } \| { match: 'manual', ingredientId } }` (sammen med eller uten `name`/`categoryKey`) | `ItemResponse` | 400 `ingredient.ingredientId: validation.ingredient.unknown`, 404 |
+
+- `ItemResponse` har nå `ingredientMatch` (`auto`/`manual`/`none`) og `ingredientId` (bare ved `manual`).
+- Listen er sortert etter poengsum, så færrest manglende, så tittel. Søk, tagg og skjuling på grunn av allergener
+  gjøres i nettleseren (som i matlageret), fordi listen er liten. Planen nevnte spørreparametere for dette. Se
+  «Avvik» i spesifikasjon 05.
+- Partier med passert siste forbruksdag regnes aldri med. De står i `excludedUseByItems`.

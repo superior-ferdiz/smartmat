@@ -19,6 +19,7 @@ import type {
   BatchRecord,
   EventRecord,
   InventoryRepo,
+  ItemPatch,
   NewBatch,
   UndoPlan,
   WasteRecord,
@@ -27,6 +28,8 @@ import type {
 export interface InventoryServiceDeps {
   repo: InventoryRepo;
   locations: LocationRepo;
+  /** Spec 05: checks an ingredient id the user chose for an item (the ingredient table is global). */
+  ingredients: { exists(ingredientId: string): Promise<boolean> };
   now: Clock;
 }
 
@@ -90,9 +93,22 @@ export class InventoryService {
   }
 
   async update(householdId: string, itemId: string, body: UpdateItemBody) {
-    const patch: { name?: string; categoryKey?: CreateItemBody['categoryKey'] } = {};
+    const patch: ItemPatch = {};
     if (body.name !== undefined) patch.name = body.name;
     if (body.categoryKey !== undefined) patch.categoryKey = body.categoryKey;
+    if (body.ingredient !== undefined) {
+      const { ingredient } = body;
+      if (
+        ingredient.match === 'manual' &&
+        !(await this.deps.ingredients.exists(ingredient.ingredientId))
+      ) {
+        throw new AppError(400, API_ERRORS.validation, {
+          'ingredient.ingredientId': 'validation.ingredient.unknown',
+        });
+      }
+      patch.ingredientMatch = ingredient.match;
+      patch.ingredientId = ingredient.match === 'manual' ? ingredient.ingredientId : null;
+    }
     if (!(await this.deps.repo.updateItem(householdId, itemId, patch))) throw notFound();
     return this.get(householdId, itemId);
   }

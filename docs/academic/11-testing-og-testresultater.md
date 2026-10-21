@@ -345,6 +345,118 @@ uten bruk. Testen går nå frem i to steg med en forespørsel imellom. To kompon
 hensyn til hardt mellomrom i beløp, og én ventet ikke lenge nok på feilvisningen etter at en 5xx-feil ble prøvd på
 nytt.
 
+## Testtyper og sporbarhet (fase 5)
+
+Testene refererer til krav-ID-ene i [05-oppskrifter.md](../development/requirements/05-oppskrifter.md). Oppskriftene i
+API- og ende-til-ende-testene er tre fiktive testoppskrifter (`source=test`, `apps/api/test/fixtures/seed/`), ikke
+teamets.
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| Spesifikasjon 05 (kobling) | Normalisering av navn (mengder, tegnsetting, store bokstaver), alias på hele ord, flest ord vinner, tvetydig gir ingen kobling, manuell kobling og «ikke en ingrediens» | `shared/src/recipes/matching.test.ts` | 31 |
+| FR-REC-002/003, ADR-0006 | Omregning rundes ned, summering av varer, siste forbruksdag passert regnes aldri, «går snart ut», status per ingrediens, poengsum, bonus høyst 3, basisvarer og valgfrie, rekkefølge | `shared/src/recipes/scoring.test.ts` | 30 |
+| ADR-0009, spesifikasjon 05 (frødata) | Mengder og skjeer til grunnenhet, forfatter påkrevd, `source`, unike aliaser, ukjent ingrediens, samme ingrediens to ganger, allergener påkrevd, alle feil på en gang | `shared/src/recipes/seed.test.ts` | 28 |
+| ADR-0009 | Alle frødatafilene i repoet og testfiksturene består sjekken | `api/src/modules/recipes/seed.test.ts` | 4 |
+| FR-REC-001–004, FR-DASH-001 | URL-filter, søk i tittel og ingrediens, tagg, skjuling på grunn av allergener med telling, middagsforslag, gruppering av ingredienser | `web/src/recipes/filter.test.ts` | 14 |
+| FR-REC-001/002/004 | Oppskriftslisten: status, første grunn, forbehold, tom tilstand, testdata-merke, søk i URL, skjulte allergener og «Vis dem likevel», feil, axe | `pages/recipes/RecipesPage.test.tsx` | 8 |
+| FR-REC-002/003/004 | Oppskriftssiden: grupper, mengder, «ca.», siste forbruksdag passert, forklaring med poeng, best før-ordlyd, allergenboks i tre varianter, 404, axe | `pages/recipes/RecipePage.test.tsx` | 8 |
+| FR-REC-004 | Ingen tekst i noe språk sier «allergenfri»/«free from», forbeholdet finnes, alle allergener har navn | `web/src/i18n/locales.test.ts` (3 nye) | 3 |
+| FR-DASH-001, FR-REC-004, spesifikasjon 05 | Middagskortet (allergener, ingen treff), ingen eksempeldata på forsiden, allergier på profilen, ingredienskobling på varesiden | `OverviewPage.test.tsx`, `navigation.test.tsx`, `ProfilePage.test.tsx`, `ItemPage.test.tsx` | 7 |
+| FR-REC-001–004 | API mot database: tomt lager, detaljer, 404/400, ingredienser, rangering etter vare, for lite og omregning, summering, siste forbruksdag passert, best før passert, brukt opp, automatisk/manuell/ingen kobling, ukjent ingrediens, CHECK, allergier (lagre, rekkefølge, advarsler, valgfri ingrediens, ugyldig, kontosletting, ikke i loggen) | `api/test/recipes.api.test.ts` | 23 |
+| NFR-SEC-001 | Annen husholdnings ID i URL-en, rangering uten andres lager og allergier, `/me/allergens` alltid egen, andres vare, 401 og CSRF, ingen skriving av oppskrifter | `api/test/recipes.security.api.test.ts` | 6 |
+| FR-REC-001–004, FR-DASH-001, NFR-UX-001/002 | Ende-til-ende: vare lagt inn i skjemaet → oppskriften rangeres først og viser hva som mangler → forsiden; siste forbruksdag passert; allergier på profilen → skjult → vist med advarsel; axe og 360 px på fire sider i lyst og mørkt tema | `e2e/recipes.spec.ts` | 5 (× 2 skjermstørrelser) |
+
+**Sum etter fase 5:** 637 enhetstester (267 shared, 60 api, 310 web), 158 API-tester mot database, 125
+ende-til-ende-tester.
+
+Eksisterende tester som ble endret fordi oppførselen var ment å endres:
+- navigasjonstesten forventet ett merke med «Eksempeldata» på forsiden (nå ingen)
+- tre profiltester forventet at første forespørsel var endringen (siden leser nå også allergiene)
+- testdataene for `ItemResponse` fikk `ingredientMatch`/`ingredientId`
+- axe-testene for alle sider og profilen i `app-shell.spec.ts` og `auth.spec.ts` bruker nå et vindu like høyt som
+  siden på telefon (se «Begrensninger»)
+
+**Ustabil test rettet:** `findBy*` i Testing Library gir opp etter 1 sekund. Med hele pakken i gang samtidig tok
+første rendering av oppskriftslisten 1,4 sekunder, og testen feilte tilfeldig (2 av 4 kjøringer). Fristen er nå
+3 sekunder for alle webtester (`test/setup.ts`). Etterpå gikk pakken grønt 5 av 5 ganger. Samme årsak forklarer
+trolig at en axe-test i `InventoryPage` feilet én gang tidligere i fasen, men det er ikke undersøkt for seg.
+
+### Kontroll av testene (fase 5)
+
+Én regel eller beskyttelse ble slått av i koden om gangen
+([skript](../evidence/test-results/fase-5/10-mutation-check.sh)). Både enhetstestene og API-testene ble kjørt.
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-5/10-mutation-check-run1.txt)) viste to problemer:
+- **Allergener fra valgfrie ingredienser** kunne ignoreres uten at noen test feilet. Ingen testoppskrift hadde en
+  valgfri ingrediens med et allergen. Testoppskriften med kylling og ris fikk valgfrie sesamfrø, og en ny API-test
+  sjekker advarselen.
+- **Tallene for enhetstestene var ikke til å stole på:** runder som bare endret API-kode, viste 1–2 feilende
+  enhetstester. Det var den ustabile testen over, ikke endringen.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-5/10-mutation-check.txt)) viser også *hvilke* tester som
+feilet, slik at det går an å se at riktig test fanget endringen:
+
+| Endring | Enhet | API |
+|---|---|---|
+| Oppskriftsrutene uten `householdAccess` | 0 | 21 |
+| Matlageret leses uten husholdningsfilter | 0 | 2 |
+| Lagring av allergier sletter alle brukeres allergier | 0 | 1 |
+| Valgt ingrediens sjekkes ikke mot tabellen | 0 | 1 |
+| Partier med passert siste forbruksdag regnes med | 2 | 1 |
+| Omregning runder opp | 2 | 0 |
+| Valgfrie ingredienser teller i poengsummen | 2 | 5 |
+| Basisvarer regnes som vanlige ingredienser | 2 | 4 |
+| Ingen grense på bonus for «går snart ut» | 1 | 0 |
+| Best før passert gir ikke bonus | 1 | 1 |
+| Tvetydige navn gjettes | 2 | 0 |
+| Manuell kobling ignoreres | 2 | 1 |
+| «Ikke en ingrediens» ignoreres | 2 | 1 |
+| Aliaser treffer deler av ord | 3 | 1 |
+| Allergener fra valgfrie ingredienser telles ikke | 0 | 2 |
+| Oppskrift uten forfatter godtas | 1 | 0 |
+| Samme alias på to ingredienser godtas | 1 | 0 |
+| Oppskrifter med brukerens allergener skjules ikke | 4 | 0 |
+| Forbeholdet fjernes fra oppskriften | 3 | 0 |
+| En tekst sier «allergenfri» | 2 | 0 |
+| *Uendret kode* | *0 (637 av 637)* | *0 (158 av 158)* |
+
+Alle 20 endringer ble fanget. Kontrollen dekker ikke alt: CHECK-begrensningene i databasen ble ikke slått av, og
+ende-til-ende-testene ble ikke kjørt i kontrollen.
+
+## Resultater fase 5 (kjørt 2026-10-21)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 637 av 637 | `04-unit-tests.txt` |
+| API mot testdatabase | 158 av 158 | `05-api-tests.txt` |
+| Bygg | Vellykket. Advarsel om stor JS-fil (690 kB). | `06-build.txt` |
+| Ende-til-ende | 125 bestått, 23 hoppet over (20 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (5 migreringer) | `09-migrate-status.txt` |
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-5/](../evidence/screenshots/fase-5/). De viser testoppskriftene, merket «Testdata».
+
+## Feil funnet i fase 5
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-21.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | Uavgjort mellom aliaser ble avgjort av ordlengde. «Kyllingfilet med løk» ble kylling, og «smør og melk» ble avgjort av tilfeldigheter. | Enhetstest | Like mange ord gir ingen kobling. Spesifikasjonen er rettet. |
+| 2 | Samme varenavn ble vist to ganger («Kyllingfilet og Kyllingfilet») når to varer het det samme | Gjennomgang av egne skjermbilder | Navnene vises én gang. Ny test. |
+| 3 | Filtrene i oppskriftslisten fylte hele første skjermbilde på 360 px | Gjennomgang av egne skjermbilder | Tagg og allergenbryter i sammenleggbar «Filtrer», og lenken «Vis dem likevel» |
+| 4 | To knapper het «Endre» på varesiden. Det er uklart for skjermleserbrukere. | Skjermbildeskriptet feilet (Playwright strict mode) | «Endre ingrediens» |
+| 5 | Salt og krydder i gram kunne ikke måles i teskje. Teamet ville fått feil på «1 ts salt». | Frødatasjekken på testoppskriftene | Omregning fra ml (anslag) for salt, krydder og noen sauser |
+| 6 | Hull i testene og en ustabil test (se kontrollen over) | Mutasjonskontrollen | Ny testoppskrift og test, og lengre frist i Testing Library |
+
+Feil i testene:
+- én test forventet feil rekkefølge (alle oppskrifter med 0 poeng sorteres etter færrest manglende, ikke tittel)
+- én testfil fikk et usynlig hardt mellomrom (kjent fallgruve)
+- `Pick<…, 'a' | 'b'>` i delt kode traff regexen i `locales.test.ts` som ser etter øre-feilkoder
+- `check()` i Playwright leste av en avkrysningsboks før routeren hadde oppdatert den
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser
@@ -354,13 +466,18 @@ nytt.
 - Kontrast i jsdom-testene er slått av (jsdom regner ikke ut stiler). Kontrast sjekkes i stedet i Playwright og i
   `tokens.test.ts`.
 - Ingen kodedekning (coverage) er målt.
+- **Allergenmerkingen og omregningene er ikke testet mot virkeligheten.** Testene sjekker at reglene virker, ikke at
+  dataene i `prisma/seed/ingredients.json` (KI-utkast) er riktige. Det må teamet kontrollere.
 - Ende-til-ende-testene kjører mot et API med høye rate limits (alle tester registrerer brukere fra samme adresse).
   Selve grensene er testet i API-testene.
 - Det er ikke gjort noen penetrasjonstest eller ekstern sikkerhetsgjennomgang.
 - **axe på telefon med fast bunnmeny:** axe vurderer bare siden slik den står når den lastes. Et felt som da
   tilfeldigvis ligger halvveis bak den faste bunnmenyen, blir rapportert som for lite (WCAG 2.5.8), selv om
   brukeren kan scrolle det fram. I `e2e/inventory.spec.ts` kjøres derfor axe på telefon med et høyt vindu
-  (360 × 2400 px), slik at hele siden får plass. Bredden er fortsatt 360 px. Ved ett tilfelle var funnet reelt nok
+  (360 × 2400 px), slik at hele siden får plass. Fra fase 5 setter hjelpefunksjonen `useTallPhoneViewport` høyden
+  etter sidens faktiske lengde (designsystemsiden er lengre enn 2400 px), og den brukes også i de eldre testene i
+  `app-shell.spec.ts` og `auth.spec.ts`. Oppskriftslisten og profilen ble så lange at et kort og en avkrysningsboks
+  havnet bak menyen (målt: y ≈ 785–790 px, menyen y 735–800 px i et vindu på 360 × 800 px). Bredden er fortsatt 360 px. Ved ett tilfelle var funnet reelt nok
   til at vi endret siden (filtrene, se funn 3), men regelen kan slå ut på andre lange sider også.
 - Testene for forsiden og lagerstatus bruker datoer regnet ut fra dagens dato. De er derfor ikke avhengige av når de
   kjøres, men en test kjørt nøyaktig ved midnatt kan i teorien se to forskjellige «i dag».

@@ -20,3 +20,20 @@ export async function expectNoAxeViolations(page: Page) {
   );
   expect(summary).toEqual([]);
 }
+
+/**
+ * On phones the sticky bottom menu covers whatever sits behind it, and axe's target-size rule then reports that
+ * control (WCAG 2.5.8), although the user can scroll it into view. Making the viewport as tall as the page (same
+ * width) lets everything fit, so every control is checked without the menu in front of it. Call it after the page
+ * has rendered, right before the axe check. See chapter 11, "Begrensninger". (Phase 5: a fixed 2400 px was not
+ * enough for the design system page, so the height now follows the page.)
+ */
+export async function useTallPhoneViewport(page: Page) {
+  const viewport = page.viewportSize();
+  if (!viewport || viewport.width >= 600) return;
+  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  await page.setViewportSize({
+    width: viewport.width,
+    height: Math.max(viewport.height, height + 100),
+  });
+}

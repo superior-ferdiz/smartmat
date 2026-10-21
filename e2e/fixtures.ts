@@ -113,6 +113,10 @@ export async function apiAs(playwright: Playwright, account: Account) {
       });
       expect(response.status(), await response.text()).toBe(200);
     },
+    async setAllergens(allergens: string[]) {
+      const response = await api.put('/api/v1/me/allergens', { data: { allergens }, headers });
+      expect(response.status(), await response.text()).toBe(200);
+    },
     dispose: () => api.dispose(),
   };
 }

@@ -224,3 +224,62 @@ Bevis ligger i `docs/evidence/test-results/fase-4/`, skjermbilder i `docs/eviden
 **Oppfølging 2026-10-21:** Claude spurte hva gjennomgangen omfattet, og om `fase-4` skulle committes og pushes.
 Ferdinand svarte «ja». Det ble tolket som ja til commit og push av `fase-4` og push av `fase-3`. Hva gjennomgangen
 omfattet, er fortsatt ikke avklart.
+
+---
+
+## 2026-10-21 – Fase 5: oppskrifter
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med.
+
+**Hva skjedde**
+- Ferdinand startet fase 5 i en ny chat med en detaljert prompt: omfang, Git-regler, KI-ens og teamets del, at
+  KI-skrevne oppskrifter ikke skal presenteres som teamets, og at det aldri skal påstås at noe er allergenfritt.
+- Linjen i prompten om hva som er gjennomgått av fase 1–4 var ikke fylt ut. Claude påpekte det. Ferdinand svarte
+  «godkjennt vennligst fortsett», uten å fylle den ut. **Ingen gjennomgang av fase 1–4 er derfor registrert.**
+- Anbefalingene i de sju åpne spørsmålene gjelder (se [spesifikasjon 05](requirements/05-oppskrifter.md)). Viktigst:
+  **teamet skriver oppskriftene selv.** KI har ikke skrevet noen oppskrift med `source=team`.
+- Claude laget grenen `fase-5` fra `fase-4`, fordi `fase-4` ikke er merget til `main`. Spesifikasjon 05 ble skrevet
+  **før** koden. **All kode i fasen er skrevet av KI.** KI laget også et utkast til ingredienslisten (61
+  ingredienser med aliaser, allergener og omregninger, merket i filen) og tre fiktive testoppskrifter som bare
+  finnes i test-databasene.
+- Ferdinand spurte underveis «All good?». Claude svarte at to ting gjensto (et hull i testene og en ustabil test).
+  Begge ble rettet før sluttkjøringen.
+
+**Avvik og funn underveis** (detaljer i kapittel 8, 10 og 11)
+- Regelen for uavgjort i matchingen («så flest tegn») var i praksis gjetting og ble fjernet.
+- Claude så på sine egne skjermbilder og fant to feil: samme varenavn ble vist to ganger, og filtrene fylte hele første
+  skjermbilde på telefon. To knapper het også «Endre» på varesiden.
+- **Kontrollen av testene fant et hull i første kjøring** (allergener fra valgfrie ingredienser), og viste at én
+  enhetstest var ustabil. Etter rettingene ble alle 20 endringer fanget i andre kjøring. Begge kjøringene er lagret.
+- **Eldre axe-tester feilet på telefon** fordi oppskriftslisten og profilen ble lange nok til at elementer havnet
+  bak bunnmenyen. Plasseringen ble målt før testene ble endret. Testene bruker nå et vindu like høyt som siden.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 637 |
+| API-tester mot database | 158 |
+| Bygg | Vellykket |
+| Playwright-tester | 125 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-5/`, skjermbilder i `docs/evidence/screenshots/fase-5/`.
+
+**Ikke gjort:**
+- **teamets oppskrifter** (ingen er skrevet). Appen viser «Ingen oppskrifter ennå» i utviklingsdatabasen.
+- kontroll av allergenmerkingen og omregningene i `prisma/seed/ingredients.json` (KI-utkast)
+- teamets vurdering av behandlingsgrunnlaget for allergier (GDPR art. 9, se kapittel 12)
+- teamets gjennomgang av fase 1–5
+- commit og push av `fase-5` (ikke bedt om ennå)
+- manuell test med skjermleser og på ekte telefon
+
+**Neste:** Teamet skriver oppskrifter (mal i `prisma/seed/README.md`), kontrollerer ingredienslisten, går gjennom
+fasen og ber om commit og push. Deretter fase 6 (handleliste), helst i en ny chat.
+
+**Oppfølging 2026-10-21:** Ferdinand skrev: «Vi har gått igjennom det i plenum.» Det er registrert ordrett som
+hans erklæring om en felles gjennomgang. Det er ikke oppgitt hvem som deltok, om det gjelder fase 5 alene eller
+også fase 1–4, eller hva som ble sett på (plan, kode eller den kjørende appen), og ingen funn er meldt. Fasen er ikke
+satt til «Ferdig», fordi teamets oppskrifter og kontrollen av ingredienslisten fortsatt mangler. `fase-5` er ikke
+committet. Ferdinand ba om prompten til fase 6.

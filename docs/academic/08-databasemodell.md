@@ -173,6 +173,44 @@ en sammensatt nøkkel ville også tømt `household_id`. Koden fjerner derfor kob
 `food_budgets` har én rad per måned budsjettet ble endret. For en måned brukes raden med senest `valid_from` som ikke
 er etter måneden. Endrer man budsjettet i november, beholder oktober det gamle beløpet.
 
+## Oppskrifter og allergier (fase 5)
+
+```mermaid
+erDiagram
+  ingredients ||--o{ ingredient_aliases : "kalles også"
+  ingredients ||--o{ ingredient_allergens : "har registrert"
+  ingredients ||--o{ unit_conversions : "regnes om med"
+  recipes ||--o{ recipe_ingredients : krever
+  ingredients ||--o{ recipe_ingredients : "brukes i"
+  ingredients |o--o{ inventory_items : "valgt manuelt"
+  users ||--o{ user_allergens : har
+```
+
+### Globale tabeller uten `household_id`
+Oppskrifter og ingredienser er like for alle og hører ikke til en husholdning. De skrives bare av seed-skriptet
+(`npm run db:seed`) fra JSON-filer i `prisma/seed/`, aldri gjennom API-et. Allergiene hører til brukeren
+(`user_allergens`, ADR-0008), ikke husholdningen.
+
+### Mengder og omregning (ADR-0006)
+En ingrediens har én grunnenhet. `recipe_ingredients.quantity_base` står i den, som heltall, eller er tom («etter
+smak»). Har en vare en annen enhet enn ingrediensen, brukes `unit_conversions` («1 stk egg ≈ 60 g» lagres som
+`unit = g, unit_qty = 60, base_qty = 1`). Det er to heltall i stedet for en desimalfaktor, så ingen flyttall trengs.
+Det svarer også på det åpne spørsmålet fra fase 0: omregningen gjelder per ingrediens, ikke per produkt.
+
+### Kobling fra vare til ingrediens
+Normalt skjer koblingen ved lesing, ut fra varenavnet og aliasene, og lagres ikke. Bare et valg brukeren har gjort,
+lagres på varen: `ingredient_match` er `auto`, `manual` eller `none`, og CHECK-en
+`(ingredient_match = 'manual') = (ingredient_id IS NOT NULL)` gjør at en ingrediens bare kan stå der når den er
+valgt. Fremmednøkkelen er `RESTRICT`: seed-skriptet fjerner bare ingredienser som ingen vare er koblet til.
+
+### Regler i databasen
+- `ingredient_aliases.alias` er primærnøkkel: et alias kan bare høre til én ingrediens. CHECK sier at det er lagret
+  normalisert (små bokstaver, uten mellomrom i endene).
+- `recipe_ingredients` er unik per (oppskrift, ingrediens).
+- CHECK: `cardinality(authors) >= 1` (ADR-0009: forfatteren må registreres), minst ett trinn, porsjoner 1–50,
+  minutter 0–1440, omregningstall 1–100 000, mengder 1–100 000 000.
+- `RESTRICT` fra `recipe_ingredients` til `ingredients`: en ingrediens som brukes i en oppskrift, kan ikke slettes.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -190,7 +228,7 @@ CHECK-begrensningene kan ikke uttrykkes i Prisma. De er skrevet som rå SQL nede
 
 ## Husholdningsisolasjon (ADR-0008)
 
-Alle tabeller med brukerdata har `household_id`: matlageret fra fase 3, og kjøp, linjer og budsjett fra fase 4.
+Alle tabeller med husholdningsdata har `household_id`: matlageret fra fase 3, og kjøp, linjer og budsjett fra fase 4. Oppskriftstabellene fra fase 5 er globale, og allergiene er knyttet til brukeren.
 
 - Hver bruker får en husholdning ved registrering, i samme transaksjon som brukeren, sammen med tre standardsteder.
 - Tilgang avgjøres av en rad i `household_members`, ikke av hvem som opprettet noe.
@@ -209,6 +247,7 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261021114832_inventory` | Matlageret: 5 tabeller, 6 enums, sammensatte fremmednøkler, CHECK, 12 kategorier, standardsteder for eksisterende husholdninger |
 | `20261021115500_inventory_event_seq` | Løpenummer på hendelser (se under) |
 | `20261021124836_purchases_budget` | Kjøp, linjer og matbudsjett: 3 tabeller, 2 enums, `purchase_line_id` på partier, sammensatte fremmednøkler og CHECK |
+| `20261021153638_recipes` | Oppskrifter: 7 tabeller, 3 enums, `ingredient_match`/`ingredient_id` på varer, CHECK. Innholdet legges inn med `npm run db:seed`, ikke av migreringen. |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

@@ -106,11 +106,11 @@ describe('FR-UI-002 placeholder pages', () => {
 });
 
 describe('FR-UI-003 overview', () => {
-  it('labels what is still sample content (dinner) as sample data', () => {
+  it('has no sample data any more: the dinner card shows real recipes (phase 5)', async () => {
     renderApp('/');
-    expect(screen.getByText('Noe er fortsatt eksempeldata')).toBeInTheDocument();
-    // Since phase 4 only the dinner suggestion is made up (expiry and waste: phase 3, budget: phase 4).
-    expect(screen.getAllByText('Eksempeldata')).toHaveLength(1);
+    expect(await screen.findByText('Ingen oppskrifter ennå.')).toBeInTheDocument();
+    expect(screen.queryByText('Noe er fortsatt eksempeldata')).not.toBeInTheDocument();
+    expect(screen.queryAllByText('Eksempeldata')).toHaveLength(0);
   });
 
   it('formats money from øre in Norwegian format', async () => {

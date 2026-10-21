@@ -28,6 +28,9 @@ import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
 import { createProfileRepo } from './modules/profile/repo';
 import { createPurchaseRepo } from './modules/purchases/repo';
+import { createRecipeRepo } from './modules/recipes/repo';
+import { recipeRoutes } from './modules/recipes/routes';
+import { RecipeService } from './modules/recipes/service';
 import { purchaseRoutes } from './modules/purchases/routes';
 import { PurchaseService } from './modules/purchases/service';
 import { profileRoutes } from './modules/profile/routes';
@@ -99,11 +102,15 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const requireAuth = createRequireAuth(authService, cookies);
   const householdAccess = createHouseholdAccess(householdRepo);
   const locationRepo = createLocationRepo(db);
+  const inventoryRepo = createInventoryRepo(db);
+  const recipeRepo = createRecipeRepo(db);
   const inventoryService = new InventoryService({
-    repo: createInventoryRepo(db),
+    repo: inventoryRepo,
     locations: locationRepo,
+    ingredients: { exists: (id) => recipeRepo.ingredientExists(id) },
     now,
   });
+  const recipeService = new RecipeService({ repo: recipeRepo, inventory: inventoryRepo, now });
   const purchaseService = new PurchaseService({
     repo: createPurchaseRepo(db),
     locations: locationRepo,
@@ -140,6 +147,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         householdAccess,
       });
       await api.register(budgetRoutes, { service: budgetService, requireAuth, householdAccess });
+      await api.register(recipeRoutes, { service: recipeService, requireAuth, householdAccess });
     },
     { prefix: API_PREFIX },
   );

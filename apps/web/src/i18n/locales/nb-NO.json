@@ -154,14 +154,19 @@
     "budget": {
       "tooSmall": "Budsjettet må være minst 1 kr.",
       "tooLarge": "Budsjettet kan være høyst 1 000 000 kr."
+    },
+    "allergen": {
+      "unknown": "Ukjent allergen.",
+      "duplicate": "Samme allergen står flere ganger."
+    },
+    "ingredient": {
+      "unknown": "Velg en ingrediens fra listen."
     }
   },
   "pages": {
     "overview": {
       "title": "Oversikt",
       "lead": "Det viktigste på kjøkkenet akkurat nå.",
-      "sampleNoticeTitle": "Noe er fortsatt eksempeldata",
-      "sampleNoticeText": "Middagsforslaget er oppdiktet til oppskriftene kommer i en senere versjon. Resten av forsiden viser dine egne data.",
       "expiring": {
         "title": "Går ut snart",
         "seeAll": "Se hele matlageret",
@@ -181,8 +186,9 @@
       },
       "dinner": {
         "title": "Forslag til middag",
-        "recipe": "Kyllingwok med grønnsaker",
-        "reason": "Bruker kyllingfileten som må brukes i dag. Du har 4 av 6 ingredienser."
+        "open": "Se alle oppskrifter",
+        "noRecipes": "Ingen oppskrifter ennå.",
+        "noMatch": "Ingen oppskrifter passer det du har ennå. Legg varer i matlageret for å få forslag."
       },
       "waste": {
         "title": "Kastet denne måneden",
@@ -203,7 +209,7 @@
       "emptyText": "Her skal du kunne skanne strekkoden med kameraet eller skrive den inn selv. Du bekrefter alltid før noe lagres."
     },
     "recipes": {
-      "lead": "Middagsforslag basert på det du allerede har.",
+      "lead": "Rangert etter hva du har hjemme, hva som må brukes først og hva som mangler.",
       "emptyTitle": "Oppskrifter kommer i fase 5",
       "emptyText": "Her skal du finne norske oppskrifter, rangert etter hva du har hjemme og hva som må brukes først."
     },
@@ -337,7 +343,7 @@
     },
     "profile": {
       "title": "Profil",
-      "lead": "Navn, språk, passord og konto.",
+      "lead": "Navn, språk, allergier, passord og konto.",
       "about": "Om deg",
       "save": "Lagre",
       "saved": "Profilen er lagret",
@@ -360,6 +366,13 @@
         "confirm": "Jeg forstår at alt slettes og ikke kan gjenopprettes",
         "submit": "Slett kontoen for godt",
         "deleted": "Kontoen din er slettet."
+      },
+      "allergies": {
+        "title": "Allergier",
+        "text": "Velg det du ikke tåler. Det brukes bare til å skjule eller varsle om oppskrifter. Det er frivillig, og slettes sammen med kontoen.",
+        "legend": "Mine allergener",
+        "save": "Lagre allergier",
+        "saved": "Allergiene er lagret"
       }
     }
   },
@@ -650,6 +663,20 @@
       "deleted": "Stedet er slettet",
       "batchCount_one": "{{count}} parti",
       "batchCount_other": "{{count}} partier"
+    },
+    "ingredient": {
+      "title": "Ingrediens i oppskrifter",
+      "auto": "{{name}} (automatisk, fra navnet)",
+      "manual": "{{name}} (valgt av deg)",
+      "none": "Ikke en ingrediens (valgt av deg)",
+      "ambiguous": "Navnet passer til flere ingredienser ({{names}}), så varen er ikke koblet. Velg selv.",
+      "unmatched": "Ikke koblet til en ingrediens.",
+      "help": "Koblingen avgjør hvilke oppskrifter varen teller i.",
+      "change": "Endre ingrediens",
+      "dialogTitle": "Ingrediens for {{name}}",
+      "field": "Ingrediens",
+      "optionAuto": "Automatisk (fra navnet)",
+      "optionNone": "Ikke en ingrediens"
     }
   },
   "budget": {
@@ -765,6 +792,113 @@
       "done": "Kjøpet er slettet.",
       "doneWithItems_one": "Kjøpet er slettet, og {{count}} vare er fjernet fra matlageret.",
       "doneWithItems_other": "Kjøpet er slettet, og {{count}} varer er fjernet fra matlageret."
+    }
+  },
+  "recipes": {
+    "loading": "Henter oppskrifter …",
+    "listLabel": "Oppskrifter, best egnet først",
+    "empty": {
+      "title": "Ingen oppskrifter ennå",
+      "text": "Oppskriftene skrives av teamet og legges inn senere."
+    },
+    "noMatch": {
+      "title": "Ingen oppskrifter passer søket",
+      "text": "Prøv et annet søk eller en annen tagg."
+    },
+    "notFound": {
+      "title": "Fant ikke oppskriften",
+      "text": "Den kan være fjernet, eller lenken kan være feil."
+    },
+    "backToList": "Tilbake til oppskriftene",
+    "filters": {
+      "search": "Søk i oppskrifter",
+      "searchHint": "Tittel eller ingrediens",
+      "tag": "Tagg",
+      "allTags": "Alle tagger",
+      "showAllergens": "Vis oppskrifter med mine allergener",
+      "reset": "Nullstill søket",
+      "more": "Filtrer ({{count}} i bruk)",
+      "showHidden": "Vis dem likevel"
+    },
+    "count": "{{shown}} av {{count}} oppskrifter",
+    "hiddenByAllergens_one": "{{count}} oppskrift er skjult fordi en ingrediens har et av dine allergener.",
+    "hiddenByAllergens_other": "{{count}} oppskrifter er skjult fordi en ingrediens har et av dine allergener.",
+    "card": {
+      "have": "Har {{enough}} av {{required}}",
+      "missing_one": "{{count}} mangler",
+      "missing_other": "{{count}} mangler",
+      "expiring_one": "{{count}} går snart ut",
+      "expiring_other": "{{count}} går snart ut"
+    },
+    "score": "{{points}} poeng",
+    "points": "+{{points}}",
+    "total": "Sum",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} t",
+    "hours_other": "{{count}} t",
+    "hoursMinutes": "{{hours}} t {{minutes}} min",
+    "servings_one": "{{count}} porsjon",
+    "servings_other": "{{count}} porsjoner",
+    "testData": "Testdata",
+    "facts": {
+      "time": "Tid",
+      "servings": "Porsjoner",
+      "score": "Poengsum"
+    },
+    "ingredients": "Ingredienser",
+    "steps": "Slik gjør du",
+    "whyTitle": "Hvorfor denne plasseringen",
+    "whyText": "Opptil 100 poeng for det du har (nok gir fullt, litt gir halvt), og 10 poeng for hver av opptil tre ingredienser som snart går ut. Basisvarer og valgfrie ingredienser teller ikke.",
+    "writtenBy": "Skrevet av {{names}}",
+    "license": "Lisens: {{license}}",
+    "groups": {
+      "have": "Har",
+      "short": "For lite eller usikker mengde",
+      "missing": "Mangler",
+      "staple": "Basisvarer"
+    },
+    "line": {
+      "have": "Du har {{amount}}",
+      "approx": "ca. {{amount}}",
+      "notEnough": "Du har {{have}}, mangler {{missing}}",
+      "unknownAmount": "Du har {{items}}, men mengden kan ikke sammenlignes",
+      "staple": "Basisvare – sjekk at du har",
+      "optional": "valgfri",
+      "fromItems": "Fra matlageret: {{items}}",
+      "useByExcluded": "Du har {{items}} med passert siste forbruksdag. Det er ikke regnet med, og bør ikke spises."
+    },
+    "reasons": {
+      "coverage": "Du har nok av {{enough}} av {{required}} ingredienser",
+      "coveragePartial": "Du har nok av {{enough}} av {{required}} ingredienser, og litt av {{partial}}",
+      "nothing": "Du har ingen av ingrediensene",
+      "expiring": "{{item}}: {{status}}",
+      "missing": "Mangler: {{names}}"
+    },
+    "allergens": {
+      "title": "Allergener",
+      "contains": "Inneholder {{list}}",
+      "from": "{{allergen}}: {{ingredients}}",
+      "disclaimer": "Allergeninformasjonen er veiledende og kan være ufullstendig. Sjekk alltid ingredienslisten på varene du bruker.",
+      "noneRegistered": "Ingen av dine registrerte allergener er registrert i ingrediensene.",
+      "noUserAllergens": "Du har ikke registrert allergener.",
+      "register": "Registrer allergener"
+    },
+    "allergenNames": {
+      "gluten": "gluten",
+      "crustaceans": "skalldyr",
+      "egg": "egg",
+      "fish": "fisk",
+      "peanuts": "peanøtter",
+      "soy": "soya",
+      "milk": "melk",
+      "nuts": "nøtter",
+      "celery": "selleri",
+      "mustard": "sennep",
+      "sesame": "sesam",
+      "sulphites": "sulfitt",
+      "lupin": "lupin",
+      "molluscs": "bløtdyr"
     }
   }
 }

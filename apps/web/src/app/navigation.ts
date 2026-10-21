@@ -50,6 +50,8 @@ export const INVENTORY_PATH = '/matlager';
 export const NEW_ITEM_PATH = '/matlager/ny';
 export const LOCATIONS_PATH = '/matlager/steder';
 export const itemPath = (itemId: string) => `/matlager/${itemId}`;
+export const RECIPES_PATH = '/oppskrifter';
+export const recipePath = (recipeId: string) => `/oppskrifter/${recipeId}`;
 export const BUDGET_PATH = '/budsjett';
 export const NEW_PURCHASE_PATH = '/budsjett/kjop/ny';
 export const purchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}`;

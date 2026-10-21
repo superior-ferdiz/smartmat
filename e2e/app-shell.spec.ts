@@ -1,4 +1,4 @@
-import { expectNoAxeViolations, expectNoHorizontalScroll } from './checks';
+import { expectNoAxeViolations, expectNoHorizontalScroll, useTallPhoneViewport } from './checks';
 import { expect, test } from './fixtures';
 
 /*
@@ -36,6 +36,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
         // Wait for the web font, so axe measures contrast on the final rendering.
         await page.evaluate(() => document.fonts.ready);
         await expectNoHorizontalScroll(page);
+        await useTallPhoneViewport(page);
         await expectNoAxeViolations(page);
       });
     }

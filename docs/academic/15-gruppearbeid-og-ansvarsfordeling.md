@@ -28,7 +28,14 @@ Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
 - Arbeidsfordelingen i fase 4 ble satt i prompten: KI implementerer, teamet gjennomgår via pull request. Planen
   skilte mellom KI-ens del (spesifikasjon, kode, tester, dokumentasjon) og teamets del (beslutninger, gjennomgang
   av pull requesten, manuell test på telefon og med skjermleser, egne refleksjoner i dette kapittelet).
-- Ingen gjennomgang fra Linus Saxe Huseby er registrert ennå.
+- **Fase 5 (2026-10-21):** All kode er skrevet av KI. Ferdinand godkjente planen med «godkjennt vennligst fortsett».
+  Linjen i prompten om hva som er gjennomgått av fase 1–4 var ikke fylt ut, så ingen gjennomgang er registrert.
+- **Oppskriftene (ADR-0009):** Teamet skal skrive dem selv. KI har ikke skrevet noen oppskrift med `source=team`.
+  KI har laget et utkast til ingredienslisten med aliaser, allergener og omregninger (merket i filen), og tre
+  fiktive testoppskrifter som bare finnes i test-databasene. Hvem som skriver oppskriftene, er ikke avtalt.
+- **Gjennomgang av fase 5:** Ferdinand skrev 2026-10-21: «Vi har gått igjennom det i plenum.» Det er registrert som
+  hans erklæring. Deltakere, omfang og eventuelle funn er ikke oppgitt.
+- Ingen gjennomgang fra Linus Saxe Huseby er registrert med navn ennå.
 
 ## Kilder i prosjektet
 

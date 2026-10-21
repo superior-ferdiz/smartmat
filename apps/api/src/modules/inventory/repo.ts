@@ -3,6 +3,7 @@ import type {
   CategoryKey,
   ExpiryKind,
   HistoryEvent,
+  IngredientMatchMode,
   InventoryEventType,
   ItemResponse,
   WasteReason,
@@ -51,6 +52,14 @@ export interface WasteRecord {
   basis: 'actual' | 'estimated' | 'unknown';
 }
 
+export interface ItemPatch {
+  name?: string;
+  categoryKey?: CategoryKey;
+  /** Spec 05: always set together; ingredientId only with 'manual' (CHECK in the database). */
+  ingredientMatch?: IngredientMatchMode;
+  ingredientId?: string | null;
+}
+
 /** What an undo does to the batch: change the quantity, or move it back. */
 export type UndoPlan =
   | { kind: 'quantity'; batchId: string; delta: number }
@@ -65,11 +74,7 @@ export interface InventoryRepo {
     item: { name: string; categoryKey: CategoryKey; unit: ItemResponse['unit'] },
     batch: NewBatch,
   ): Promise<string>;
-  updateItem(
-    householdId: string,
-    itemId: string,
-    patch: { name?: string; categoryKey?: CategoryKey },
-  ): Promise<boolean>;
+  updateItem(householdId: string, itemId: string, patch: ItemPatch): Promise<boolean>;
   deleteItem(householdId: string, itemId: string): Promise<boolean>;
   addBatch(householdId: string, actorId: string, itemId: string, batch: NewBatch): Promise<boolean>;
   getBatch(householdId: string, batchId: string): Promise<BatchRecord | null>;
@@ -159,6 +164,8 @@ const itemSelect = {
   name: true,
   categoryKey: true,
   unit: true,
+  ingredientMatch: true,
+  ingredientId: true,
   createdAt: true,
   batches: {
     where: { quantityBase: { gt: 0 } },
@@ -176,6 +183,8 @@ function toItem(row: ItemRow): ItemResponse {
     name: row.name,
     categoryKey: row.categoryKey as CategoryKey,
     unit: row.unit,
+    ingredientMatch: row.ingredientMatch,
+    ingredientId: row.ingredientId,
     createdAt: row.createdAt.toISOString(),
     batches: row.batches.map(toBatch),
   };

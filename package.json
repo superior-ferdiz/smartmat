@@ -30,6 +30,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
+    "db:seed": "npm run seed -w @smartmat/api --",
     "test:api": "vitest run --config apps/api/vitest.db.config.ts"
   },
   "devDependencies": {

@@ -1,0 +1,18 @@
+$ npm run test
+# Kjørt 2026-10-21 18:16:34 UTC, Node v22.14.0, npm 11.1.0
+
+
+> smartmat@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+
+ Test Files  50 passed (50)
+      Tests  637 passed (637)
+   Start at  18:16:35
+   Duration  12.71s (transform 35.12s, setup 21.65s, import 56.18s, tests 71.77s, environment 23.00s)
+
+
+# exit code: 0

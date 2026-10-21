@@ -3,11 +3,12 @@ import { fileURLToPath } from 'node:url';
 import { buildApp } from '../src/app';
 import { loadConfig } from '../src/config';
 import { createDb } from '../src/db';
+import { seedFixtureRecipes } from '../test/fixtureSeed';
 import { testDatabaseUrl } from '../test/testDatabase';
 
 /*
  * The API instance Playwright starts (playwright.config.ts): its own database (smartmat_e2e), emptied
- * at start, on port 3101, accepting requests from the preview server on 4173. Rate limits are raised
+ * at start and given the fictional test recipes, on port 3101, accepting requests from the preview server on 4173. Rate limits are raised
  * because every test registers users from the same address; the limits themselves are tested in
  * apps/api/test/security.api.test.ts.
  */
@@ -32,5 +33,7 @@ const db = createDb(databaseUrl);
 await db.$executeRawUnsafe(
   'TRUNCATE TABLE sessions, household_members, households, users RESTART IDENTITY CASCADE',
 );
+// Spec 05: the fictional test recipes, never the team's (the e2e tests must not depend on real content).
+await seedFixtureRecipes(db);
 const app = await buildApp({ config, db });
 await app.listen({ host: config.host, port: config.port });

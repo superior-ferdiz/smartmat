@@ -4,7 +4,12 @@
 import { describe, expect, it } from 'vitest';
 import nb from './locales/nb-NO.json';
 import en from './locales/en.json';
-import { API_ERRORS, DISPLAY_NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@smartmat/shared';
+import {
+  ALLERGENS,
+  API_ERRORS,
+  DISPLAY_NAME_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from '@smartmat/shared';
 import { NETWORK_ERROR } from '../api/client';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -79,5 +84,37 @@ describe('NFR-UX-004 / FR-UI-005 translations', () => {
   it('the display-name message matches the limit in the shared schema', () => {
     expect(nbKeys['validation.displayName.tooLong']).toContain(String(DISPLAY_NAME_MAX_LENGTH));
     expect(enKeys['validation.displayName.tooLong']).toContain(String(DISPLAY_NAME_MAX_LENGTH));
+  });
+});
+
+describe('FR-REC-004 allergen wording', () => {
+  // The data only says which allergens are registered; the app must never claim that something is free of one.
+  const forbidden = [
+    /allergenfri/i,
+    /\bfri for\b/i,
+    /\b\w+fri\b.*allergen/i,
+    /allergen-free/i,
+    /free from/i,
+    /\b(gluten|lactose|nut|milk)-free\b/i,
+    /\b(glutenfri|laktosefri|nøttefri|melkefri)\b/i,
+  ];
+
+  it('no text in either language says that a recipe is free of an allergen', () => {
+    const offenders = [...Object.entries(nbKeys), ...Object.entries(enKeys)].filter(([, text]) =>
+      forbidden.some((pattern) => pattern.test(text)),
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it('the disclaimer exists in both languages and says to check the products', () => {
+    expect(nbKeys['recipes.allergens.disclaimer']).toMatch(/veiledende.*Sjekk alltid/s);
+    expect(enKeys['recipes.allergens.disclaimer']).toMatch(/guide.*Always check/s);
+  });
+
+  it('every allergen has a name in both languages', () => {
+    for (const allergen of ALLERGENS) {
+      expect(nbKeys[`recipes.allergenNames.${allergen}`], allergen).toBeTruthy();
+      expect(enKeys[`recipes.allergenNames.${allergen}`], allergen).toBeTruthy();
+    }
   });
 });

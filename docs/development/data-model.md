@@ -27,6 +27,20 @@ er ikke lagt til ennå, fordi ingenting bruker den før fase 4. `AuditEvent` er 
   `household_id`), ikke fra linje til parti.
 - `dedupe_key` er unik per husholdning, ikke globalt.
 
+**Implementert i fase 5 (2026-10-21):** `Ingredient`, `IngredientAlias`, `UnitConversion`, `Recipe` og
+`RecipeIngredient`, og i tillegg `IngredientAllergen`, `UserAllergen` og `ingredient_id`/`ingredient_match` på
+`InventoryItem`. Avvik fra planen:
+- `UnitConversion` gjelder alltid én ingrediens (`ingredient_id` er påkrevd) og har to heltall (`unit_qty`, `base_qty`)
+  i stedet for en `to_base_factor`. Omregning mellom g og kg, ml og dl osv. ligger i koden, ikke i tabellen.
+- `IngredientAlias` har aliaset som primærnøkkel, så det er unikt på tvers av alle ingredienser. Navnet lagres også
+  som alias.
+- `Recipe` har `authors` (påkrevd, ADR-0009), `slug` (stabil id i frødatafilene), `steps` som liste og ikke `image`.
+  `source` er `team` eller `test`.
+- `RecipeIngredient` har `position` og er unik per (oppskrift, ingrediens). `quantity_base` er null for «etter smak».
+- Oppskriftens allergener lagres ikke. De regnes ut fra ingrediensene (`ingredient_allergens`).
+- Allergier er en egen tabell `user_allergens` knyttet til brukeren, som planen sa.
+- `InventoryItem` fikk `ingredient_match` (`auto`/`manual`/`none`) og `ingredient_id` (bare ved `manual`, CHECK).
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
@@ -77,7 +91,7 @@ erDiagram
 | `Purchase` | household_id, store_name?, purchased_on, total_ore, currency, source (`manual`/`receipt`/`barcode`), dedupe_key (unik per husholdning), created_by | **Eneste utgiftskilde** | 4 |
 | `PurchaseLine` | household_id, purchase_id, position, description, kind (`food`/`nonFood`), category_key?, amount_ore | Ikke-mat registreres, men teller ikke i matbudsjettet og gir ikke lagerparti | 4 |
 | `FoodBudget` | household_id, valid_from, amount_ore? | Gjelder fra en måned og fremover | 4 |
-| `Ingredient` / `IngredientAlias` | canonical_name / alias | Normalisering: "lettmelk", "melk 1%" → melk | 5 |
+| `Ingredient` / `IngredientAlias` | key, name, base_unit, is_staple, category_key? / alias (unik) | Normalisering: "lettmelk", "melk 1%" → melk | 5 |
 | `UnitConversion` | ingredient_id?, from_unit, to_base_factor | f.eks. 1 dl melk = 100 ml, 1 egg ≈ 60 g | 5 |
 | `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image? | Frødata fra teamet | 5 |
 | `RecipeIngredient` | recipe_id, ingredient_id, quantity_base, display_text, optional | | 5 |
@@ -92,4 +106,6 @@ erDiagram
 ## Åpne spørsmål
 
 - Skal `Product` kunne opprettes fritt av brukere, eller skal fritekst ligge på `InventoryItem` til produktet er kjent? (Forslag: det siste, avklares i fase 3.)
-- Omregning stykk ↔ gram for oppskriftsmatching: per ingrediens eller per produkt? (Avklares i fase 5.)
+- ~~Omregning stykk ↔ gram for oppskriftsmatching: per ingrediens eller per produkt?~~ **Avklart i fase 5:** per
+  ingrediens (`unit_conversions`), fordi `Product` ikke finnes før fase 7. Tallene er anslag og må kontrolleres av
+  teamet.

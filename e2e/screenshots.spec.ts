@@ -3,16 +3,18 @@ import { apiAs, test, type Account } from './fixtures';
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
  * Only runs when asked for:  SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 4 pages, with a seeded inventory, purchases and budget. (The phase 1–3 screenshots in
+ * Phase 5 pages, with a seeded inventory, purchases, budget and one registered allergen. The recipes are
+ * the fictional test recipes the e2e API is seeded with (marked "Testdata"). (The phase 1–4 screenshots in
  * docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-4';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-5';
 const LOGGED_IN_PAGES = [
   ['oversikt', '/'],
-  ['budsjett', '/budsjett'],
-  ['nytt-kjop', '/budsjett/kjop/ny'],
+  ['oppskrifter', '/oppskrifter'],
+  ['oppskrifter-med-allergener', '/oppskrifter?allergener=vis'],
+  ['profil-allergier', '/profil'],
 ] as const;
 
 function inDays(days: number) {
@@ -84,6 +86,8 @@ async function seed(
     ],
   });
   await api.createPurchase({ storeName: 'Kiwi', purchasedOn: inDays(0), totalOre: 64_550 });
+  // Phase 5: one allergen, so the list shows a hidden recipe and the warnings.
+  await api.setAllergens(['egg']);
   await api.dispose();
   return { created, purchaseId: purchase.id };
 }
@@ -98,15 +102,16 @@ for (const colorScheme of ['light', 'dark'] as const) {
         await seed(playwright, account);
         await page.goto(path);
         await page.getByRole('heading', { level: 1 }).waitFor();
-        if (path === '/budsjett/kjop/ny') {
-          // Show the inventory part of a line, the most involved part of the form.
-          await page.getByLabel('Legg i matlageret').check();
-        } else {
+        if (path === '/') {
           await page
-            .getByRole('region', { name: /Matbudsjett/ })
-            .getByText(/kr/)
+            .getByRole('region', { name: 'Forslag til middag' })
+            .getByRole('link')
             .first()
             .waitFor();
+        } else if (path.startsWith('/oppskrifter')) {
+          await page.getByRole('list', { name: 'Oppskrifter, best egnet først' }).waitFor();
+        } else {
+          await page.getByRole('region', { name: 'Allergier' }).getByLabel('egg').waitFor();
         }
         await page.evaluate(() => document.fonts.ready);
         await page.screenshot({
@@ -120,30 +125,26 @@ for (const colorScheme of ['light', 'dark'] as const) {
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – purchase page and delete dialog`, () => {
+  test.describe(`${colorScheme} – a recipe and the item's ingredient link`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('kjop-og-dialog', async ({ page, playwright, account }, testInfo) => {
-      const { purchaseId } = await seed(playwright, account);
+    test('oppskrift-og-vare', async ({ page, playwright, account }, testInfo) => {
+      const { created } = await seed(playwright, account);
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
       const full = !testInfo.project.name.startsWith('mobil');
-      await page.goto(`/budsjett/kjop/${purchaseId}`);
-      await page.getByRole('heading', { level: 1 }).waitFor();
+      await page.goto('/oppskrifter');
+      await page.getByRole('link', { name: 'Testrett: kylling og ris' }).click();
+      await page.getByRole('heading', { level: 2, name: 'Ingredienser' }).waitFor();
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({
-        path: `${OUT}/kjop-${testInfo.project.name}-${suffix}.png`,
+        path: `${OUT}/oppskrift-${testInfo.project.name}-${suffix}.png`,
         fullPage: full,
       });
-      await page.goto(`/budsjett/kjop/${purchaseId}/rett`);
-      await page.getByRole('group', { name: 'Linje 1' }).waitFor();
-      await page.screenshot({
-        path: `${OUT}/rett-kjop-${testInfo.project.name}-${suffix}.png`,
-        fullPage: full,
-      });
-      await page.goto(`/budsjett/kjop/${purchaseId}`);
-      await page.getByRole('button', { name: 'Slett kjøpet' }).click();
+      await page.goto(`/matlager/${created[0]!.id}`);
+      await page.getByText('Kyllingfilet (automatisk, fra navnet)').waitFor();
+      await page.getByRole('button', { name: 'Endre ingrediens' }).click();
       await page.getByRole('dialog').waitFor();
       await page.screenshot({
-        path: `${OUT}/slett-kjop-dialog-${testInfo.project.name}-${suffix}.png`,
+        path: `${OUT}/vare-ingrediens-dialog-${testInfo.project.name}-${suffix}.png`,
       });
     });
   });

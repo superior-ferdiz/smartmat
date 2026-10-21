@@ -118,6 +118,21 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   files and uses the API's field names as error keys (`lines.0.amountOre`) so server errors land on the right field.
 - API tests that move a fake clock more than 14 days must make a request in between (sessions expire after 14 idle days).
 
+## Code conventions (added in phase 5)
+
+- Recipe/ingredient tables are **global** (no `household_id`), written only by `npm run db:seed` from
+  `prisma/seed/` (checked by `checkSeed` in `packages/shared/src/recipes/seed.ts`; `-- --check` only validates).
+  Test and e2e databases get the fictional fixtures in `apps/api/test/fixtures/seed/` (`source=test`) via
+  `globalSetup` / `e2e-server.ts` – never the team's recipes. Never write recipes as `source=team` (ADR-0009).
+- Matching and scoring are pure functions in `packages/shared/src/recipes/` (used by API and web). Whole-word aliases,
+  most words wins, a tie is "ambiguous" (no guess). Conversions round **down**; use-by-passed batches never count.
+- Allergen wording: only "registered", never "free of"; `AllergenDisclaimer` wherever recipes are shown;
+  `locales.test.ts` blocks forbidden phrases. Allergies are `/me/allergens` (user, not household).
+- Recipe queries live under `['household', id, 'recipes']`, so inventory/purchase invalidation re-ranks them.
+- A shared type like `Pick<T, 'a' | 'b'>` also trips the øre-code regex in `locales.test.ts` (`| 'x'`): split into
+  `Pick<T,'a'> & Pick<T,'b'>`.
+- URL-controlled checkboxes update a tick after the click: in Playwright use `click()` + `toBeChecked()`, not `check()`.
+
 ## Integrity rules (non-negotiable)
 
 - Never fabricate dates, meetings, tests, test results, screenshots, user feedback, sources or authorship.

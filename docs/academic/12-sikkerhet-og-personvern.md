@@ -39,10 +39,23 @@
 | Feil summer | Klienten sender en totalsum som ikke stemmer med linjene | Serveren regner summen. Totalsum med linjer avvises. | `purchases.api.test.ts` |
 | Tapt historikk ved sletting | Et kjøp slettes mens noen bruker en vare fra det | Partiene låses (`FOR UPDATE`). Brukte partier slettes aldri. | `purchases.api.test.ts` (samtidig sletting og forbruk) |
 
+### Nytt i fase 5: oppskrifter og allergier
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se andres matlager gjennom rangeringen | Bytte husholdnings-ID i URL-en til oppskriftene | `householdAccess` på begge oppskriftsrutene. Rangeringen leser bare matlageret til husholdningen i URL-en. | `recipes.security.api.test.ts` (A og B) |
+| Lese eller endre andres allergier | Sende en annen brukers ID | Bare `/me/allergens`, brukeren tas fra sesjonen. Det finnes ingen `/users/:id`, og en `userId` i kroppen ignoreres. | Samme fil (C) |
+| Koble andres vare til en ingrediens | PATCH med en annen husholdnings vare-ID | Varen slås opp med `household_id` (404) | Samme fil (D) |
+| Ugyldig ingrediens | Sende en tilfeldig UUID som `ingredientId` | Sjekkes mot tabellen (400), og fremmednøkkel | `recipes.api.test.ts` |
+| Endre oppskriftene | POST/PUT/DELETE mot oppskrifter | Ingen slike endepunkter. Oppskrifter legges bare inn med seed-skriptet. | `recipes.security.api.test.ts` |
+| Villedende allergeninformasjon | Appen sier at en rett er «allergenfri» | Ordlyden sier bare hva som er *registrert*. Forbeholdet vises alltid. En test stopper slike ord i begge språk. | `locales.test.ts`, side- og e2e-tester |
+| Råd om farlig mat | Oppskriften regner med kylling der siste forbruksdag er passert | Slike partier regnes aldri med, og oppskriften sier at de ikke bør spises | `scoring.test.ts`, `recipes.api.test.ts`, `e2e/recipes.spec.ts` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
-[fase 4](../evidence/test-results/fase-4/10-mutation-check.txt)). Resultatet for fase 4 står i kapittel 11.
+[fase 4](../evidence/test-results/fase-4/10-mutation-check.txt),
+[fase 5](../evidence/test-results/fase-5/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -58,6 +71,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Kjøp (butikk, dato, hva som ble kjøpt, beløp) og matbudsjett | Appens formål (budsjett) | `purchases`, `purchase_lines`, `food_budgets` | Til kjøpet eller kontoen slettes |
 | Hvem som registrerte et kjøp | Historikk i husholdningen | `purchases.created_by` | Settes til tom hvis kontoen slettes |
 | Hvem som gjorde en endring | Historikk i husholdningen | `inventory_events.actor_id` | Settes til tom hvis kontoen slettes. Hendelsen blir stående til husholdningen slettes. |
+| **Allergier** (fase 5) | Skjule eller varsle om oppskrifter (FR-REC-004) | `user_allergens`, knyttet til brukeren | Til brukeren endrer dem eller sletter kontoen |
+| Hvilken ingrediens en vare er (fase 5) | Rangering av oppskrifter | `inventory_items.ingredient_match`/`ingredient_id` | Som varen |
 | IP-adresse | Rate limiting | Bare i minnet i API-prosessen, i 15–60 minutter | Lagres ikke og logges ikke |
 
 Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører lokalt.
@@ -66,7 +81,7 @@ Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører l
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
   Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005). Fra fase 3 omfatter
-  det hele matlageret og svinnloggen, og fra fase 4 kjøp, linjer og budsjett. Dette er testet.
+  det hele matlageret og svinnloggen, fra fase 4 kjøp, linjer og budsjett, og fra fase 5 allergiene. Dette er testet.
 - Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
 - **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt) og eierskap i delte husholdninger (fase 10).
 
@@ -85,6 +100,13 @@ Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører l
 - **Kjøpsdata kan si mye om en person.** Butikk, dato og hva som kjøpes, kan avsløre vaner, bosted og helse
   (for eksempel kosthold). Dataene vises bare for medlemmer av husholdningen, logges ikke og sendes ikke ut av
   maskinen. En vurdering av behovet for kryptering eller kortere lagringstid hører til fase 13.
+- **Allergier kan være helseopplysninger** (særlige kategorier, GDPR art. 9). I SmartMat er de frivillige, brukes
+  bare til å skjule eller varsle om oppskrifter, vises bare for brukeren selv, logges ikke (testet) og slettes med
+  kontoen. **Behandlingsgrunnlaget er ikke vurdert av teamet.** Uttrykkelig samtykke (art. 9 nr. 2 a) er den
+  nærliggende løsningen, men det er en vurdering teamet må gjøre selv, og den er ikke gjort per 2026-10-21. Appen
+  kjører bare lokalt og har ingen ekte brukere.
+- **Allergenmerkingen er et KI-utkast som ikke er kontrollert** (`prisma/seed/ingredients.json`). Forbeholdet sier
+  at informasjonen er veiledende, men det erstatter ikke at teamet kontrollerer merkingen.
 - **Retting av samme kjøp fra to steder:** siste lagring vinner, uten varsel. Betyr lite før husholdninger kan ha
   flere medlemmer (fase 10).
 - **Ikke gjort:** tofaktorinnlogging, varsel om innlogging fra ny enhet, sjekk mot lister over lekkede passord,

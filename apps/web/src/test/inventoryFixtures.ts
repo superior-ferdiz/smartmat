@@ -40,6 +40,8 @@ export function item(name: string, overrides: Partial<ItemResponse> = {}): ItemR
     name,
     categoryKey: 'dairy',
     unit: 'ml',
+    ingredientMatch: 'auto',
+    ingredientId: null,
     createdAt: '2026-10-01T10:00:00.000Z',
     batches: [batch()],
     ...overrides,

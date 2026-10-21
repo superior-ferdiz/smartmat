@@ -1,0 +1,38 @@
+{
+  "slug": "testrett-pasta-med-tomat",
+  "title": "Testrett: pasta med tomat",
+  "description": "Fiktiv oppskrift for automatiske tester.",
+  "servings": 2,
+  "prepMinutes": 5,
+  "cookMinutes": 15,
+  "tags": ["middag", "test"],
+  "source": "test",
+  "license": "test",
+  "authors": ["Testdata (laget av KI for testene)"],
+  "ingredients": [
+    {
+      "ingredient": "pasta",
+      "amount": "200",
+      "unit": "g",
+      "text": "200 g pasta"
+    },
+    {
+      "ingredient": "tomat",
+      "amount": "4",
+      "unit": "stk",
+      "text": "4 tomater"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 løk",
+      "optional": true
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt"
+    }
+  ],
+  "steps": ["Testtrinn 1."]
+}

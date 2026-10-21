@@ -85,8 +85,30 @@ function atLeastOne<T extends Record<string, unknown>>(value: T) {
   return Object.values(value).some((v) => v !== undefined);
 }
 
+/**
+ * Spec 05: how an item is linked to a recipe ingredient. auto = by its name, none = "not an ingredient",
+ * manual = the ingredient the user chose (checked against the ingredient table by the server).
+ */
+export const itemIngredientSchema = z.discriminatedUnion(
+  'match',
+  [
+    z.object({ match: z.literal('auto') }),
+    z.object({ match: z.literal('none') }),
+    z.object({
+      match: z.literal('manual'),
+      ingredientId: z.uuid({ error: 'validation.ingredient.unknown' }),
+    }),
+  ],
+  { error: 'validation.ingredient.unknown' },
+);
+export type ItemIngredientInput = z.infer<typeof itemIngredientSchema>;
+
 export const updateItemSchema = z
-  .object({ name: itemNameSchema.optional(), categoryKey: categoryKeySchema.optional() })
+  .object({
+    name: itemNameSchema.optional(),
+    categoryKey: categoryKeySchema.optional(),
+    ingredient: itemIngredientSchema.optional(),
+  })
   .refine(atLeastOne, { error: 'validation.nothingToUpdate' });
 export type UpdateItemBody = z.output<typeof updateItemSchema>;
 

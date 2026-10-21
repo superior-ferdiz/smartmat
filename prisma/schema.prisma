@@ -43,6 +43,7 @@ model User {
   memberships     HouseholdMember[]
   inventoryEvents InventoryEvent[]
   purchases       Purchase[]
+  allergens       UserAllergen[]
 
   @@map("users")
 }
@@ -161,6 +162,7 @@ model Category {
 
   items         InventoryItem[]
   purchaseLines PurchaseLine[]
+  ingredients   Ingredient[]
 
   @@map("categories")
 }
@@ -185,18 +187,24 @@ model StorageLocation {
 
 /// What the household has ("Lettmelk"). Free-text name until the product catalogue arrives (phase 7).
 model InventoryItem {
-  id          String   @id @default(uuid(7)) @db.Uuid
-  householdId String   @map("household_id") @db.Uuid
-  name        String   @db.VarChar(100)
-  categoryKey String   @map("category_key") @db.VarChar(32)
-  unit        BaseUnit
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  id              String          @id @default(uuid(7)) @db.Uuid
+  householdId     String          @map("household_id") @db.Uuid
+  name            String          @db.VarChar(100)
+  categoryKey     String          @map("category_key") @db.VarChar(32)
+  unit            BaseUnit
+  /// Phase 5 (spec 05): how the item is linked to a recipe ingredient. auto = by name (aliases), manual = the
+  /// user chose ingredient_id, none = the user said it is no ingredient. CHECK: ingredient_id only with manual.
+  ingredientMatch IngredientMatch @default(auto) @map("ingredient_match")
+  ingredientId    String?         @map("ingredient_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  category  Category         @relation(fields: [categoryKey], references: [key])
-  batches   InventoryBatch[]
-  events    InventoryEvent[]
+  household  Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  category   Category         @relation(fields: [categoryKey], references: [key])
+  /// RESTRICT: the seed script only removes ingredients that nothing uses.
+  ingredient Ingredient?      @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  batches    InventoryBatch[]
+  events     InventoryEvent[]
 
   @@unique([id, householdId])
   @@index([householdId])
@@ -357,4 +365,148 @@ model FoodBudget {
 
   @@id([householdId, validFrom])
   @@map("food_budgets")
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 5: recipes (spec 05). Recipes and ingredients are GLOBAL (no household_id): the same for everyone,
+// seeded from prisma/seed/ by `npm run db:seed`, never written through the API. Allergies belong to the user.
+
+enum IngredientMatch {
+  auto
+  manual
+  none
+
+  @@map("ingredient_match")
+}
+
+/// The 14 allergens that must be declared under the Norwegian food information regulation (matinformasjonsforskriften).
+enum Allergen {
+  gluten
+  crustaceans
+  egg
+  fish
+  peanuts
+  soy
+  milk
+  nuts
+  celery
+  mustard
+  sesame
+  sulphites
+  lupin
+  molluscs
+
+  @@map("allergen")
+}
+
+/// team = written by the students (ADR-0009); test = fictional recipes that only exist in the test databases.
+enum RecipeSource {
+  team
+  test
+
+  @@map("recipe_source")
+}
+
+/// A normalised food that recipes use ("melk"). Quantities of it are whole units of base_unit (ADR-0006).
+model Ingredient {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  /// Stable id in the seed files ("melk").
+  key         String   @unique @db.VarChar(64)
+  name        String   @db.VarChar(60)
+  baseUnit    BaseUnit @map("base_unit")
+  /// Salt, pepper, oil, water: assumed to be in the kitchen, not counted as missing.
+  isStaple    Boolean  @default(false) @map("is_staple")
+  categoryKey String?  @map("category_key") @db.VarChar(32)
+
+  category    Category?            @relation(fields: [categoryKey], references: [key], onDelete: SetNull)
+  aliases     IngredientAlias[]
+  allergens   IngredientAllergen[]
+  conversions UnitConversion[]
+  recipes     RecipeIngredient[]
+  items       InventoryItem[]
+
+  @@map("ingredients")
+}
+
+/// Another name for an ingredient, normalised (lower case, single spaces). Unique across all ingredients,
+/// so an item name can never quietly match two of them.
+model IngredientAlias {
+  alias        String     @id @db.VarChar(60)
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@index([ingredientId])
+  @@map("ingredient_aliases")
+}
+
+model IngredientAllergen {
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  allergen     Allergen
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@id([ingredientId, allergen])
+  @@map("ingredient_allergens")
+}
+
+/// unit_qty of `unit` ≈ base_qty of the ingredient's base unit ("1 stk egg ≈ 60 g"). Whole numbers (ADR-0006).
+model UnitConversion {
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  unit         BaseUnit
+  unitQty      Int        @map("unit_qty")
+  baseQty      Int        @map("base_qty")
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@id([ingredientId, unit])
+  @@map("unit_conversions")
+}
+
+model Recipe {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  /// Stable id in the seed files; the seed script upserts on it, so the id survives a re-seed.
+  slug        String       @unique @db.VarChar(80)
+  title       String       @db.VarChar(120)
+  description String       @db.VarChar(500)
+  servings    Int
+  prepMinutes Int          @map("prep_minutes")
+  cookMinutes Int          @map("cook_minutes")
+  steps       String[]
+  tags        String[]
+  source      RecipeSource
+  license     String       @db.VarChar(50)
+  /// Who really wrote the recipe (ADR-0009). Never empty (CHECK).
+  authors     String[]
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  ingredients RecipeIngredient[]
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  recipeId     String     @map("recipe_id") @db.Uuid
+  position     Int
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  /// In the ingredient's base unit; null = no amount ("etter smak").
+  quantityBase Int?       @map("quantity_base")
+  /// What the recipe says ("2 dl melk").
+  displayText  String     @map("display_text") @db.VarChar(120)
+  optional     Boolean    @default(false)
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@id([recipeId, position])
+  @@unique([recipeId, ingredientId])
+  @@index([ingredientId])
+  @@map("recipe_ingredients")
+}
+
+/// FR-REC-004. May be health data (GDPR art. 9): voluntary, deleted with the account, never logged.
+model UserAllergen {
+  userId   String   @map("user_id") @db.Uuid
+  allergen Allergen
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, allergen])
+  @@map("user_allergens")
 }
