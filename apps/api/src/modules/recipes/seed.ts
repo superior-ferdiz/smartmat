@@ -147,9 +147,14 @@ export async function applySeed(db: Db, seed: ResolvedSeed): Promise<SeedSummary
       });
       const stale = await tx.ingredient.findMany({
         where: { id: { notIn: ids } },
-        select: { id: true, key: true, _count: { select: { items: true, shoppingItems: true } } },
+        select: {
+          id: true,
+          key: true,
+          _count: { select: { items: true, shoppingItems: true, barcodes: true } },
+        },
       });
-      const inUse = (i: (typeof stale)[number]) => i._count.items + i._count.shoppingItems > 0;
+      const inUse = (i: (typeof stale)[number]) =>
+        i._count.items + i._count.shoppingItems + i._count.barcodes > 0;
       const unused = stale.filter((i) => !inUse(i));
       await tx.ingredient.deleteMany({ where: { id: { in: unused.map((i) => i.id) } } });
 

@@ -1,7 +1,11 @@
 {
   "app": {
     "name": "SmartMat",
-    "skipToContent": "Hopp til hovedinnhold"
+    "skipToContent": "Hopp til hovedinnhold",
+    "staging": {
+      "title": "Testmiljø.",
+      "text": "Bruk bare testdata. Ikke legg inn ekte allergier eller andre ekte opplysninger."
+    }
   },
   "common": {
     "loading": "Laster …",
@@ -173,6 +177,12 @@
       "notInRecipe": "Ingrediensen finnes ikke i oppskriften. Last inn siden på nytt.",
       "itemRequired": "Velg en vare.",
       "itemNotFound": "Varen finnes ikke lenger. Velg en annen."
+    },
+    "barcode": {
+      "required": "Skriv inn strekkoden.",
+      "digits": "Strekkoden kan bare ha tall.",
+      "length": "Strekkoden skal ha 8, 12, 13 eller 14 sifre.",
+      "checkDigit": "Strekkoden stemmer ikke. Sjekk at alle sifrene er riktige."
     }
   },
   "pages": {
@@ -219,9 +229,7 @@
       "emptyText": "Her skal du kunne legge til varer, se hva som går ut snart, og registrere forbruk og svinn."
     },
     "scan": {
-      "lead": "Legg til varer raskt med strekkoden.",
-      "emptyTitle": "Skanning kommer i fase 7",
-      "emptyText": "Her skal du kunne skanne strekkoden med kameraet eller skrive den inn selv. Du bekrefter alltid før noe lagres."
+      "lead": "Skann strekkoden eller skriv den inn. Du sjekker og bekrefter alltid før noe legges i matlageret."
     },
     "recipes": {
       "lead": "Rangert etter hva du har hjemme, hva som må brukes først og hva som mangler.",
@@ -415,7 +423,8 @@
       "householdNote": "Du får din egen husholdning når du oppretter konto. Deling med andre kommer i en senere versjon.",
       "submit": "Opprett konto",
       "haveAccount": "Har du allerede konto?",
-      "logIn": "Logg inn"
+      "logIn": "Logg inn",
+      "closedLogin": "Logg inn"
     }
   },
   "errors": {
@@ -424,7 +433,8 @@
       "invalidCredentials": "Feil e-postadresse eller passord. Etter fem feil på rad må du vente 15 minutter før du kan prøve igjen.",
       "emailTaken": "Det finnes allerede en konto med denne e-postadressen. Logg inn i stedet.",
       "wrongPassword": "Passordet er feil.",
-      "unauthenticated": "Du er ikke logget inn lenger. Logg inn igjen."
+      "unauthenticated": "Du er ikke logget inn lenger. Logg inn igjen.",
+      "registrationClosed": "Dette er et lukket testmiljø. Nye kontoer lages av teamet."
     },
     "security": {
       "forbiddenOrigin": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen.",
@@ -1012,6 +1022,82 @@
       "nothing": "Du har alt oppskriften trenger.",
       "submit": "Legg i handlelisten",
       "open": "Gå til handlelisten"
+    }
+  },
+  "scan": {
+    "camera": {
+      "title": "Skann med kameraet",
+      "start": "Start kamera",
+      "privacy": "Bildet fra kameraet blir på enheten din. Bare tallene i strekkoden sendes.",
+      "starting": "Starter kameraet …",
+      "scanning": "Hold strekkoden inne i rammen.",
+      "videoLabel": "Kamerabilde",
+      "stop": "Stopp kamera",
+      "close": "Lukk",
+      "retry": "Prøv igjen",
+      "typeInstead": "Du kan skrive inn strekkoden i stedet.",
+      "problems": {
+        "insecure": {
+          "title": "Kameraet krever en sikker side",
+          "text": "Nettleseren gir bare kameratilgang på sider som er åpnet med https (eller på localhost)."
+        },
+        "unsupported": {
+          "title": "Nettleseren støtter ikke kamera",
+          "text": "Denne nettleseren gir ikke nettsider tilgang til kameraet."
+        },
+        "denied": {
+          "title": "Ingen tilgang til kameraet",
+          "text": "Du eller nettleseren har sagt nei til kameraet. Du kan gi tilgang i nettleserens innstillinger for denne siden."
+        },
+        "noCamera": {
+          "title": "Fant ikke noe kamera",
+          "text": "Vi fant ikke noe kamera på denne enheten, eller et annet program bruker det."
+        },
+        "failed": {
+          "title": "Kameraet startet ikke",
+          "text": "Noe gikk galt da kameraet eller strekkodeleseren skulle starte."
+        }
+      }
+    },
+    "manual": {
+      "title": "Skriv inn strekkoden",
+      "label": "Strekkode",
+      "hint": "Tallene under strekkene, vanligvis 13 eller 8 sifre.",
+      "submit": "Slå opp"
+    },
+    "lookup": {
+      "title": "Strekkode funnet",
+      "code": "Strekkode: {{gtin}}",
+      "loading": "Slår opp strekkoden …",
+      "brand": "Merke: {{brand}}.",
+      "another": "Skann en annen vare",
+      "status": {
+        "found": "Funnet i Open Food Facts. Sjekk og rett før du legger til.",
+        "household": "Dere har skannet denne før. Svarene fra sist er fylt ut.",
+        "notFound": "Vi fant ikke denne strekkoden. Fyll inn selv, så husker vi den til neste gang.",
+        "unavailable": "Produktoppslaget svarer ikke akkurat nå. Fyll inn selv.",
+        "storeCode": "Butikkens egen kode (for eksempel for vekt eller pris). Fyll inn selv. Koden blir ikke husket.",
+        "notAsked": "Fyll inn selv."
+      }
+    },
+    "form": {
+      "title": "Sjekk og legg i matlageret",
+      "modeLegend": "Hvor skal pakken?",
+      "existing": "Nytt parti på «{{name}}»",
+      "newItem": "Ny vare",
+      "nameHint": "Rett navnet hvis det er feil eller på et annet språk.",
+      "ingredientAuto": "Automatisk: {{name}}",
+      "ingredientAmbiguous": "Automatisk (navnet passer til flere, ikke koblet)",
+      "ingredientUnmatched": "Automatisk (ikke koblet)",
+      "dateHint": "Datoen fylles aldri ut. Les den på pakken.",
+      "submit": "Legg i matlageret"
+    },
+    "added": "{{name}} er lagt i matlageret.",
+    "seeItem": "Se varen",
+    "attribution": {
+      "text": "Produktdata fra",
+      "source": "Open Food Facts",
+      "license": "lisens ODbL"
     }
   }
 }

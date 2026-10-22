@@ -26,6 +26,19 @@
   en avkrysningsboks som beholdt haken etter tilbakerulling (funnet av komponenttesten), et redigeringsskript som
   stoppet halvveis, og to ting KI-en så på sine egne skjermbilder: et felt som brøt linjen på 360 px, og to felt som
   begge het «Enhet» i dialogen for ny vare.
+- **Fase 7 (2026-10-22):** KI skrev all kode for strekkodeskanning og testmiljøet, tre ADR-er (0014–0016, der 0016
+  bare er et forslag), vilkårsdokumentet for Open Food Facts og en KI-laget tabell fra OFF-kategorier til
+  SmartMat-kategorier (merket i filen, ikke kontrollert). Reglene for GS1-prefikser og UPC-E bygger på KI-ens
+  kunnskap. Testverdiene ble regnet ut for seg, men reglene er ikke kontrollert mot GS1-spesifikasjonen.
+- Feil KI-en gjorde og fant selv i fase 7 (detaljer i kapittel 11):
+  - **feil i egne beregninger:** to testverdier med feil kontrollsiffer (funnet da Python regnet dem ut på nytt), og
+    en paritetstabell for EAN-13 der radene for 6 og 7 var byttet (funnet fordi strekkodeleseren ikke kunne lese
+    bildet, og så sammenlignet med zxing sin egen tegning)
+  - **feil i egen kode:** strekkoden i den loggede URL-en (funnet av egen loggtest), et skjema som ble bygd på nytt
+    og mistet `onSuccess` (funnet av Playwright, ikke av komponenttesten), og tre Playwright-tester som traff feil
+    element
+  - **planen bygde på feil tall:** grensen til OFF er 15 oppslag i minuttet, ikke rundt 100. Det ble funnet da
+    vilkårene faktisk ble lest, før koden ble skrevet.
 - Teamets refleksjon over dette er ikke skrevet.
 
 ## Kilder i prosjektet

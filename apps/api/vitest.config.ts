@@ -6,5 +6,6 @@ export default defineProject({
     name: 'api',
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    setupFiles: ['./test/noNetwork.ts'],
   },
 });

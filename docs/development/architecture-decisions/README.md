@@ -19,5 +19,8 @@ En beslutning endres ved å skrive en ny ADR som erstatter den gamle (og markere
 | [0009](0009-egne-froppskrifter.md) | Egne norske frøoppskrifter i stedet for eksternt oppskrifts-API |
 | [0010](0010-ingen-skraping-av-priser.md) | Ingen skraping av priser |
 | [0011](0011-ocr-velges-etter-maling.md) | OCR-løsning velges etter måling, Tesseract først |
-| [0012](0012-lokal-utvikling-forst.md) | Lokal utvikling først, ingen Git ennå (Git-delen erstattet av 0013) |
+| [0012](0012-lokal-utvikling-forst.md) | Lokal utvikling først, ingen Git ennå (Git-delen erstattet av 0013, hosting-delen av 0015) |
 | [0013](0013-git-og-github.md) | Versjonskontroll med Git og privat repo på GitHub |
+| [0014](0014-produkter-og-strekkoder.md) | Produkter fra Open Food Facts som globalt mellomlager, og husholdningens egne strekkoder |
+| [0015](0015-lukket-testmiljo.md) | Lukket testmiljø med HTTPS på smartmat.risansolutions.no |
+| [0016](0016-oppskrifter-fra-apne-kilder.md) | Oppskrifter fra åpne kilder, oversatt til norsk (**foreslått, ikke godkjent**; skal erstatte 0009) |

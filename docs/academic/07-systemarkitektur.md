@@ -1,6 +1,6 @@
 # Systemarkitektur
 
-> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20). Arkitekturen og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20), utvidet i fase 7 (2026-10-22). Arkitekturen og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides når flere deler kommer til. Offisielle APP2000-krav til rapporten er
 > ikke verifisert.
 
@@ -72,13 +72,48 @@ sequenceDiagram
   A-->>N: 200 {oppdatert bruker}
 ```
 
+## Eksterne tjenester bak et grensesnitt (fase 7)
+
+Open Food Facts er den første eksterne tjenesten. API-et snakker bare med den gjennom `BarcodeProvider`
+(`apps/api/src/providers/barcode/`). Nettleseren snakker aldri med den direkte, og kamerabildet forlater aldri
+nettleseren.
+
+```mermaid
+flowchart LR
+  K[Kamera<br/>i nettleseren] -- "bilde (bare lokalt)" --> L[Strekkodeleser<br/>BarcodeDetector / zxing-wasm]
+  L -- "bare tallene" --> A[API]
+  A --> H[(household_barcodes)]
+  A --> C[(products<br/>mellomlager)]
+  A -- "GTIN, User-Agent,<br/>3 s tidsavbrudd" --> O[Open Food Facts]
+```
+
+Rekkefølgen er husholdningens egne svar, så mellomlageret, så OFF. Er OFF nede, får brukeren det tomme skjemaet, og
+resten av appen merker ingenting (NFR-REL-001). I testene erstattes `fetch`, så OFF aldri kalles.
+
+## Testmiljøet (fase 7, ADR-0015)
+
+Et lukket testmiljø på `smartmat.risansolutions.no` gjør det mulig å teste kameraet på en ekte telefon. Kameraet
+krever HTTPS. Det er bygd, men **ikke satt opp** per 2026-10-22, fordi DNS mangler.
+
+```mermaid
+flowchart LR
+  T[Telefon] -- "HTTPS + passord<br/>(basic auth)" --> Y[Caddy<br/>ghostwebsite-caddy-1]
+  Y -- "ghostweb-nettet,<br/>X-Forwarded-For overskrevet" --> P[smartmat-staging-app<br/>API + ferdig webapp]
+  P -- "internt nett<br/>uten internett" --> Q[(smartmat-staging-db)]
+  P --> O[Open Food Facts]
+```
+
+Her serverer API-et også webappen, så det er fortsatt én opprinnelse. `trustProxy` stoler bare på `ghostweb`-nettet,
+ellers ville alle brukere hatt samme IP-adresse (Caddy sin) og delt én rate limit.
+
 ## Sikkerhetsgrenser
 
 - **All tilgangskontroll skjer i API-et.** `RequireAuth` i React bestemmer bare hva som vises. Den beskytter ingenting.
 - **Husholdningsdata:** ruter går gjennom `householdAccess`, som sjekker medlemskap i databasen (NFR-SEC-001).
   Mønsteret er beskrevet i [kapittel 10](10-teknisk-implementering.md#eksempel-6-autorisasjon-for-husholdningsdata).
 - **Validering:** API-et validerer all input med de samme Zod-skjemaene som skjemaene i nettleseren (NFR-SEC-002).
-- **Nettverk:** Database og API lytter bare på `127.0.0.1`. Maskinen kjører også andre nettsteder.
+- **Nettverk:** Lokalt lytter database og API bare på `127.0.0.1`. Maskinen kjører også andre nettsteder. I
+  testmiljøet har ingen container en åpen port. Caddy når appen over Docker-nettet.
 
 ## Kilder i prosjektet
 
@@ -87,6 +122,8 @@ sequenceDiagram
   [ADR-0003](../development/architecture-decisions/0003-postgresql-prisma.md),
   [ADR-0005](../development/architecture-decisions/0005-sesjoner-og-argon2id.md),
   [ADR-0008](../development/architecture-decisions/0008-husholdning-fra-start.md),
-  [ADR-0012](../development/architecture-decisions/0012-lokal-utvikling-forst.md)
+  [ADR-0012](../development/architecture-decisions/0012-lokal-utvikling-forst.md),
+  [ADR-0014](../development/architecture-decisions/0014-produkter-og-strekkoder.md),
+  [ADR-0015](../development/architecture-decisions/0015-lukket-testmiljo.md)
 - [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md)
 - [API-dokumentasjon](../development/api-documentation.md)

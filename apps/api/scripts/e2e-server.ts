@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { buildApp } from '../src/app';
 import { loadConfig } from '../src/config';
 import { createDb } from '../src/db';
+import { fakeOffFetch, testBarcodeProvider } from '../test/fakeOff';
 import { seedFixtureRecipes } from '../test/fixtureSeed';
 import { testDatabaseUrl } from '../test/testDatabase';
 
@@ -33,7 +34,13 @@ const db = createDb(databaseUrl);
 await db.$executeRawUnsafe(
   'TRUNCATE TABLE sessions, household_members, households, users RESTART IDENTITY CASCADE',
 );
+await db.$executeRawUnsafe('TRUNCATE TABLE products, product_lookup_misses');
 // Spec 05: the fictional test recipes, never the team's (the e2e tests must not depend on real content).
 await seedFixtureRecipes(db);
-const app = await buildApp({ config, db });
+// Spec 07: never the real Open Food Facts. The fake one answers for the made-up codes in test/fakeOff.ts.
+const app = await buildApp({
+  config,
+  db,
+  barcodeProvider: testBarcodeProvider(fakeOffFetch().fetchFn as typeof fetch),
+});
 await app.listen({ host: config.host, port: config.port });

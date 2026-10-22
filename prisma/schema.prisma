@@ -66,6 +66,7 @@ model Household {
   shoppingList     ShoppingList?
   shoppingItems    ShoppingListItem[]
   shoppingShares   ShoppingListItemRecipe[]
+  barcodes         HouseholdBarcode[]
 
   @@map("households")
 }
@@ -167,6 +168,8 @@ model Category {
   items         InventoryItem[]
   purchaseLines PurchaseLine[]
   ingredients   Ingredient[]
+  products      Product[]
+  barcodes      HouseholdBarcode[]
 
   @@map("categories")
 }
@@ -179,10 +182,11 @@ model StorageLocation {
   name        String?      @db.VarChar(50)
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  household Household          @relation(fields: [householdId], references: [id], onDelete: Cascade)
   batches   InventoryBatch[]
-  movedFrom InventoryEvent[] @relation("EventFromLocation")
-  movedTo   InventoryEvent[] @relation("EventToLocation")
+  movedFrom InventoryEvent[]   @relation("EventFromLocation")
+  movedTo   InventoryEvent[]   @relation("EventToLocation")
+  barcodes  HouseholdBarcode[]
 
   @@unique([id, householdId])
   @@index([householdId])
@@ -203,12 +207,13 @@ model InventoryItem {
   createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  household  Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  category   Category         @relation(fields: [categoryKey], references: [key])
+  household  Household          @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  category   Category           @relation(fields: [categoryKey], references: [key])
   /// RESTRICT: the seed script only removes ingredients that nothing uses.
-  ingredient Ingredient?      @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  ingredient Ingredient?        @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
   batches    InventoryBatch[]
   events     InventoryEvent[]
+  barcodes   HouseholdBarcode[]
 
   @@unique([id, householdId])
   @@index([householdId])
@@ -231,6 +236,8 @@ model InventoryBatch {
   purchasedOn         DateTime?   @map("purchased_on") @db.Date
   /// The purchase line the batch came from (phase 4, FR-BUD-002); null when added in the inventory or unlinked.
   purchaseLineId      String?     @map("purchase_line_id") @db.Uuid
+  /// Phase 7 (spec 07, FR-SCAN-005): "scan:<clientRequestId>", so a confirmation sent twice gives one batch.
+  dedupeKey           String?     @map("dedupe_key") @db.VarChar(80)
   createdAt           DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt           DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
 
@@ -246,6 +253,7 @@ model InventoryBatch {
   events       InventoryEvent[]
 
   @@unique([purchaseLineId, householdId])
+  @@unique([householdId, dedupeKey])
   @@index([householdId])
   @@index([itemId])
   @@index([locationId])
@@ -428,6 +436,7 @@ model Ingredient {
   conversions   UnitConversion[]
   recipes       RecipeIngredient[]
   items         InventoryItem[]
+  barcodes      HouseholdBarcode[]
   shoppingItems ShoppingListItem[]
 
   @@map("ingredients")
@@ -584,4 +593,66 @@ model ShoppingListItemRecipe {
   @@id([itemId, recipeId])
   @@index([recipeId])
   @@map("shopping_list_item_recipes")
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Phase 7: barcodes (spec 07, ADR-0014)
+// ---------------------------------------------------------------------------------------------------------------
+
+/// Global cache of what Open Food Facts answered for a GTIN (ODbL, see docs/development/integrations).
+/// No household or user data. Used for 30 days, then asked again.
+model Product {
+  gtin                String    @id @db.VarChar(14)
+  name                String?   @db.VarChar(100)
+  brand               String?   @db.VarChar(100)
+  /// Pack size in whole grams or millilitres, when OFF gave one we could read.
+  packageQuantityBase Int?      @map("package_quantity_base")
+  packageUnit         BaseUnit? @map("package_unit")
+  categoryKey         String?   @map("category_key") @db.VarChar(32)
+  fetchedAt           DateTime  @map("fetched_at") @db.Timestamptz(3)
+
+  category Category? @relation(fields: [categoryKey], references: [key], onDelete: SetNull)
+
+  @@map("products")
+}
+
+/// GTINs Open Food Facts did not know, so they are not asked again for 24 hours. Errors are never stored here.
+model ProductLookupMiss {
+  gtin      String   @id @db.VarChar(14)
+  checkedAt DateTime @map("checked_at") @db.Timestamptz(3)
+
+  @@map("product_lookup_misses")
+}
+
+/// What the household confirmed last for a GTIN. Wins over Open Food Facts; the only memory of unknown codes.
+model HouseholdBarcode {
+  householdId     String          @map("household_id") @db.Uuid
+  gtin            String          @db.VarChar(14)
+  name            String          @db.VarChar(100)
+  categoryKey     String          @map("category_key") @db.VarChar(32)
+  unit            BaseUnit
+  /// The amount confirmed last time, offered again.
+  quantityBase    Int?            @map("quantity_base")
+  ingredientMatch IngredientMatch @default(auto) @map("ingredient_match")
+  ingredientId    String?         @map("ingredient_id") @db.Uuid
+  locationId      String?         @map("location_id") @db.Uuid
+  expiryKind      ExpiryKind?     @map("expiry_kind")
+  /// The item it was added to last time.
+  itemId          String?         @map("item_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household  Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  category   Category         @relation(fields: [categoryKey], references: [key])
+  /// RESTRICT, like inventory_items: the seed script only removes ingredients that nothing uses.
+  ingredient Ingredient?      @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  /// NO ACTION: the app clears the link before it deletes the item or the location (SET NULL on a composite
+  /// key would also clear household_id).
+  item       InventoryItem?   @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: NoAction)
+  location   StorageLocation? @relation(fields: [locationId, householdId], references: [id, householdId], onDelete: NoAction)
+
+  @@id([householdId, gtin])
+  @@index([itemId])
+  @@index([locationId])
+  @@map("household_barcodes")
 }

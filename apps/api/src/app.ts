@@ -10,7 +10,11 @@ import type { Db } from './db';
 import { createHouseholdAccess } from './authz/household';
 import { systemClock, type Clock } from './lib/clock';
 import { AppError } from './lib/errors';
+import { WindowLimiter } from './lib/windowLimiter';
 import { createAuthRepo } from './modules/auth/repo';
+import { createBarcodeRepo } from './modules/barcodes/repo';
+import { barcodeRoutes } from './modules/barcodes/routes';
+import { BarcodeService } from './modules/barcodes/service';
 import { authRoutes } from './modules/auth/routes';
 import { argon2Hasher, type PasswordHasher } from './modules/auth/password';
 import { AuthService } from './modules/auth/service';
@@ -38,9 +42,24 @@ import { ShoppingService } from './modules/shopping/service';
 import { PurchaseService } from './modules/purchases/service';
 import { profileRoutes } from './modules/profile/routes';
 import { ProfileService } from './modules/profile/service';
-import { createRequireAuth, createSessionCookies, registerAuthDecorations } from './plugins/auth';
+import {
+  createRequireAuth,
+  createSessionCookies,
+  HOST_SESSION_COOKIE,
+  registerAuthDecorations,
+  SESSION_COOKIE,
+} from './plugins/auth';
 import { registerErrorHandling } from './plugins/errors';
 import { registerOriginCheck } from './plugins/origin';
+import {
+  inlineScriptHashes,
+  isPageRequest,
+  readIndexHtml,
+  registerWebApp,
+  webCsp,
+} from './plugins/web';
+import { createOpenFoodFactsProvider } from './providers/barcode/openFoodFacts';
+import { disabledBarcodeProvider, type BarcodeProvider } from './providers/barcode/types';
 
 export interface AppDeps {
   config: AppConfig;
@@ -50,9 +69,30 @@ export interface AppDeps {
   hasher?: PasswordHasher;
   /** Tests capture the log here to check that it contains no personal data. */
   logStream?: DestinationStream;
+  /** Tests pass a fake; otherwise Open Food Facts if a User-Agent is configured (spec 07). */
+  barcodeProvider?: BarcodeProvider;
+}
+
+const MINUTE = 60_000;
+
+/** Open Food Facts requires a User-Agent with a contact. Without one, lookups are switched off (manual form). */
+function defaultBarcodeProvider(config: AppConfig, now: Clock): BarcodeProvider {
+  const { offUserAgent, offBaseUrl, offTimeoutMs, offMaxPerMinute } = config.barcode;
+  if (!offUserAgent) return disabledBarcodeProvider;
+  return createOpenFoodFactsProvider({
+    baseUrl: offBaseUrl,
+    userAgent: offUserAgent,
+    timeoutMs: offTimeoutMs,
+    limiter: new WindowLimiter(offMaxPerMinute, MINUTE, now),
+  });
 }
 
 export const API_PREFIX = '/api/v1';
+
+/** Spec 07: a barcode says what a household has bought, so it is left out of the logged URL. */
+export function redactUrl(url: string): string {
+  return url.replace(/\/barcodes\/[^/?#]*/, '/barcodes/[gtin]');
+}
 
 /** Builds the API without starting it (server.ts listens; tests use app.inject). */
 export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
@@ -61,16 +101,17 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const hasher = deps.hasher ?? argon2Hasher;
 
   const app = Fastify({
-    // Rate limits count the socket's address. X-Forwarded-For is NOT trusted: any client can set it,
-    // and trusting it would let an attacker get a fresh limit per request. (A reverse proxy is phase 13.)
-    trustProxy: false,
+    // Rate limits count the client's address. Locally X-Forwarded-For is NOT trusted: any client can set it,
+    // and trusting it would let an attacker get a fresh limit per request. In the test environment only
+    // Caddy's network is trusted (ADR-0015), and Caddy overwrites the header with the real address.
+    trustProxy: config.trustProxy,
     bodyLimit: 64 * 1024,
     logger: {
       level: config.logLevel,
       // NFR-SEC-004: no personal data in logs. Request bodies are never logged. The IP address is
       // personal data and is left out; headers that carry secrets are censored if anything logs them.
       serializers: {
-        req: (request) => ({ method: request.method, url: request.url }),
+        req: (request) => ({ method: request.method, url: redactUrl(request.url) }),
       },
       redact: {
         paths: [
@@ -87,10 +128,27 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
 
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
-  registerErrorHandling(app);
+  const indexHtml = config.webDistDir ? readIndexHtml(config.webDistDir) : null;
+  registerErrorHandling(
+    app,
+    indexHtml
+      ? { html: indexHtml, isPage: (method, url) => isPageRequest(method, url, API_PREFIX) }
+      : null,
+  );
   registerAuthDecorations(app);
 
-  await app.register(helmet);
+  // With the web app served from here, the CSP is for the page: our scripts, the hashed theme script, and
+  // WebAssembly for the fallback barcode reader (ADR-0015). The API-only default is helmet's.
+  await app.register(
+    helmet,
+    indexHtml
+      ? { contentSecurityPolicy: { directives: webCsp(inlineScriptHashes(indexHtml)) } }
+      : {},
+  );
+  // Spec 07: the camera only for our own page; nothing else the app does not use.
+  app.addHook('onSend', async (_request, reply) => {
+    reply.header('permissions-policy', 'camera=(self), microphone=(), geolocation=(), payment=()');
+  });
   await app.register(cookie);
   await app.register(rateLimitPlugin, {
     global: false,
@@ -98,7 +156,10 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   });
   registerOriginCheck(app, config.allowedOrigins);
 
-  const cookies = createSessionCookies(config.cookieSecure);
+  const cookies = createSessionCookies(
+    config.cookieSecure,
+    config.cookieHostPrefix ? HOST_SESSION_COOKIE : SESSION_COOKIE,
+  );
   const authService = new AuthService({ repo: createAuthRepo(db), hasher, now });
   const profileService = new ProfileService({ repo: createProfileRepo(db), hasher });
   const householdRepo = createHouseholdRepo(db);
@@ -120,6 +181,15 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     now,
   });
   const budgetService = new BudgetService({ repo: createBudgetRepo(db), now });
+  const barcodeService = new BarcodeService({
+    repo: createBarcodeRepo(db),
+    provider: deps.barcodeProvider ?? defaultBarcodeProvider(config, now),
+    inventory: inventoryRepo,
+    locations: locationRepo,
+    ingredients: { exists: (id) => recipeRepo.ingredientExists(id) },
+    userLimiter: new WindowLimiter(config.barcode.lookupsPerUserPerMinute, MINUTE, now),
+    now,
+  });
   const shoppingService = new ShoppingService({
     repo: createShoppingRepo(db),
     locations: locationRepo,
@@ -135,6 +205,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         cookies,
         requireAuth,
         rateLimits: config.rateLimits,
+        registrationOpen: config.registrationOpen,
       });
       await api.register(profileRoutes, {
         service: profileService,
@@ -157,6 +228,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       });
       await api.register(budgetRoutes, { service: budgetService, requireAuth, householdAccess });
       await api.register(recipeRoutes, { service: recipeService, requireAuth, householdAccess });
+      await api.register(barcodeRoutes, { service: barcodeService, requireAuth, householdAccess });
       await api.register(shoppingRoutes, {
         service: shoppingService,
         requireAuth,
@@ -165,6 +237,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     },
     { prefix: API_PREFIX },
   );
+  if (config.webDistDir) await registerWebApp(app, config.webDistDir);
 
   return app;
 }

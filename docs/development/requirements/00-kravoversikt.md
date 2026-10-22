@@ -41,6 +41,9 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-SHOP-003 | Avhukede varer kan legges inn i lageret | B | 6 |
 | FR-SCAN-001 | Bruker kan skanne strekkode med kameraet eller skrive den inn | B | 7 |
 | FR-SCAN-002 | Kjent strekkode fyller ut produktinfo; bruker bekrefter og legger til mengde/dato | B | 7 |
+| FR-SCAN-003 | Strekkoden kan skrives inn og valideres med kontrollsiffer på klient og server (lagt til i fase 7) | B | 7 |
+| FR-SCAN-004 | Ukjent strekkode gir et manuelt skjema og huskes for husholdningen (lagt til i fase 7) | B | 7 |
+| FR-SCAN-005 | Ingenting fra en skanning lagres uten bekreftelse; dobbel innsending gir ett parti (lagt til i fase 7) | B | 7 |
 
 ## Ikke-funksjonelle krav
 

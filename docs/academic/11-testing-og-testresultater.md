@@ -558,6 +558,107 @@ Feil i testene:
 - testene for innlogging og CSRF sendte tom kropp, og fikk 400 fra valideringen før sjekken de skulle teste
 - skjermbildeskriptet prøvde å huke av melk, som testdataene allerede hadde nok av
 
+## Testtyper og sporbarhet (fase 7)
+
+Testene refererer til krav-ID-ene i [07-strekkode.md](../development/requirements/07-strekkode.md). **Ingen test
+kaller Open Food Facts:** `apps/api/test/noNetwork.ts` stopper `fetch` i alle API-tester, og API- og
+ende-til-ende-testene bruker den ekte provideren med en falsk `fetch` med oppdiktede produkter
+(`apps/api/test/fakeOff.ts`).
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-SCAN-003 | Kontrollsiffer (verdier regnet ut for seg), EAN-8/13, UPC-A, GTIN-14, mellomrom og bindestrek, feilmeldinger, UPC-E (alle fire regler), butikkens egne koder, `gtinSchema`, kategorier fra OFF | `shared/src/barcode/gtin.test.ts` | 37 |
+| FR-SCAN-002, NFR-REL-001 | OFF-provideren: treff, ukjent (404 og 200), URL og felt, User-Agent, innlogging bare mot OFF sitt testmiljø, tidsavbrudd, nettverksfeil, HTTP-feil, seks slags ugyldige svar, for stort svar, egen grense, nekter alt som ikke er en GTIN, navn/merke/pakningsstørrelse, ingen nettilgang i testene | `api/src/providers/barcode/openFoodFacts.test.ts` | 41 |
+| FR-SCAN-002/-004/-005 | Servicen med fakes: rekkefølge, mellomlager 30 dager / 24 timer, feil lagres ikke, gammelt treff når OFF er nede, husholdningens svar vinner, butikkens egne koder, grense per bruker, bekreftelse, `clientRequestId` og tapt kappløp, ingrediens, sted, vare som er borte | `api/src/modules/barcodes/service.test.ts` | 17 |
+| Spec 07, ADR-0015 | Telleren for grensene, og konfigurasjonen (`TRUST_PROXY`, `COOKIE_HOST_PREFIX`, OFF-innstillinger) | `windowLimiter.test.ts`, `config.test.ts` | 2 + 12 |
+| FR-SCAN-001/-002/-005 | Skjemalogikken: utfylling fra OFF og fra husholdningen, ingen dato, sted som ikke finnes lenger, varen fra sist, kropp til API-et, feltfeil, bytte av enhet | `web/src/scan/scanForm.test.ts` | 10 |
+| FR-SCAN-001 | Kameratilstander og feilnavn, `stopStream`, format | `web/src/scan/camera.test.ts` | 13 |
+| FR-SCAN-001–005 | Skannesiden: feil kontrollsiffer sendes ikke, normalisert kode i URL-en, ugyldig kode i URL-en, utfylt skjema → bekreft (én POST, `clientRequestId`), påkrevde felt, tre statustekster, varen fra sist, «Ny vare», 429, kreditering, ikke sikker side, ingen kamerastøtte, tre kamerafeil, kamera bare på forespørsel og stoppet etter lesing (feillesing ignorert), UPC-E, «Stopp kamera», axe | `pages/scan/ScanPage.test.tsx` | 20 |
+| ADR-0015 | Banner og stengt registrering i nettleseren | `layout/StagingBanner.test.tsx` | 5 |
+| FR-SCAN-002/-004/-005, NFR-DATA-002 | API mot database: ugyldig kode (400, ingenting til OFF), UPC-A, treff og mellomlager på tvers av husholdninger, oppslag lagrer ingenting, ukjent, tidsavbrudd og ugyldig svar (ingenting lagret, årsak i loggen, ikke koden), butikkens egne koder, bekreftelse (vare, parti, hendelse), oppskriftsmatching for skannet vare, huskede svar og nytt parti på samme vare, ingrediens, ugyldig ingrediens, to ganger og fem samtidig gir ett parti, ugyldig kropp, sletting av vare, sted og konto, seed beholder ingrediens | `api/test/barcodes.api.test.ts` | 24 |
+| NFR-SEC-001 | Andres husholdnings-ID (404), andres vare og sted (404/400), andres `clientRequestId`, repoet filtrerer selv, andres huskede svar vises aldri, 401, CSRF, Origin, grense per bruker (også fra samme IP) | `api/test/barcodes.security.api.test.ts` | 14 |
+| ADR-0015 | `trustProxy` (egen grense per klient bak proxy, falsk header fra andre ignoreres), stengt registrering, `__Host-`-cookie, servering av webappen (sideruter, CSP med hash og `'wasm-unsafe-eval'`, buffer, `.wasm`, JSON-404 for API), `Permissions-Policy` | `api/test/staging.api.test.ts` | 8 |
+| FR-SCAN-001–005, NFR-REL-001, NFR-UX-001/002 | Ende-til-ende: skriv inn kjent kode → utfylt skjema → bekreft → varen er i matlageret (bare egen server ble spurt), ukjent kode huskes og gir nytt parti, OFF svarer ikke, dobbeltklikk gir ett parti, feil kontrollsiffer, ingen kameratilgang, ingen kamerastøtte, 360 px og axe i lyst og mørkt tema | `e2e/scan.spec.ts` | 9 (× 2 skjermstørrelser) |
+| FR-SCAN-001 | **Ekte kamera i Chromium:** falskt kamera som viser en generert EAN-13-video. Reserveleseren (zxing-wasm) leser koden, wasm-filen kommer fra egen server, og kameraet stoppes. Tegningen er sjekket mot zxing sin egen. | `e2e/scan-camera.spec.ts` | 2 (× 2) |
+
+**Sum etter fase 7:** 863 enhetstester (328 shared, 148 api, 387 web), 241 API-tester mot database, 157
+ende-til-ende-tester.
+
+Eksisterende tester ble ikke endret, bortsett fra at `testConfig` og `e2e/fixtures.ts` fikk nye felt
+(`inventory()`). Skjermbildeskriptet viser nå skannesiden.
+
+### Kontroll av testene (fase 7)
+
+Samme metode som før: én regel eller beskyttelse slås av om gangen, og enhetstestene og API-testene kjøres
+([skript](../evidence/test-results/fase-7/10-mutation-check.sh)). 30 endringer, også i oppsettet for testmiljøet og
+i kamerakoden.
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-7/10-mutation-check-run1.txt)): 29 av 30 ble fanget.
+**Runde 3 ble ikke fanget:** `itemSummary` kunne slutte å filtrere på husholdning. Det kan ikke misbrukes gjennom
+API-et, fordi `item_id` kommer fra husholdningens egen rad, og fremmednøkkelen sikrer samme husholdning. Filteret er
+et ekstra lag. En ny API-test kaller repoet direkte med en annen husholdnings vare.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-7/10-mutation-check.txt)): alle 30 ble fanget, og
+utdataene viser at det var de riktige testene som feilet. Uendret kode: 863 av 863 og 241 av 241.
+
+Kontrollen dekker ikke CHECK-begrensningene for seg, og ende-til-ende-testene ble ikke kjørt i kontrollen. Feilen med
+`dataUpdatedAt` (funn 3 under) ble bare fanget av Playwright, ikke av noen enhetstest.
+
+## Resultater fase 7 (kjørt 2026-10-22)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 863 av 863 | `04-unit-tests.txt` |
+| API mot testdatabase | 241 av 241 | `05-api-tests.txt` |
+| Bygg | Vellykket. Hovedfilen er 739 kB (223 kB gzip). Skanneren ligger for seg: `CameraScanner` 2,8 kB, reserveleseren 43 kB og wasm 1,09 MB (461 kB gzip), bare lastet ved behov. | `06-build.txt` |
+| Ende-til-ende | 157 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (8 migreringer) | `09-migrate-status.txt` |
+
+Første forsøk på sluttkjøringen ble avbrutt mens API-testene kjørte (prosessen ble drept, kode 137). Årsaken ble ikke
+funnet. Minnet på serveren var ikke fullt da det ble sjekket etterpå. API-testene ble kjørt på nytt for seg, og
+utdataene i `05` er fra den kjøringen.
+
+**Røyktest av testmiljøet:** Docker-bildet ble bygd og startet med midlertidige containere på serveren (eget nett,
+port bare på 127.0.0.1), og så fjernet. Med `curl` ble dette sjekket:
+- CSP, `Permissions-Policy`, `.wasm` som `application/wasm`, 403 ved registrering, JSON-404 for API-et
+- prosessen kjører som brukeren `node`
+
+Et Playwright-skript i nettleseren logget inn med `__Host-`-cookien, leste en strekkode med det falske kameraet
+(reserveleseren under den ekte CSP-en), og la til en vare. Dette er ikke lagret som bevisfil, fordi det var en
+engangssjekk med midlertidige containere.
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-7/](../evidence/screenshots/fase-7/). I headless Chromium gir «Start kamera» meldingen «Fant ikke
+noe kamera» (det finnes ikke noe kamera).
+
+**Ikke testet:** ekte telefoner (Android og iPhone) og ekte strekkoder på varer. Det krever testmiljøet med HTTPS.
+Sjekklisten står i [testmiljo.md](../development/testmiljo.md).
+
+## Feil funnet i fase 7
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-22.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | Planen sa at OFF tillater rundt 100 oppslag i minuttet. Riktig tall er 15 per IP. | Vilkårene ble lest før koden ble skrevet | Grense på 10 i minuttet totalt, og mellomlager |
+| 2 | Strekkoden stod i URL-en i loggen | Egen API-test for loggen | `redactUrl` |
+| 3 | Etter bekreftelsen kom ingen melding, og koden ble stående i URL-en: skjemaet var nøklet på `dataUpdatedAt`, ble bygd på nytt da oppslaget ble hentet igjen, og `onSuccess` i `mutate` ble aldri kalt | Playwright (komponenttesten fanget det ikke) | Nøkkel bare på koden |
+| 4 | `prisma generate` i Docker-bygget krever `DATABASE_URL` | Docker-bygget feilet | Plassholder under bygget |
+| 5 | Helmets `upgrade-insecure-requests` ville stoppet en nettlesertest over http, og trengs ikke bak Caddy | Røyktesten | Slått av |
+| 6 | Et regulært uttrykk med kontrolltegn ble stoppet av lint | ESLint | Filtrering på tegnkoder |
+| 7 | Ett hull i testene (se kontrollen over) | Mutasjonskontrollen | Ny API-test |
+
+Feil i testene:
+- to av KI-ens egne testverdier for UPC-E hadde feil kontrollsiffer (funnet da de ble regnet ut på nytt i Python)
+- paritetstabellen i generatoren for den falske kameravideoen hadde radene for 6 og 7 byttet. Strekkodeleseren fant
+  derfor ingenting. Funnet ved å lese bildet med zxing i Node og sammenligne med zxing sin egen tegning. Testen
+  sammenligner nå med den.
+- tre Playwright-tester traff feil element: «Skap» i «Kjøleskap», to sider montert samtidig i en komponenttest, og
+  «450 g» som stod fire steder
+- en komponenttest ventet ikke på at skjemaet var lastet
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser

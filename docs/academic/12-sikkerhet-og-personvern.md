@@ -64,12 +64,30 @@
 | Ugyldig ingrediens fra oppskrift | Sende en ingrediens som ikke er i oppskriften | Sjekkes mot oppskriften (400) | `shopping.api.test.ts` |
 | Personopplysninger i logger | Linjetekst («graviditetstest») i loggen | Kropper logges aldri. Testen sjekker loggen. | `shopping.api.test.ts` |
 
+### Nytt i fase 7: strekkoder, Open Food Facts og testmiljøet
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se andres huskede strekkoder | Bytte husholdnings-ID i URL-en, eller skanne samme kode som en annen husholdning | `householdAccess`. `household_barcodes` slås opp med `(household_id, gtin)`. Mellomlageret har ingen husholdningsdata. | `barcodes.security.api.test.ts` (A, C) |
+| Legge parti på andres vare eller sted | `confirm` med andres `itemId` eller `locationId` | Slås opp med `household_id` (404/400), og sammensatte fremmednøkler | Samme fil (B) |
+| Fritekst eller stier sendt videre til OFF | `/barcodes/../../x` eller bokstaver i koden | Koden valideres med kontrollsiffer før noe skjer. Provideren nekter alt som ikke er 8, 13 eller 14 sifre. | `barcodes.api.test.ts`, `openFoodFacts.test.ts` |
+| Ondsinnet eller ødelagt svar fra OFF | Feil typer, enorm tekst, kontrolltegn, HTML i stedet for JSON | Zod-validering, maks 200 000 tegn, navn renses og kuttes til 100 tegn, vises som ren tekst | `openFoodFacts.test.ts` |
+| OFF nede eller treg | Tidsavbrudd, 503 | 3 s tidsavbrudd, manuelt skjema, feil lagres ikke | `barcodes.api.test.ts`, `e2e/scan.spec.ts` |
+| Sperret av OFF eller misbruk av oppslaget | Mange oppslag fra én bruker | 30 per bruker og minutt, 10 per minutt totalt mot OFF (OFF tillater 15 per IP) | `barcodes.security.api.test.ts` (D), `openFoodFacts.test.ts` |
+| Doble partier | Dobbeltklikk, nytt forsøk etter tapt svar | `dedupe_key` på partiet, unik per husholdning | `barcodes.api.test.ts` (også samtidig), `e2e/scan.spec.ts` |
+| Hva noen har kjøpt, i loggen | Strekkoden står i URL-en | URL-en logges som `/barcodes/[gtin]`. Navn logges aldri. | `barcodes.api.test.ts` |
+| Kamerabilder lekker | Bilder sendt til server eller CDN | Bildet leses bare i nettleseren. Reserveleseren og wasm-filen kommer fra vår egen server. `Permissions-Policy: camera=(self)`. | `ScanPage.test.tsx`, `e2e/scan.spec.ts`, `e2e/scan-camera.spec.ts` (alle forespørsler går til egen server) |
+| Felles rate limit bak proxy, eller forfalsket IP | Alle brukere kommer fra Caddy sin adresse | `TRUST_PROXY` bare for `ghostweb`-nettet. Caddy overskriver `X-Forwarded-For`. | `staging.api.test.ts` |
+| Fremmede registrerer seg i testmiljøet | Åpen registrering på en offentlig adresse | Basic auth i Caddy, `REGISTRATION_OPEN=false` (403), kontoer bare med skript | `staging.api.test.ts`, `StagingBanner.test.tsx` |
+| Cookie overstyrt fra et annet underdomene | En side på `*.risansolutions.no` setter `smartmat_session` | `__Host-`-prefiks: ingen `Domain`, krever `Secure` | `staging.api.test.ts` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
 [fase 4](../evidence/test-results/fase-4/10-mutation-check.txt),
 [fase 5](../evidence/test-results/fase-5/10-mutation-check.txt),
-[fase 6](../evidence/test-results/fase-6/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 6](../evidence/test-results/fase-6/10-mutation-check.txt),
+[fase 7](../evidence/test-results/fase-7/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -87,9 +105,25 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Hvem som gjorde en endring | Historikk i husholdningen | `inventory_events.actor_id` | Settes til tom hvis kontoen slettes. Hendelsen blir stående til husholdningen slettes. |
 | **Allergier** (fase 5) | Skjule eller varsle om oppskrifter (FR-REC-004) | `user_allergens`, knyttet til brukeren | Til brukeren endrer dem eller sletter kontoen |
 | Hvilken ingrediens en vare er (fase 5) | Rangering av oppskrifter | `inventory_items.ingredient_match`/`ingredient_id` | Som varen |
+| Strekkoder husholdningen har bekreftet, med navn, sted og valgt ingrediens (fase 7) | Fylle ut skjemaet neste gang (FR-SCAN-004) | `household_barcodes`, knyttet til husholdningen | Til husholdningen slettes. Koblingen til en vare eller et sted tømmes når de slettes. |
 | IP-adresse | Rate limiting | Bare i minnet i API-prosessen, i 15–60 minutter | Lagres ikke og logges ikke |
+| Bruker-ID per oppslag (fase 7) | Grensen på 30 oppslag i minuttet | Bare i minnet i API-prosessen, i ett minutt | Lagres ikke og logges ikke |
 
-Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører lokalt.
+Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Alt kjørte lokalt.
+
+**Fra fase 7:**
+- **Open Food Facts** får strekkoden når den ikke er kjent fra før. Den sendes fra serveren, ikke fra brukerens
+  nettleser, så OFF får ikke brukerens IP-adresse eller cookie. OFF får serverens IP-adresse og kontaktadressen i
+  User-Agent. En strekkode alene sier ikke hvem som skannet den. Det mellomlagrede svaret (`products`) har ingen
+  data om brukere.
+- **Det lukkede testmiljøet** (ADR-0015, ikke satt opp per 2026-10-22):
+  - Behandlingsansvarlige er studentene (Ferdinand Risan og Linus Saxe Huseby), etter Ferdinands svar i chat
+    2026-10-22.
+  - Serveren står i Tyskland (EØS) og driftes av Ferdinand. Leverandøren av serveren er dermed databehandler. Om det
+    finnes en databehandleravtale, er ikke undersøkt.
+  - Det er bare teamets egne kontoer og testdata der. Banneret ber om at ingen ekte allergier legges inn, så
+    helseopplysninger (art. 9) skal ikke finnes der. Det håndheves ikke teknisk.
+  - Lokalt er ingenting endret: alt kjører fortsatt på maskinen.
 
 ## Sletting
 
@@ -104,8 +138,14 @@ Det brukes ingen eksterne tjenester eller databehandlere i fase 2. Alt kjører l
 - **E-post som allerede finnes:** Registrering sier ærlig fra om dette. Da kan noen finne ut om en adresse har konto.
   Rate limiting begrenser det. Ordentlig løsning (svar «sjekk e-posten din») krever e-postverifisering
   (FR-AUTH-006, fase 13).
-- **Grensen per IP-adresse** er i praksis felles for alle lokalt, fordi alt går via Vite-proxyen fra 127.0.0.1.
-  Når appen settes opp bak en omvendt proxy (fase 13), må klientens IP-adresse hentes fra en proxy vi stoler på.
+- **Grensen per IP-adresse** er i praksis felles for alle lokalt, fordi alt går via Vite-proxyen fra 127.0.0.1. I
+  testmiljøet hentes klientens adresse fra Caddy (`TRUST_PROXY`). **Restrisiko:** andre containere på `ghostweb`-nettet
+  (andre nettsteder på serveren, samme eier) kan sende et falskt `X-Forwarded-For`. Et eget nett bare for Caddy og
+  SmartMat ville fjernet det, men krever endring i et annet prosjekt.
+- **Basic auth i testmiljøet** er ett felles passord for teamet. Det er et ekstra lag foran innloggingen, ikke en
+  erstatning for den.
+- **Open Food Facts-data kan være feil** («must not be used for medical purposes»). Allergener hentes derfor ikke fra
+  OFF, og alt fra OFF er bare et forslag brukeren retter.
 - **Sperre som angrep:** Noen som kjenner en e-postadresse, kan sperre kontoen i 15 minutter om gangen. Sperren er
   kort med vilje.
 - **Samtidige forsøk:** Forespørsler som allerede er i gang når sperren slår inn, blir fortsatt sjekket. Dette

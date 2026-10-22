@@ -11,6 +11,8 @@ import { safeEqual } from '../modules/auth/tokens';
 import { isChangingRequest } from './origin';
 
 export const SESSION_COOKIE = 'smartmat_session';
+/** ADR-0015: in the test environment. The prefix makes the browser refuse it without Secure, Path=/ or with a Domain. */
+export const HOST_SESSION_COOKIE = `__Host-${SESSION_COOKIE}`;
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -29,20 +31,20 @@ export interface SessionCookies {
  * Secure (HTTPS only; browsers make an exception for localhost), SameSite=Lax (not sent on
  * requests from other sites, except plain link navigation).
  */
-export function createSessionCookies(secure: boolean): SessionCookies {
+export function createSessionCookies(secure: boolean, name = SESSION_COOKIE): SessionCookies {
   const options = { httpOnly: true, secure, sameSite: 'lax', path: '/' } as const;
   return {
     set(reply, session) {
-      reply.setCookie(SESSION_COOKIE, session.token, {
+      reply.setCookie(name, session.token, {
         ...options,
         expires: session.cookieExpiresAt,
       });
     },
     clear(reply) {
-      reply.clearCookie(SESSION_COOKIE, options);
+      reply.clearCookie(name, options);
     },
     read(request) {
-      return request.cookies[SESSION_COOKIE];
+      return request.cookies[name];
     },
   };
 }

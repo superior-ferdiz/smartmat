@@ -331,3 +331,71 @@ Bevis ligger i `docs/evidence/test-results/fase-6/`, skjermbilder i `docs/eviden
 
 **Neste:** Teamet går gjennom fasen og ber om commit og push. Deretter fase 7 (strekkodeskanning), helst i en ny chat.
 
+---
+
+## 2026-10-21/22 – Fase 7: strekkodeskanning
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 7 i en ny chat med en detaljert prompt. Den bestemte omfanget og ba om to nye ADR-er:
+  oppskrifter fra nett (som skal erstatte ADR-0009) og et lukket testmiljø med HTTPS (som skal erstatte
+  hosting-delen av ADR-0012).
+- Claude svarte med fasemalen og ventet. Ferdinand spurte hva User-Agent betyr, og svarte på to spørsmål:
+  - behandlingsansvarlige for testmiljøet er «vi som studenter»
+  - domenet skal være `smartmat.risansolutions.no` («ikke laget domene enda»)
+  - serveren står i Tyskland og driftes av Ferdinand
+
+  Han godkjente med «godkjent» 2026-10-22. Anbefalingene i de andre spørsmålene gjelder (se
+  [spesifikasjon 07](requirements/07-strekkode.md)). Kontaktadressen til OFF er ikke valgt.
+- Claude laget grenen `fase-7` fra `fase-6`, fordi ingenting er merget til `main`. Vilkårene til Open Food Facts ble
+  lest og dokumentert, og spesifikasjon 07 og ADR-ene ble skrevet **før** koden. **All kode i fasen er skrevet av
+  KI.** ADR-0014 og ADR-0015 er akseptert gjennom godkjenningen av planen. ADR-0016 er bare foreslått, og ingen
+  oppskrifter er hentet eller skrevet.
+- Claude rørte verken Caddy eller andre prosjekter:
+  - Docker-bildet for testmiljøet ble bygd og røyktestet med midlertidige containere (`smartmat-smoke-*`), som så ble
+    fjernet, også volumet. Bildet `smartmat-staging-app` (0,9 GB) står igjen på serveren.
+  - To manuelle oppslag ble gjort mot OFF sitt testmiljø for å se formatet på svaret. Ingen test kaller OFF.
+
+**Avvik og funn underveis** (detaljer i kapittel 8, 10, 11 og 12)
+- **Grensen hos OFF er 15 oppslag i minuttet per IP**, ikke rundt 100 som planen sa. Serveren holder seg på 10.
+- Strekkoden kom med i loggen gjennom URL-en. Det er rettet og testet.
+- Playwright fant en feil komponenttestene ikke fant: skjemaet ble bygd på nytt etter bekreftelsen, og meldingen kom
+  aldri.
+- Kameraet ble testet i en ekte nettleser med Chromiums falske kamera og en generert strekkodevideo. Den første
+  generatoren hadde feil i paritetstabellen, så strekkoden kunne ikke leses. Det ble funnet ved å sammenligne med
+  zxing.
+- **Kontrollen av testene fant ett hull i første kjøring** (husholdningsfilteret i `itemSummary`). Etter en ny test
+  ble alle 30 endringer fanget i andre kjøring. Begge kjøringene er lagret.
+- Første forsøk på sluttkjøringen ble avbrutt (kode 137) under API-testene. De ble kjørt på nytt for seg.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 863 |
+| API-tester mot database | 241 |
+| Bygg | Vellykket (hovedfil 739 kB; skanneren for seg) |
+| Playwright-tester | 157 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-7/`, skjermbilder i `docs/evidence/screenshots/fase-7/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 7 (pull request)
+- DNS, passord for basic auth og oppsett av testmiljøet. Etter det: test på ekte telefon (sjekkliste i
+  [testmiljo.md](testmiljo.md)).
+- kontaktadresse i User-Agent til OFF, og API-skjemaet til OFF
+- kontroll av tabellen fra OFF-kategorier (KI-utkast)
+- vurdering og godkjenning av ADR-0016
+- commit og push av `fase-7` (ikke bedt om ennå)
+- fortsatt utestående fra fase 5: teamets oppskrifter og kontroll av `prisma/seed/ingredients.json`
+
+**Neste:** Teamet går gjennom fasen og ber om commit og push. Når DNS er klar, settes testmiljøet opp. Deretter
+fase 8 (kvitterings-OCR) eller oppskriftene etter ADR-0016, helst i en ny chat.
+
+**Oppfølging 2026-10-22:** Ferdinand ville gå videre til neste fase og ordne DNS og resten av testmiljøet senere. Han
+fikk prompten til fase 8 og ba om commit og push av `fase-7` («Committ og push nå»). Ingen gjennomgang av fase 7 er
+oppgitt.
+

@@ -17,7 +17,16 @@ function fieldName(instancePath: string): string {
   return instancePath.replace(/^\//, '').replaceAll('/', '.') || '_form';
 }
 
-export function registerErrorHandling(app: FastifyInstance) {
+/** ADR-0015: when the API also serves the web app, page routes get index.html instead of a JSON 404. */
+export interface PageFallback {
+  html: string;
+  isPage(method: string, url: string): boolean;
+}
+
+export function registerErrorHandling(
+  app: FastifyInstance,
+  pageFallback: PageFallback | null = null,
+) {
   app.setErrorHandler((error: FastifyError, request, reply) => {
     if (hasZodFastifySchemaValidationErrors(error)) {
       const fields: Record<string, string> = {};
@@ -54,5 +63,13 @@ export function registerErrorHandling(app: FastifyInstance) {
     return reply.status(500).send(body(API_ERRORS.internal));
   });
 
-  app.setNotFoundHandler((_request, reply) => reply.status(404).send(body(API_ERRORS.notFound)));
+  app.setNotFoundHandler((request, reply) => {
+    if (pageFallback?.isPage(request.method, request.url)) {
+      return reply
+        .header('cache-control', 'no-cache')
+        .type('text/html; charset=utf-8')
+        .send(pageFallback.html);
+    }
+    return reply.status(404).send(body(API_ERRORS.notFound));
+  });
 }

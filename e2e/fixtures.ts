@@ -80,6 +80,12 @@ export async function apiAs(playwright: Playwright, account: Account) {
     async locations(): Promise<{ id: string; kind: string }[]> {
       return (await api.get(`/api/v1/households/${householdId}/locations`)).json();
     },
+    async inventory(): Promise<{ id: string; batches: { id: string }[] }[]> {
+      const response = await api.get(`/api/v1/households/${householdId}/inventory`, { headers });
+      expect(response.status(), await response.text()).toBe(200);
+      return ((await response.json()) as { items: { id: string; batches: { id: string }[] }[] })
+        .items;
+    },
     async createItem(body: unknown): Promise<{ id: string; batches: { id: string }[] }> {
       const response = await api.post(`/api/v1/households/${householdId}/inventory/items`, {
         data: body,

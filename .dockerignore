@@ -1,0 +1,14 @@
+# Docker build context for docker/staging (ADR-0015). Secrets and generated files never go into the image.
+**/node_modules
+**/dist
+.env
+.env.*
+docker/staging/.env.staging
+apps/api/src/generated
+playwright-report
+test-results
+e2e/.auth
+coverage
+.git
+docs
+*.log

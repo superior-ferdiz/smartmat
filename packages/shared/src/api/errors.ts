@@ -26,6 +26,7 @@ export const API_ERRORS = {
   purchaseChangedMeanwhile: 'errors.purchase.changedMeanwhile',
   shoppingChangedMeanwhile: 'errors.shopping.changedMeanwhile',
   shoppingAlreadyOnList: 'errors.shopping.alreadyOnList',
+  registrationClosed: 'errors.auth.registrationClosed',
   internal: 'errors.internal',
 } as const;
 

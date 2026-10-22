@@ -1,0 +1,11 @@
+/* ADR-0015: a band at the top of every page in the closed test environment. Text, not only colour. */
+.banner {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-soft);
+  color: var(--color-warning-text);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}

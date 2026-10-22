@@ -5,7 +5,8 @@ SmartMat is a Norwegian-first web app that helps households reduce food waste an
 It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN Bø, 2026/2027)**.
 
 - **Team:** Ferdinand Risan and Linus Saxe Huseby. Never name anyone else as a contributor.
-- **Environment:** local development only (no hosting, no domain yet). Git since 2026-10-20 (ADR-0013): private repo
+- **Environment:** local development. A closed HTTPS test environment on `smartmat.risansolutions.no` is built
+  (ADR-0015) but not set up yet (no DNS as of 2026-10-22). Git since 2026-10-20 (ADR-0013): private repo
   `git@github.com:superior-ferdiz/smartmat.git`, branch `main`; one branch per phase (`fase-2`), the team opens and
   approves the pull request on GitHub. Commits from this server carry Ferdinand's identity, so
   AI-written changes must include a `Co-Authored-By: Claude` trailer. Commit/push only when asked; never commit secrets.
@@ -44,7 +45,8 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - **`Purchase` is the single source of spending** in the MVP (no separate FinancialTransaction table).
 - **Every household-owned row has `household_id`** from the first migration; a single user gets a household of one.
   Every query on household data filters by the caller's membership — server-side.
-- Recipes: team-authored Norwegian seed recipes (`source=team`). No TheMealDB in MVP.
+- Recipes: team-authored Norwegian seed recipes (`source=team`). No TheMealDB in MVP. ADR-0016 (recipes from openly
+  licensed sources, translated, with source/licence) is only **proposed** – fetch or write no recipes until approved.
 - Prices: no scraping. Kassalapp only after its terms are verified and documented.
 - OCR: decided by a measured spike on real receipts; Tesseract (server-side) first for privacy.
   Automated extraction is never saved without user confirmation.
@@ -146,6 +148,32 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   their state plus a `version` bumped on rollback. Playwright: tick with `click()`, not `check()`.
 - Testing Library normalises `\u00A0` in the DOM but not in the matcher: write plain spaces in `getByText`.
   Bash heredocs/python edits have produced literal U+00A0 three times now – grep the files you wrote.
+
+## Code conventions (added in phase 7)
+
+- Barcodes: GTIN rules are pure functions in `packages/shared/src/barcode/gtin.ts` (check digit, UPC-A → 13 digits,
+  UPC-E only when the camera says `upc_e`, store codes 02/04/2x never looked up or remembered). `gtinSchema`
+  validates the `:gtin` URL parameter too.
+- `products`/`product_lookup_misses` are a **global** Open Food Facts cache (no household data); `household_barcodes`
+  is household data. Its `item_id`/`location_id` are composite `NoAction` FKs: deleting an item or a location clears
+  them first (inventory repo `deleteItem`, locations repo `deleteIfEmpty`). The seed script counts them too.
+- External services only through `apps/api/src/providers/` and `AppDeps` (`barcodeProvider`). Tests never reach the
+  network: `apps/api/test/noNetwork.ts` replaces `fetch`; API tests and the Playwright API use the real OFF provider
+  with the fake fetch in `apps/api/test/fakeOff.ts` (made-up products). Without `OFF_USER_AGENT` lookups are off.
+- OFF allows 15 product reads per minute per IP. Our limit is 10/min for the server (`OFF_MAX_PER_MINUTE`) and
+  30/min per user (`WindowLimiter`, in memory). Errors are never cached.
+- Log lines must not contain barcodes: `redactUrl` in `app.ts` turns `/barcodes/<gtin>` into `/barcodes/[gtin]`.
+- Web: the scanner is lazy (`React.lazy` for `CameraScanner`, `import()` for the fallback reader); its `.wasm` file
+  must come from our own server (`locateFile`), never jsDelivr. A form whose mutation callback matters must not be
+  keyed on `dataUpdatedAt` – a refetch remounts it and TanStack drops `mutate`'s `onSuccess`.
+- Playwright `e2e/scan-camera.spec.ts` uses Chromium's fake camera with a generated Y4M video (`e2e/fakeCamera.ts`,
+  checked against zxing's own EAN-13 drawing). Headless Chromium on Linux has no `BarcodeDetector`, so it tests the
+  fallback.
+- Test environment (ADR-0015, `docs/development/testmiljo.md`): `TRUST_PROXY`, `REGISTRATION_OPEN`,
+  `COOKIE_HOST_PREFIX`, `WEB_DIST_DIR` are off locally. Web build flags `VITE_SMARTMAT_ENVIRONMENT=staging` and
+  `VITE_REGISTRATION_OPEN=false` (`app/environment.ts`, read at call time so tests can `vi.stubEnv`). Caddy runs in
+  another project's container (`ghostwebsite-caddy-1`, single-file mount): edit the Caddyfile in place, validate,
+  reload – and only after the team says DNS is ready. Do not copy the risansolutions header block (`camera=()`).
 
 ## Integrity rules (non-negotiable)
 

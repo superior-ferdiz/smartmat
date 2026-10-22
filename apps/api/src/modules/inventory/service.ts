@@ -65,6 +65,18 @@ export function wasteValue(
   return { valueOre: null, basis: 'unknown' };
 }
 
+/** A validated batch body as the repo stores it. Also used by barcode scanning (spec 07). */
+export function newBatchFrom(input: BatchInput): NewBatch {
+  return {
+    quantityBase: input.quantityBase,
+    locationId: input.locationId,
+    expiryKind: input.expiry?.kind ?? null,
+    expiryDate: input.expiry?.date ?? null,
+    priceOre: input.priceOre ?? null,
+    purchasedOn: input.purchasedOn ?? null,
+  };
+}
+
 const conflict = (code: (typeof API_ERRORS)[keyof typeof API_ERRORS]) => new AppError(409, code);
 
 /** Business rules for the inventory (FR-INV-001–008). All methods are scoped to one household. */
@@ -234,13 +246,6 @@ export class InventoryService {
     locationField: string,
   ): Promise<NewBatch> {
     await this.requireLocation(householdId, input.locationId, locationField);
-    return {
-      quantityBase: input.quantityBase,
-      locationId: input.locationId,
-      expiryKind: input.expiry?.kind ?? null,
-      expiryDate: input.expiry?.date ?? null,
-      priceOre: input.priceOre ?? null,
-      purchasedOn: input.purchasedOn ?? null,
-    };
+    return newBatchFrom(input);
   }
 }

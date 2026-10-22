@@ -1,0 +1,62 @@
+# The closed test environment on smartmat.risansolutions.no (ADR-0015).
+#
+#   cp docker/staging/.env.staging.example docker/staging/.env.staging   # fill in, never commit
+#   docker compose -f docker/staging/compose.yml --env-file docker/staging/.env.staging up -d --build
+#
+# This machine also runs other projects. Everything here is named "smartmat-staging". The only shared thing is
+# the external network `ghostweb`, which the Caddy container is on: Caddy reaches the app by its container name.
+# No port is published. The database is on an internal network without internet access.
+name: smartmat-staging
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: smartmat-staging-db
+    environment:
+      POSTGRES_USER: smartmat
+      POSTGRES_PASSWORD: ${STAGING_POSTGRES_PASSWORD:?Set STAGING_POSTGRES_PASSWORD in docker/staging/.env.staging}
+      POSTGRES_DB: smartmat
+    volumes:
+      - smartmat_staging_pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U smartmat -d smartmat']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/staging/Dockerfile
+    image: smartmat-staging-app
+    container_name: smartmat-staging-app
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env.staging
+    environment:
+      DATABASE_URL: postgresql://smartmat:${STAGING_POSTGRES_PASSWORD}@db:5432/smartmat
+    networks:
+      - internal
+      - ghostweb
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  smartmat_staging_pgdata:
+    name: smartmat_staging_pgdata
+
+networks:
+  internal:
+    name: smartmat-staging-internal
+    internal: true
+  ghostweb:
+    external: true

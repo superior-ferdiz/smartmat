@@ -7,6 +7,7 @@ import { Alert } from '../../components/Alert/Alert';
 import { Button } from '../../components/Button/Button';
 import { FormErrorSummary } from '../../components/FormError/FormError';
 import { TextField } from '../../components/TextField/TextField';
+import { isRegistrationOpen } from '../../app/environment';
 import { REGISTER_PATH } from '../../app/navigation';
 import { useLogin } from '../../auth/session';
 import { fieldErrorsFromZod, summaryItems, type FieldErrors } from '../../forms/fieldErrors';
@@ -86,9 +87,11 @@ export function LoginPage() {
           </Button>
         </div>
       </form>
-      <p className={styles.switch}>
-        {t('auth.login.noAccount')} <Link to={registerLink}>{t('auth.login.createAccount')}</Link>
-      </p>
+      {isRegistrationOpen() && (
+        <p className={styles.switch}>
+          {t('auth.login.noAccount')} <Link to={registerLink}>{t('auth.login.createAccount')}</Link>
+        </p>
+      )}
     </Page>
   );
 }

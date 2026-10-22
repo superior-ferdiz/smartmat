@@ -7,6 +7,7 @@ import { Alert } from '../../components/Alert/Alert';
 import { Button } from '../../components/Button/Button';
 import { FormErrorSummary } from '../../components/FormError/FormError';
 import { TextField } from '../../components/TextField/TextField';
+import { isRegistrationOpen } from '../../app/environment';
 import { LOGIN_PATH } from '../../app/navigation';
 import { useRegister } from '../../auth/session';
 import { fieldErrorsFromZod, summaryItems, type FieldErrors } from '../../forms/fieldErrors';
@@ -20,8 +21,22 @@ const FIELD_IDS = {
   password: 'register-password',
 };
 
-/** FR-AUTH-001. A household of one is created on the server together with the account. */
+/** FR-AUTH-001. In the closed test environment (ADR-0015) there is no form, only a link to log in. */
 export function RegisterPage() {
+  const { t } = useTranslation();
+  if (isRegistrationOpen()) return <RegisterForm />;
+  return (
+    <Page title={t('auth.register.title')}>
+      <Alert variant="info">{t('errors.auth.registrationClosed')}</Alert>
+      <p className={styles.switch}>
+        <Link to={LOGIN_PATH}>{t('auth.register.closedLogin')}</Link>
+      </p>
+    </Page>
+  );
+}
+
+/** A household of one is created on the server together with the account. */
+function RegisterForm() {
   const { t, i18n } = useTranslation();
   const message = useValidationMessage();
   const [params] = useSearchParams();

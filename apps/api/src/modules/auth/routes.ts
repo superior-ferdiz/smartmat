@@ -19,17 +19,23 @@ export interface AuthRoutesOptions {
   cookies: SessionCookies;
   requireAuth: preHandlerAsyncHookHandler;
   rateLimits: AppConfig['rateLimits'];
+  /** ADR-0015: false in the closed test environment. */
+  registrationOpen: boolean;
 }
 
 /** FR-AUTH-001 (register), FR-AUTH-002 (log in/out), FR-AUTH-003 (rate limit). */
 export const authRoutes: FastifyPluginAsyncZod<AuthRoutesOptions> = async (app, options) => {
-  const { service, cookies, requireAuth, rateLimits } = options;
+  const { service, cookies, requireAuth, rateLimits, registrationOpen } = options;
 
   app.post(
     '/auth/register',
     {
       schema: { body: registerSchema, response: { 201: sessionResponseSchema } },
       config: rateLimit(rateLimits.register),
+      // Before the body is validated: a closed registration says so, whatever is sent.
+      onRequest: async () => {
+        if (!registrationOpen) throw new AppError(403, API_ERRORS.registrationClosed);
+      },
     },
     async (request, reply) => {
       const { user, session } = await service.register(request.body);

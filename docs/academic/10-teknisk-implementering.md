@@ -428,6 +428,63 @@ høyere. Det er testet hele veien i Playwright.
 mengde, og en linje i en annen enhet beholder sin mengde. Ingenting regnes om, så ingenting rundes. Oppskriftens
 bidrag vises under linjen («Pannekaker: 500 ml»), så brukeren ser hva som trengs.
 
+## Fase 7: strekkodeskanning
+
+Strekkodereglene (kontrollsiffer, UPC-A/UPC-E, butikkens egne koder) ligger som rene funksjoner i
+`packages/shared/src/barcode/gtin.ts`. Skjemaet, kameraet og API-et bruker de samme funksjonene. Open Food Facts
+nås bare gjennom et provider-grensesnitt (`apps/api/src/providers/barcode/`).
+
+## Eksempel 27: kontrollsifferet (FR-SCAN-003)
+
+Det siste sifferet i en EAN-kode regnes ut fra de andre: annethvert siffer fra høyre ganges med 3, alt summeres, og
+kontrollsifferet er det som mangler opp til neste tier. `checkDigit('400638133393')` gir 1, så `4006381333931` er
+gyldig. Et feiltastet siffer, eller to naboer som har byttet plass, gir feil sum. Kontrollen stopper derfor de
+fleste skrivefeil i nettleseren, før noe sendes. Serveren gjør den samme kontrollen på koden i URL-en. Testverdiene
+ble regnet ut for seg (i Python), ikke med funksjonen som testes.
+
+## Eksempel 28: kameraet bare når det trengs (FR-SCAN-001)
+
+- **Nettleserens egen leser først:** finnes `BarcodeDetector` og kan den lese EAN-13, brukes den.
+- **Ellers en reserve:** iPhone, Firefox og Chrome på Windows/Linux mangler den. Da lastes `barcode-detector` med
+  `zxing-wasm` med `import()`. Kamerakoden lastes med `React.lazy` når brukeren trykker «Start kamera». Hovedbunten
+  vokste derfor bare med selve skannesiden (720 → 739 kB). Reserven (43 kB) og wasm-filen (1,09 MB, 461 kB med
+  gzip) kommer bare til nettlesere som trenger dem.
+- **Wasm fra vår egen server:** biblioteket henter som standard wasm-filen fra jsDelivr. `locateFile` er overstyrt,
+  så filen kommer fra vår egen server, og ingen tredjepart får vite at noen skanner.
+- **Bildet blir i nettleseren:** én rute hvert 200. ms leses fra `<video>`, og bare tallene går videre. En kode med
+  feil kontrollsiffer (feillesing) blir ignorert, og neste bilde prøves.
+- **Kameraet slås av:** når en kode er lest, når brukeren trykker «Stopp», forlater siden eller bytter fane
+  (`visibilitychange`).
+
+## Eksempel 29: en ekstern tjeneste som kan svikte (NFR-REL-001)
+
+`createOpenFoodFactsProvider` gir alltid ett av tre svar: `found`, `notFound` eller `unavailable`. Tidsavbrudd (3 s
+med `AbortSignal.timeout`), nettverksfeil, HTTP-feil, ugyldig JSON, et svar som ikke passer Zod-skjemaet og
+serverens egen grense blir alle `unavailable`. Brukeren får da det tomme skjemaet. Bare de to første lagres i
+mellomlageret. En feil lagres aldri, så neste skanning prøver igjen. Svarer OFF ikke, men et gammelt treff finnes,
+brukes det. Testene erstatter `fetch`, og testoppsettet stopper alle kall ut på nettet (`test/noNetwork.ts`).
+
+## Eksempel 30: ingenting lagres uten bekreftelse (FR-SCAN-005)
+
+Oppslaget (`GET …/barcodes/:gtin`) lagrer ingenting for husholdningen. Først når brukeren trykker «Legg i
+matlageret», lager én transaksjon varen (eller et nytt parti på varen fra sist) med `insertBatchWithEvent`, og
+lagrer det brukeren bekreftet i `household_barcodes`. Skjemaet har én `clientRequestId` så lenge det er åpent. Den
+lagres som `dedupe_key` på partiet, så et dobbeltklikk eller et nytt forsøk etter et tapt svar gir ett parti (200 med
+varen fra første gang).
+
+*Funnet under testingen:* Etter bekreftelsen hentes oppslaget på nytt, fordi husholdningen nå kjenner koden. Skjemaet
+var nøklet på tidspunktet for svaret og ble derfor bygd på nytt. Da forsvant `onSuccess`-funksjonen som ble sendt
+til `mutate`, fordi TanStack Query ikke kaller den når komponenten er borte. Ingen melding kom, og koden ble stående
+i URL-en. Playwright fant det. Komponenttesten gjorde ikke det. Nå er skjemaet nøklet bare på koden.
+
+## Eksempel 31: én opprinnelse i testmiljøet (ADR-0015)
+
+I testmiljøet serverer API-et også den ferdigbygde webappen (`@fastify/static`), så side og API har samme
+opprinnelse, og cookien er førstepart. Sideruter (`/skann?kode=…`) får `index.html` i 404-behandleren, mens ukjente
+`/api`-stier fortsatt får JSON. CSP-en tillater bare egne skript. Det lille temaskriptet i `index.html` får en
+sha256-hash som regnes ut ved oppstart, i stedet for `'unsafe-inline'`. `'wasm-unsafe-eval'` trengs for reserveleseren.
+Lokalt er alt dette av, og Vite serverer siden som før.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
@@ -436,15 +493,17 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
 ## Kjente begrensninger
 
-- **Bundle på 720 kB** (217 kB gzip) i én fil etter fase 6, opp fra 690 kB i fase 5, 658 kB i fase 4, 619 kB i fase 3, 566 kB i
-  fase 2 og 517 kB i fase 1. Vite advarer om dette. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
+- **Bundle på 739 kB** (223 kB gzip) i hovedfilen etter fase 7, opp fra 720 kB i fase 6, 690 kB i fase 5, 658 kB i
+  fase 4, 619 kB i fase 3, 566 kB i fase 2 og 517 kB i fase 1. Vite advarer om dette. Skanneren er den første delen
+  som er delt ut i egne filer. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Bør sjekkes på nytt i fase 13.
 - `exactOptionalPropertyTypes` ble prøvd i TypeScript-oppsettet og fjernet igjen, fordi den gjorde det tungvint å
   sende valgfrie props videre i React.
 - **Rangeringen regnes ut ved hver visning** for alle oppskrifter (ingen hurtiglager). Med 30–50 oppskrifter og et
   vanlig matlager er det raskt nok lokalt. Med mange hundre oppskrifter bør det måles.
-- API-et kjøres med tsx uten byggesteg. Det holder lokalt. Et produksjonsbygg kommer i fase 13.
+- API-et kjøres med tsx uten byggesteg, også i testmiljøet (bildet er 0,9 GB fordi utviklingsavhengighetene er med).
+  Et produksjonsbygg kommer i fase 13.
 - Den genererte Prisma-klienten (`apps/api/src/generated/`) er ikke i Git. Den lages av `npm install` (`postinstall`).
 
 ## Kilder i prosjektet

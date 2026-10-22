@@ -79,6 +79,11 @@ export function createLocationRepo(db: Db): LocationRepo {
           await tx.inventoryBatch.deleteMany({
             where: { locationId, householdId, quantityBase: 0 },
           });
+          // Spec 07: a remembered barcode keeps its other answers, just not this place (NO ACTION key).
+          await tx.householdBarcode.updateMany({
+            where: { householdId, locationId },
+            data: { locationId: null },
+          });
           await tx.storageLocation.delete({ where: { id: locationId } });
           return 'deleted' as const;
         });

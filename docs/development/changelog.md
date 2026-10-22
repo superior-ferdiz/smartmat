@@ -2,6 +2,33 @@
 
 ## [Ikke utgitt]
 
+### Fase 7 – 2026-10-22 (grenen `fase-7`)
+- **Strekkodeskanning** (`/skann`):
+  - skanne med kameraet: nettleserens `BarcodeDetector`, ellers `barcode-detector` + `zxing-wasm`, lastet bare når
+    kameraet startes, med wasm-filen fra vår egen server
+  - egne tekster for ingen kamerastøtte, ikke sikker side, nektet tilgang, fant ikke kamera og annen feil
+  - skrive inn koden selv: EAN-8, EAN-13, UPC-A, UPC-E (fra kameraet) og GTIN-14, med kontrollsiffer, i nettleseren
+    og på serveren. Koden står i URL-en (`?kode=`).
+  - oppslag: husholdningens egne svar, så mellomlageret, så Open Food Facts (ODbL, kreditert på siden).
+    Tidsavbrudd 3 s, Zod-validering, 30 oppslag per bruker og minutt, 10 per minutt mot OFF. Appen virker når OFF er
+    nede.
+  - skjemaet fylles ut (navn, kategori, mengde, enhet, sted, datotype, ingrediens), men datoen aldri. Ingenting
+    lagres før brukeren bekrefter. Ukjente koder huskes for husholdningen. Butikkens egne koder (vekt/pris) slås ikke
+    opp og huskes ikke.
+  - nytt parti på varen fra sist (FR-INV-002), og ett parti selv ved dobbel innsending
+- **Migrering `barcodes`:** `products`, `product_lookup_misses`, `household_barcodes` og
+  `inventory_batches.dedupe_key`, med CHECK og sammensatte fremmednøkler.
+- **API:** `GET /households/:h/barcodes/:gtin` og `POST …/confirm`. Strekkoden logges som `[gtin]`. Ny
+  `Permissions-Policy` på alle svar.
+- **Testmiljø (ADR-0015, ikke satt opp):** `docker/staging/` (Dockerfile, compose og eksempelfil for miljøvariabler),
+  `TRUST_PROXY`, `REGISTRATION_OPEN`, `COOKIE_HOST_PREFIX` (`__Host-`), `WEB_DIST_DIR` (API-et serverer webappen,
+  med CSP), skriptet `create-user` og et banner i webappen. Oppsettet står i
+  [testmiljo.md](testmiljo.md).
+- **Dokumentasjon:** spesifikasjon 07, vilkårene til Open Food Facts, ADR-0014 og ADR-0015 (akseptert) og ADR-0016
+  (oppskrifter fra åpne kilder, bare foreslått).
+- **Avhengigheter:** `barcode-detector` 3.2.2, `zxing-wasm` 3.1.3, `@fastify/static` 10.1.5. Valgt med vilje før
+  nyeste versjon, som var tre og én dag gammel.
+
 ### Fase 6 – 2026-10-21 (grenen `fase-6`)
 - **Handleliste** (`/handleliste`), én per husholdning:
   - føre listen for hånd: legge til (Enter i hurtigfeltet), rette, fjerne, huke av og fjerne hake, fjerne avhukede

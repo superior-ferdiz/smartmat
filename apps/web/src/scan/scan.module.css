@@ -1,0 +1,160 @@
+/* The scan page (phase 7, spec 07). Mobile first: one column; camera and form never wider than the screen. */
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  max-width: 36rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Code field + button side by side; the button wraps under the field on the narrowest screens. */
+.manual {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.manual > :first-child {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.camera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* 4:3 picture with a frame in the middle that shows where the barcode should be. */
+.viewfinder {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+
+.viewfinder[hidden] {
+  display: none;
+}
+
+.video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame {
+  position: absolute;
+  inset: 30% 10%;
+  border: 3px solid var(--color-on-primary);
+  border-radius: var(--radius-sm);
+  /* Darkens everything outside the frame, in both themes. */
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.35);
+}
+
+.hint {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.code {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* "Nytt parti" or "Ny vare": two large radio choices, as in the purchase form. */
+.modes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+@media (min-width: 600px) {
+  .modes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.mode {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3);
+  min-height: var(--tap-target);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-control-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.mode:has(input:checked) {
+  border: 2px solid var(--color-primary);
+}
+
+.mode input {
+  position: relative;
+  z-index: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: var(--space-1) 0 0;
+  accent-color: var(--color-primary);
+}
+
+.modeTitle {
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.modeTitle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.attribution {
+  margin: 0;
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

@@ -1,7 +1,11 @@
 {
   "app": {
     "name": "SmartMat",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "staging": {
+      "title": "Test environment.",
+      "text": "Use test data only. Do not enter real allergies or other real information."
+    }
   },
   "common": {
     "loading": "Loading …",
@@ -173,6 +177,12 @@
       "notInRecipe": "The ingredient is not in the recipe. Reload the page.",
       "itemRequired": "Choose an item.",
       "itemNotFound": "The item no longer exists. Choose another one."
+    },
+    "barcode": {
+      "required": "Enter the barcode.",
+      "digits": "The barcode can only contain digits.",
+      "length": "The barcode must have 8, 12, 13 or 14 digits.",
+      "checkDigit": "The barcode is not valid. Check that all the digits are right."
     }
   },
   "pages": {
@@ -219,9 +229,7 @@
       "emptyText": "Here you will add items, see what expires soon, and record what you use and throw out."
     },
     "scan": {
-      "lead": "Add items quickly using the barcode.",
-      "emptyTitle": "Scanning arrives in phase 7",
-      "emptyText": "Here you will scan a barcode with the camera or type it in. You always confirm before anything is saved."
+      "lead": "Scan the barcode or type it in. You always check and confirm before anything goes into your pantry."
     },
     "recipes": {
       "lead": "Ranked by what you have at home, what needs using first and what is missing.",
@@ -415,7 +423,8 @@
       "householdNote": "You get your own household when you create an account. Sharing with others comes in a later version.",
       "submit": "Create account",
       "haveAccount": "Already have an account?",
-      "logIn": "Log in"
+      "logIn": "Log in",
+      "closedLogin": "Log in"
     }
   },
   "errors": {
@@ -424,7 +433,8 @@
       "invalidCredentials": "Wrong email address or password. After five mistakes in a row you have to wait 15 minutes before trying again.",
       "emailTaken": "There is already an account with this email address. Log in instead.",
       "wrongPassword": "The password is wrong.",
-      "unauthenticated": "You are no longer logged in. Please log in again."
+      "unauthenticated": "You are no longer logged in. Please log in again.",
+      "registrationClosed": "This is a closed test environment. New accounts are made by the team."
     },
     "security": {
       "forbiddenOrigin": "The request was blocked for security reasons. Reload the page and try again.",
@@ -1012,6 +1022,82 @@
       "nothing": "You have everything the recipe needs.",
       "submit": "Add to the shopping list",
       "open": "Go to the shopping list"
+    }
+  },
+  "scan": {
+    "camera": {
+      "title": "Scan with the camera",
+      "start": "Start camera",
+      "privacy": "The camera picture stays on your device. Only the numbers in the barcode are sent.",
+      "starting": "Starting the camera …",
+      "scanning": "Hold the barcode inside the frame.",
+      "videoLabel": "Camera picture",
+      "stop": "Stop camera",
+      "close": "Close",
+      "retry": "Try again",
+      "typeInstead": "You can type the barcode instead.",
+      "problems": {
+        "insecure": {
+          "title": "The camera needs a secure page",
+          "text": "Browsers only allow the camera on pages opened with https (or on localhost)."
+        },
+        "unsupported": {
+          "title": "This browser does not support the camera",
+          "text": "This browser does not give web pages access to the camera."
+        },
+        "denied": {
+          "title": "No access to the camera",
+          "text": "You or the browser said no to the camera. You can allow it in the browser's settings for this page."
+        },
+        "noCamera": {
+          "title": "No camera found",
+          "text": "We found no camera on this device, or another app is using it."
+        },
+        "failed": {
+          "title": "The camera did not start",
+          "text": "Something went wrong when starting the camera or the barcode reader."
+        }
+      }
+    },
+    "manual": {
+      "title": "Type the barcode",
+      "label": "Barcode",
+      "hint": "The numbers under the bars, usually 13 or 8 digits.",
+      "submit": "Look up"
+    },
+    "lookup": {
+      "title": "Barcode found",
+      "code": "Barcode: {{gtin}}",
+      "loading": "Looking up the barcode …",
+      "brand": "Brand: {{brand}}.",
+      "another": "Scan another item",
+      "status": {
+        "found": "Found in Open Food Facts. Check and correct before adding.",
+        "household": "You have scanned this before. Last time's answers are filled in.",
+        "notFound": "We did not find this barcode. Fill it in yourself, and we will remember it next time.",
+        "unavailable": "The product lookup is not answering right now. Fill it in yourself.",
+        "storeCode": "The store's own code (for example for weight or price). Fill it in yourself. The code is not remembered.",
+        "notAsked": "Fill it in yourself."
+      }
+    },
+    "form": {
+      "title": "Check and add to the pantry",
+      "modeLegend": "Where should the pack go?",
+      "existing": "New batch of “{{name}}”",
+      "newItem": "New item",
+      "nameHint": "Correct the name if it is wrong or in another language.",
+      "ingredientAuto": "Automatic: {{name}}",
+      "ingredientAmbiguous": "Automatic (the name fits several, not linked)",
+      "ingredientUnmatched": "Automatic (not linked)",
+      "dateHint": "The date is never filled in. Read it on the pack.",
+      "submit": "Add to the pantry"
+    },
+    "added": "{{name}} has been added to the pantry.",
+    "seeItem": "See the item",
+    "attribution": {
+      "text": "Product data from",
+      "source": "Open Food Facts",
+      "license": "licence ODbL"
     }
   }
 }

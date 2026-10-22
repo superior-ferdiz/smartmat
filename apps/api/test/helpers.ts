@@ -18,11 +18,23 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     port: 0,
     allowedOrigins: [ORIGIN],
     cookieSecure: true,
+    cookieHostPrefix: false,
+    trustProxy: false,
+    registrationOpen: true,
+    webDistDir: null,
     logLevel: 'silent',
     rateLimits: {
       login: { max: 1000, windowMs: 60_000 },
       register: { max: 1000, windowMs: 60_000 },
       sensitive: { max: 1000, windowMs: 60_000 },
+    },
+    // No User-Agent: Open Food Facts is never called from tests. Tests pass a fake provider instead.
+    barcode: {
+      offBaseUrl: 'https://world.openfoodfacts.net',
+      offUserAgent: null,
+      offTimeoutMs: 3000,
+      offMaxPerMinute: 10,
+      lookupsPerUserPerMinute: 1000,
     },
     ...overrides,
   };

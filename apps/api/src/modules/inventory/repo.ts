@@ -213,9 +213,10 @@ export async function insertBatchWithEvent(
   itemId: string,
   batch: NewBatch,
   purchaseLineId: string | null = null,
+  dedupeKey: string | null = null,
 ): Promise<string> {
   const created = await tx.inventoryBatch.create({
-    data: { householdId, itemId, purchaseLineId, ...batchData(batch) },
+    data: { householdId, itemId, purchaseLineId, dedupeKey, ...batchData(batch) },
     select: { id: true },
   });
   await tx.inventoryEvent.create({
@@ -272,8 +273,15 @@ export function createInventoryRepo(db: Db): InventoryRepo {
 
     async deleteItem(householdId, itemId) {
       // Batches and events go with the item (ON DELETE CASCADE): "Slett" is for mistakes (spec 03).
-      const { count } = await db.inventoryItem.deleteMany({ where: { id: itemId, householdId } });
-      return count === 1;
+      // A remembered barcode (spec 07) keeps its answers but no longer points at the item (NO ACTION key).
+      return db.$transaction(async (tx) => {
+        await tx.householdBarcode.updateMany({
+          where: { householdId, itemId },
+          data: { itemId: null },
+        });
+        const { count } = await tx.inventoryItem.deleteMany({ where: { id: itemId, householdId } });
+        return count === 1;
+      });
     },
 
     async addBatch(householdId, actorId, itemId, batch) {

@@ -50,6 +50,9 @@ export const INVENTORY_PATH = '/matlager';
 export const NEW_ITEM_PATH = '/matlager/ny';
 export const LOCATIONS_PATH = '/matlager/steder';
 export const itemPath = (itemId: string) => `/matlager/${itemId}`;
+export const SCAN_PATH = '/skann';
+/** The scan page with a code already in the URL (spec 07). */
+export const scanCodePath = (gtin: string) => `${SCAN_PATH}?kode=${gtin}`;
 export const RECIPES_PATH = '/oppskrifter';
 export const recipePath = (recipeId: string) => `/oppskrifter/${recipeId}`;
 export const SHOPPING_LIST_PATH = '/handleliste';

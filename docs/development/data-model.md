@@ -54,11 +54,23 @@ Avvik fra planen:
 - `ShoppingListItemRecipe` (`item_id`, `recipe_id`, `quantity_base`) har primærnøkkel `(item_id, recipe_id)`, så
   samme oppskrift aldri teller to ganger på en linje.
 
+**Implementert i fase 7 (2026-10-22):** `Product`, `ProductLookupMiss` og `HouseholdBarcode`, og `dedupe_key` på
+`InventoryBatch` ([ADR-0014](architecture-decisions/0014-produkter-og-strekkoder.md)). Avvik fra planen:
+- `Product` er et **globalt mellomlager** for Open Food Facts, med GTIN som primærnøkkel. Det har ingen
+  `household_id` og ingen kobling til ingredienser. `ProductBarcode` er ikke laget: OFF har én kode per produkt.
+- `ProductLookupMiss` (`gtin`, `checked_at`) husker koder OFF ikke kjente, i 24 timer. Feil lagres aldri.
+- `HouseholdBarcode` (`household_id`, `gtin`) er det husholdningen bekreftet sist: navn, kategori, enhet, mengde,
+  ingrediensvalg (samme CHECK som på varen), sted, datotype og varen. Den er det eneste stedet en ukjent kode huskes.
+  Sted og vare er sammensatte fremmednøkler med `NoAction`, og koden tømmer dem før en vare eller et sted slettes.
+- `InventoryItem` fikk **ikke** `product_id`: varen kobles til ingrediensen med navnet, som før (spesifikasjon 05).
+- `inventory_batches.dedupe_key` (unik per husholdning, kan være tom) gjør at en bekreftelse sendt to ganger gir
+  ett parti.
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–6)
+## Kjernemodell (fase 2–7)
 
 ```mermaid
 erDiagram
@@ -69,9 +81,11 @@ erDiagram
   Household ||--o{ InventoryItem : eier
   Household ||--o{ Purchase : registrerer
   Household ||--o{ FoodBudget : har
-  Product ||--o{ ProductBarcode : identifiseres_av
-  Product ||--o{ InventoryItem : beskriver
   Category ||--o{ Product : grupperer
+  Household ||--o{ HouseholdBarcode : husker
+  HouseholdBarcode }o--o| InventoryItem : sist_lagt_på
+  HouseholdBarcode }o--o| StorageLocation : sist_sted
+  Ingredient ||--o{ HouseholdBarcode : valgt_ingrediens
   InventoryItem ||--o{ InventoryBatch : består_av
   StorageLocation ||--o{ InventoryBatch : lagrer
   InventoryBatch ||--o{ InventoryEvent : historikk
@@ -79,7 +93,6 @@ erDiagram
   Purchase ||--o{ PurchaseLine : inneholder
   PurchaseLine ||--o| InventoryBatch : skaper
   Ingredient ||--o{ IngredientAlias : kalles_også
-  Ingredient ||--o{ Product : tilsvarer
   Recipe ||--o{ RecipeIngredient : krever
   Ingredient ||--o{ RecipeIngredient : brukes_i
   Household ||--|| ShoppingList : har
@@ -99,10 +112,11 @@ erDiagram
 | `HouseholdMember` | household_id, user_id, role (`owner`/`member`) | Unik (household_id, user_id) | 2 |
 | `AuditEvent` | actor_id, action, target, created_at | Ingen personopplysninger i fritekst | 3 (utsatt fra 2) |
 | `Category` | name, parent_id | Global, frødata | 3 |
-| `Product` | name, brand, category_id, package_size_base, unit_kind, ingredient_id? | **Katalog** – hva varen er. Globalt eller husholdningsspesifikt (household_id nullable) | 3 |
-| `ProductBarcode` | gtin (unik), product_id, source | Én vare kan ha flere strekkoder | 3 (brukes 7) |
+| `Product` | gtin (PK), name?, brand?, package_quantity_base?, package_unit?, category_key?, fetched_at | **Globalt mellomlager** for Open Food Facts (ODbL). Ingen husholdningsdata. | 7 |
+| `ProductLookupMiss` | gtin (PK), checked_at | Koder OFF ikke kjente, husket i 24 timer | 7 |
+| `HouseholdBarcode` | household_id + gtin (PK), name, category_key, unit, quantity_base?, ingredient_match, ingredient_id?, location_id?, expiry_kind?, item_id? | Husholdningens egne svar. Vinner over OFF. | 7 |
 | `StorageLocation` | household_id, name, kind (`fridge`/`freezer`/`pantry`/`other`) | Standardsteder opprettes for nye husholdninger | 3 |
-| `InventoryItem` | household_id, product_id? , custom_name? | **Lager** – at husholdningen har varen | 3 |
+| `InventoryItem` | household_id, name, category_key, unit, ingredient_match, ingredient_id? | **Lager** – at husholdningen har varen. Ingen `product_id` (fase 7: koblingen går via `household_barcodes`). | 3 |
 | `InventoryBatch` | item_id, location_id, quantity_base, best_before?, use_by?, purchased_at?, price_ore?, price_basis, purchase_line_id?, source | Én fysisk pakke/parti. Ulike datoer per parti. CHECK quantity_base ≥ 0 | 3 |
 | `InventoryEvent` | batch_id, type (`add`/`consume`/`discard`/`move`/`adjust`/`undo`), delta_base, actor_id, created_at | Kun innsetting – gir historikk og angre | 3 |
 | `FoodWasteEvent` | event_id, reason, value_ore?, value_basis (`actual`/`estimated`/`unknown`) | Grunnlag for svinnstatistikk | 3 |
@@ -123,7 +137,10 @@ erDiagram
 
 ## Åpne spørsmål
 
-- Skal `Product` kunne opprettes fritt av brukere, eller skal fritekst ligge på `InventoryItem` til produktet er kjent? (Forslag: det siste, avklares i fase 3.)
+- ~~Skal `Product` kunne opprettes fritt av brukere, eller skal fritekst ligge på `InventoryItem` til produktet er kjent?~~
+  **Avklart i fase 7 (ADR-0014):** brukere lager ikke produkter. Fritekst ligger fortsatt på varen. Det en
+  husholdning bekrefter for en strekkode, lagres i `household_barcodes`, og `products` er bare et mellomlager for
+  Open Food Facts.
 - ~~Omregning stykk ↔ gram for oppskriftsmatching: per ingrediens eller per produkt?~~ **Avklart i fase 5:** per
   ingrediens (`unit_conversions`), fordi `Product` ikke finnes før fase 7. Tallene er anslag og må kontrolleres av
   teamet.

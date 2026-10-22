@@ -257,3 +257,54 @@ StockLine = { shoppingItemId, target: StockTarget, quantityBase /* i målvarens 
   sendt, rulles alt tilbake (409). Partiene får ingen pris og ingen kjøpskobling (ADR-0007, avgjørelse 4). En ny vare
   får `ingredient_match = manual` når navnet ikke selv treffer linjens ingrediens.
 
+
+## Strekkoder (fase 7)
+
+Spesifikasjon [07](requirements/07-strekkode.md), ADR-0014. Begge rutene ligger under
+`/households/:householdId/barcodes/:gtin` med `requireAuth` og `householdAccess`. `:gtin` valideres og normaliseres
+med de samme reglene som skjemaet (`gtinSchema`). En ugyldig kode gir 400 med feltfeil `gtin`
+(`validation.barcode.*`), og sendes aldri videre til Open Food Facts. I loggen står koden som `[gtin]`.
+
+### Typer
+
+```ts
+ScanSuggestion = { name|null, brand|null, categoryKey|null, unit: 'g'|'ml'|'stk'|null, quantityBase|null,
+                   ingredient: { match: 'auto'|'manual'|'none', ingredientId|null }|null, // bare fra husholdningen
+                   locationId|null, expiryKind: 'best_before'|'use_by'|null }            // datoen fylles aldri ut
+BarcodeLookup = { gtin, storeCode: boolean, source: 'household'|'openFoodFacts'|'none',
+                  providerStatus: 'notAsked'|'found'|'notFound'|'unavailable',
+                  suggestion: ScanSuggestion, existingItem: { id, name, unit }|null }
+ConfirmScan = { mode: 'newItem', clientRequestId: uuid, name, categoryKey, unit, ingredient: ItemIngredient,
+                batch: BatchInput }
+            | { mode: 'existingItem', clientRequestId: uuid, itemId, batch: BatchInput }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/barcodes/:gtin` | – | `BarcodeLookup`. Lagrer ingenting for husholdningen. | 400 `gtin`, 404, 429 (30 per bruker og minutt) |
+| POST | `/households/:h/barcodes/:gtin/confirm` | `ConfirmScan` | 201 `{ item }`, 200 ved gjentatt `clientRequestId` | 400 `batch.locationId`, `ingredient.ingredientId`, `validation.*`; 404 (vare som ikke finnes i husholdningen), 409 `errors.inventory.changedMeanwhile` |
+
+- **Rekkefølge for oppslaget:**
+  1. Butikkens egen kode slås ikke opp (`notAsked`).
+  2. Husholdningens svar (`source: household`).
+  3. Mellomlageret: treff i 30 dager, «fant ingenting» i 24 timer.
+  4. Open Food Facts.
+
+  Svarer ikke OFF (tidsavbrudd 3 s, HTTP-feil, ugyldig svar, serverens egen grense på 10 i minuttet), blir det
+  `unavailable`, eller et gammelt treff fra mellomlageret hvis det finnes. Feil lagres aldri.
+- **`confirm`:** én transaksjon. Den lager vare og parti (med hendelsen `add` og `dedupe_key = scan:<clientRequestId>`)
+  eller et nytt parti på `itemId`, og lagrer svarene i `household_barcodes`. Butikkens egne koder huskes ikke.
+
+### Innstillinger for testmiljøet (ADR-0015)
+
+| Variabel | Lokalt | Testmiljø | Virkning |
+|---|---|---|---|
+| `TRUST_PROXY` | tom (`false`) | `172.26.0.0/16` | `X-Forwarded-For` trodd bare fra dette nettet (rate limiting per klient) |
+| `REGISTRATION_OPEN` | `true` | `false` | `POST /auth/register` svarer 403 `errors.auth.registrationClosed` |
+| `COOKIE_HOST_PREFIX` | `false` | `true` | Sesjonscookien heter `__Host-smartmat_session` (krever `COOKIE_SECURE=true`) |
+| `WEB_DIST_DIR` | tom | `/app/apps/web/dist` | API-et serverer webappen (én opprinnelse), CSP med `'wasm-unsafe-eval'` og hash av temaskriptet |
+| `OFF_BASE_URL` / `OFF_USER_AGENT` | testmiljøet til OFF / tom (av) | `world.openfoodfacts.org` / kontaktadresse | Uten User-Agent er oppslag slått av |
+
+Alle svar har `Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=()`.

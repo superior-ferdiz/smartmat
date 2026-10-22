@@ -3,13 +3,13 @@ import { apiAs, test, type Account } from './fixtures';
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
  * Only runs when asked for:  SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 6 pages (shopping list), with a seeded inventory, purchases, budget and one registered allergen. The
- * recipes are the fictional test recipes the e2e API is seeded with (marked "Testdata"). (The phase 1–5
- * screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
+ * Phase 7 pages (barcode scanning), with a seeded inventory, purchases and budget. Open Food Facts is the e2e API's
+ * fake (made-up products). (The phase 1–6 screenshots in docs/evidence/screenshots/ were made by earlier versions of
+ * this file; see Git history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-6';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-7';
 
 function inDays(days: number) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date());
@@ -87,49 +87,47 @@ async function seed(
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – shopping list`, () => {
+  test.describe(`${colorScheme} – scanning`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('handleliste', async ({ page, playwright, account }, testInfo) => {
+    test('skann', async ({ page, playwright, account }, testInfo) => {
       await seed(playwright, account);
-      const api = await apiAs(playwright, account);
-      await api.addShoppingItem({ text: 'Bananer', quantity: { quantityBase: 6, unit: 'stk' } });
-      const { item } = await api.addShoppingItem({ text: 'Tannkrem' });
-      await api.setShoppingItemChecked(item.id, true);
-      await api.dispose();
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
       const shot = (name: string, fullPage = false) =>
         page.screenshot({
           path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
           fullPage,
         });
+      const ready = () => page.evaluate(() => document.fonts.ready);
 
-      // FR-SHOP-002: the dialog on the recipe page.
-      await page.goto('/oppskrifter?allergener=vis');
-      await page.getByRole('link', { name: 'Testrett: pannekaker' }).click();
-      await page.getByRole('button', { name: 'Legg manglende i handlelisten' }).click();
-      const suggestions = page.getByRole('dialog', { name: 'Legg i handlelisten' });
-      await suggestions.getByRole('checkbox').first().waitFor();
-      await page.evaluate(() => document.fonts.ready);
-      await shot('oppskrift-legg-i-handleliste');
-      await suggestions.getByRole('button', { name: 'Legg i handlelisten' }).click();
-      await page.getByText('Lagt i handlelisten').waitFor();
+      // FR-SCAN-001/-003: the start of the page (camera button, typed code, credit to Open Food Facts).
+      await page.goto('/skann');
+      await page.getByRole('button', { name: 'Start kamera' }).waitFor();
+      await ready();
+      await shot('skann-start', true);
 
-      // FR-SHOP-001: the list itself.
-      await page.goto('/handleliste');
-      await page.getByRole('heading', { name: /Skal kjøpes/ }).waitFor();
-      await page.evaluate(() => document.fonts.ready);
-      await shot('handleliste', !testInfo.project.name.startsWith('mobil'));
+      // FR-SCAN-002: a known code fills in the form.
+      await page.goto('/skann?kode=7038010000737');
+      await page.getByText(/Funnet i Open Food Facts/).waitFor();
+      await page.getByLabel(/Navn på varen/).waitFor();
+      await ready();
+      await shot('skann-funnet', true);
 
-      // FR-SHOP-003: the dialog that puts checked lines in the inventory.
-      await page.getByRole('checkbox', { name: /^Egg/ }).click();
-      await page.getByRole('region', { name: /Huket av \(2\)/ }).waitFor();
-      await page.getByRole('button', { name: 'Legg i matlageret' }).click();
-      await page
-        .getByRole('dialog', { name: 'Legg i matlageret' })
-        .getByRole('group')
-        .first()
-        .waitFor();
-      await shot('handleliste-legg-i-matlageret');
+      // FR-SCAN-004 / NFR-REL-001: unknown code and a lookup that does not answer.
+      await page.goto('/skann?kode=4006381333931');
+      await page.getByText(/Vi fant ikke denne strekkoden/).waitFor();
+      await ready();
+      await shot('skann-ukjent');
+      await page.goto('/skann?kode=0036000291452');
+      await page.getByText(/svarer ikke akkurat nå/).waitFor();
+      await ready();
+      await shot('skann-svarer-ikke');
+
+      // FR-SCAN-001: no camera access.
+      await page.goto('/skann');
+      await page.getByRole('button', { name: 'Start kamera' }).click();
+      await page.getByText(/Du kan skrive inn strekkoden i stedet/).waitFor();
+      await ready();
+      await shot('skann-kamera-feil');
     });
   });
 }

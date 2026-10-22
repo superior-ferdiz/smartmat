@@ -20,3 +20,7 @@ export * from './api/recipes';
 export * from './schemas/shopping';
 export * from './api/shopping';
 export * from './shopping/list';
+export * from './barcode/gtin';
+export * from './barcode/offCategories';
+export * from './schemas/barcodes';
+export * from './api/barcodes';

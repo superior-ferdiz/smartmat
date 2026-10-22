@@ -1,6 +1,6 @@
 # Databasemodell
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21). Skjemaet og teksten er laget
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet i fase 5–7. Skjemaet og teksten er laget
 > av KI (Claude) og ikke gjennomgått av teamet ennå. Kapittelet utvides med tabellene for oppskrifter i senere faser.
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
 
@@ -245,6 +245,55 @@ En oppskrift som fjernes av seed-skriptet, tar bidragene med seg (`CASCADE`). Li
   når og bare når linjen er avhuket, og teksten er ikke tom.
 - `dedupe_key` er unik per husholdning: samme skjema sendt to ganger gir én linje (NFR-DATA-002).
 - `RESTRICT` fra linje til ingrediens. Seed-skriptet teller nå også handlelistelinjer før det fjerner en ingrediens.
+
+## Strekkoder (fase 7)
+
+```mermaid
+erDiagram
+  products {
+    varchar gtin PK
+    varchar name "kan være tom"
+    int package_quantity_base "kan være tom"
+    timestamptz fetched_at
+  }
+  product_lookup_misses {
+    varchar gtin PK
+    timestamptz checked_at
+  }
+  households ||--o{ household_barcodes : husker
+  household_barcodes }o--o| inventory_items : "sist lagt på"
+  household_barcodes }o--o| storage_locations : "sist sted"
+  ingredients |o--o{ household_barcodes : "valgt av brukeren"
+  categories ||--o{ products : grupperer
+```
+
+### To slags data om en strekkode (ADR-0014)
+- **`products` og `product_lookup_misses`** er et globalt mellomlager for Open Food Facts. Tabellene har ingen
+  `household_id` og ingenting om brukere. Det er derfor greit at alle husholdninger deler dem: et oppslag én
+  husholdning har gjort, koster ingenting for neste, og grensen mot OFF (15 i minuttet) nås ikke så lett.
+- **`household_barcodes`** er det husholdningen selv har bekreftet. Primærnøkkelen er `(household_id, gtin)`. Navnet
+  kan være skrevet av brukeren, så tabellen er husholdningsdata og slettes med husholdningen (`CASCADE`).
+
+### Ingen `product_id` på varen
+Planen fra fase 0 hadde `inventory_items.product_id`. Den ble ikke laget. Oppskriftene kobler varer til ingredienser
+med navnet (spesifikasjon 05), og det navnet brukeren bekrefter for en skannet vare, matches likt. Det husholdningen
+husker om koden, peker i stedet til varen (`household_barcodes.item_id`). Slik kan en vare ha mange strekkoder (to
+merker melk), og en strekkode kan peke til en ny vare hvis den gamle slettes.
+
+### Sammensatte fremmednøkler som kan være tomme
+`(item_id, household_id)` og `(location_id, household_id)` gjør at en husket strekkode aldri kan peke til en annen
+husholdnings vare eller sted. Begge kan være tomme. `SET NULL` kan ikke brukes på en sammensatt nøkkel, fordi det
+også ville tømt `household_id`. Nøklene er derfor `NO ACTION`, og koden tømmer koblingen i samme transaksjon som den
+sletter varen eller stedet. Det er det samme mønsteret som `purchase_line_id` i fase 4, og det er testet.
+
+### Regler i databasen
+- CHECK: GTIN er 8, 13 eller 14 sifre i alle tre tabellene. Navnet er ikke tomt, mengden er over 0, og en ingrediens
+  står bare der når den er valgt manuelt (samme CHECK som på varen).
+- CHECK på `products`: pakningsstørrelse og enhet er satt sammen eller ikke i det hele tatt.
+- `inventory_batches.dedupe_key` er unik per husholdning (`scan:<clientRequestId>`): samme bekreftelse to ganger gir
+  ett parti, også når de kommer samtidig.
+- `RESTRICT` fra `household_barcodes` til `ingredients`. Seed-skriptet teller nå også huskede strekkoder før det
+  fjerner en ingrediens.
 
 ## Viktige begrensninger
 

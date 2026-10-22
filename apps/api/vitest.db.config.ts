@@ -11,6 +11,7 @@ export default defineConfig({
     environment: 'node',
     include: ['test/**/*.test.ts'],
     globalSetup: ['./test/globalSetup.ts'],
+    setupFiles: ['./test/noNetwork.ts'],
     // All files share one database and empty it between tests, so they must not run at the same time.
     fileParallelism: false,
     testTimeout: 20_000,

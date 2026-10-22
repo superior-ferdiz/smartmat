@@ -5,6 +5,7 @@ import { localeSchema, SUPPORTED_LOCALES } from '@smartmat/shared';
 import { Select } from '../components/Select/Select';
 import { changeLocale } from '../i18n';
 import { Logo } from './Logo';
+import { StagingBanner } from './StagingBanner';
 import { useFocusHeadingOnNavigate } from './useFocusHeadingOnNavigate';
 import styles from './AuthLayout.module.css';
 
@@ -27,6 +28,7 @@ export function AuthLayout() {
       <a className={styles.skipLink} href="#hovedinnhold">
         {t('app.skipToContent')}
       </a>
+      <StagingBanner />
       <header className={styles.header}>
         <Logo />
         <div className={styles.language}>
