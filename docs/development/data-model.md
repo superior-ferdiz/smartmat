@@ -66,11 +66,26 @@ Avvik fra planen:
 - `inventory_batches.dedupe_key` (unik per husholdning, kan være tom) gjør at en bekreftelse sendt to ganger gir
   ett parti.
 
+**Implementert i fase 8 (2026-10-24):** `Receipt`, `ReceiptImage` og `ReceiptExtraction`
+([spesifikasjon 08](requirements/08-kvittering.md), ADR-0017). Avvik fra planen:
+- Planen hadde «Receipt og ReceiptExtraction». **Bildet ligger i en egen tabell** (`receipt_images`, `bytea`), så
+  det kan slettes for seg og aldri leses ved et uhell sammen med kvitteringen. Ingen filer på disk.
+- `Receipt` har `status` (`queued`/`processing`/`review`/`failed`/`confirmed`, CHECK med `failure_code`),
+  `delete_after` (opplasting + 7 dager), `image_sha256` (samme bilde to ganger) og `purchase_id`.
+- **Etter bekreftelse** blir bare `receipts`-raden igjen, med kobling til kjøpet. Bilde og uttrekk slettes i
+  samme transaksjon som kjøpet lages.
+- `purchase_id` er en sammensatt fremmednøkkel `(purchase_id, household_id)` med **`ON DELETE CASCADE`**: slettes
+  kjøpet, slettes kvitteringsraden, og kvitteringen kan importeres på nytt.
+- **Duplikatnøkkelen ligger på kjøpet** (`purchases.dedupe_key`), ikke på kvitteringen: `receipt:<sha256>` når
+  kvitteringsnummer og klokkeslett er lest, ellers `receipt-id:<id>`.
+- `ReceiptExtraction.raw_text` lagres uten betalingslinjer. `parsed` er JSON med tolkede linjer og konfidens.
+- **pg-boss** har sitt eget skjema `pgboss` i samme database. Jobbene inneholder bare kvitteringens id.
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–7)
+## Kjernemodell (fase 2–8)
 
 ```mermaid
 erDiagram
@@ -100,6 +115,10 @@ erDiagram
   Ingredient ||--o{ ShoppingListItem : kobles_til
   ShoppingListItem ||--o{ ShoppingListItemRecipe : fra
   Recipe ||--o{ ShoppingListItemRecipe : bidrar
+  Household ||--o{ Receipt : laster_opp
+  Receipt ||--o| ReceiptImage : bilde
+  Receipt ||--o| ReceiptExtraction : uttrekk
+  Purchase ||--o| Receipt : fra_kvittering
 ```
 
 ## Entiteter
@@ -128,10 +147,12 @@ erDiagram
 | `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image? | Frødata fra teamet | 5 |
 | `RecipeIngredient` | recipe_id, ingredient_id, quantity_base, display_text, optional | | 5 |
 | `ShoppingList` / `ShoppingListItem` / `ShoppingListItemRecipe` | household_id (unik) / household_id, list_id, text, ingredient_id?, quantity_base?, unit?, checked, checked_at?, dedupe_key? / item_id, recipe_id, quantity_base? | Én liste per husholdning; én åpen linje per ingrediens | 6 |
+| `Receipt` | household_id, status, failure_code?, image_sha256?, uploaded_by?, purchase_id?, delete_after, confirmed_at? | Én opplastet kvittering. Etter bekreftelse bare koblingen til kjøpet. | 8 |
+| `ReceiptImage` | receipt_id (PK), household_id, bytes, width, height | Bildet uten metadata. Slettes ved bekreftelse, forkasting eller etter 7 dager. | 8 |
+| `ReceiptExtraction` | receipt_id (PK), household_id, engine, raw_text, parsed (JSON), mean_confidence, duration_ms | Det OCR og parseren fant. Uten betalingslinjer. | 8 |
 
 ## Senere
 
-`Receipt` og `ReceiptExtraction` (fase 8: originalbilde med slettefrist, råtekst, tolkede linjer, konfidens, status),
 `MealPlanEntry` (9), `Invitation` (10), `Notification` / `NotificationPreference` (11),
 `PriceObservation` (12: product_id, chain, price_ore, unit_price, observed_at, source).
 

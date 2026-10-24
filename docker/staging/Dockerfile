@@ -2,9 +2,10 @@
 # Built from the repo root:  docker compose -f docker/staging/compose.yml build
 FROM node:22.14.0-bookworm-slim
 
-# Prisma's migration engine needs OpenSSL; ca-certificates for HTTPS to Open Food Facts.
+# Prisma's migration engine needs OpenSSL; ca-certificates for HTTPS to Open Food Facts; Tesseract with the
+# Norwegian model for the receipt worker (spec 08, ADR-0017 – the same packages as docker/ocr).
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && apt-get install -y --no-install-recommends openssl ca-certificates tesseract-ocr tesseract-ocr-nor \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

@@ -295,6 +295,20 @@ sletter varen eller stedet. Det er det samme mønsteret som `purchase_line_id` i
 - `RESTRICT` fra `household_barcodes` til `ingredients`. Seed-skriptet teller nå også huskede strekkoder før det
   fjerner en ingrediens.
 
+### Kvitteringer (fase 8)
+
+Tre tabeller, slik at det som er personlig kan slettes for seg:
+- **`receipts`:** status og frister.
+- **`receipt_images`:** bildet, som `bytea`.
+- **`receipt_extractions`:** teksten og de tolkede linjene, som JSON.
+
+Når kvitteringen bekreftes, slettes bilde og uttrekk i samme transaksjon som kjøpet lages. Bare raden i `receipts`
+blir igjen, som koblingen til kjøpet. Bildene ligger i databasen og ikke som filer. Da forsvinner de med husholdningen
+(cascade), det finnes ingen stier å misbruke, og ingen filer blir liggende igjen.
+
+Duplikatnøkkelen ligger på kjøpet (`purchases.dedupe_key`), fordi det er kjøpet som ikke må finnes to ganger. Den er
+en sha256 av kvitteringsnummer, klokkeslett, dato og total, så kvitteringsnummeret ikke står i klartekst.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -333,6 +347,8 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261021124836_purchases_budget` | Kjøp, linjer og matbudsjett: 3 tabeller, 2 enums, `purchase_line_id` på partier, sammensatte fremmednøkler og CHECK |
 | `20261021153638_recipes` | Oppskrifter: 7 tabeller, 3 enums, `ingredient_match`/`ingredient_id` på varer, CHECK. Innholdet legges inn med `npm run db:seed`, ikke av migreringen. |
 | `20261021200000_shopping_list` | Handleliste: 3 tabeller, sammensatte fremmednøkler, CHECK, delvis unik indeks (én åpen linje per ingrediens) og én liste for hver husholdning som fantes |
+| `20261022000000_barcodes` | Strekkoder: `products`, `product_lookup_misses`, `household_barcodes` og `inventory_batches.dedupe_key` |
+| `20261024120000_receipts` | Kvitteringer: 3 tabeller, enum `receipt_status`, sammensatte fremmednøkler (også `(purchase_id, household_id)` med `ON DELETE CASCADE`) og CHECK (feilkode bare ved `failed`, bekreftet bare med kjøp og uten bildehash, bildestørrelse, sikkerhet 0–100) |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

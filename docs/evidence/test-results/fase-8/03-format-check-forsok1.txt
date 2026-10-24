@@ -1,0 +1,10 @@
+$ npm run format:check
+Kjørt 2026-10-24T13:19:57Z
+
+> smartmat@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+[warn] apps/web/src/pages/receipts/ReceiptPage.tsx
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.
+exit 1

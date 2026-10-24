@@ -16,6 +16,8 @@ export class ApiError extends Error {
     readonly status: number,
     readonly code: string,
     readonly fields: Record<string, string> = {},
+    /** The id of an existing row the conflict is about (spec 08: the purchase a receipt duplicates). */
+    readonly refId: string | null = null,
   ) {
     super(code);
     this.name = 'ApiError';
@@ -38,7 +40,9 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const method = options.method ?? 'GET';
   const headers: Record<string, string> = { accept: 'application/json' };
-  if (options.body !== undefined) headers['content-type'] = 'application/json';
+  // A file upload (spec 08) is sent as FormData: the browser sets the multipart content type and boundary.
+  const isForm = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  if (options.body !== undefined && !isForm) headers['content-type'] = 'application/json';
   if (method !== 'GET' && csrfToken) headers[CSRF_HEADER] = csrfToken;
 
   let response: Response;
@@ -47,7 +51,9 @@ export async function apiFetch<T>(
       method,
       headers,
       credentials: 'same-origin',
-      ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+      ...(options.body === undefined
+        ? {}
+        : { body: isForm ? (options.body as FormData) : JSON.stringify(options.body) }),
     });
   } catch {
     throw new ApiError(0, NETWORK_ERROR);
@@ -58,7 +64,12 @@ export async function apiFetch<T>(
   if (!response.ok) {
     const parsed = apiErrorBodySchema.safeParse(data);
     throw parsed.success
-      ? new ApiError(response.status, parsed.data.error.code, parsed.data.error.fields ?? {})
+      ? new ApiError(
+          response.status,
+          parsed.data.error.code,
+          parsed.data.error.fields ?? {},
+          parsed.data.error.refId ?? null,
+        )
       : new ApiError(response.status, API_ERRORS.internal);
   }
   return data as T;

@@ -81,13 +81,31 @@
 | Fremmede registrerer seg i testmiljøet | Åpen registrering på en offentlig adresse | Basic auth i Caddy, `REGISTRATION_OPEN=false` (403), kontoer bare med skript | `staging.api.test.ts`, `StagingBanner.test.tsx` |
 | Cookie overstyrt fra et annet underdomene | En side på `*.risansolutions.no` setter `smartmat_session` | `__Host-`-prefiks: ingen `Domain`, krever `Secure` | `staging.api.test.ts` |
 
+### Nytt i fase 8: kvitteringer
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se eller endre andres kvitteringer og bilder | Bytte husholdnings-ID eller kvitterings-ID i URL-en | `householdAccess`, og hvert oppslag i repoet filtrerer på `household_id`. Sammensatte fremmednøkler på bilde og uttrekk. | `receipts.security.api.test.ts` (A, B, repoet, databasen) |
+| Lekke at en annen husholdning har samme bilde | Laste opp samme fil som en annen husholdning | «Allerede lastet opp» sjekkes bare innenfor husholdningen | Samme fil |
+| Bekrefte inn i andres sted, eller få id-en til andres kjøp | `confirm` med andres `locationId`. Duplikatsvaret peker på et kjøp. | Kjøpsreglene fra fase 4. Duplikatsjekkene ser bare på egen husholdning. | Samme fil |
+| Posisjon og kamerainformasjon lagres | GPS i EXIF fra mobilkameraet | Bildet skrives om uten metadata før lagring (også i nettleseren når det går). Originalfilen lagres aldri. | `image.test.ts`, `receipts.api.test.ts` |
+| Ondsinnet fil | Annen filtype med `.jpg`-navn, «dekompresjonsbombe», ødelagt fil | Typen fra innholdet, 10 MB, 40 MP (sharp nekter før dekoding), ødelagt fil gir 400 | `image.test.ts`, `receipts.api.test.ts` |
+| Kodeinjeksjon via OCR | Filnavn eller tekst sendt til et shell | Tesseract startes uten shell, bildet går på stdin. Ingenting fra brukeren blir argumenter. | `tesseract.test.ts` |
+| OCR som henger eller svarer med søppel | Tesseract bruker minutter, eller svarer med noe som ikke er TSV | Tidsavbrudd (prosessen drepes), grense på 2 MB utdata, TSV-formatet kontrolleres, 60 s for hele lesingen | `tesseract.test.ts`, `tesseractTsv.test.ts`, `receipts.api.test.ts` |
+| Bildet sendes ut av serveren | Skytjeneste, eller en container med internett | Tesseract kjører lokalt (lokalt i Docker med `--network none`). Workeren i testmiljøet er bare på det interne nettverket. | Røyktest og compose-oppsett (ikke automatisk testet) |
+| Kortnummer og autorisasjonskode lagres | Betalingsdelen av kvitteringen i råteksten | Betalingslinjer fjernes før råteksten lagres | `parse.test.ts`, `receipts.api.test.ts` |
+| Hva noen har kjøpt, i loggen | Varetekst, beløp, butikk eller filnavn | Workeren logger id, utfall og tid. API-et logger URL uten spørrestreng. | `receipts.api.test.ts` (sjekker loggene for tekst fra kvitteringen) |
+| Overbelastning | Mange store bilder | 10 opplastinger per bruker og time, 20 i kø totalt, én kvittering om gangen i workeren, `mem_limit` 512 MB i testmiljøet | `receipts.api.test.ts` |
+| Samme kvittering blir to kjøp | Fotografert to ganger, dobbeltklikk | Sterk nøkkel (hash av kvitteringsnummer, klokkeslett, dato, total) unik per husholdning, advarsel ved samme dato og sum, statusbetingelse i transaksjonen | `receipts.api.test.ts` (også samtidig) |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
 [fase 4](../evidence/test-results/fase-4/10-mutation-check.txt),
 [fase 5](../evidence/test-results/fase-5/10-mutation-check.txt),
 [fase 6](../evidence/test-results/fase-6/10-mutation-check.txt),
-[fase 7](../evidence/test-results/fase-7/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 7](../evidence/test-results/fase-7/10-mutation-check.txt),
+[fase 8](../evidence/test-results/fase-8/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -108,6 +126,10 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Strekkoder husholdningen har bekreftet, med navn, sted og valgt ingrediens (fase 7) | Fylle ut skjemaet neste gang (FR-SCAN-004) | `household_barcodes`, knyttet til husholdningen | Til husholdningen slettes. Koblingen til en vare eller et sted tømmes når de slettes. |
 | IP-adresse | Rate limiting | Bare i minnet i API-prosessen, i 15–60 minutter | Lagres ikke og logges ikke |
 | Bruker-ID per oppslag (fase 7) | Grensen på 30 oppslag i minuttet | Bare i minnet i API-prosessen, i ett minutt | Lagres ikke og logges ikke |
+| **Bilde av kvitteringen** (fase 8): butikk, tidspunkt, hva som er kjøpt, ofte kortnummerets siste siffer | Lese kjøpet (FR-RCPT-001–005) | `receipt_images`, uten metadata | Slettes ved bekreftelse eller forkasting, og senest etter 7 dager |
+| Teksten fra kvitteringen og tolkede linjer (fase 8) | Gjennomgangen | `receipt_extractions`, uten betalingslinjer | Som bildet |
+| At en kvittering er brukt (fase 8) | Hindre to kjøp av samme kvittering | `receipts` (kobling til kjøpet) og `purchases.dedupe_key` (hash) | Til kjøpet slettes |
+| Bruker-ID per opplasting (fase 8) | Grensen på 10 i timen | Bare i minnet i API-prosessen, i én time | Lagres ikke og logges ikke |
 
 Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Alt kjørte lokalt.
 
@@ -125,11 +147,24 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
     helseopplysninger (art. 9) skal ikke finnes der. Det håndheves ikke teknisk.
   - Lokalt er ingenting endret: alt kjører fortsatt på maskinen.
 
+**Fra fase 8 (kvitteringer):**
+- Bildet behandles bare på vår egen server, av Tesseract. Ingen skytjeneste brukes (ADR-0011, ADR-0017).
+- **Pilotmålingen** brukte teamets egne 3 kvitteringer. De ligger utenfor repoet, i en mappe bare eieren kan lese.
+  Bildene ble også vist til KI-assistenten (Claude, Anthropic) i chatten, fordi teamet ba om det for å lage
+  fasiten. De er ikke lagt i Git, tester, logger eller dokumentasjon, og bare samlede tall er lagret.
+  **Slettefrist:** når ADR-0017 er godkjent, senest 2026-11-23.
+- En kvittering kan vise de siste sifrene i et kortnummer og autorisasjonskoden. Bildet beholdes bare til kjøpet er
+  bekreftet. Råteksten lagres uten slike linjer.
+
 ## Sletting
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
   Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005). Fra fase 3 omfatter
-  det hele matlageret og svinnloggen, fra fase 4 kjøp, linjer og budsjett, og fra fase 5 allergiene. Dette er testet.
+  det hele matlageret og svinnloggen, fra fase 4 kjøp, linjer og budsjett, fra fase 5 allergiene og fra fase 8
+  kvitteringer, bilder og uttrekk. Dette er testet.
+- **Kvitteringer** (fase 8): bilde og uttrekk slettes når kjøpet bekreftes eller kvitteringen forkastes. Ellers
+  slettes alt etter 7 dager av en jobb hver 15. minutt, og utløpte kvitteringer vises ikke selv før jobben har
+  kjørt. Slettes kjøpet, slettes også kvitteringsraden. Dette er testet (unntatt selve tidsplanen i pg-boss).
 - Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
 - **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt) og eierskap i delte husholdninger (fase 10).
 
@@ -163,6 +198,11 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   at informasjonen er veiledende, men det erstatter ikke at teamet kontrollerer merkingen.
 - **Retting av samme kjøp fra to steder:** siste lagring vinner, uten varsel. Betyr lite før husholdninger kan ha
   flere medlemmer (fase 10).
+- **Kvitteringsbilder i databasen:** bildene ligger i Postgres i opptil 7 dager. Det finnes ikke sikkerhetskopier
+  lokalt. Når sikkerhetskopier innføres (fase 13), må de enten ikke ta med `receipt_images`, eller ha en
+  slettefrist som er like kort.
+- **OCR-teksten kan være feil.** Appen fyller bare inn butikk, dato og total som standard (ADR-0017), og ingenting
+  lagres før brukeren har bekreftet.
 - **Ikke gjort:** tofaktorinnlogging, varsel om innlogging fra ny enhet, sjekk mot lister over lekkede passord,
   HTTPS og sikkerhetsheadere for selve nettsiden (fase 13).
 

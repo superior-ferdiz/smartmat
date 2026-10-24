@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Delte Zod-skjemaer og hjelpefunksjoner for SmartMat (klient og server)",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./test-fixtures/receipts": "./src/receipts/fixtures.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

@@ -399,3 +399,88 @@ fase 8 (kvitterings-OCR) eller oppskriftene etter ADR-0016, helst i en ny chat.
 fikk prompten til fase 8 og ba om commit og push av `fase-7` («Committ og push nå»). Ingen gjennomgang av fase 7 er
 oppgitt.
 
+
+---
+
+## 2026-10-24 – Fase 8: kvitterings-OCR
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 8 i en ny chat med en detaljert prompt. Den bestemte omfanget og satte regler for de ekte
+  kvitteringene: aldri i Git, tester, logger eller dokumentasjon, og ingen skytjeneste uten godkjenning.
+- **Kvitteringene:**
+  - Prompten sa 6 kvitteringer i en privat mappe. Claude fant **3** (2 Extra, 1 Kiwi, ingen Rema 1000), og de lå
+    som filer som ikke var lagt til i Git, i roten av repoet. Da kunne en `git add -A` ha lagt dem på GitHub.
+    Den private mappen fantes ikke.
+  - Claude så på bildene for å se kjede og format. Det ble sagt fra i svaret at det betyr at bildene er sendt til
+    Claude (Anthropic).
+- **Planen:**
+  - Claude svarte med fasemalen og ventet.
+  - Linjen i prompten om gjennomgang av fase 7 var ikke fylt ut. Claude påpekte det.
+  - Ferdinand svarte: «Vi godkjenner alt i plenum. Fase 7 ble gjennomgått i plenum av både meg og Linus. Vennligst
+    fortsett.» Det er registrert ordrett som hans erklæring. Hva som ble gjennomgått, er ikke oppgitt, og Linus har
+    ikke bekreftet det selv i en økt.
+  - Anbefalingene i de åpne spørsmålene gjelder (se [spesifikasjon 08](requirements/08-kvittering.md)).
+- **Før koden:**
+  - Bildene ble flyttet til `/opt/Websites/smartmat-private/kvitteringer/` (mappe 0700, filer 0600, sjekksummene
+    kontrollert).
+  - `.gitignore` og `npm run check:files` stopper nå bildefiler i repoet.
+  - Grenen `fase-8` ble laget fra `fase-7`.
+  - Spesifikasjon 08 ble skrevet **før** koden.
+- **Fasit og pilotmåling:**
+  - Claude skrev av fasiten fra bildene. Den ligger i den private mappen, og betalingsdelen er utelatt.
+  - Ferdinand kontrollerte den: «Kontrollert og all good».
+  - Målingen ble kjørt 6 ganger. Hver kjøring er lagret med samlede tall. Resultatet står i ADR-0017 (foreslått,
+    foreløpig): Tesseract på serveren, og bare butikk, dato og total foreslås.
+- **All kode i fasen er skrevet av KI.**
+
+**Avvik og funn underveis** (detaljer i kapittel 11 og ADR-0017)
+- **Første målekjøring målte forbehandlingen:** Tesseracts retningsgjenkjenning valgte feil retning på begge bildene
+  som var tatt liggende, og beskjæringen fant ikke en smal kvittering. Det ble rettet, og kjøringen ble lagret.
+- **Parseren ble justert etter å ha sett resultatene** på de samme tre kvitteringene. Det var åtte generelle
+  rettinger, hver med en fiktiv test. Tallene er derfor sannsynligvis for gode. Kvitteringene som kommer senere,
+  skal måles som et rent kontrollsett.
+- Selvtesten av måleskriptet med en fiktiv kvittering fant at psm 4 kan miste beløpskolonnen, og at minnemålingen
+  ikke ga Tesseract bildet.
+- **Røyktesten av hele kjeden** (ekte pg-boss og Tesseract, fiktiv kvittering, midlertidig konto som ble slettet)
+  fant at en kort kvittering som ligger på siden, ble lest i feil retning. Det ble rettet, og en test ble lagt til.
+- pg-boss `singletonKey` hindrer ikke doble jobber. Det er ufarlig, og ble fjernet fra koden.
+- Første formateringssjekk feilet på én fil. Den feilede kjøringen er lagret (`03-format-check-forsok1.txt`).
+- I kapittel 8 manglet raden for migreringen fra fase 7. Den er lagt til.
+- I kapittel 11 stod det at fase 7 hadde 8 migreringer. Bevisfilen sier 7. Det er rettet.
+- **Kontrollen av testene** (37 endringer, med bare API-testene for kvitteringer og kjøp per endring, for å holde
+  tiden nede):
+  - Første kjøring fant tre hull: runde 16, 31 og 36. Nye tester ble lagt til.
+  - Andre kjøring fanget 36 av 37. Runde 16 er en dobbel sperre som repoet stopper uansett. En ekstra mutasjon viser
+    at den nye repotesten fanger den.
+  - Loggtesten var ustabil (én feil av fem kjøringer). Den sannsynlige årsaken er at tall fra den fiktive kvitteringen
+    kan stå inne i en tilfeldig id. Årsaken er ikke bekreftet. Testen er gjort robust.
+  - Alle kjøringene er lagret.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 956 |
+| API-tester mot database | 282 |
+| Bygg | Vellykket (hovedfil 761 kB) |
+| Playwright-tester | 163 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-8/`, skjermbilder i `docs/evidence/screenshots/fase-8/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 8 (pull request) og godkjenning av ADR-0017
+- de 3 kvitteringene som mangler (minst én fra Rema 1000), og en ny måling på dem som et rent kontrollsett
+- sletting av de ekte kvitteringene, fasiten og måleresultatene i `/opt/Websites/smartmat-private/` (når ADR-0017 er
+  godkjent, senest 2026-11-23)
+- test på ekte telefon (punkt 11–14 i [testmiljo.md](testmiljo.md)), og testmiljøet satt opp
+- commit og push av `fase-8` (ikke bedt om ennå)
+- fortsatt utestående fra tidligere faser: DNS og passord for testmiljøet, kontaktadresse til Open Food Facts,
+  kontroll av OFF-kategoritabellen, ADR-0016 og ingredienslisten
+
+**Neste:** Teamet går gjennom fasen, tar stilling til ADR-0017, og legger de andre kvitteringene i den private
+mappen. Deretter fase 9 (måltidsplan), helst i en ny chat.
+

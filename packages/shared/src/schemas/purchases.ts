@@ -117,7 +117,7 @@ export const purchaseLineSchema = z
   .superRefine(checkLine);
 export type PurchaseLineInput = z.input<typeof purchaseLineSchema>;
 
-const purchaseFields = {
+export const purchaseFields = {
   storeName: storeNameSchema,
   purchasedOn: purchaseDateSchema,
   /** Only for a purchase without lines; with lines the server computes the total. */
@@ -128,7 +128,7 @@ const purchaseFields = {
 };
 
 /** FR-BUD-001: lines OR a total, never both, and the lines may not add up to more than the limit. */
-function checkPurchase(
+export function checkPurchase(
   purchase: { lines: { amountOre: number }[]; totalOre?: number | null | undefined },
   ctx: z.RefinementCtx,
 ) {
@@ -154,7 +154,7 @@ function checkPurchase(
   }
 }
 
-const linesSchema = <T extends z.ZodType>(line: T) =>
+export const linesSchema = <T extends z.ZodType>(line: T) =>
   z.array(line).max(MAX_PURCHASE_LINES, { error: 'validation.purchase.tooManyLines' }).default([]);
 
 export const createPurchaseSchema = z

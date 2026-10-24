@@ -42,6 +42,9 @@ import { ShoppingService } from './modules/shopping/service';
 import { PurchaseService } from './modules/purchases/service';
 import { profileRoutes } from './modules/profile/routes';
 import { ProfileService } from './modules/profile/service';
+import { createReceiptRepo } from './modules/receipts/repo';
+import { receiptRoutes } from './modules/receipts/routes';
+import { ReceiptService, type ReceiptQueue } from './modules/receipts/service';
 import {
   createRequireAuth,
   createSessionCookies,
@@ -71,7 +74,14 @@ export interface AppDeps {
   logStream?: DestinationStream;
   /** Tests pass a fake; otherwise Open Food Facts if a User-Agent is configured (spec 07). */
   barcodeProvider?: BarcodeProvider;
+  /** Spec 08: where uploaded receipts go for the worker. server.ts passes pg-boss; tests pass a fake. */
+  receiptQueue?: ReceiptQueue;
 }
+
+/** Without a queue, an upload is refused before anything is saved (the API was started without OCR). */
+const noReceiptQueue: ReceiptQueue = {
+  enqueue: () => Promise.reject(new Error('no receipt queue configured')),
+};
 
 const MINUTE = 60_000;
 
@@ -91,7 +101,7 @@ export const API_PREFIX = '/api/v1';
 
 /** Spec 07: a barcode says what a household has bought, so it is left out of the logged URL. */
 export function redactUrl(url: string): string {
-  return url.replace(/\/barcodes\/[^/?#]*/, '/barcodes/[gtin]');
+  return url.replace(/\/barcodes\/[^/?#]*/, '/barcodes/[gtin]').replace(/\?.*$/, '');
 }
 
 /** Builds the API without starting it (server.ts listens; tests use app.inject). */
@@ -190,6 +200,18 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     userLimiter: new WindowLimiter(config.barcode.lookupsPerUserPerMinute, MINUTE, now),
     now,
   });
+  const receiptService = new ReceiptService({
+    repo: createReceiptRepo(db),
+    purchases: purchaseService,
+    queue: deps.receiptQueue ?? noReceiptQueue,
+    config: {
+      ...config.receipts,
+      // No queue means no worker will ever read the receipt: say so instead of accepting the upload.
+      ocrProvider: deps.receiptQueue ? config.receipts.ocrProvider : 'off',
+    },
+    uploadLimiter: new WindowLimiter(config.receipts.uploadsPerUserPerHour, 60 * MINUTE, now),
+    now,
+  });
   const shoppingService = new ShoppingService({
     repo: createShoppingRepo(db),
     locations: locationRepo,
@@ -229,6 +251,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(budgetRoutes, { service: budgetService, requireAuth, householdAccess });
       await api.register(recipeRoutes, { service: recipeService, requireAuth, householdAccess });
       await api.register(barcodeRoutes, { service: barcodeService, requireAuth, householdAccess });
+      await api.register(receiptRoutes, { service: receiptService, requireAuth, householdAccess });
       await api.register(shoppingRoutes, {
         service: shoppingService,
         requireAuth,

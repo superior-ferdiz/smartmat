@@ -1,0 +1,8 @@
+$ npm run check:files
+Kjørt 2026-10-24T15:36:35Z
+
+> smartmat@0.1.0 check:files
+> node scripts/check-files.mjs
+
+check:files: 738 files, no stray images
+exit 0

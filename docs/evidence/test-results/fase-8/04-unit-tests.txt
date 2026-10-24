@@ -1,0 +1,12 @@
+$ npx vitest run
+Kjørt 2026-10-24T15:37:16Z
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+
+ Test Files  71 passed (71)
+      Tests  956 passed (956)
+   Start at  15:37:17
+   Duration  19.75s (transform 42.38s, setup 32.43s, import 67.35s, tests 144.97s, environment 35.44s)
+
+exit 0

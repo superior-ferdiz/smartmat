@@ -18,3 +18,13 @@ uploads/
 apps/api/src/generated/
 # Playwright login state
 e2e/.auth/
+
+# Real receipts never go in the repo (phase 8). Photos dropped in the root, or a receipt folder anywhere.
+# `npm run check:files` also fails on raster images outside docs/evidence/screenshots/.
+/*.jpg
+/*.jpeg
+/*.png
+/*.webp
+/*.heic
+kvitteringer/
+receipts-private/

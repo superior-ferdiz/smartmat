@@ -45,6 +45,7 @@ model User {
   purchases       Purchase[]
   allergens       UserAllergen[]
   shoppingItems   ShoppingListItem[]
+  receipts        Receipt[]
 
   @@map("users")
 }
@@ -67,6 +68,9 @@ model Household {
   shoppingItems    ShoppingListItem[]
   shoppingShares   ShoppingListItemRecipe[]
   barcodes         HouseholdBarcode[]
+  receipts         Receipt[]
+  receiptImages    ReceiptImage[]
+  receiptExtracts  ReceiptExtraction[]
 
   @@map("households")
 }
@@ -332,6 +336,7 @@ model Purchase {
   household Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
   createdBy User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
   lines     PurchaseLine[]
+  receipt   Receipt?
 
   @@unique([id, householdId])
   @@unique([householdId, dedupeKey])
@@ -655,4 +660,84 @@ model HouseholdBarcode {
   @@index([itemId])
   @@index([locationId])
   @@map("household_barcodes")
+}
+
+// ---------- Phase 8: receipt OCR (spec 08, ADR-0011, ADR-0017) ----------
+
+enum ReceiptStatus {
+  queued
+  processing
+  review
+  failed
+  confirmed
+
+  @@map("receipt_status")
+}
+
+/// One uploaded receipt. Kept after confirmation only as the link to its purchase; the image and the extraction
+/// are deleted then. Unconfirmed receipts are deleted entirely after `delete_after` (spec 08 FR-RCPT-008).
+model Receipt {
+  id           String        @id @default(uuid(7)) @db.Uuid
+  householdId  String        @map("household_id") @db.Uuid
+  status       ReceiptStatus @default(queued)
+  /// Why OCR failed: timeout, unavailable, invalidResponse or noText (CHECK).
+  failureCode  String?       @map("failure_code") @db.VarChar(30)
+  /// Of the stored (rewritten) image: the same file uploaded twice is refused. Cleared on confirmation.
+  imageSha256  String?       @map("image_sha256") @db.Char(64)
+  uploadedById String?       @map("uploaded_by") @db.Uuid
+  purchaseId   String?       @map("purchase_id") @db.Uuid
+  deleteAfter  DateTime      @map("delete_after") @db.Timestamptz(3)
+  confirmedAt  DateTime?     @map("confirmed_at") @db.Timestamptz(3)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household  Household          @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  uploadedBy User?              @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  /// Deleting the purchase deletes this row, so the receipt can be imported again.
+  purchase   Purchase?          @relation(fields: [purchaseId, householdId], references: [id, householdId], onDelete: Cascade)
+  image      ReceiptImage?
+  extraction ReceiptExtraction?
+
+  @@unique([id, householdId])
+  @@unique([purchaseId])
+  @@unique([purchaseId, householdId])
+  @@index([householdId, status])
+  @@index([deleteAfter])
+  @@map("receipts")
+}
+
+/// The rewritten JPEG (no metadata). In its own table so it can be deleted on its own and is never read by
+/// accident with the receipt.
+model ReceiptImage {
+  receiptId   String   @id @map("receipt_id") @db.Uuid
+  householdId String   @map("household_id") @db.Uuid
+  bytes       Bytes
+  width       Int
+  height      Int
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  receipt   Receipt   @relation(fields: [receiptId, householdId], references: [id, householdId], onDelete: Cascade)
+
+  @@unique([receiptId, householdId])
+  @@map("receipt_images")
+}
+
+/// What OCR and the parser found. The raw text is stored without the payment lines.
+model ReceiptExtraction {
+  receiptId      String   @id @map("receipt_id") @db.Uuid
+  householdId    String   @map("household_id") @db.Uuid
+  engine         String   @db.VarChar(60)
+  rawText        String   @map("raw_text")
+  /// ParsedReceipt from packages/shared/src/receipts/parse.ts
+  parsed         Json
+  meanConfidence Int      @map("mean_confidence")
+  durationMs     Int      @map("duration_ms")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  receipt   Receipt   @relation(fields: [receiptId, householdId], references: [id, householdId], onDelete: Cascade)
+
+  @@unique([receiptId, householdId])
+  @@map("receipt_extractions")
 }

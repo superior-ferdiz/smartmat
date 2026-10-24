@@ -35,6 +35,20 @@ export interface LineWrite {
   toInventory: LineInventoryWrite | null;
 }
 
+/** Spec 08: the receipt a purchase is confirmed from. It is closed in the purchase's transaction. */
+export interface ReceiptLink {
+  id: string;
+  confirmedAt: Date;
+}
+
+/** Thrown inside the transaction when the receipt is no longer waiting for review: nothing is saved. */
+export class ReceiptNotInReviewError extends Error {
+  constructor() {
+    super('receipt is not in review');
+    this.name = 'ReceiptNotInReviewError';
+  }
+}
+
 export interface PurchaseWrite {
   storeName: string | null;
   purchasedOn: string;
@@ -48,12 +62,16 @@ export interface PurchaseRepo {
   findByDedupeKey(householdId: string, dedupeKey: string): Promise<string | null>;
   /** The unit of each of these items that belongs to the household (others are left out). */
   itemUnits(householdId: string, itemIds: string[]): Promise<Map<string, BaseUnit>>;
-  /** Returns the new purchase's id, or null if one with the same dedupe key was saved meanwhile. */
+  /**
+   * Returns the new purchase's id, or null if one with the same dedupe key was saved meanwhile. With a receipt,
+   * the receipt is confirmed in the same transaction, or nothing is saved (ReceiptNotInReviewError).
+   */
   create(
     householdId: string,
     actorId: string,
     purchase: PurchaseWrite,
     dedupeKey: string | null,
+    receipt?: ReceiptLink,
   ): Promise<string | null>;
   /** False if the purchase no longer exists. */
   update(
@@ -226,6 +244,25 @@ async function releaseBatches(
   return { removedBatches: remove.length, keptBatches: keep.length };
 }
 
+/**
+ * Spec 08 FR-RCPT-006/008: the receipt becomes "confirmed" and keeps only the link to its purchase. The image and
+ * the extraction are deleted now. The condition on the status stops a second confirmation of the same receipt.
+ */
+async function confirmReceipt(
+  tx: Prisma.TransactionClient,
+  householdId: string,
+  receipt: ReceiptLink,
+  purchaseId: string,
+) {
+  const { count } = await tx.receipt.updateMany({
+    where: { id: receipt.id, householdId, status: 'review' },
+    data: { status: 'confirmed', purchaseId, confirmedAt: receipt.confirmedAt, imageSha256: null },
+  });
+  if (count === 0) throw new ReceiptNotInReviewError();
+  await tx.receiptImage.deleteMany({ where: { receiptId: receipt.id, householdId } });
+  await tx.receiptExtraction.deleteMany({ where: { receiptId: receipt.id, householdId } });
+}
+
 export function createPurchaseRepo(db: Db): PurchaseRepo {
   return {
     async listMonth(householdId, start, next) {
@@ -275,7 +312,7 @@ export function createPurchaseRepo(db: Db): PurchaseRepo {
       return new Map(rows.map((r) => [r.id, r.unit]));
     },
 
-    async create(householdId, actorId, purchase, dedupeKey) {
+    async create(householdId, actorId, purchase, dedupeKey, receipt) {
       try {
         return await db.$transaction(async (tx) => {
           const created = await tx.purchase.create({
@@ -284,7 +321,7 @@ export function createPurchaseRepo(db: Db): PurchaseRepo {
               storeName: purchase.storeName,
               purchasedOn: toDbDate(purchase.purchasedOn),
               totalOre: purchase.totalOre,
-              source: 'manual',
+              source: receipt ? 'receipt' : 'manual',
               dedupeKey,
               createdById: actorId,
             },
@@ -293,6 +330,7 @@ export function createPurchaseRepo(db: Db): PurchaseRepo {
           for (const line of purchase.lines) {
             await createLine(tx, householdId, actorId, created.id, line);
           }
+          if (receipt) await confirmReceipt(tx, householdId, receipt, created.id);
           return created.id;
         });
       } catch (error) {

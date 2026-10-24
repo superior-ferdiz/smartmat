@@ -44,6 +44,14 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-SCAN-003 | Strekkoden kan skrives inn og valideres med kontrollsiffer på klient og server (lagt til i fase 7) | B | 7 |
 | FR-SCAN-004 | Ukjent strekkode gir et manuelt skjema og huskes for husholdningen (lagt til i fase 7) | B | 7 |
 | FR-SCAN-005 | Ingenting fra en skanning lagres uten bekreftelse; dobbel innsending gir ett parti (lagt til i fase 7) | B | 7 |
+| FR-RCPT-001 | Bruker kan laste opp bilde av en kvittering fra kamera eller fil, med grenser for type og størrelse (lagt til i fase 8) | K | 8 |
+| FR-RCPT-002 | Bildet skrives om på serveren uten metadata (EXIF/GPS) (lagt til i fase 8) | K | 8 |
+| FR-RCPT-003 | Kvitteringen leses i bakgrunnen, med tydelige tilstander og manuell reserve (lagt til i fase 8) | K | 8 |
+| FR-RCPT-004 | Teksten tolkes til linjer med beløp i øre, pant, rabatt, dato og total (lagt til i fase 8) | K | 8 |
+| FR-RCPT-005 | Bruker ser bildet og retter forslaget før noe lagres (lagt til i fase 8) | K | 8 |
+| FR-RCPT-006 | Bekreftelsen lager kjøp, linjer og lagerpartier i én transaksjon (lagt til i fase 8) | K | 8 |
+| FR-RCPT-007 | Samme kvittering kan ikke gi to kjøp (lagt til i fase 8) | K | 8 |
+| FR-RCPT-008 | Bilde og uttrekk slettes ved bekreftelse eller etter 7 dager (lagt til i fase 8) | K | 8 |
 
 ## Ikke-funksjonelle krav
 
@@ -60,6 +68,7 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | NFR-UX-003 | Alle datavisninger har tilstand for lasting, feil og tomt | 1+ |
 | NFR-UX-004 | Grensesnittet er på norsk bokmål; engelsk kan velges | 1+ |
 | NFR-REL-001 | Lager og budsjett virker selv om eksterne tjenester er nede | 7+ |
+| NFR-REL-002 | Appen virker uten kvitteringslesing; kjøp kan alltid fylles inn selv (lagt til i fase 8) | 8 |
 
 ## Kursrelaterte krav (antatt, ikke verifisert)
 

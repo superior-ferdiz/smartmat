@@ -76,7 +76,12 @@ export function mockApi(handler: Handler) {
       method: init?.method ?? 'GET',
       path: url.replace(/^.*\/api\/v1/, ''),
       headers: Object.fromEntries(Object.entries((init?.headers ?? {}) as Record<string, string>)),
-      body: typeof init?.body === 'string' ? JSON.parse(init.body) : undefined,
+      body:
+        typeof init?.body === 'string'
+          ? JSON.parse(init.body)
+          : init?.body instanceof FormData
+            ? init.body
+            : undefined,
     };
     requests.push(request);
     const response = handler(request) ?? defaultApi(request);

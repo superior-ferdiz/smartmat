@@ -48,8 +48,9 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - Recipes: team-authored Norwegian seed recipes (`source=team`). No TheMealDB in MVP. ADR-0016 (recipes from openly
   licensed sources, translated, with source/licence) is only **proposed** – fetch or write no recipes until approved.
 - Prices: no scraping. Kassalapp only after its terms are verified and documented.
-- OCR: decided by a measured spike on real receipts; Tesseract (server-side) first for privacy.
-  Automated extraction is never saved without user confirmation.
+- OCR: Tesseract on our server (ADR-0017, **proposed and provisional**: measured on only 3 real receipts). By default
+  only store, date and total are suggested (`RECEIPT_LINE_SUGGESTIONS=false`). Automated extraction is never saved
+  without user confirmation. No cloud OCR without the team's approval and documented terms.
 - External providers (OCR, barcode, prices, recipes, notifications) sit behind interfaces in `apps/api/src/providers/`
   with timeouts, validated responses and a working app when they are down.
 
@@ -174,6 +175,35 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   `VITE_REGISTRATION_OPEN=false` (`app/environment.ts`, read at call time so tests can `vi.stubEnv`). Caddy runs in
   another project's container (`ghostwebsite-caddy-1`, single-file mount): edit the Caddyfile in place, validate,
   reload – and only after the team says DNS is ready. Do not copy the risansolutions header block (`camera=()`).
+
+## Code conventions (added in phase 8)
+
+- **Real receipts never enter the repo, tests, logs or docs.** They live in `/opt/Websites/smartmat-private/`
+  (0700), with the answer keys and the pilot output; delete them when ADR-0017 is approved, at the latest 2026-11-23.
+  `npm run check:files` (first step of `npm run check`) fails on any image outside `docs/evidence/screenshots/`.
+  Parser tests use made-up texts in `packages/shared/src/receipts/fixtures.ts` (exported to tests as
+  `@smartmat/shared/test-fixtures/receipts`).
+- Receipts: API module `apps/api/src/modules/receipts/`, OCR in `apps/api/src/providers/ocr/`, the background
+  worker is a second entry point of the API package (`src/worker.ts`, `npm run worker -w @smartmat/api`), jobs via
+  pg-boss (`lib/receiptQueue.ts`, schema `pgboss`; a job carries only the receipt id). `AppDeps.receiptQueue`:
+  without it uploads answer 503 `ocrUnavailable`. API tests pass `fakeQueue()` and run the job with `runWorker()`
+  and a fake OCR (`apps/api/test/receiptHelpers.ts`); the e2e server runs a real pg-boss worker with a fake OCR.
+- Tesseract runs as a child process without a shell (`runWithInput`): image on stdin, TSV on stdout. Locally via
+  `docker run --rm -i --network none smartmat-ocr timeout 55 tesseract` (build `docker/ocr` first); `timeout` is
+  inside the container because killing the docker client does not stop it. The pilot script
+  (`apps/api/scripts/ocr-pilot.ts`) prints totals only.
+- OSD picked the wrong way up on real photos: rotation comes from the paper's shape, the reading with the most
+  confident words (≥ 60) wins, and all four rotations are read when the best is unsure (< 70).
+- sharp: a raw greyscale buffer comes out with 3 channels after `resize()` unless `.toColourspace('b-w')`;
+  `withExif` does not set the orientation (use `withMetadata({ orientation })` in tests).
+- The upload image is rewritten (`normalizeReceiptImage`): type from magic bytes, 40 MP limit, `rotate()`,
+  metadata dropped, ≤ 3000 px. Confirming a receipt goes through `PurchaseService.createFromReceipt`, which closes
+  the receipt (status, image, extraction) in the purchase's transaction; `ReceiptNotInReviewError` rolls back.
+- Error bodies may carry `refId` (id of the conflicting row – never content). URLs are logged without query string.
+- In shared code, `as const` arrays for unions (the øre-code regex in `locales.test.ts`); typed i18n keys mean
+  ``t(`receipts.flags.${flag}`)`` from a typed union, not `t(someString)`.
+- pg-boss `singletonKey` does not deduplicate in a standard queue; the worker's conditional claim
+  (`queued → processing`) makes a second job harmless.
 
 ## Integrity rules (non-negotiable)
 

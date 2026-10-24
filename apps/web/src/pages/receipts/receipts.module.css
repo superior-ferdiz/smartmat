@@ -1,0 +1,143 @@
+/* Receipt pages (spec 08). Mobile first; the review puts the photo beside the form from 900 px. */
+
+.uploadButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-3);
+}
+
+.listItem + .listItem {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.listText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.spinner {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  flex: none;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 3s;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Photo and form: one column on phones, side by side on wide screens. */
+.review {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+@media (min-width: 900px) {
+  .review {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: start;
+  }
+
+  .image {
+    max-block-size: 60vh;
+  }
+
+  .photo {
+    position: sticky;
+    top: var(--space-4);
+  }
+}
+
+.photo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.image {
+  display: block;
+  inline-size: 100%;
+  /* On a phone the form must start on the first screen: the photo gets 40 % of the height, 60 % from 900 px. */
+  max-block-size: 40vh;
+  object-fit: contain;
+  background: var(--color-surface-sunken);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.rawText {
+  max-block-size: 18rem;
+  overflow: auto;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  color: var(--color-warning-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}

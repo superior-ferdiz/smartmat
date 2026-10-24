@@ -20,7 +20,12 @@ import { Icon } from '../../components/Icon/Icon';
 import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { NumberField } from '../../components/NumberField/NumberField';
 import { useToast } from '../../components/Toast/toastContext';
-import { budgetMonthPath, NEW_PURCHASE_PATH, purchasePath } from '../../app/navigation';
+import {
+  budgetMonthPath,
+  NEW_PURCHASE_PATH,
+  purchasePath,
+  RECEIPTS_PATH,
+} from '../../app/navigation';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
 import { useFormatDate } from '../../inventory/formatHooks';
 import { Page } from '../../layout/Page';
@@ -46,6 +51,9 @@ export function BudgetPage() {
       <div className={styles.actions}>
         <LinkButton to={NEW_PURCHASE_PATH} icon={<Icon name="plus" size={20} />}>
           {t('budget.addPurchase')}
+        </LinkButton>
+        <LinkButton to={RECEIPTS_PATH} variant="secondary" icon={<Icon name="receipt" size={20} />}>
+          {t('budget.addFromReceipt')}
         </LinkButton>
         <Button variant="secondary" onClick={() => setBudgetOpen(true)}>
           {budget.data?.amountOre ? t('budget.changeBudget') : t('budget.setBudget')}

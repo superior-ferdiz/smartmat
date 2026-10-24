@@ -183,6 +183,9 @@
       "digits": "Strekkoden kan bare ha tall.",
       "length": "Strekkoden skal ha 8, 12, 13 eller 14 sifre.",
       "checkDigit": "Strekkoden stemmer ikke. Sjekk at alle sifrene er riktige."
+    },
+    "receipt": {
+      "imageRequired": "Velg et bilde av kvitteringen."
     }
   },
   "pages": {
@@ -458,6 +461,19 @@
     "shopping": {
       "changedMeanwhile": "Handlelisten ble endret i mellomtiden, kanskje på en annen enhet. Last inn siden på nytt og prøv igjen.",
       "alreadyOnList": "Det står allerede en linje for denne varen på listen. Huk av eller fjern den først."
+    },
+    "receipt": {
+      "tooLarge": "Bildet er for stort. Bruk et bilde under 10 MB.",
+      "unsupportedType": "Bruk et bilde i JPEG-, PNG- eller WebP-format.",
+      "unreadable": "Vi klarte ikke å åpne bildet. Prøv å ta et nytt.",
+      "alreadyUploaded": "Dette bildet er allerede lastet opp.",
+      "busy": "Det er mange kvitteringer i kø akkurat nå. Prøv igjen om litt, eller fyll inn kjøpet selv.",
+      "ocrUnavailable": "Kvitteringslesing er ikke satt opp. Fyll inn kjøpet selv.",
+      "notReady": "Kvitteringen er ikke ferdig lest ennå.",
+      "alreadyConfirmed": "Kvitteringen er allerede registrert som et kjøp.",
+      "duplicate": "Denne kvitteringen er allerede registrert.",
+      "possibleDuplicate": "Du har allerede et kjøp med samme dato og sum. Er dette det samme kjøpet?",
+      "cannotRetry": "Kvitteringen kan ikke leses på nytt nå."
     }
   },
   "units": {
@@ -742,7 +758,8 @@
       "saved": "Budsjettet er lagret.",
       "removed": "Budsjettet er fjernet.",
       "remove": "Fjern budsjettet"
-    }
+    },
+    "addFromReceipt": "Fra kvittering"
   },
   "purchases": {
     "noStore": "Ukjent butikk",
@@ -1098,6 +1115,99 @@
       "text": "Produktdata fra",
       "source": "Open Food Facts",
       "license": "lisens ODbL"
+    }
+  },
+  "receipts": {
+    "title": "Kvittering",
+    "lead": "Ta bilde av kvitteringen, så fyller vi inn kjøpet. Du sjekker og retter før noe lagres.",
+    "loading": "Henter kvitteringen …",
+    "backToList": "Til kvitteringene",
+    "manual": "Fyll inn selv",
+    "upload": {
+      "title": "Last opp kvittering",
+      "lead": "Legg kvitteringen flatt, i godt lys, og få med hele.",
+      "camera": "Ta bilde",
+      "file": "Velg fil",
+      "uploading": "Laster opp …",
+      "openExisting": "Åpne den",
+      "privacy": "Bildet behandles bare på vår server. Posisjon og annen informasjon fra kameraet fjernes. Bildet slettes når du har bekreftet kjøpet, eller etter 7 dager."
+    },
+    "unavailable": {
+      "title": "Kvitteringslesing er ikke tilgjengelig",
+      "text": "Den er ikke satt opp på denne serveren. Du kan registrere kjøpet selv.",
+      "manual": "Registrer kjøp"
+    },
+    "list": {
+      "title": "Kvitteringer som venter",
+      "empty": "Ingen kvitteringer venter.",
+      "open": "Åpne",
+      "uploaded": "Lastet opp {{time}}"
+    },
+    "status": {
+      "queued": "I kø",
+      "processing": "Leses",
+      "review": "Klar til sjekk",
+      "failed": "Kunne ikke leses",
+      "confirmed": "Registrert"
+    },
+    "waiting": {
+      "queued": "Kvitteringen står i kø …",
+      "processing": "Leser kvitteringen …",
+      "text": "Det tar vanligvis noen sekunder. Du kan bli på siden.",
+      "slow": "Det tar lengre tid enn vanlig. Du kan vente, eller fylle inn kjøpet selv."
+    },
+    "failed": {
+      "title": "Kvitteringen kunne ikke leses",
+      "timeout": "Lesingen tok for lang tid.",
+      "unavailable": "Kvitteringslesingen svarer ikke akkurat nå.",
+      "invalidResponse": "Noe gikk galt under lesingen.",
+      "noText": "Vi fant ingen tekst i bildet. Prøv et skarpere bilde, med hele kvitteringen og godt lys.",
+      "retry": "Prøv igjen",
+      "retryFailed": "Kunne ikke prøve igjen. Last inn siden på nytt."
+    },
+    "review": {
+      "title": "Sjekk kvitteringen",
+      "lead": "Se over det vi leste, og rett det som er feil. Ingenting lagres før du trykker «Bekreft kjøpet».",
+      "imageAlt": "Bildet av kvitteringen",
+      "openImage": "Åpne bildet i full størrelse",
+      "lowConfidenceTitle": "Lav sikkerhet",
+      "lowConfidence": "Bildet var vanskelig å lese. Sjekk alle feltene nøye.",
+      "dateGuessed": "Vi fant ikke datoen. Dagens dato er fylt inn – sjekk den.",
+      "totalOnly": "Vi fyller inn butikk, dato og total. Linjene leses ikke godt nok ennå. Vil du ha varene i matlageret, velg «Med linjer» og legg dem til selv.",
+      "sumMismatch": "Linjene blir {{lines}}, men kvitteringen sier {{total}}. Sjekk beløpene.",
+      "rawText": "Teksten vi leste",
+      "check": "Sjekk:",
+      "submit": "Bekreft kjøpet",
+      "saved": "Kjøpet er registrert.",
+      "savedWithItems_one": "Kjøpet er registrert, og {{count}} vare er lagt i matlageret.",
+      "savedWithItems_other": "Kjøpet er registrert, og {{count}} varer er lagt i matlageret.",
+      "duplicateLink": "Se kjøpet som finnes fra før",
+      "allowDuplicate": "Lagre likevel – dette er et annet kjøp",
+      "allowDuplicateHint": "Kryss av hvis du har handlet for samme sum samme dag."
+    },
+    "flags": {
+      "lowConfidence": "teksten var utydelig.",
+      "noAmount": "beløpet ble ikke funnet.",
+      "amountFromQuantity": "beløpet er regnet ut fra antall og pris.",
+      "quantityMismatch": "antall × pris stemte ikke med beløpet.",
+      "discountApplied": "rabatten er trukket fra."
+    },
+    "confirmed": {
+      "title": "Kvitteringen er registrert",
+      "text": "Kjøpet er lagret, og bildet er slettet.",
+      "open": "Se kjøpet"
+    },
+    "notFound": {
+      "title": "Fant ikke kvitteringen",
+      "text": "Den kan være forkastet, eller slettet fordi den ikke ble bekreftet innen 7 dager."
+    },
+    "discard": {
+      "button": "Forkast kvitteringen",
+      "title": "Forkaste kvitteringen?",
+      "text": "Bildet og det vi leste, slettes. Ingen kjøp blir registrert.",
+      "confirm": "Forkast",
+      "done": "Kvitteringen er forkastet.",
+      "failed": "Kunne ikke forkaste kvitteringen. Prøv igjen."
     }
   }
 }

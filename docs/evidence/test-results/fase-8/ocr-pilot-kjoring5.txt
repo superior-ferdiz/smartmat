@@ -1,0 +1,67 @@
+Kjørt 2026-10-24T12:57:44Z (kjøring 5: endelig pipeline, med ekstra retninger ved lav sikkerhet)
+OCR pilot. Tesseract, language nor, psm 4 and 6.
+Receipts: 3. Ids: extra-1, extra-2, kiwi-1
+
+## Level 1: fields found in the OCR text
+
+| Variant | Chain | Date | Total | Item lines found | Item amounts exact | Deposit found | Deposit amounts exact | Mean line CER | Mean conf. | Time (s) | Peak memory (MB) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| V1 raw, psm 4 | 0/3 (0 %) | 1/3 (33 %) | 0/3 (0 %) | 7/12 (58 %) | 1/7 (14 %) | 3/4 (75 %) | 0/3 (0 %) | 0.48 | 52 | 1.4 (max 1.6) | 114 |
+  extra-1: failed (noText)
+| V2 clean, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 1/3 (33 %) | 16/16 (100 %) | 8/16 (50 %) | 4/4 (100 %) | 1/4 (25 %) | 0.07 | 66 | 7.3 (max 7.9) | 51 |
+| V3 threshold, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 2/3 (67 %) | 12/16 (75 %) | 4/12 (33 %) | 4/4 (100 %) | 1/4 (25 %) | 0.09 | 64 | 7.9 (max 10.2) | 48 |
+| V4 deskew, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 1/3 (33 %) | 16/16 (100 %) | 8/16 (50 %) | 4/4 (100 %) | 1/4 (25 %) | 0.07 | 66 | 8.9 (max 9.7) | 52 |
+| V4 deskew, full size, psm 4 | 3/3 (100 %) | 2/3 (67 %) | 2/3 (67 %) | 16/16 (100 %) | 9/16 (56 %) | 4/4 (100 %) | 1/4 (25 %) | 0.05 | 61 | 10.6 (max 11.2) | 51 |
+| V1 raw, psm 6 | 1/3 (33 %) | 1/3 (33 %) | 0/3 (0 %) | 7/16 (44 %) | 2/7 (29 %) | 3/4 (75 %) | 0/3 (0 %) | 0.43 | 41 | 5.0 (max 6.9) | 110 |
+| V2 clean, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 1/4 (25 %) | 0/1 (0 %) | 0.60 | 40 | 12.3 (max 13.6) | 34 |
+| V3 threshold, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 0/4 (0 %) | – | 0.63 | 38 | 11.6 (max 13.0) | 34 |
+| V4 deskew, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 1/4 (25 %) | 0/1 (0 %) | 0.60 | 40 | 14.3 (max 16.0) | 33 |
+| V4 deskew, full size, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 0/4 (0 %) | – | 0.63 | 40 | 15.4 (max 15.6) | 42 |
+
+## Level 2: OCR + parser against the answer key ("good enough" is judged here)
+
+| Variant | Chain | Layout | Date | Time | Receipt no. | Total | Lines = total | Item lines found | Item amounts exact | Deposit found | Deposit amounts exact | Extra lines | Flagged lines |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| V1 raw, psm 4 | 0/3 (0 %) | 1/3 (33 %) | 1/3 (33 %) | 0/3 (0 %) | 0/3 (0 %) | 1/3 (33 %) | 0/3 (0 %) | 7/12 (58 %) | 3/7 (43 %) | 2/4 (50 %) | 0/2 (0 %) | 3 | 11 |
+| V2 clean, psm 4 | 1/3 (33 %) | 3/3 (100 %) | 3/3 (100 %) | 2/3 (67 %) | 1/3 (33 %) | 3/3 (100 %) | 1/3 (33 %) | 14/16 (88 %) | 7/14 (50 %) | 2/4 (50 %) | 1/2 (50 %) | 4 | 14 |
+| V3 threshold, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 3/3 (100 %) | 2/3 (67 %) | 0/3 (0 %) | 2/3 (67 %) | 1/3 (33 %) | 11/16 (69 %) | 5/11 (45 %) | 2/4 (50 %) | 1/2 (50 %) | 5 | 13 |
+| V4 deskew, psm 4 | 1/3 (33 %) | 3/3 (100 %) | 3/3 (100 %) | 2/3 (67 %) | 1/3 (33 %) | 3/3 (100 %) | 1/3 (33 %) | 14/16 (88 %) | 7/14 (50 %) | 2/4 (50 %) | 1/2 (50 %) | 4 | 14 |
+| V4 deskew, full size, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 2/3 (67 %) | 0/3 (0 %) | 2/3 (67 %) | 3/3 (100 %) | 2/3 (67 %) | 13/16 (81 %) | 8/13 (62 %) | 2/4 (50 %) | 0/2 (0 %) | 5 | 12 |
+| V1 raw, psm 6 | 0/3 (0 %) | 1/3 (33 %) | 1/3 (33 %) | 0/3 (0 %) | 0/3 (0 %) | 1/3 (33 %) | 0/3 (0 %) | 7/16 (44 %) | 2/7 (29 %) | 1/4 (25 %) | 0/1 (0 %) | 101 | 107 |
+| V2 clean, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 0/4 (0 %) | – | 10 | 10 |
+| V3 threshold, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 0/4 (0 %) | – | 13 | 13 |
+| V4 deskew, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 0/4 (0 %) | – | 10 | 10 |
+| V4 deskew, full size, psm 6 | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/3 (0 %) | 0/16 (0 %) | – | 0/4 (0 %) | – | 0 | 0 |
+
+Per receipt, level 2 (found/of, amounts exact; no receipt text):
+  extra-1    V1 raw, psm 4                  failed (noText)
+  extra-1    V2 clean, psm 4                items 4/4 amounts 3, deposits 0/0 amounts 0, chain no, date yes, total yes, sum ok no, extra 0, flagged 1
+  extra-1    V3 threshold, psm 4            items 4/4 amounts 3, deposits 0/0 amounts 0, chain yes, date yes, total yes, sum ok no, extra 0, flagged 0
+  extra-1    V4 deskew, psm 4               items 4/4 amounts 3, deposits 0/0 amounts 0, chain no, date yes, total yes, sum ok no, extra 0, flagged 1
+  extra-1    V4 deskew, full size, psm 4    items 4/4 amounts 4, deposits 0/0 amounts 0, chain yes, date yes, total yes, sum ok yes, extra 0, flagged 1
+  extra-1    V1 raw, psm 6                  items 0/4 amounts 0, deposits 0/0 amounts 0, chain no, date no, total no, sum ok no, extra 34, flagged 34
+  extra-1    V2 clean, psm 6                items 0/4 amounts 0, deposits 0/0 amounts 0, chain no, date no, total no, sum ok no, extra 5, flagged 5
+  extra-1    V3 threshold, psm 6            items 0/4 amounts 0, deposits 0/0 amounts 0, chain no, date no, total no, sum ok no, extra 7, flagged 7
+  extra-1    V4 deskew, psm 6               items 0/4 amounts 0, deposits 0/0 amounts 0, chain no, date no, total no, sum ok no, extra 5, flagged 5
+  extra-1    V4 deskew, full size, psm 6    items 0/4 amounts 0, deposits 0/0 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+  extra-2    V1 raw, psm 4                  items 7/10 amounts 3, deposits 2/3 amounts 0, chain no, date yes, total yes, sum ok no, extra 3, flagged 11
+  extra-2    V2 clean, psm 4                items 8/10 amounts 2, deposits 1/3 amounts 0, chain no, date yes, total yes, sum ok no, extra 4, flagged 11
+  extra-2    V3 threshold, psm 4            items 5/10 amounts 0, deposits 1/3 amounts 0, chain no, date yes, total no, sum ok no, extra 5, flagged 11
+  extra-2    V4 deskew, psm 4               items 8/10 amounts 2, deposits 1/3 amounts 0, chain no, date yes, total yes, sum ok no, extra 4, flagged 11
+  extra-2    V4 deskew, full size, psm 4    items 7/10 amounts 2, deposits 2/3 amounts 0, chain no, date yes, total yes, sum ok no, extra 4, flagged 10
+  extra-2    V1 raw, psm 6                  items 7/10 amounts 2, deposits 1/3 amounts 0, chain no, date yes, total yes, sum ok no, extra 8, flagged 14
+  extra-2    V2 clean, psm 6                items 0/10 amounts 0, deposits 0/3 amounts 0, chain no, date no, total no, sum ok no, extra 5, flagged 5
+  extra-2    V3 threshold, psm 6            items 0/10 amounts 0, deposits 0/3 amounts 0, chain no, date no, total no, sum ok no, extra 6, flagged 6
+  extra-2    V4 deskew, psm 6               items 0/10 amounts 0, deposits 0/3 amounts 0, chain no, date no, total no, sum ok no, extra 5, flagged 5
+  extra-2    V4 deskew, full size, psm 6    items 0/10 amounts 0, deposits 0/3 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+  kiwi-1     V1 raw, psm 4                  items 0/2 amounts 0, deposits 0/1 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+  kiwi-1     V2 clean, psm 4                items 2/2 amounts 2, deposits 1/1 amounts 1, chain yes, date yes, total yes, sum ok yes, extra 0, flagged 2
+  kiwi-1     V3 threshold, psm 4            items 2/2 amounts 2, deposits 1/1 amounts 1, chain yes, date yes, total yes, sum ok yes, extra 0, flagged 2
+  kiwi-1     V4 deskew, psm 4               items 2/2 amounts 2, deposits 1/1 amounts 1, chain yes, date yes, total yes, sum ok yes, extra 0, flagged 2
+  kiwi-1     V4 deskew, full size, psm 4    items 2/2 amounts 2, deposits 0/1 amounts 0, chain yes, date no, total yes, sum ok yes, extra 1, flagged 1
+  kiwi-1     V1 raw, psm 6                  items 0/2 amounts 0, deposits 0/1 amounts 0, chain no, date no, total no, sum ok no, extra 59, flagged 59
+  kiwi-1     V2 clean, psm 6                items 0/2 amounts 0, deposits 0/1 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+  kiwi-1     V3 threshold, psm 6            items 0/2 amounts 0, deposits 0/1 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+  kiwi-1     V4 deskew, psm 6               items 0/2 amounts 0, deposits 0/1 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+  kiwi-1     V4 deskew, full size, psm 6    items 0/2 amounts 0, deposits 0/1 amounts 0, chain no, date no, total no, sum ok no, extra 0, flagged 0
+exit=0

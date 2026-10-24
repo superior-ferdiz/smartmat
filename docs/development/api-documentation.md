@@ -297,6 +297,56 @@ ConfirmScan = { mode: 'newItem', clientRequestId: uuid, name, categoryKey, unit,
 - **`confirm`:** én transaksjon. Den lager vare og parti (med hendelsen `add` og `dedupe_key = scan:<clientRequestId>`)
   eller et nytt parti på `itemId`, og lagrer svarene i `household_barcodes`. Butikkens egne koder huskes ikke.
 
+## Kvitteringer (fase 8)
+
+Spesifikasjon [08](requirements/08-kvittering.md), ADR-0011 og ADR-0017. Alle rutene ligger under
+`/households/:householdId/receipts` med `requireAuth` og `householdAccess`. En kvittering i en annen husholdning
+gir 404. API-et tar imot bildet og legger kvitteringens id i køen (pg-boss). Workeren (`npm run worker -w
+@smartmat/api`) leser bildet med Tesseract.
+
+### Typer
+
+```ts
+ReceiptSummary  = { id, status: 'queued'|'processing'|'review'|'failed'|'confirmed',
+                    failureCode: 'timeout'|'unavailable'|'invalidResponse'|'noText'|null,
+                    createdAt, deleteAfter }                       // deleteAfter = opplasting + 7 dager
+ParsedLine      = { description, amountOre|null, kind: 'item'|'deposit', discountOre, count|null, weightG|null,
+                    unitPriceOre|null, vatRate|null, suggestedKind: 'food'|'nonFood', confidence: 0–100,
+                    flags: ('lowConfidence'|'noAmount'|'amountFromQuantity'|'quantityMismatch'|'discountApplied')[],
+                    uncertain: boolean }
+ReceiptSuggestion = { storeName|null, chain|null, purchasedOn|null, totalOre|null,
+                      linesShown: boolean, lines: ParsedLine[],   // tom når linjeforslag er av (ADR-0017)
+                      linesSumOre, sumMatches: boolean }
+Receipt         = ReceiptSummary & { purchaseId|null, suggestion: ReceiptSuggestion|null,
+                                     rawText: string[]|null,       // bare i review, uten betalingslinjer
+                                     meanConfidence|null }
+ReceiptList     = { ocrAvailable: boolean, lineSuggestions: boolean, receipts: ReceiptSummary[] }
+ConfirmReceipt  = { storeName|null, purchasedOn, lines: PurchaseLineInput[] | totalOre,   // som POST /purchases
+                    allowPossibleDuplicate?: boolean }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/receipts` | – | `ReceiptList` (åpne kvitteringer, ikke utløpte) | 404 |
+| POST | `/households/:h/receipts` | `multipart/form-data`, ett felt `image` (JPEG, PNG eller WebP) | 202 `ReceiptSummary` | 400 `image`, `errors.receipt.unreadable`; 409 `alreadyUploaded` (+ `refId`); 413 `tooLarge` (> 10 MB eller > 40 MP); 415 `unsupportedType`; 429 (10 per bruker og time); 503 `busy` (20 i kø) eller `ocrUnavailable` |
+| GET | `/households/:h/receipts/:id` | – | `Receipt` | 404 (også etter fristen) |
+| GET | `/households/:h/receipts/:id/image` | – | `image/jpeg`, `Cache-Control: no-store, private` | 404 (bekreftet, forkastet eller utløpt) |
+| POST | `/households/:h/receipts/:id/confirm` | `ConfirmReceipt` | 201 kjøp (`source: receipt`), 200 hvis kvitteringen er bekreftet før | 400 som kjøp; 409 `notReady`, `duplicate` (+ `refId`), `possibleDuplicate` (+ `refId`) |
+| POST | `/households/:h/receipts/:id/retry` | – | 202 `ReceiptSummary` | 409 `cannotRetry` (ikke `failed`) |
+| DELETE | `/households/:h/receipts/:id` | – | 204 | 409 `alreadyConfirmed` |
+
+- **`refId` i feilsvaret** (nytt i fase 8): id-en til raden konflikten gjelder, for eksempel kjøpet en kvittering
+  ligner. Bare id-er, aldri innhold. `{ "error": { "code": "errors.receipt.duplicate", "refId": "…" } }`.
+- **Opplasting:** filtypen avgjøres av de første bytene. Bildet skrives om (rettes opp, all metadata fjernes,
+  høyst 3000 piksler, JPEG) før det lagres. Samme bildefil i en åpen kvittering i samme husholdning gir 409.
+- **`confirm`:** én transaksjon. Kjøp, linjer, partier og hendelser lagres som i `POST /purchases`. Kvitteringen
+  settes til `confirmed`, og bilde og uttrekk slettes. Med kvitteringsnummer og klokkeslett får kjøpet
+  `dedupe_key = receipt:<sha256>`, ellers `receipt-id:<kvitterings-id>` og en sjekk mot kjøp med samme dato og sum.
+- **Logger:** ingen tekst, beløp eller butikk fra kvitteringen. Workeren logger id, utfall og varighet. Fra fase 8
+  logges URL-er uten spørrestreng.
+
 ### Innstillinger for testmiljøet (ADR-0015)
 
 | Variabel | Lokalt | Testmiljø | Virkning |
@@ -306,5 +356,9 @@ ConfirmScan = { mode: 'newItem', clientRequestId: uuid, name, categoryKey, unit,
 | `COOKIE_HOST_PREFIX` | `false` | `true` | Sesjonscookien heter `__Host-smartmat_session` (krever `COOKIE_SECURE=true`) |
 | `WEB_DIST_DIR` | tom | `/app/apps/web/dist` | API-et serverer webappen (én opprinnelse), CSP med `'wasm-unsafe-eval'` og hash av temaskriptet |
 | `OFF_BASE_URL` / `OFF_USER_AGENT` | testmiljøet til OFF / tom (av) | `world.openfoodfacts.org` / kontaktadresse | Uten User-Agent er oppslag slått av |
+| `OCR_PROVIDER` | `off` (eller `tesseract`) | `tesseract` | Av: opplasting gir 503 `ocrUnavailable`, og siden lenker til skjemaet |
+| `OCR_TESSERACT_COMMAND` | `docker run --rm -i --network none smartmat-ocr timeout 55 tesseract` | `timeout 55 tesseract` | Hvordan workeren starter Tesseract (uten shell) |
+| `RECEIPT_LINE_SUGGESTIONS` | `false` | `false` | ADR-0017: linjene foreslås ikke før en ny måling viser at beløpene holder |
+| `RECEIPT_UPLOADS_PER_HOUR` / `RECEIPT_MAX_QUEUED` | 10 / 20 | 10 / 20 | Grense per bruker / for hele serveren |
 
 Alle svar har `Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=()`.

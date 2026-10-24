@@ -39,6 +39,24 @@
     element
   - **planen bygde på feil tall:** grensen til OFF er 15 oppslag i minuttet, ikke rundt 100. Det ble funnet da
     vilkårene faktisk ble lest, før koden ble skrevet.
+- **Fase 8 (2026-10-24):** KI skrev all kode for kvitteringslesing, og i tillegg:
+  - fasiten for pilotmålingen, skrevet av fra bildene av teamets kvitteringer og kontrollert av Ferdinand Risan
+  - ADR-0017, foreslått og ikke godkjent
+  - dokumentet om kjedeformater
+  - de fiktive testkvitteringene
+
+  Bildene av de ekte kvitteringene ble vist til KI-assistenten i chat, fordi teamet ba om det.
+- Feil KI-en gjorde og fant selv i fase 8 (detaljer i kapittel 11):
+  - **målingen målte først forbehandlingen:** OSD valgte feil retning, og beskjæringen fant ikke en smal kvittering.
+    Første kjøring ga 0 på to av tre kvitteringer. Det ble rettet, og alle kjøringene er lagret.
+  - **egne mål som var feil:**
+    - minnemålingen målte en tom prosess (et bakgrunnsjobb i `sh` får ikke stdin)
+    - målet «ord × sikkerhet» valgte søppeltekst
+    - `singletonKey` i pg-boss gjorde ikke det KI-en trodde
+  - **feil som bare den ekte kjeden fant:** en kort kvittering som lå på siden, ble ikke lest. De falske testene
+    kunne ikke finne det, men røyktesten med ekte Tesseract fant det.
+  - **risikoen for å tilpasse seg dataene:** parseren ble justert etter å ha sett resultatene på de samme tre
+    kvitteringene den ble målt på. Tallene i ADR-0017 er derfor sannsynligvis for gode, og det står der.
 - Teamets refleksjon over dette er ikke skrevet.
 
 ## Kilder i prosjektet

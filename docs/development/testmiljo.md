@@ -1,5 +1,10 @@
 # Lukket testmiljø (smartmat.risansolutions.no)
 
+**Fase 8 (2026-10-24):** Bildet har nå Tesseract, og compose-oppsettet har en tredje container,
+`smartmat-staging-worker`, som leser kvitteringer. Den er bare på det interne nettverket (uten internett) og har
+`mem_limit: 512m`. Bildet ble bygd på nytt 2026-10-24 (1,08 GB), og Tesseract og sharp ble kontrollert inni det.
+Containerne er ikke startet.
+
 **Status 2026-10-22:** Koden og Docker-oppsettet er ferdig og testet lokalt (bildet ble bygd og røyktestet med
 midlertidige containere på serveren, som så ble fjernet). **Ikke satt opp:** DNS finnes ikke ennå, Caddy er ikke
 endret, og ingen containere for testmiljøet kjører. Beslutningen står i
@@ -16,13 +21,15 @@ endret, og ingen containere for testmiljøet kjører. Beslutningen står i
 
 ## Oppsett (når DNS peker til serveren)
 
-1. **Sjekk disken** (`df -h /`). Bildet er rundt 0,9 GB.
+1. **Sjekk disken** (`df -h /`). Bildet er rundt 1,1 GB (med Tesseract fra fase 8).
 2. **Miljøvariabler:** `cp docker/staging/.env.staging.example docker/staging/.env.staging` og fyll inn.
    Filen er ignorert av Git. Sjekk at `TRUST_PROXY` er nettet til `ghostweb`:
    `docker network inspect ghostweb --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}'` (172.26.0.0/16 per
    2026-10-22).
 3. **Start:** `docker compose -f docker/staging/compose.yml --env-file docker/staging/.env.staging up -d --build`.
-   Containeren kjører migreringene og legger inn ingredienslisten selv. Den har ingen åpne porter.
+   Containeren kjører migreringene og legger inn ingredienslisten selv. Den har ingen åpne porter. Workeren
+   (`smartmat-staging-worker`) starter fra samme bilde og leser kvitteringskøen. Slå kvitteringslesing av med
+   `OCR_PROVIDER=off`.
 4. **Kontoer** (registreringen er stengt):
    `docker exec -it smartmat-staging-app npm run -s create-user -w @smartmat/api -- --email … --name …`.
    Passordet skrives inn i terminalen og vises ikke.
@@ -83,3 +90,7 @@ Teamet fyller ut tabellen når testen faktisk er gjort. Bevis legges i `docs/evi
 | 8 | Ukjent strekkode → tomt skjema, og den huskes neste gang | | |
 | 9 | Vekt- eller prisvare fra disken (starter med 2) → «Butikkens egen kode» | | |
 | 10 | Ingen horisontal rulling, knappene er lette å treffe | | |
+| 11 | Kvittering: «Ta bilde» åpner bakkameraet, bildet lastes opp, og siden viser «Leser kvitteringen …» | | |
+| 12 | Kvittering: butikk, dato og total er fylt ut. «Bekreft kjøpet» lagrer, og bildet forsvinner fra listen. | | |
+| 13 | Kvittering: et uskarpt bilde gir «Kunne ikke leses» med «Prøv igjen» og «Fyll inn selv» | | |
+| 14 | Kvittering: kontroller at det lagrede bildet ikke har GPS (be Claude lese EXIF fra databasen) | | |

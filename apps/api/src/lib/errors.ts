@@ -9,6 +9,8 @@ export class AppError extends Error {
     readonly statusCode: number,
     readonly code: ApiErrorCode,
     readonly fields?: Record<string, string>,
+    /** The id of an existing row the conflict is about (only ids, never content). */
+    readonly refId?: string,
   ) {
     super(code);
     this.name = 'AppError';

@@ -49,6 +49,19 @@ export interface AppConfig {
     offMaxPerMinute: number;
     lookupsPerUserPerMinute: number;
   };
+  /** Receipt OCR (spec 08, ADR-0017). The API only queues jobs; the worker (src/worker.ts) runs Tesseract. */
+  receipts: {
+    /** "off": no OCR on this server – the upload page offers the manual form (NFR-REL-002). */
+    ocrProvider: 'off' | 'tesseract';
+    /** What starts Tesseract, split on spaces and run without a shell (providers/ocr/tesseract.ts). */
+    tesseractCommand: string[];
+    ocrTimeoutMs: number;
+    /** ADR-0017: off until a new measurement shows the amounts per line can be trusted. */
+    lineSuggestions: boolean;
+    uploadsPerUserPerHour: number;
+    /** Receipts waiting or being read on the whole server; more gives 503. */
+    maxQueued: number;
+  };
 }
 
 const MINUTE = 60_000;
@@ -93,6 +106,14 @@ const envSchema = z.object({
   OFF_TIMEOUT_MS: z.coerce.number().int().min(100).max(30_000).default(3000),
   OFF_MAX_PER_MINUTE: z.coerce.number().int().positive().max(15).default(10),
   SCAN_LOOKUPS_PER_MINUTE: z.coerce.number().int().positive().default(30),
+  // Spec 08. Locally Tesseract runs in Docker: OCR_TESSERACT_COMMAND="docker run --rm -i --network none
+  // smartmat-ocr timeout 55 tesseract". In the test environment's worker image it is "timeout 55 tesseract".
+  OCR_PROVIDER: z.enum(['off', 'tesseract']).default('off'),
+  OCR_TESSERACT_COMMAND: z.string().trim().min(1).default('timeout 55 tesseract'),
+  OCR_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120_000).default(60_000),
+  RECEIPT_LINE_SUGGESTIONS: z.enum(['true', 'false']).default('false'),
+  RECEIPT_UPLOADS_PER_HOUR: z.coerce.number().int().positive().default(10),
+  RECEIPT_MAX_QUEUED: z.coerce.number().int().positive().default(20),
 });
 
 /** "172.26.0.0/16" or "127.0.0.1". */
@@ -141,6 +162,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       offTimeoutMs: e.OFF_TIMEOUT_MS,
       offMaxPerMinute: e.OFF_MAX_PER_MINUTE,
       lookupsPerUserPerMinute: e.SCAN_LOOKUPS_PER_MINUTE,
+    },
+    receipts: {
+      ocrProvider: e.OCR_PROVIDER,
+      tesseractCommand: e.OCR_TESSERACT_COMMAND.split(/\s+/),
+      ocrTimeoutMs: e.OCR_TIMEOUT_MS,
+      lineSuggestions: e.RECEIPT_LINE_SUGGESTIONS === 'true',
+      uploadsPerUserPerHour: e.RECEIPT_UPLOADS_PER_HOUR,
+      maxQueued: e.RECEIPT_MAX_QUEUED,
     },
   };
 }

@@ -1,0 +1,4 @@
+$ npm audit
+Kjørt 2026-10-24T13:24:20Z
+found 0 vulnerabilities
+exit 0

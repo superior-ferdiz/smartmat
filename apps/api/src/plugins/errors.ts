@@ -8,8 +8,8 @@ import { AppError } from '../lib/errors';
  * i18n keys. Error responses never contain stack traces, SQL, e-mail addresses or input values (NFR-SEC-004).
  */
 
-function body(code: string, fields?: Record<string, string>): ApiErrorBody {
-  return fields ? { error: { code, fields } } : { error: { code } };
+function body(code: string, fields?: Record<string, string>, refId?: string): ApiErrorBody {
+  return { error: { code, ...(fields ? { fields } : {}), ...(refId ? { refId } : {}) } };
 }
 
 /** "/email" → "email", "/items/0/name" → "items.0.name", "" (whole body) → "_form". */
@@ -38,7 +38,7 @@ export function registerErrorHandling(
     }
 
     if (error instanceof AppError) {
-      return reply.status(error.statusCode).send(body(error.code, error.fields));
+      return reply.status(error.statusCode).send(body(error.code, error.fields, error.refId));
     }
 
     const status = error.statusCode ?? 500;

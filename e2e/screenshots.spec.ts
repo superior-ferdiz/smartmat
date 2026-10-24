@@ -1,15 +1,17 @@
+import sharp from 'sharp';
+import { COOP_RECEIPT } from '@smartmat/shared/test-fixtures/receipts';
 import { apiAs, test, type Account } from './fixtures';
 
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
  * Only runs when asked for:  SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 7 pages (barcode scanning), with a seeded inventory, purchases and budget. Open Food Facts is the e2e API's
- * fake (made-up products). (The phase 1–6 screenshots in docs/evidence/screenshots/ were made by earlier versions of
- * this file; see Git history.)
+ * Phase 8 pages (receipts), with a seeded inventory, purchases and budget. The receipt photo is generated here from
+ * the made-up Coop receipt text that the e2e API's fake OCR "reads" (no real receipt). (The phase 1–7 screenshots in
+ * docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-7';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-8';
 
 function inDays(days: number) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date());
@@ -86,10 +88,30 @@ async function seed(
   return { created, purchaseId: purchase.id };
 }
 
+/** A picture of the made-up receipt: its lines (without the confidence) on light paper on a dark table. */
+async function receiptPhoto(seed: number, width = 620) {
+  const rows = COOP_RECEIPT.map((line) => line.text.replace(/&/g, '&amp;').replace(/</g, '&lt;'));
+  const height = 60 + rows.length * 30;
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+    '<rect width="100%" height="100%" fill="#f4f2ec"/><g font-family="DejaVu Sans Mono" font-size="19" fill="#222">' +
+    rows
+      .map((row, i) => `<text x="24" y="${44 + i * 30}" xml:space="preserve">${row}</text>`)
+      .join('') +
+    `</g><rect x="${seed % 40}" y="2" width="2" height="2" fill="#f4f2ec"/></svg>`;
+  const paper = await sharp(Buffer.from(svg)).png().toBuffer();
+  return sharp({
+    create: { width: width + 160, height: height + 160, channels: 3, background: '#2a2a2a' },
+  })
+    .composite([{ input: paper, left: 80, top: 80 }])
+    .jpeg({ quality: 85 })
+    .toBuffer();
+}
+
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – scanning`, () => {
+  test.describe(`${colorScheme} – receipts`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('skann', async ({ page, playwright, account }, testInfo) => {
+    test('kvittering', async ({ page, playwright, account }, testInfo) => {
       await seed(playwright, account);
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
       const shot = (name: string, fullPage = false) =>
@@ -99,35 +121,48 @@ for (const colorScheme of ['light', 'dark'] as const) {
         });
       const ready = () => page.evaluate(() => document.fonts.ready);
 
-      // FR-SCAN-001/-003: the start of the page (camera button, typed code, credit to Open Food Facts).
-      await page.goto('/skann');
-      await page.getByRole('button', { name: 'Start kamera' }).waitFor();
+      // FR-RCPT-001: the upload page.
+      await page.goto('/budsjett/kvittering');
+      await page.getByRole('button', { name: 'Ta bilde' }).waitFor();
       await ready();
-      await shot('skann-start', true);
+      await shot('kvittering-start', true);
 
-      // FR-SCAN-002: a known code fills in the form.
-      await page.goto('/skann?kode=7038010000737');
-      await page.getByText(/Funnet i Open Food Facts/).waitFor();
-      await page.getByLabel(/Navn på varen/).waitFor();
+      // FR-RCPT-003: a photo that cannot be read.
+      await page.locator('#receipt-file').setInputFiles({
+        name: 'liten.jpg',
+        mimeType: 'image/jpeg',
+        buffer: await sharp({
+          create: { width: 120, height: 180, channels: 3, background: '#f0eee6' },
+        })
+          .jpeg()
+          .toBuffer(),
+      });
+      await page.getByText(/Vi fant ingen tekst i bildet/).waitFor({ timeout: 15_000 });
       await ready();
-      await shot('skann-funnet', true);
+      await shot('kvittering-feilet');
 
-      // FR-SCAN-004 / NFR-REL-001: unknown code and a lookup that does not answer.
-      await page.goto('/skann?kode=4006381333931');
-      await page.getByText(/Vi fant ikke denne strekkoden/).waitFor();
+      // FR-RCPT-005: the review, filled in with store, date and total (ADR-0017).
+      await page.goto('/budsjett/kvittering');
+      await page.locator('#receipt-file').setInputFiles({
+        name: 'kvittering.jpg',
+        mimeType: 'image/jpeg',
+        buffer: await receiptPhoto(testInfo.workerIndex + (colorScheme === 'light' ? 1 : 2)),
+      });
+      await page
+        .getByLabel(/^Butikk/)
+        .and(page.locator('[value="Extra"]'))
+        .waitFor({ timeout: 15_000 });
+      await page
+        .getByRole('img', { name: 'Bildet av kvitteringen' })
+        .evaluate((img: HTMLImageElement) => img.decode());
       await ready();
-      await shot('skann-ukjent');
-      await page.goto('/skann?kode=0036000291452');
-      await page.getByText(/svarer ikke akkurat nå/).waitFor();
-      await ready();
-      await shot('skann-svarer-ikke');
+      await shot('kvittering-sjekk', true);
 
-      // FR-SCAN-001: no camera access.
-      await page.goto('/skann');
-      await page.getByRole('button', { name: 'Start kamera' }).click();
-      await page.getByText(/Du kan skrive inn strekkoden i stedet/).waitFor();
+      // FR-RCPT-006: confirmed.
+      await page.getByRole('button', { name: 'Bekreft kjøpet' }).click();
+      await page.getByText('Kjøpet er registrert.').waitFor();
       await ready();
-      await shot('skann-kamera-feil');
+      await shot('kvittering-bekreftet', true);
     });
   });
 }

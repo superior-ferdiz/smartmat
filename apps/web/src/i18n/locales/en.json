@@ -183,6 +183,9 @@
       "digits": "The barcode can only contain digits.",
       "length": "The barcode must have 8, 12, 13 or 14 digits.",
       "checkDigit": "The barcode is not valid. Check that all the digits are right."
+    },
+    "receipt": {
+      "imageRequired": "Choose a photo of the receipt."
     }
   },
   "pages": {
@@ -458,6 +461,19 @@
     "shopping": {
       "changedMeanwhile": "The shopping list was changed meanwhile, perhaps on another device. Reload the page and try again.",
       "alreadyOnList": "The list already has a line for this item. Tick it off or remove it first."
+    },
+    "receipt": {
+      "tooLarge": "The image is too large. Use an image under 10 MB.",
+      "unsupportedType": "Use a JPEG, PNG or WebP image.",
+      "unreadable": "We could not open the image. Try taking a new one.",
+      "alreadyUploaded": "This image has already been uploaded.",
+      "busy": "Many receipts are waiting right now. Try again shortly, or enter the purchase yourself.",
+      "ocrUnavailable": "Receipt reading is not set up. Enter the purchase yourself.",
+      "notReady": "The receipt has not been read yet.",
+      "alreadyConfirmed": "The receipt is already saved as a purchase.",
+      "duplicate": "This receipt is already saved.",
+      "possibleDuplicate": "You already have a purchase with the same date and total. Is this the same purchase?",
+      "cannotRetry": "The receipt cannot be read again right now."
     }
   },
   "units": {
@@ -742,7 +758,8 @@
       "saved": "The budget is saved.",
       "removed": "The budget is removed.",
       "remove": "Remove the budget"
-    }
+    },
+    "addFromReceipt": "From a receipt"
   },
   "purchases": {
     "noStore": "Unknown shop",
@@ -1098,6 +1115,99 @@
       "text": "Product data from",
       "source": "Open Food Facts",
       "license": "licence ODbL"
+    }
+  },
+  "receipts": {
+    "title": "Receipt",
+    "lead": "Take a photo of the receipt and we fill in the purchase. You check and correct it before anything is saved.",
+    "loading": "Loading the receipt …",
+    "backToList": "To the receipts",
+    "manual": "Fill in yourself",
+    "upload": {
+      "title": "Upload a receipt",
+      "lead": "Lay the receipt flat, in good light, and get all of it in the picture.",
+      "camera": "Take a photo",
+      "file": "Choose a file",
+      "uploading": "Uploading …",
+      "openExisting": "Open it",
+      "privacy": "The image is only processed on our server. Location and other camera information are removed. The image is deleted when you confirm the purchase, or after 7 days."
+    },
+    "unavailable": {
+      "title": "Receipt reading is not available",
+      "text": "It is not set up on this server. You can enter the purchase yourself.",
+      "manual": "Add purchase"
+    },
+    "list": {
+      "title": "Receipts waiting",
+      "empty": "No receipts are waiting.",
+      "open": "Open",
+      "uploaded": "Uploaded {{time}}"
+    },
+    "status": {
+      "queued": "Queued",
+      "processing": "Reading",
+      "review": "Ready to check",
+      "failed": "Could not be read",
+      "confirmed": "Saved"
+    },
+    "waiting": {
+      "queued": "The receipt is in the queue …",
+      "processing": "Reading the receipt …",
+      "text": "It usually takes a few seconds. You can stay on this page.",
+      "slow": "This is taking longer than usual. You can wait, or enter the purchase yourself."
+    },
+    "failed": {
+      "title": "The receipt could not be read",
+      "timeout": "Reading took too long.",
+      "unavailable": "Receipt reading is not responding right now.",
+      "invalidResponse": "Something went wrong while reading.",
+      "noText": "We found no text in the image. Try a sharper photo of the whole receipt in good light.",
+      "retry": "Try again",
+      "retryFailed": "Could not try again. Reload the page."
+    },
+    "review": {
+      "title": "Check the receipt",
+      "lead": "Look over what we read and correct anything that is wrong. Nothing is saved until you press \"Confirm purchase\".",
+      "imageAlt": "The photo of the receipt",
+      "openImage": "Open the image in full size",
+      "lowConfidenceTitle": "Low confidence",
+      "lowConfidence": "The image was hard to read. Check every field carefully.",
+      "dateGuessed": "We could not find the date. Today’s date is filled in – check it.",
+      "totalOnly": "We fill in the store, date and total. The lines are not read well enough yet. To put the items in your food stock, choose \"With lines\" and add them yourself.",
+      "sumMismatch": "The lines add up to {{lines}}, but the receipt says {{total}}. Check the amounts.",
+      "rawText": "The text we read",
+      "check": "Check:",
+      "submit": "Confirm purchase",
+      "saved": "The purchase is saved.",
+      "savedWithItems_one": "The purchase is saved and {{count}} item was added to your food stock.",
+      "savedWithItems_other": "The purchase is saved and {{count}} items were added to your food stock.",
+      "duplicateLink": "See the existing purchase",
+      "allowDuplicate": "Save anyway – this is a different purchase",
+      "allowDuplicateHint": "Tick this if you shopped for the same amount on the same day."
+    },
+    "flags": {
+      "lowConfidence": "the text was unclear.",
+      "noAmount": "the amount was not found.",
+      "amountFromQuantity": "the amount is worked out from count and price.",
+      "quantityMismatch": "count × price did not match the amount.",
+      "discountApplied": "the discount is subtracted."
+    },
+    "confirmed": {
+      "title": "The receipt is saved",
+      "text": "The purchase is saved and the image is deleted.",
+      "open": "See the purchase"
+    },
+    "notFound": {
+      "title": "Receipt not found",
+      "text": "It may have been discarded, or deleted because it was not confirmed within 7 days."
+    },
+    "discard": {
+      "button": "Discard the receipt",
+      "title": "Discard the receipt?",
+      "text": "The image and what we read are deleted. No purchase is saved.",
+      "confirm": "Discard",
+      "done": "The receipt was discarded.",
+      "failed": "Could not discard the receipt. Try again."
     }
   }
 }

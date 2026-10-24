@@ -5,7 +5,7 @@
 #
 # This machine also runs other projects. Everything here is named "smartmat-staging". The only shared thing is
 # the external network `ghostweb`, which the Caddy container is on: Caddy reaches the app by its container name.
-# No port is published. The database is on an internal network without internet access.
+# No port is published. The database and the receipt worker are on an internal network without internet access.
 name: smartmat-staging
 
 services:
@@ -45,6 +45,28 @@ services:
       - internal
       - ghostweb
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # Spec 08: reads receipts from the job queue with Tesseract. Same image as the app, but only on the internal
+  # network: it never needs the internet, so an image can never be sent anywhere from here. One receipt at a time.
+  worker:
+    image: smartmat-staging-app
+    container_name: smartmat-staging-worker
+    depends_on:
+      app:
+        condition: service_started
+    env_file: .env.staging
+    environment:
+      DATABASE_URL: postgresql://smartmat:${STAGING_POSTGRES_PASSWORD}@db:5432/smartmat
+    command: ['npm', 'run', 'worker', '-w', '@smartmat/api']
+    networks:
+      - internal
+    restart: unless-stopped
+    # ADR-0017: Tesseract used about 50 MB per receipt in the pilot; Node and sharp come on top.
+    mem_limit: 512m
     cap_drop:
       - ALL
     security_opt:

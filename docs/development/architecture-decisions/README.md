@@ -24,3 +24,4 @@ En beslutning endres ved å skrive en ny ADR som erstatter den gamle (og markere
 | [0014](0014-produkter-og-strekkoder.md) | Produkter fra Open Food Facts som globalt mellomlager, og husholdningens egne strekkoder |
 | [0015](0015-lukket-testmiljo.md) | Lukket testmiljø med HTTPS på smartmat.risansolutions.no |
 | [0016](0016-oppskrifter-fra-apne-kilder.md) | Oppskrifter fra åpne kilder, oversatt til norsk (**foreslått, ikke godkjent**; skal erstatte 0009) |
+| [0017](0017-tesseract-pa-serveren-forelopig.md) | Tesseract på serveren, foreløpig – bare butikk, dato og total som standard (**foreslått, ikke godkjent**) |

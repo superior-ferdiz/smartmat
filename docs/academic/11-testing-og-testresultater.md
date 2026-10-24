@@ -614,7 +614,7 @@ Kontrollen dekker ikke CHECK-begrensningene for seg, og ende-til-ende-testene bl
 | Bygg | Vellykket. Hovedfilen er 739 kB (223 kB gzip). Skanneren ligger for seg: `CameraScanner` 2,8 kB, reserveleseren 43 kB og wasm 1,09 MB (461 kB gzip), bare lastet ved behov. | `06-build.txt` |
 | Ende-til-ende | 157 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
 | `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
-| Migreringsstatus | À jour (8 migreringer) | `09-migrate-status.txt` |
+| Migreringsstatus | À jour (7 migreringer; rettet 2026-10-24, stod først 8) | `09-migrate-status.txt` |
 
 Første forsøk på sluttkjøringen ble avbrutt mens API-testene kjørte (prosessen ble drept, kode 137). Årsaken ble ikke
 funnet. Minnet på serveren var ikke fullt da det ble sjekket etterpå. API-testene ble kjørt på nytt for seg, og
@@ -658,6 +658,126 @@ Feil i testene:
 - tre Playwright-tester traff feil element: «Skap» i «Kjøleskap», to sider montert samtidig i en komponenttest, og
   «450 g» som stod fire steder
 - en komponenttest ventet ikke på at skjemaet var lastet
+
+## Testtyper og sporbarhet (fase 8)
+
+Testene refererer til krav-ID-ene i [08-kvittering.md](../development/requirements/08-kvittering.md).
+**Ingen test bruker en ekte kvittering eller en ekte OCR-tjeneste.**
+- API- og ende-til-ende-testene bruker en falsk OCR som «leser» oppdiktede kvitteringstekster
+  (`packages/shared/src/receipts/fixtures.ts`).
+- Testene av Tesseract-kjøreren bruker en liten Node-prosess i stedet for Tesseract.
+- Bildene i testene genereres med sharp.
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-RCPT-004 | Parseren med fiktive tekster i Coop-, NG- og generelt oppsett: beløp (punktum, komma, minus), kjede bare fra toppteksten (også med frukten «KIWI»), dato med to- og firesifret år, kvitteringsnummer, vekt og antall, pant, rabatt, kontrollsum, antall artikler, mat eller ikke mat. OCR-støy fra piloten: beløp på neste linje, beløp på antall-linjen, antall × pris retter et feillest beløp, kantstøy, «Part», O%, «Tota1t», junk etter totalen, tid som ligner klokkeslett, umulige datoer. Betalingslinjer gjenkjennes og fjernes. | `shared/src/receipts/parse.test.ts` | 32 |
+| FR-RCPT-001/002 | Filtype fra innholdet (JPEG, PNG, WebP; GIF, SVG og PDF nektes), EXIF med GPS og kamera fjernes, bildet rettes opp, største side 3000 px, ingen forstørring, ødelagt fil, 10 MB, «dekompresjonsbombe» på 48 MP, Otsu-terskel, papir på mørkt bord med lyse prikker, liggende papir, utretting (0°, 2°, −1,5°, 3,5°) | `api/src/providers/ocr/image.test.ts` | 13 |
+| FR-RCPT-003 | Tesseract-kjøreren: stdin/stdout, tidsavbrudd dreper prosessen, feilkode, program som mangler, for mye utdata, ingen shell. Valg av retning: stående og liggende kvittering, kort kvittering (alle fire retninger når usikker), søppel med mange usikre ord taper, sikker lesing leses ikke på nytt, rått bilde én gang. Feil blir `timeout`, `unavailable`, `invalidResponse` eller `noText`. | `api/src/providers/ocr/tesseract.test.ts` | 12 |
+| FR-RCPT-003 | TSV fra Tesseract: ord til linjer med sikkerhet, tomme ord, «empty» og «invalid», lange linjer kuttes | `api/src/providers/ocr/tesseractTsv.test.ts` | 4 |
+| Pilotmålingen | Poengberegningen: CER mot del av linje, beløp med punktum og komma, nivå 1 og nivå 2, fasit med hele øre | `api/src/providers/ocr/pilot/score.test.ts` | 9 |
+| FR-RCPT-007 | Den sterke duplikatnøkkelen: lik for samme kvittering, skjuler kvitteringsnummeret, endres med dato, total, tid, nummer og kjede, tom uten nummer eller tid | `api/src/modules/receipts/service.test.ts` | 3 |
+| FR-RCPT-005 | Fra forslag til skjema: bare totalsum (ADR-0017, også når serveren har sendt linjer), dato som ikke ble lest, linjer med vekt og antall, merknader, nedskalering i nettleseren | `web/src/receipts/receiptForm.test.ts` | 5 |
+| FR-RCPT-001/003/005/006 | Sidene: kamera og fil (`capture="environment"`), multipart med CSRF, samme bilde igjen (lenke), OCR av, liste med status i ord, i kø, tar lang tid, feilet og «Prøv igjen», borte etter 7 dager, gjennomgang med bare totalsum, lav sikkerhet og dato som ikke ble lest, linjer med «Sjekk», sum som ikke stemmer, mulig duplikat og «Lagre likevel», forkasting med dialog, registrert. Axe på tre av dem. | `web/src/pages/receipts/ReceiptPages.test.tsx` | 15 |
+| FR-RCPT-001–008, NFR-SEC-004 | API mot database: opplasting og lagret bilde uten metadata, samme bilde, filtyper, størrelse og piksler, lest kvittering (bare butikk, dato og total), linjeforslag på, fire OCR-feil, provider som kaster, bare betalingslinjer, lest to ganger, nytt forsøk, liste, bildet med `no-store`, bekreftelse (kjøp, linjer, partier, hendelser, kvittering lukket, bilde og uttrekk slettet), samtidig bekreftelse gir ett kjøp, sterk og svak duplikatkontroll, kvittering som ikke er klar, kjøpsreglene, sted som ikke finnes, repoet nekter selv, forkasting, frist på 7 dager og opprydding, slettet kjøp, workeren som døde, OCR av, grense per bruker, full kø, ingen kvitteringstekst i loggene | `api/test/receipts.api.test.ts` | 30 |
+| NFR-SEC-001 | Andres husholdnings-ID (404, også opplasting), andres kvitterings-ID (404), listen, samme bilde i to husholdninger, andres sted, duplikatsvar på tvers av husholdninger, samme kvittering i to husholdninger, repoet filtrerer selv, databasen nekter feil husholdning, 401, CSRF | `api/test/receipts.security.api.test.ts` | 10 |
+| FR-RCPT-003 | Ekte pg-boss i testdatabasen: starter to ganger, jobben inneholder bare id-en | `api/test/receiptQueue.api.test.ts` | 1 |
+| FR-RCPT-001/003/005/006/008, NFR-UX-001/002 | Ende-til-ende med ekte kø og falsk OCR: last opp → sjekk → bekreft → kjøpet og varen finnes, og listen er tom. Ulesbart bilde → årsak → «Fyll inn selv». Forkasting. 360 px og axe. | `e2e/receipts.spec.ts` | 3 (× 2 skjermstørrelser) |
+
+**Sum etter fase 8:** 956 enhetstester (360 shared, 189 api, 407 web), 282 API-tester mot database, 163
+ende-til-ende-tester.
+
+Eksisterende tester ble endret så lite som mulig:
+- `testConfig` fikk feltet `receipts`, og `mockApi` sender `FormData` videre.
+- `e2e/fixtures.ts` fikk `receipts()`.
+- To tester som starter prosesser, fikk 20 s tidsavbrudd.
+
+Skjermbildeskriptet viser nå kvitteringssidene.
+
+### Pilotmålingen er ikke en automatisk test
+
+Målingen på ekte kvitteringer (`apps/api/scripts/ocr-pilot.ts`) kjøres for hånd, fordi bildene og fasiten ikke kan
+ligge i repoet. Utdataene har bare samlede tall og ligger i `docs/evidence/test-results/fase-8/ocr-pilot-*.txt`
+(kjøring 1–6). Resultatet og forbeholdene står i ADR-0017.
+
+### Kontroll av testene (fase 8)
+
+Samme metode som før ([skript](../evidence/test-results/fase-8/10-mutation-check.sh)), med 37 endringer.
+**Avvik:** for å holde tiden nede ble bare API-testene for kvitteringer og kjøp kjørt for hver endring, ikke hele
+API-pakken. Enhetstestene ble kjørt i sin helhet.
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-8/10-mutation-check-run1.txt)): 35 av 37 ble fanget.
+- **Runde 31 ble ikke fanget** (kjeden letes etter i hele kvitteringen). Testen med frukten «KIWI» hadde «COOP
+  EXTRA» i toppen, og Extra sjekkes før Kiwi, så rekkefølgen skjulte feilen. Ny fiktiv kvittering med bare «COOP».
+- **Runde 36 ble ikke fanget** (linjene fylles inn selv om linjeforslag er av). Testen sendte en tom linjeliste. Ny
+  test med linjer.
+- **Runde 16 ble ikke fanget** (servicen sjekker ikke at kvitteringen er klar). Repoet sjekker det uansett i
+  transaksjonen, så svaret ble det samme. En ny test kaller repoet direkte, og en ekstra mutasjon av repoets sjekk
+  ([utdata](../evidence/test-results/fase-8/10-mutation-check-tillegg.txt)) viser at den fanges.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-8/10-mutation-check.txt)): 36 av 37 ble fanget, og
+utdataene viser at det var de riktige testene som feilet. Runde 16 fanges fortsatt ikke, av samme grunn som over.
+Uendret kode: 956 av 956 enhetstester og 89 av 89 API-tester.
+
+**Ustabil test:** loggtesten (ingen kvitteringstekst i loggene) feilet én gang av fem kjøringer mellom de to
+kontrollene. Feilmeldingen ble ikke lagret, så årsaken er **ikke bekreftet**. Den sannsynlige årsaken er at tall
+fra den fiktive kvitteringen («13232», «424242») kan stå inne i en tilfeldig id i loggen. Tallene sjekkes nå bare
+når de ikke er en del av en heks-streng. Testen bestod tre ganger på rad etterpå.
+
+Kontrollen dekker ikke Playwright, CHECK-begrensningene og worker-oppsettet (`worker.ts`) for seg. Den ekte kjeden ble
+røyktestet for hånd (under).
+
+## Resultater fase 8 (kjørt 2026-10-24)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Bilder i repoet | Ingen utenfor skjermbildemappen | `00-check-files.txt` |
+| Typesjekk, lint, formatering | Ingen feil. Første formateringssjekk feilet på én fil som ikke var formatert (`03-format-check-forsok1.txt`). | `01`–`03` |
+| Enhet/komponent | 956 av 956 | `04-unit-tests.txt` |
+| API mot testdatabase | 282 av 282 | `05-api-tests.txt` |
+| Bygg | Vellykket. Hovedfilen er 761 kB (232 kB gzip). | `06-build.txt` |
+| Ende-til-ende | 163 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (8 migreringer) | `09-migrate-status.txt` |
+| Røyktest av den ekte kjeden | Fiktiv kvittering lest riktig etter én retting (se funn 6) | `11-royktest-ekte-kjede.txt` |
+
+Enhets- og API-testene ble kjørt på nytt etter den andre mutasjonskontrollen, fordi testene var endret. Tallene over
+er fra den siste kjøringen. Ende-til-ende-testene ble ikke kjørt på nytt, fordi bare testfiler og en ny fiktiv tekst
+var endret etter den kjøringen.
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-8/](../evidence/screenshots/fase-8/). Kvitteringen på bildene er generert fra den fiktive teksten.
+
+**Ikke testet:**
+- ekte telefon (kamera og opplasting over mobilnett)
+- iPhone sin omgjøring fra HEIC
+- ekte kvitteringer ut over de 3 i piloten
+- staging-containerne kjørende (bildet er bare bygd og kontrollert)
+
+## Feil funnet i fase 8
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-24.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | De ekte kvitteringene lå i roten av repoet som filer Git ikke sporet, og ingenting hindret at de ble committet | `git status` før planen | Flyttet ut, `.gitignore` og `check:files` |
+| 2 | Beskjæringen fant ikke en smal kvittering: rader og kolonner ble målt mot hele bildet | Enhetstest, og deretter de to liggende bildene i piloten | Telling i to omganger |
+| 3 | Tesseracts OSD valgte feil retning på to av tre ekte kvitteringer | Pilotkjøring 1 (0 treff) | Retning fra papirets form, lese to retninger |
+| 4 | Med psm 4 kunne beløpskolonnen forsvinne | Selvtest av måleskriptet med fiktiv kvittering | psm 4 og 6 målt. psm 4 ble valgt på grunn av målingen. |
+| 5 | Parseren mistet linjer OCR hadde lest, og laget ekstra linjer | Pilotkjøring 3 | Åtte generelle rettinger, hver med fiktiv test (spesifikasjon 08) |
+| 6 | En kort kvittering som lå på siden, ble ikke lest (den så stående ut) | Røyktest med ekte Tesseract | Leser alle fire retninger når usikker |
+| 7 | Målet «ord × snittsikkerhet» valgte søppeltekst i feil retning | Pilotkjøring 5 (psm 6 falt til 0) | Antall sikre ord |
+| 8 | sharp gjør et rått gråtonebilde om til 3 kanaler ved skalering | Enhetstest | `toColourspace('b-w')` |
+| 9 | `singletonKey` i pg-boss hindrer ikke doble jobber | Test mot ekte pg-boss | Fjernet. Workeren tåler doble jobber. |
+| 10 | En kilopris kunne bli tatt for linjebeløpet | Gjennomlesing av koden mot formatene | Bare beløp etter prisen teller |
+| 11 | Tre hull i testene (se kontrollen over) | Mutasjonskontrollen | Nye tester |
+
+Feil i målingen og testene:
+- minnemålingen målte et tomt kjøretrinn: en bakgrunnsjobb i `sh` får stdin fra `/dev/null`
+- to av KI-ens egne fiktive tall i Coop-eksempelet var feil (artikler og mva), funnet da de ble regnet etter
+- tvetydige lokatorer i Playwright («Totalsum» er både en radioknapp og et felt), og flere `role="status"` i en
+  komponenttest
+- forventninger i testene som ikke stemte med regelen, for eksempel kantord med siffer
+- loggtesten var ustabil (se over)
 
 ## Begrensninger
 

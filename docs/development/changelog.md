@@ -2,6 +2,49 @@
 
 ## [Ikke utgitt]
 
+### Fase 8 – 2026-10-24 (grenen `fase-8`)
+- **Pilotmåling av OCR** på 3 ekte kvitteringer (2 Extra, 1 Kiwi), med fasit kontrollert av Ferdinand Risan:
+  - Tesseract 5.3.0 med norsk modell i Docker uten nettverk
+  - 4 forbehandlinger × 2 sidedelinger (psm), målt i 6 kjøringer
+  - bare samlede tall er lagret, i `docs/evidence/test-results/fase-8/`
+  - resultat: dato og total 3/3, 88 % av linjene, men bare 50 % av beløpene per linje
+  - [ADR-0017](architecture-decisions/0017-tesseract-pa-serveren-forelopig.md) (foreslått, foreløpig): appen foreslår
+    bare butikk, dato og total
+- **Kvitteringer** (`/budsjett/kvittering`):
+  - laste opp med «Ta bilde» (bakkameraet) eller «Velg fil»
+  - lesing i bakgrunnen, med tilstandene i kø, leses, feilet (med årsak, «Prøv igjen» og «Fyll inn selv»), lav
+    sikkerhet, klar til sjekk og registrert
+  - gjennomgang med bildet ved siden av kjøpsskjemaet fra fase 4, og «Teksten vi leste»
+  - linjeforslag med «Sjekk:»-merknader, som bare vises når de er slått på
+  - forkasting, og lenke fra budsjettsiden
+- **Opplasting:**
+  - JPEG, PNG og WebP, avgjort av innholdet
+  - høyst 10 MB og 40 MP
+  - bildet skrives om uten EXIF/GPS (og skaleres ned i nettleseren når det går)
+  - 10 per bruker og time, 20 i kø for hele serveren
+- **Tolkning** (`packages/shared/src/receipts/`):
+  - kjedegjenkjenning bare fra toppteksten, og familie (Coop, NG, Rema, generell) ut fra oppsettet
+  - beløp i øre, antall- og vektlinjer, pant, rabatt trukket fra linjen over
+  - kontrollsum mot totalen og antall artikler
+  - betalingslinjer fjernes før lagring
+- **Bekreftelse:** kjøp, linjer, partier og hendelser i én transaksjon, sammen med at kvitteringen lukkes og bilde
+  og uttrekk slettes. Samme kvittering kan ikke gi to kjøp: sterk nøkkel med kvitteringsnummer og klokkeslett,
+  ellers en advarsel ved samme dato og sum. Usikre verdier merkes.
+- **Bakgrunnsjobber med pg-boss** (12.38.0):
+  - `npm run worker -w @smartmat/api` leser én kvittering om gangen
+  - hvert 15. minutt slettes ubekreftede kvitteringer eldre enn 7 dager
+- **Migrering `receipts`:** `receipts`, `receipt_images`, `receipt_extractions`, med CHECK og sammensatte
+  fremmednøkler.
+- **API:** sju endepunkter under `/households/:h/receipts`. Feilsvar kan ha `refId`. URL-er logges uten
+  spørrestreng.
+- **Testmiljø:** Tesseract i bildet og containeren `smartmat-staging-worker` på det interne nettverket.
+- **Andre endringer:**
+  - Docker-bildet `docker/ocr`
+  - `npm run check:files` og `.gitignore` stopper bildefiler utenfor skjermbildemappen
+  - ikoner for kamera og kvittering
+- **Avhengigheter:** sharp 0.35.5, pg-boss 12.38.0, `@fastify/multipart` 10.1.4 (valgt før 10.1.5/10.1.6, som var 0–2
+  dager gamle) og pino 10.4.0 (som direkte avhengighet, samme versjon som Fastify bruker).
+
 ### Fase 7 – 2026-10-22 (grenen `fase-7`)
 - **Strekkodeskanning** (`/skann`):
   - skanne med kameraet: nettleserens `BarcodeDetector`, ellers `barcode-detector` + `zxing-wasm`, lastet bare når

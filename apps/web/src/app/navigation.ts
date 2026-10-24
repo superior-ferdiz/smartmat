@@ -60,6 +60,9 @@ export const BUDGET_PATH = '/budsjett';
 export const NEW_PURCHASE_PATH = '/budsjett/kjop/ny';
 export const purchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}`;
 export const editPurchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}/rett`;
+/** Spec 08: upload a receipt, and one receipt's status and review. */
+export const RECEIPTS_PATH = '/budsjett/kvittering';
+export const receiptPath = (receiptId: string) => `${RECEIPTS_PATH}/${receiptId}`;
 /** The budget page for a month ("2026-09"); the month is in the URL so it can be shared and reloaded. */
 export const budgetMonthPath = (month: string) => `${BUDGET_PATH}?maned=${month}`;
 

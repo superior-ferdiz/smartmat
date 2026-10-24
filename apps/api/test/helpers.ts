@@ -36,6 +36,15 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       offMaxPerMinute: 10,
       lookupsPerUserPerMinute: 1000,
     },
+    // OCR "on" so uploads are accepted; the tests pass a fake queue and run the worker's job with a fake OCR.
+    receipts: {
+      ocrProvider: 'tesseract',
+      tesseractCommand: ['tesseract'],
+      ocrTimeoutMs: 60_000,
+      lineSuggestions: false,
+      uploadsPerUserPerHour: 1000,
+      maxQueued: 1000,
+    },
     ...overrides,
   };
 }

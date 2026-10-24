@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   BASE_UNITS,
@@ -47,6 +47,10 @@ interface PurchaseFormProps {
   onSubmit: (body: PurchaseBody, options: { removeUntouchedBatches: boolean }) => Promise<void>;
   /** When correcting: offer to keep the batches of lines that are removed (spec 04 decision 2). */
   editing?: boolean;
+  /** Spec 08: a note above a line ("check this"), for a purchase filled in from a receipt. */
+  lineNote?: (line: LineFormValues) => ReactNode;
+  /** Shown above the buttons (spec 08: the possible-duplicate warning). */
+  children?: ReactNode;
 }
 
 /** Field ids in form order, for the error summary. */
@@ -80,6 +84,8 @@ export function PurchaseForm({
   cancelTo,
   onSubmit,
   editing = false,
+  lineNote,
+  children,
 }: PurchaseFormProps) {
   const { t } = useTranslation();
   const message = useValidationMessage();
@@ -208,6 +214,7 @@ export function PurchaseForm({
           <ol role="list" className={styles.lineList}>
             {values.lines.map((line, index) => (
               <li key={line.key}>
+                {lineNote?.(line)}
                 <LineFields
                   index={index}
                   line={line}
@@ -249,6 +256,8 @@ export function PurchaseForm({
           onChange={(e) => setRemoveUntouched(e.target.checked)}
         />
       )}
+
+      {children}
 
       <div className={styles.buttons}>
         <Button type="submit" loading={pending}>

@@ -106,6 +106,28 @@ flowchart LR
 Her serverer API-et også webappen, så det er fortsatt én opprinnelse. `trustProxy` stoler bare på `ghostweb`-nettet,
 ellers ville alle brukere hatt samme IP-adresse (Caddy sin) og delt én rate limit.
 
+## Kvitteringer i bakgrunnen (fase 8)
+
+Å lese en kvittering tar 2–10 sekunder og rundt 50 MB minne. Det skjer derfor ikke i forespørselen, men i en egen
+prosess, **workeren** (`apps/api/src/worker.ts`). API-et lagrer bildet og legger kvitteringens id i en kø
+(pg-boss, i samme Postgres). Siden spør etter status hvert 2. sekund.
+
+```mermaid
+flowchart LR
+  T[Telefon] -- "bilde (multipart)" --> A[API]
+  A -- "skrives om uten metadata" --> I[(receipt_images)]
+  A -- "bare id" --> Q[[pg-boss-kø]]
+  Q --> W[Worker]
+  W -- "bilde på stdin,<br/>uten nettverk" --> X[Tesseract]
+  W -- "tekst uten betalingslinjer<br/>+ tolkede linjer" --> E[(receipt_extractions)]
+  T -- "status / gjennomgang / bekreft" --> A
+  A -- "én transaksjon" --> P[(purchases, lines,<br/>batches)]
+```
+
+Workeren er et eget startpunkt i API-pakken, fordi den bruker samme databasekode. I testmiljøet er den en egen
+container på det interne nettverket uten internett. Uten OCR (`OCR_PROVIDER=off`) tar API-et ikke imot kvitteringer,
+og siden viser det vanlige skjemaet (NFR-REL-002).
+
 ## Sikkerhetsgrenser
 
 - **All tilgangskontroll skjer i API-et.** `RequireAuth` i React bestemmer bare hva som vises. Den beskytter ingenting.

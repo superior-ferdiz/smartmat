@@ -19,6 +19,8 @@ import { BudgetPage } from '../pages/budget/BudgetPage';
 import { EditPurchasePage } from '../pages/budget/EditPurchasePage';
 import { NewPurchasePage } from '../pages/budget/NewPurchasePage';
 import { PurchasePage } from '../pages/budget/PurchasePage';
+import { ReceiptPage } from '../pages/receipts/ReceiptPage';
+import { ReceiptsPage } from '../pages/receipts/ReceiptsPage';
 import { RecipePage } from '../pages/recipes/RecipePage';
 import { RecipesPage } from '../pages/recipes/RecipesPage';
 import { ScanPage } from '../pages/scan/ScanPage';
@@ -32,6 +34,7 @@ import {
   NEW_ITEM_PATH,
   NEW_PURCHASE_PATH,
   PROFILE_PATH,
+  RECEIPTS_PATH,
   RECIPES_PATH,
   REGISTER_PATH,
   SCAN_PATH,
@@ -82,6 +85,8 @@ export const routes: RouteObject[] = [
           { path: NEW_PURCHASE_PATH.slice(1), element: <NewPurchasePage /> },
           { path: 'budsjett/kjop/:purchaseId', element: <PurchasePage /> },
           { path: 'budsjett/kjop/:purchaseId/rett', element: <EditPurchasePage /> },
+          { path: RECEIPTS_PATH.slice(1), element: <ReceiptsPage /> },
+          { path: `${RECEIPTS_PATH.slice(1)}/:receiptId`, element: <ReceiptPage /> },
           { path: 'maltidsplan', element: <SectionPage section="mealPlan" /> },
           { path: 'husholdning', element: <SectionPage section="household" /> },
           { path: 'innstillinger', element: <SettingsPage /> },

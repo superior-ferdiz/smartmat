@@ -1,5 +1,6 @@
 import {
   API_ERRORS,
+  type ConfirmReceiptBody,
   monthRange,
   osloDate,
   firstOfMonth,
@@ -12,7 +13,13 @@ import {
 import type { Clock } from '../../lib/clock';
 import { AppError, notFound } from '../../lib/errors';
 import type { LocationRepo } from '../locations/repo';
-import { isPrismaError, type LineWrite, type PurchaseRepo, type PurchaseWrite } from './repo';
+import {
+  isPrismaError,
+  type LineWrite,
+  type PurchaseRepo,
+  type PurchaseWrite,
+  type ReceiptLink,
+} from './repo';
 
 export interface PurchaseServiceDeps {
   repo: PurchaseRepo;
@@ -75,6 +82,28 @@ export class PurchaseService {
     return { purchase: await this.get(householdId, id), created: true };
   }
 
+  /**
+   * Spec 08 FR-RCPT-006: a corrected receipt becomes a purchase by the same rules as the form (date, items and
+   * places in the household). Returns the id, or null when the dedupe key is taken (another receipt, or the same
+   * one confirmed at the same moment). Throws ReceiptNotInReviewError if the receipt was closed meanwhile.
+   */
+  async createFromReceipt(
+    householdId: string,
+    actorId: string,
+    body: ConfirmReceiptBody,
+    dedupeKey: string,
+    receipt: ReceiptLink,
+  ): Promise<string | null> {
+    const write = await this.toWrite(householdId, body, new Set());
+    return this.withRaceHandling(() =>
+      this.deps.repo.create(householdId, actorId, write, dedupeKey, receipt),
+    );
+  }
+
+  async findByDedupeKey(householdId: string, dedupeKey: string) {
+    return this.deps.repo.findByDedupeKey(householdId, dedupeKey);
+  }
+
   async update(householdId: string, actorId: string, purchaseId: string, body: UpdatePurchaseBody) {
     const current = await this.get(householdId, purchaseId);
     const linked = new Set(current.lines.filter((l) => l.batch !== null).map((l) => l.id));
@@ -112,7 +141,7 @@ export class PurchaseService {
    */
   private async toWrite(
     householdId: string,
-    body: CreatePurchaseBody | UpdatePurchaseBody,
+    body: CreatePurchaseBody | UpdatePurchaseBody | ConfirmReceiptBody,
     linkedLineIds: Set<string>,
   ): Promise<PurchaseWrite> {
     const fields: Record<string, string> = {};

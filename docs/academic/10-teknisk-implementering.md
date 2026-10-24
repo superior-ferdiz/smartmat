@@ -485,6 +485,38 @@ opprinnelse, og cookien er førstepart. Sideruter (`/skann?kode=…`) får `inde
 sha256-hash som regnes ut ved oppstart, i stedet for `'unsafe-inline'`. `'wasm-unsafe-eval'` trengs for reserveleseren.
 Lokalt er alt dette av, og Vite serverer siden som før.
 
+## Eksempel 32: tolke en kvittering med kvitteringens egne kontrollsummer (FR-RCPT-004)
+
+Parseren (`packages/shared/src/receipts/parse.ts`) er rene funksjoner. Den gjør OCR-linjer om til kjøpslinjer i øre.
+OCR leser tall feil, så parseren bruker det kvitteringen selv skriver to ganger:
+- «Antall: 2 stk 46.50 kr/stk» gir 93,00.
+- «0.946 kg 31.90 kr/kg» gir 30,18.
+- Linjene skal bli summen.
+- «Totalt (N Artikler)» er summen av antallene uten pant.
+
+Er beløpet lest annerledes enn antall × pris, vinner utregningen, og linjen merkes «Sjekk». To tall som stemmer med
+hverandre, er sikrere enn ett. Kjeden leses bare fra toppteksten, fordi en frukt som heter «KIWI» står på en
+Coop-kvittering. Alle testtekstene er oppdiktede, med samme oppsett som kjedene bruker.
+
+## Eksempel 33: et program uten shell (FR-RCPT-003)
+
+Tesseract startes med `spawn(fil, argumenter, { shell: false })`. Bildet går inn på stdin, og teksten kommer ut på
+stdout. Ingenting brukeren har skrevet, blir et argument. Tidsavbruddet dreper prosessen, og mer enn 2 MB utdata
+stopper den. Lokalt kjører programmet i Docker med `--network none`, og `timeout` ligger inne i containeren, fordi
+det ikke stopper containeren å drepe `docker`-klienten. Testene bruker en liten Node-prosess i stedet for Tesseract,
+med samme argumenter og samme stdin.
+
+## Eksempel 34: kvitteringen lukkes i kjøpets transaksjon (FR-RCPT-006)
+
+Bekreftelsen bruker samme regler og samme repo som et manuelt kjøp. Repoet lager kjøpet, linjene og partiene, og så,
+i samme transaksjon:
+1. setter det kvitteringen til `confirmed` (bare hvis den fortsatt er `review`)
+2. sletter bildet og uttrekket
+
+Har noen bekreftet den samme kvitteringen i mellomtiden, kaster repoet `ReceiptNotInReviewError`, og alt rulles
+tilbake. Servicen svarer da med kjøpet som ble laget først (200). Testen sender to bekreftelser samtidig og
+sjekker at det blir ett kjøp.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
@@ -493,7 +525,7 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
 ## Kjente begrensninger
 
-- **Bundle på 739 kB** (223 kB gzip) i hovedfilen etter fase 7, opp fra 720 kB i fase 6, 690 kB i fase 5, 658 kB i
+- **Bundle på 761 kB** (232 kB gzip) i hovedfilen etter fase 8, opp fra 739 kB i fase 7, 720 kB i fase 6, 690 kB i fase 5, 658 kB i
   fase 4, 619 kB i fase 3, 566 kB i fase 2 og 517 kB i fase 1. Vite advarer om dette. Skanneren er den første delen
   som er delt ut i egne filer. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
@@ -502,7 +534,8 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
   sende valgfrie props videre i React.
 - **Rangeringen regnes ut ved hver visning** for alle oppskrifter (ingen hurtiglager). Med 30–50 oppskrifter og et
   vanlig matlager er det raskt nok lokalt. Med mange hundre oppskrifter bør det måles.
-- API-et kjøres med tsx uten byggesteg, også i testmiljøet (bildet er 0,9 GB fordi utviklingsavhengighetene er med).
+- API-et kjøres med tsx uten byggesteg, også i testmiljøet (bildet er 1,08 GB etter fase 8, fordi
+  utviklingsavhengighetene og Tesseract er med).
   Et produksjonsbygg kommer i fase 13.
 - Den genererte Prisma-klienten (`apps/api/src/generated/`) er ikke i Git. Den lages av `npm install` (`postinstall`).
 
