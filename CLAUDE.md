@@ -45,8 +45,11 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - **`Purchase` is the single source of spending** in the MVP (no separate FinancialTransaction table).
 - **Every household-owned row has `household_id`** from the first migration; a single user gets a household of one.
   Every query on household data filters by the caller's membership — server-side.
-- Recipes: team-authored Norwegian seed recipes (`source=team`). No TheMealDB in MVP. ADR-0016 (recipes from openly
-  licensed sources, translated, with source/licence) is only **proposed** – fetch or write no recipes until approved.
+- Recipes (ADR-0016, **accepted 2026-10-24**, replaces ADR-0009): imported from openly licensed sources (English
+  Wikibooks Cookbook, CC BY-SA 4.0) by a developer-run script, translated by AI, stored with source, revision link,
+  licence and what was changed (`source=external`), shown as "KI-utkast" until a team member is in `reviewedBy`.
+  No recipe API at runtime (Spoonacular forbids storing ingredients; TheMealDB is dev-only/English). No pure AI
+  recipes (`source=ai`) – the team has not decided. Never write recipes as `source=team`.
 - Prices: no scraping. Kassalapp only after its terms are verified and documented.
 - OCR: Tesseract on our server (ADR-0017, **proposed and provisional**: measured on only 3 real receipts). By default
   only store, date and total are suggested (`RECEIPT_LINE_SUGGESTIONS=false`). Automated extraction is never saved
@@ -204,6 +207,28 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   ``t(`receipts.flags.${flag}`)`` from a typed union, not `t(someString)`.
 - pg-boss `singletonKey` does not deduplicate in a standard queue; the worker's conditional claim
   (`queued → processing`) makes a second job harmless.
+
+## Code conventions (added in phase 9)
+
+- Recipe import: `npm run recipes:fetch -w @smartmat/api [-- slug]` saves the Wikibooks original (wikitext +
+  revision id) to `prisma/seed/sources/wikibooks/<slug>.json`; the translated file in `prisma/seed/recipes/` must use
+  that `revisionUrl` as `sourceUrl` (a test checks it). User-Agent contact = `WIKIMEDIA_CONTACT` or the repo's GitHub
+  profile – never put someone's e-mail there without being told. Ranges in an original ("2–3 dl") keep the text and use
+  the lowest amount. `seedQuantityBase` rounds once, after the conversion (½ stk løk = 50 g).
+- `RECIPES_INCLUDE_UNREVIEWED` (default true) hides unreviewed external recipes in the repo layer (`createRecipeRepo`),
+  so the recipe list, the detail page, the meal plan and "add from recipe" all agree.
+- Meal plan: pure rules in `packages/shared/src/mealplan/needs.ts` (scaling rounds UP, greedy allocation by use-by
+  date, `entryDelta` never negative) and ISO weeks in `packages/shared/src/dates/week.ts` (`needsRange`: from today).
+  API module `apps/api/src/modules/mealplan/`; what a planned meal put on the shopping list lives in
+  `shopping_list_item_meals` and is written by the shopping repo (`addFromMealPlan`, under the list lock).
+- `GET /recipes?for=YYYY-MM-DD` ranks for a planned day (`stockByIngredient(..., usableOn)`).
+- Web: meal plan queries under `['household', id, 'meal-plan', …]`. A mutation whose component can unmount on the
+  refetch (an entry in a list) must run its callbacks in a parent that stays mounted – TanStack drops them otherwise
+  (the remove announcement broke this way on phones).
+- Repeated landmarks (one `section` per meal per day) fail axe's `landmark-unique`; use headings in plain blocks.
+- Web tests that need a fixed "today": `vi.useFakeTimers({ toFake: ['Date'], now })` (only Date, so Testing Library's
+  waits still work). Playwright `getByText` with a regex must use `\s` between amount and unit (U+00A0).
+- Screenshots with the real recipes: `E2E_RECIPE_SEED=repo SCREENSHOTS=1 npx playwright test screenshots`.
 
 ## Integrity rules (non-negotiable)
 

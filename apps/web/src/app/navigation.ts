@@ -30,7 +30,7 @@ export const SECTIONS: readonly NavSection[] = [
   { id: 'recipes', path: '/oppskrifter', icon: 'recipes', inBottomNav: true },
   { id: 'shoppingList', path: '/handleliste', icon: 'shoppingList', inBottomNav: false },
   { id: 'budget', path: '/budsjett', icon: 'budget', inBottomNav: false },
-  { id: 'mealPlan', path: '/maltidsplan', icon: 'mealPlan', inBottomNav: false, comingLater: true },
+  { id: 'mealPlan', path: '/maltidsplan', icon: 'mealPlan', inBottomNav: false },
   {
     id: 'household',
     path: '/husholdning',
@@ -55,7 +55,12 @@ export const SCAN_PATH = '/skann';
 export const scanCodePath = (gtin: string) => `${SCAN_PATH}?kode=${gtin}`;
 export const RECIPES_PATH = '/oppskrifter';
 export const recipePath = (recipeId: string) => `/oppskrifter/${recipeId}`;
+/** FR-REC-006 (spec 09): the open sources the recipes come from, with licences. */
+export const RECIPE_SOURCES_PATH = '/oppskrifter/kilder';
 export const SHOPPING_LIST_PATH = '/handleliste';
+/** Spec 09: the meal plan; `?uke=2026-W44` shows another week. */
+export const MEAL_PLAN_PATH = '/maltidsplan';
+export const mealPlanWeekPath = (week: string) => `${MEAL_PLAN_PATH}?uke=${week}`;
 export const BUDGET_PATH = '/budsjett';
 export const NEW_PURCHASE_PATH = '/budsjett/kjop/ny';
 export const purchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}`;

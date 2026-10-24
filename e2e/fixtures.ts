@@ -144,6 +144,21 @@ export async function apiAs(playwright: Playwright, account: Account) {
       const response = await api.put('/api/v1/me/allergens', { data: { allergens }, headers });
       expect(response.status(), await response.text()).toBe(200);
     },
+    /** Spec 09: the household's recipes (ranked), to find one by slug. */
+    async recipes(): Promise<{ id: string; slug: string }[]> {
+      const response = await api.get(`/api/v1/households/${householdId}/recipes`);
+      expect(response.status(), await response.text()).toBe(200);
+      return ((await response.json()) as { recipes: { id: string; slug: string }[] }).recipes;
+    },
+    /** Spec 09: an entry in the meal plan. */
+    async addMealEntry(body: unknown): Promise<{ id: string }> {
+      const response = await api.post(`/api/v1/households/${householdId}/meal-plan/entries`, {
+        data: body,
+        headers,
+      });
+      expect(response.status(), await response.text()).toBe(201);
+      return response.json();
+    },
     dispose: () => api.dispose(),
   };
 }

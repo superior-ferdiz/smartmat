@@ -1,0 +1,82 @@
+{
+  "slug": "tomatsuppe-med-urter",
+  "title": "Tomatsuppe med urter",
+  "description": "Rask tomatsuppe med basilikum og timian, med en skvett balsamico til slutt.",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 30,
+  "tags": ["middag", "lunsj", "suppe", "vegetar"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Herbed Tomato Soup",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4518417",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 1 time totalt. Delingen i forberedelse og koking er gjort av KI. «Tomato sauce» er oversatt til passata. Mengdene av basilikum og timian er regnet som tørket urt.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "olje",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss olivenolje"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1/2",
+      "unit": "stk",
+      "text": "1,2 dl løk i terninger (ca. ½ løk)"
+    },
+    {
+      "ingredient": "hakkede-tomater",
+      "amount": "400",
+      "unit": "g",
+      "text": "1 boks (400 g) hakkede tomater"
+    },
+    {
+      "ingredient": "buljong",
+      "amount": "3,5",
+      "unit": "dl",
+      "text": "3,5 dl kylling- eller grønnsakskraft"
+    },
+    {
+      "ingredient": "passata",
+      "amount": "450",
+      "unit": "g",
+      "text": "450 g passata"
+    },
+    {
+      "ingredient": "basilikum",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ss frisk basilikum (eller 1 ts tørket)"
+    },
+    {
+      "ingredient": "timian",
+      "amount": "1/4",
+      "unit": "ts",
+      "text": "1 ts frisk timian (eller ¼ ts tørket)"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "En klype pepper"
+    },
+    {
+      "ingredient": "eddik",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss balsamico",
+      "optional": true
+    }
+  ],
+  "steps": [
+    "Fres løken i olivenolje i en kjele på 2 liter til den er myk, men ikke brun.",
+    "Ha i tomater, kraft, passata, basilikum, timian og pepper.",
+    "Kok opp.",
+    "Skru ned varmen, legg på lokk og la suppen småkoke i 20 minutter.",
+    "Rør inn eddiken rett før servering, hvis du vil.",
+    "Øs suppen i skåler og pynt med strimler av 4–6 friske basilikumblader."
+  ]
+}

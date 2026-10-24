@@ -1,0 +1,77 @@
+{
+  "slug": "spaghetti-carbonara",
+  "title": "Spaghetti carbonara",
+  "description": "Italiensk pasta med eggeplommer, pecorino, parmesan og pancetta eller guanciale.",
+  "servings": 6,
+  "prepMinutes": 15,
+  "cookMinutes": 25,
+  "tags": ["middag", "pasta", "italiensk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Spaghetti alla Carbonara",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4640105",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 1 time totalt. Delingen i forberedelse og koking er gjort av KI. Eggeplommene er regnet som hele egg i matlageret.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "pasta",
+      "amount": "450",
+      "unit": "g",
+      "text": "450 g spaghetti"
+    },
+    {
+      "ingredient": "bacon",
+      "amount": "225",
+      "unit": "g",
+      "text": "225–500 g guanciale eller pancetta (eller bacon)"
+    },
+    {
+      "ingredient": "egg",
+      "amount": "5",
+      "unit": "stk",
+      "text": "5 eggeplommer"
+    },
+    {
+      "ingredient": "pecorino",
+      "amount": "1,8",
+      "unit": "dl",
+      "text": "1,8 dl revet pecorino romano"
+    },
+    {
+      "ingredient": "parmesan",
+      "amount": "1,8",
+      "unit": "dl",
+      "text": "1,8 dl revet parmigiano reggiano"
+    },
+    {
+      "ingredient": "olje",
+      "amount": "3",
+      "unit": "ss",
+      "text": "3–4 ss extra virgin olivenolje"
+    },
+    {
+      "ingredient": "pepper",
+      "amount": "1/2",
+      "unit": "ss",
+      "text": "½ ss nykvernet pepper"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt"
+    }
+  ],
+  "steps": [
+    "Skjær guanciale eller pancetta i terninger på 2,5 cm.",
+    "Kok opp en stor kjele med vann, og ha i salt når det begynner å koke.",
+    "Kok spaghettien al dente. Ta vare på 2,5 dl av kokevannet.",
+    "Mens pastaen koker, varmer du olivenoljen i en stor stekepanne på middels høy varme. Ha i pancettaen når oljen er varm, og stek den på lav varme i omtrent 10 minutter, til mesteparten av fettet har smeltet ut, men kjøttet fortsatt er seigt og så vidt brunet.",
+    "Visp omtrent 1 dl av kokevannet langsomt inn i eggeplommene i en bolle. Ha i osten og bland godt med en gaffel.",
+    "Hell av pastaen og ha den rett over i pannen med pancettaen. Vend godt og skru av varmen.",
+    "Ha eggeblandingen i pastaen mens du rører inn resten av kokevannet, så sausen blir jevn.",
+    "Ha i pepperen og vend alt godt sammen."
+  ]
+}

@@ -36,6 +36,8 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-REC-002 | Oppskrifter rangeres etter hva som finnes, hva som går ut snart og hva som mangler, med forklaring | B | 5 |
 | FR-REC-003 | Oppskriften viser hva man har, hva som mangler og om mengden er nok | B | 5 |
 | FR-REC-004 | Oppskrifter med brukerens registrerte allergener filtreres bort eller varsles, med tydelig forbehold | B | 5 |
+| FR-REC-005 | Oppskrifter kan importeres fra åpne kilder med kilde, lisens og hva som er endret (lagt til i fase 9, ADR-0016) | B | 9 |
+| FR-REC-006 | Oppskriften viser kilde og lisens, og om teamet har kontrollert den (lagt til i fase 9) | B | 9 |
 | FR-SHOP-001 | Bruker kan føre handleliste manuelt og huke av varer | B | 6 |
 | FR-SHOP-002 | Manglende ingredienser kan legges til fra en oppskrift | B | 6 |
 | FR-SHOP-003 | Avhukede varer kan legges inn i lageret | B | 6 |
@@ -52,6 +54,15 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-RCPT-006 | Bekreftelsen lager kjøp, linjer og lagerpartier i én transaksjon (lagt til i fase 8) | K | 8 |
 | FR-RCPT-007 | Samme kvittering kan ikke gi to kjøp (lagt til i fase 8) | K | 8 |
 | FR-RCPT-008 | Bilde og uttrekk slettes ved bekreftelse eller etter 7 dager (lagt til i fase 8) | K | 8 |
+
+
+| ID | Krav (måltidsplan, lagt til i fase 9) | Prio | Fase |
+|---|---|---|---|
+| FR-PLAN-001 | Bruker kan legge oppskrifter og fritekst på dager og måltider, flytte, fjerne og bla mellom uker | K | 9 |
+| FR-PLAN-002 | Mengder skaleres til valgt antall porsjoner med heltall, og rundes opp | K | 9 |
+| FR-PLAN-003 | Ukeplanens behov regnes ut og trekkes fra matlageret (aldri siste forbruksdag passert) | K | 9 |
+| FR-PLAN-004 | Det som mangler, legges på handlelisten etter bekreftelse, uten å bli doblet | K | 9 |
+| FR-PLAN-005 | Det som går ut snart, foreslås først, med forklaring | K | 9 |
 
 ## Ikke-funksjonelle krav
 

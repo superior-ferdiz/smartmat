@@ -1,0 +1,46 @@
+{
+  "slug": "havregrot",
+  "title": "Havregrøt",
+  "description": "Havregryn kokt i vann og melk. En enkel frokost.",
+  "servings": 1,
+  "prepMinutes": 2,
+  "cookMinutes": 10,
+  "tags": ["frokost", "grøt", "vegetar"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Oat Porridge",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4606890",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 15 minutter totalt. Delingen i forberedelse og koking er gjort av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "havregryn",
+      "amount": "45",
+      "unit": "g",
+      "text": "45 g havregryn"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "1,8",
+      "unit": "dl",
+      "text": "1,8 dl vann"
+    },
+    {
+      "ingredient": "melk",
+      "amount": "1,8",
+      "unit": "dl",
+      "text": "1,8 dl melk"
+    }
+  ],
+  "steps": [
+    "Bland havregryn og vann, og kok opp under lokk.",
+    "Når det bobler, rører du og skrur ned til lavest mulig varme som holder det småkokende. Legg på lokket igjen, og følg med så det ikke koker over.",
+    "Rør omtrent hvert minutt. Etter fem minutter tar du av lokket, rører godt og har i melken.",
+    "Rør til alt er godt blandet.",
+    "Server med rosiner, sukker, brunt sukker, lønnesirup, en klype salt eller honning etter smak."
+  ]
+}

@@ -98,6 +98,23 @@
 | Overbelastning | Mange store bilder | 10 opplastinger per bruker og time, 20 i kø totalt, én kvittering om gangen i workeren, `mem_limit` 512 MB i testmiljøet | `receipts.api.test.ts` |
 | Samme kvittering blir to kjøp | Fotografert to ganger, dobbeltklikk | Sterk nøkkel (hash av kvitteringsnummer, klokkeslett, dato, total) unik per husholdning, advarsel ved samme dato og sum, statusbetingelse i transaksjonen | `receipts.api.test.ts` (også samtidig) |
 
+### Nytt i fase 9: måltidsplan og oppskrifter fra åpne kilder
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se eller endre andres måltidsplan | Bytte husholdnings-ID eller oppførings-ID i URL-en | `householdAccess` på alle rutene, og repoet filtrerer på `household_id` ved lesing, endring og sletting. Sammensatte fremmednøkler på bidragene. | `mealPlan.api.test.ts` (alle seks endepunktene, begge retninger) |
+| Legge noe på andres handleliste | `POST /meal-plan/shopping` med andres husholdning | Samme rutesjekk. Serveren regner behovet ut fra egen plan og nekter ingredienser planen ikke trenger. | `mealPlan.api.test.ts` |
+| Doble linjer på handlelisten | Dobbeltklikk, to faner | Bidrag per oppføring trekkes fra, listen låses og bidragene leses på nytt i transaksjonen. Oppføringer har dedupe-nøkkel. | `mealPlan.api.test.ts` (også samtidig) |
+| Overbelastning | Tusenvis av oppføringer på en dag, eller et år i én spørring | Høyst 20 oppføringer per dag, og høyst 42 dager per spørring | `mealPlan.api.test.ts` |
+| Hva noen spiser, i loggen | Fritekst som «Bursdag til …» | Fritekst og titler kommer aldri i logger eller feilmeldinger | `mealPlan.api.test.ts` (sjekker loggen) |
+| Skadelig innhold fra en åpen kilde | Wikitekst, HTML eller lenker i en Wikibooks-side | Appen viser bare den oversatte teksten som ren tekst. Lenken til originalen er en https-URL som seed-sjekken kontrollerer, og den åpnes med `rel="noopener noreferrer"`. | `seed.test.ts`, `RecipeSourcesPage.test.tsx` |
+| Feil eller farlig oppskrift | KI har oversatt en mengde, tid eller et allergen feil | Merket «KI-utkast – ikke kontrollert av teamet». `RECIPES_INCLUDE_UNREVIEWED=false` skjuler slike oppskrifter. Allergener regnes fortsatt ut fra ingrediensene, og forbeholdet vises på måltidsplanen. | `recipeSources.api.test.ts`, `RecipeSourcesPage.test.tsx` |
+| Brudd på lisens eller databasevern | Kopiering fra et oppskriftsnettsted | Bare kilder med åpne lisenser (ADR-0016). Kilde, lisens og endringer vises på hver oppskrift og på en egen side. | `seed.test.ts` (lisens og kildefelt kreves) |
+
+**Personvern:** måltidsplanen kan si noe om helse eller tro (for eksempel at noen aldri planlegger svinekjøtt). Det er
+husholdningens egne data, de vises ikke for andre, og de slettes med husholdningen (cascade). Teamet har ikke vurdert
+om dette krever noe mer.
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
@@ -105,7 +122,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 [fase 5](../evidence/test-results/fase-5/10-mutation-check.txt),
 [fase 6](../evidence/test-results/fase-6/10-mutation-check.txt),
 [fase 7](../evidence/test-results/fase-7/10-mutation-check.txt),
-[fase 8](../evidence/test-results/fase-8/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 8](../evidence/test-results/fase-8/10-mutation-check.txt),
+[fase 9](../evidence/test-results/fase-9/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 

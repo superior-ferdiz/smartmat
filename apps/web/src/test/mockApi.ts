@@ -48,8 +48,28 @@ export const defaultApi: Handler = (request) => {
   if (/^\/households\/[^/]+\/purchases(\?month=[\d-]+)?$/.test(request.path)) {
     return { status: 200, body: { month: '2026-10', purchases: [] } };
   }
-  if (/^\/households\/[^/]+\/recipes$/.test(request.path))
+  if (/^\/households\/[^/]+\/recipes(\?for=[\d-]+)?$/.test(request.path))
     return { status: 200, body: { recipes: [], userAllergens: [] } };
+  // Spec 09: an empty meal plan.
+  const plan = /^\/households\/[^/]+\/meal-plan(\/needs)?\?from=([\d-]+)&to=([\d-]+)$/.exec(
+    request.path,
+  );
+  if (plan) {
+    const [, needs, from, to] = plan;
+    return needs
+      ? {
+          status: 200,
+          body: {
+            from,
+            to,
+            recipeEntryCount: 0,
+            ingredients: [],
+            suggestions: [],
+            unplannedExpiring: [],
+          },
+        }
+      : { status: 200, body: { from, to, entries: [] } };
+  }
   if (request.path === '/me/allergens') return { status: 200, body: { allergens: [] } };
   if (/^\/households\/[^/]+\/shopping-list$/.test(request.path))
     return { status: 200, body: { items: [] } };

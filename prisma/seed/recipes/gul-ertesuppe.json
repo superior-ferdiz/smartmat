@@ -1,0 +1,71 @@
+{
+  "slug": "gul-ertesuppe",
+  "title": "Gul ertesuppe",
+  "description": "Enkel suppe av gule erter med løk, gulrot og selleri.",
+  "servings": 6,
+  "prepMinutes": 15,
+  "cookMinutes": 90,
+  "tags": ["middag", "suppe"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Yellow Split Pea Soup",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4525778",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 1–2 timer totalt. Delingen i forberedelse og koking er gjort av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "gule-erter",
+      "amount": "500",
+      "unit": "g",
+      "text": "500 g tørkede gule erter"
+    },
+    {
+      "ingredient": "buljong",
+      "amount": "2",
+      "unit": "stk",
+      "text": "2 terninger kylling- eller oksebuljong"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 liten løk, hakket"
+    },
+    {
+      "ingredient": "gulrot",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 middels gulrot i terninger"
+    },
+    {
+      "ingredient": "stangselleri",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 stilk stangselleri, hakket"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "1,5",
+      "unit": "l",
+      "text": "1,5 liter vann"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt etter smak"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Pepper etter smak"
+    }
+  ],
+  "steps": [
+    "Bløtlegg ertene i kaldt vann i opptil seks timer hvis du vil. Det er ikke nødvendig, men gjør koketiden kortere.",
+    "Ha alt i en stor gryte.",
+    "Kok opp, og la suppen småkoke under lokk til ertene er møre, 1–2 timer.",
+    "Følg med på vannet, og fyll på med varmt vann om nødvendig. Krutonger er godt på toppen."
+  ]
+}

@@ -78,7 +78,7 @@ describe('FR-UI-002 placeholder pages', () => {
   );
 
   it('marks later sections as "Kommer senere"', () => {
-    renderApp('/maltidsplan');
+    renderApp('/husholdning');
     const main = screen.getByRole('main');
     expect(within(main).getByText('Kommer senere')).toBeInTheDocument();
   });

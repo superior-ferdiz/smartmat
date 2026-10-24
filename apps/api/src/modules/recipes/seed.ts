@@ -2,9 +2,10 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { checkSeed, type ResolvedSeed } from '@smartmat/shared';
 import type { Db } from '../../db';
+import { toDbDate } from '../../lib/dbDates';
 
 /*
- * Seeding the global recipe tables (spec 05, ADR-0009) from a directory with ingredients.json and
+ * Seeding the global recipe tables (spec 05, ADR-0016) from a directory with ingredients.json and
  * recipes/*.json: prisma/seed/ for development (`npm run db:seed`), apps/api/test/fixtures/seed/ for the
  * test databases. Everything is checked first; the database is only touched when all files are valid.
  */
@@ -122,6 +123,14 @@ export async function applySeed(db: Db, seed: ResolvedSeed): Promise<SeedSummary
           source: recipe.source,
           license: recipe.license,
           authors: recipe.authors,
+          sourceTitle: recipe.sourceTitle ?? null,
+          sourceUrl: recipe.sourceUrl ?? null,
+          retrievedOn: recipe.retrievedOn ? toDbDate(recipe.retrievedOn) : null,
+          adaptation: recipe.adaptation ?? null,
+          adaptationNote: recipe.adaptationNote ?? null,
+          aiAssisted: recipe.aiAssisted ?? false,
+          reviewedBy: recipe.reviewedBy,
+          reviewedOn: recipe.reviewedOn ? toDbDate(recipe.reviewedOn) : null,
         };
         const row = await tx.recipe.upsert({
           where: { slug: recipe.slug },

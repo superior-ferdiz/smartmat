@@ -27,6 +27,7 @@ export const API_ERRORS = {
   purchaseChangedMeanwhile: 'errors.purchase.changedMeanwhile',
   shoppingChangedMeanwhile: 'errors.shopping.changedMeanwhile',
   shoppingAlreadyOnList: 'errors.shopping.alreadyOnList',
+  mealPlanDayFull: 'errors.mealPlan.dayFull',
   registrationClosed: 'errors.auth.registrationClosed',
   receiptTooLarge: 'errors.receipt.tooLarge',
   receiptUnsupportedType: 'errors.receipt.unsupportedType',

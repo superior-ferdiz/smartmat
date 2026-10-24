@@ -3,7 +3,7 @@ import { EXPIRY_KINDS } from '../quantity/expiry';
 import { BASE_UNITS } from '../quantity/quantity';
 import { ALLERGENS } from '../recipes/allergens';
 import { LINE_STATUSES } from '../recipes/scoring';
-import { RECIPE_SEED_SOURCES } from '../recipes/seed';
+import { RECIPE_ADAPTATIONS, RECIPE_LICENSES, RECIPE_SEED_SOURCES } from '../recipes/seed';
 import { CATEGORY_KEYS } from '../schemas/inventory';
 
 /* Request and response shapes for recipes and allergens (phase 5, spec 05). */
@@ -67,6 +67,23 @@ export const recipeScoreSchema = z.object({
   reasons: z.array(scoreReasonSchema),
 });
 
+/**
+ * ADR-0016 (spec 09, FR-REC-006): where an external recipe comes from. Null for the team's own recipes and
+ * the test fixtures. `reviewedBy` empty = shown as "KI-utkast – ikke kontrollert av teamet".
+ */
+export const recipeOriginSchema = z.object({
+  title: z.string(),
+  url: z.url(),
+  license: z.enum(RECIPE_LICENSES),
+  retrievedOn: z.iso.date(),
+  adaptation: z.enum(RECIPE_ADAPTATIONS),
+  adaptationNote: z.string().nullable(),
+  aiAssisted: z.boolean(),
+  reviewedBy: z.array(z.string()),
+  reviewedOn: z.iso.date().nullable(),
+});
+export type RecipeOrigin = z.infer<typeof recipeOriginSchema>;
+
 export const recipeSummarySchema = z.object({
   id: z.uuid(),
   slug: z.string(),
@@ -77,6 +94,7 @@ export const recipeSummarySchema = z.object({
   cookMinutes: z.number().int(),
   tags: z.array(z.string()),
   source: z.enum(RECIPE_SEED_SOURCES),
+  origin: recipeOriginSchema.nullable(),
   /** For the search field: the names of the recipe's ingredients. */
   ingredientNames: z.array(z.string()),
   /** Allergens registered for the recipe's ingredients (all of them). */
@@ -86,6 +104,12 @@ export const recipeSummarySchema = z.object({
   score: recipeScoreSchema,
 });
 export type RecipeSummary = z.infer<typeof recipeSummarySchema>;
+
+/**
+ * FR-PLAN-005 (spec 09): `?for=YYYY-MM-DD` ranks for a planned day – batches whose use-by date is before
+ * that day do not count. Without it, the ranking is for today.
+ */
+export const recipeListQuerySchema = z.object({ for: z.iso.date().optional() });
 
 /** GET /households/:householdId/recipes: ranked, best first. */
 export const recipeListResponseSchema = z.object({

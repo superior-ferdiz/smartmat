@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { readSeedDirectory } from './seed';
@@ -15,10 +17,31 @@ describe('spec 05 seed files in the repo', () => {
     expect(seed.ingredients.length).toBeGreaterThan(0);
   });
 
-  it('every team recipe in prisma/seed/ has source "team" and at least one author', () => {
+  it('every recipe in prisma/seed/ is from the team or an open source, never test data, and has authors', () => {
     for (const recipe of readSeedDirectory(repoSeed).recipes) {
-      expect(recipe.source, recipe.slug).toBe('team');
+      expect(['team', 'external'], recipe.slug).toContain(recipe.source);
       expect(recipe.authors.length, recipe.slug).toBeGreaterThan(0);
+    }
+  });
+
+  it('spec 09: every external recipe links to the exact revision it was translated from', () => {
+    const sources = JSON.parse(readFileSync(join(repoSeed, 'sources/wikibooks.json'), 'utf8')) as {
+      slug: string;
+    }[];
+    for (const recipe of readSeedDirectory(repoSeed).recipes) {
+      if (recipe.source !== 'external') continue;
+      expect(
+        sources.map((s) => s.slug),
+        recipe.slug,
+      ).toContain(recipe.slug);
+      const original = JSON.parse(
+        readFileSync(join(repoSeed, 'sources/wikibooks', `${recipe.slug}.json`), 'utf8'),
+      ) as { revisionUrl: string; retrievedOn: string; license: string };
+      expect(recipe.sourceUrl, recipe.slug).toBe(original.revisionUrl);
+      expect(recipe.retrievedOn, recipe.slug).toBe(original.retrievedOn);
+      expect(recipe.license, recipe.slug).toBe(original.license);
+      // Until someone in the team has checked it, it is shown as an AI draft (spec 09, decision 6).
+      expect(recipe.aiAssisted, recipe.slug).toBe(true);
     }
   });
 
@@ -36,7 +59,7 @@ describe('spec 05 seed files in the repo', () => {
       ['hvetemel', 150], // 2,5 dl × 60 g per dl
       ['melk', 500],
       ['egg', 3],
-      ['salt', 4], // 1/2 ts = 2,5 ml → 3 ml (rounded) → 3 × 6/5 = 3,6 → 4 g
+      ['salt', 3], // 1/2 ts = 2,5 ml × 6/5 = 3 g (rounded once, at the end, since phase 9)
     ]);
   });
 });

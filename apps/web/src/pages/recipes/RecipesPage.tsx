@@ -20,6 +20,7 @@ import {
   recipeFilterToParams,
   type RecipeFilter,
 } from '../../recipes/filter';
+import { RecipeBadge } from '../../recipes/RecipeBadge';
 import { useFormatMinutes, useReasonText } from '../../recipes/formatHooks';
 import styles from '../../recipes/recipes.module.css';
 
@@ -193,7 +194,7 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
       {score.reasons[0] && <p className={styles.meta}>{reasonText(score.reasons[0])}</p>}
       <div className={styles.tags}>
         <AllergenWarningTag allergens={recipe.allergenWarnings} />
-        {recipe.source === 'test' && <Tag tone="sample">{t('recipes.testData')}</Tag>}
+        <RecipeBadge recipe={recipe} />
         {recipe.tags.map((tag) => (
           <Tag key={tag}>{tag}</Tag>
         ))}

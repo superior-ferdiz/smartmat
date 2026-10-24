@@ -1,0 +1,234 @@
+Kjørt 2026-10-24T18:39:49Z (kjøring 2, etter nye tester for runde 21, 22, 29 og 32)
+1. Skalering runder ned i stedet for opp
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  6 failed | 1052 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-002 scaling > 1 for 3 of 4 servings → 1 (rounded: true)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-002 scaling > 1 for 6 of 4 servings → 2 (rounded: true)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-002 scaling > 250 for 1 of 3 servings → 84 (rounded: true)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > marks scaled amounts that were rounded up ("ca.")
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > spec 09 FR-PLAN-002 servings on the recipe page > scales the amounts, rounds up, works out have/missing again, and keeps the choice in the URL
+      feilet: |web| src/recipes/scale.test.ts > spec 09 FR-PLAN-002 scaling on the recipe page > scales up, rounds up, and works out have/missing again
+2. «ca.» (rundet) settes aldri
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  6 failed | 1052 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-002 scaling > 1 for 3 of 4 servings → 1 (rounded: true)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-002 scaling > 1 for 6 of 4 servings → 2 (rounded: true)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-002 scaling > 250 for 1 of 3 servings → 84 (rounded: true)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > marks scaled amounts that were rounded up ("ca.")
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > spec 09 FR-PLAN-002 servings on the recipe page > scales the amounts, rounds up, works out have/missing again, and keeps the choice in the URL
+      feilet: |web| src/recipes/scale.test.ts > spec 09 FR-PLAN-002 scaling on the recipe page > scales up, rounds up, and works out have/missing again
+3. Et parti med siste forbruksdag teller også for måltider etter datoen
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  2 failed | 1056 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > a batch with use-by before the planned day does not count; unplanned expiring food is listed
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > a batch that cannot be used on the planned day does not make it "some"
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > a batch with a use-by date only counts for meals on or before that date
+4. Fordelingen bruker partiet som går ut sist, først
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > shares out greedily: the batch that goes off first is used first
+5. Siste forbruksdag passert teller med i behovet
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > use-by passed never counts and is named; best before passed still counts
+6. Det som er lagt på listen før, trekkes ikke fra (samme behov to ganger gir dobbelt)
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  5 failed | 1053 passed (1058)
+    API-tester:   Tests  2 failed | 99 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > adds what is missing, and the same need twice never doubles
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > two requests at the same time add once
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 adding the same need twice never doubles it > another entry with the same recipe is its own need
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 adding the same need twice never doubles it > fewer servings later: nothing is taken off the list
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 adding the same need twice never doubles it > more servings later: only the increase is left to add
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 adding the same need twice never doubles it > what an entry already added is subtracted
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 suggestions (spec 06 rules) > ticks what is missing; staples, optional, unknown amounts and added ones are unticked
+7. Færre porsjoner tar noe av listen (negativ endring)
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 adding the same need twice never doubles it > fewer servings later: nothing is taken off the list
+8. «For lite» også når ingenting kan brukes den dagen
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > a batch with use-by before the planned day does not count; unplanned expiring food is listed
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 needs and the inventory > a batch that cannot be used on the planned day does not make it "some"
+9. Basisvarer og valgfrie krysses av i forslaget
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > scales, subtracts the inventory and counts only from today
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-004 suggestions (spec 06 rules) > ticks what is missing; staples, optional, unknown amounts and added ones are unticked
+10. «Går ut denne uka» tar med varer som planen bruker
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > a batch with use-by before the planned day does not count; unplanned expiring food is listed
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 / FR-INV-005 "går ut denne uka" > lists what goes off in the period and no planned recipe uses, most urgent first
+11. «Går ut denne uka» tar med passerte datoer
+    endret: packages/shared/src/mealplan/needs.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/mealplan/needs.test.ts > spec 09 FR-PLAN-003 / FR-INV-005 "går ut denne uka" > lists what goes off in the period and no planned recipe uses, most urgent first
+12. ISO-uka regnes fra onsdag i stedet for torsdag
+    endret: packages/shared/src/dates/week.ts
+    enhetstester: Tests  2 failed | 1056 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/dates/week.test.ts > spec 09 FR-PLAN-001 ISO weeks (Monday–Sunday) > 2026-01-01 is in 2026-W01
+      feilet: |shared| src/dates/week.test.ts > spec 09 FR-PLAN-001 ISO weeks (Monday–Sunday) > moves between weeks across new year, also through week 53
+13. Behovet for denne uka regnes fra mandag (dager som har vært, telles)
+    endret: packages/shared/src/dates/week.ts
+    enhetstester: Tests  3 failed | 1055 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/dates/week.test.ts > spec 09 FR-PLAN-003 the days whose needs count (decision 4) > on Sunday only Sunday is left
+      feilet: |shared| src/dates/week.test.ts > spec 09 FR-PLAN-003 the days whose needs count (decision 4) > this week: from today to Sunday
+      feilet: |web| src/pages/mealplan/MealPlanPage.test.tsx > FR-PLAN-003/004 what the week needs > this week counts from today
+14. Perioden kan være 43 dager
+    endret: packages/shared/src/schemas/mealPlan.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > a period longer than six weeks, or backwards, is refused
+      feilet: |shared| src/schemas/mealPlan.test.ts > spec 09 mealPlanRangeSchema > from ≤ to, at most six weeks (42 days, both included)
+15. Rangering for en dag: partier som går ut før dagen teller
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/recipeSources.api.test.ts > FR-PLAN-005 ranking for a planned day > a batch whose use-by date is before the day does not count for that day
+16. Eksterne oppskrifter uten kildefelt godtas
+    endret: packages/shared/src/recipes/seed.ts
+    enhetstester: Tests  5 failed | 1053 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > spec 09 / ADR-0016: external recipes > without adaptation it is refused
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > spec 09 / ADR-0016: external recipes > without aiAssisted it is refused
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > spec 09 / ADR-0016: external recipes > without retrievedOn it is refused
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > spec 09 / ADR-0016: external recipes > without sourceTitle it is refused
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > spec 09 / ADR-0016: external recipes > without sourceUrl it is refused
+17. Alle lisenser godtas for eksterne oppskrifter
+    endret: packages/shared/src/recipes/seed.ts
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > spec 09 / ADR-0016: external recipes > only the licences in ADR-0016
+18. Omregning med brøk rundes før omregningen (½ løk = 100 g)
+    endret: packages/shared/src/recipes/seed.ts
+    enhetstester: Tests  4 failed | 1054 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-001 browse > the detail has steps, authors and every ingredient line in order
+      feilet: |api| src/modules/recipes/seed.test.ts > spec 05 seed files in the repo > the fixtures resolve spoon measures and conversions to whole base units
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > a valid recipe resolves to base units, and the ingredient name is stored as an alias
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 seedQuantityBase > 3 dl → NaN
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 seedQuantityBase > spec 09: a fraction through a conversion is rounded once, at the end
+19. Rutene for måltidsplanen uten householdAccess (bare innlogging)
+    endret: apps/api/src/modules/mealplan/routes.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  19 failed | 82 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > adds a recipe and a note, and lists them by date and meal
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > a period longer than six weeks, or backwards, is refused
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > a removed recipe leaves the entry with its title, and it no longer counts in the needs
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > at most 20 entries per day, also when moving one there
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > moves an entry, changes servings and text, and removes it
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > refuses {"kind":"recipe","recipeId":"0199f0a0-0000-7000-8000-000000000001","servings":4} (field recipeId)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > servings belong to recipes and text to notes
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > the same form twice gives one entry (200 the second time)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > a batch with use-by before the planned day does not count; unplanned expiring food is listed
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > scales, subtracts the inventory and counts only from today
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > adds what is missing, and the same need twice never doubles
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > an ingredient the plan does not need is refused, and nothing is added
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > merges with an open line for the same ingredient (spec 06 rules)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > removing the line or the entry: the line stays / the need comes back
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > two requests at the same time add once
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > every endpoint under someone else’s household id
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > someone else’s entry id under one’s own household
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > the repos filter on the household themselves (not only the routes and the service)
+      feilet: |api-db| test/recipeSources.api.test.ts > FR-REC-006 source and licence > a planned recipe that is hidden as unreviewed is shown like a removed one (title kept, no link)
+20. Uka hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/mealplan/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  2 failed | 99 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > someone else’s entry id under one’s own household
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > the repos filter on the household themselves (not only the routes and the service)
+21. En oppføring hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/mealplan/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > the repos filter on the household themselves (not only the routes and the service)
+22. En oppføring endres uten å filtrere på husholdning
+    endret: apps/api/src/modules/mealplan/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > the repos filter on the household themselves (not only the routes and the service)
+23. En oppføring slettes uten å filtrere på husholdning
+    endret: apps/api/src/modules/mealplan/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  2 failed | 99 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > someone else’s entry id under one’s own household
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > the repos filter on the household themselves (not only the routes and the service)
+24. Ingen grense på 20 oppføringer per dag
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > at most 20 entries per day, also when moving one there
+25. Dobbel innsending gir to oppføringer (ingen dedupe-nøkkel)
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > the same form twice gives one entry (200 the second time)
+26. Porsjoner kan settes på fritekst
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > servings belong to recipes and text to notes
+27. En ingrediens planen ikke trenger, kan legges på listen
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > an ingredient the plan does not need is refused, and nothing is added
+28. Behovet regnes fra datoen i forespørselen, også dager som har vært
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-003 needs > scales, subtracts the inventory and counts only from today
+29. Bidragene leses uten å filtrere på husholdning
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > NFR-SEC-001 IDOR: another household gets 404 everywhere and changes nothing > the repos filter on the household themselves (not only the routes and the service)
+30. Det en oppføring la til før, trekkes ikke fra i transaksjonen
+    endret: apps/api/src/modules/shopping/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  2 failed | 99 passed (101)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > adds what is missing, and the same need twice never doubles
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-004 from the plan to the shopping list > two requests at the same time add once
+31. RECIPES_INCLUDE_UNREVIEWED=false skjuler ingenting
+    endret: apps/api/src/modules/recipes/repo.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  2 failed | 99 passed (101)
+      feilet: |api-db| test/recipeSources.api.test.ts > FR-REC-006 source and licence > a planned recipe that is hidden as unreviewed is shown like a removed one (title kept, no link)
+      feilet: |api-db| test/recipeSources.api.test.ts > FR-REC-006 source and licence > RECIPES_INCLUDE_UNREVIEWED=false hides unchecked external recipes, also by id
+32. En fjernet oppskrift vises fortsatt med id
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1058 passed (1058)
+    API-tester:   Tests  1 failed | 100 passed (101)
+      feilet: |api-db| test/recipeSources.api.test.ts > FR-REC-006 source and licence > a planned recipe that is hidden as unreviewed is shown like a removed one (title kept, no link)
+33. Oppskriftssiden regner ikke har/mangler på nytt for skalerte mengder
+    endret: apps/web/src/recipes/scale.ts
+    enhetstester: Tests  3 failed | 1055 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > spec 09 FR-PLAN-002 servings on the recipe page > scales the amounts, rounds up, works out have/missing again, and keeps the choice in the URL
+      feilet: |web| src/recipes/scale.test.ts > spec 09 FR-PLAN-002 scaling on the recipe page > scales down: what was too little can become enough
+      feilet: |web| src/recipes/scale.test.ts > spec 09 FR-PLAN-002 scaling on the recipe page > scales up, rounds up, and works out have/missing again
+34. Skjemaet sender ikke clientRequestId
+    endret: apps/web/src/mealplan/AddEntryDialog.tsx
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |web| src/pages/mealplan/MealPlanPage.test.tsx > FR-PLAN-001 the week > adds a note with a quick choice, once, and announces it
+35. Meldingen etter fjerning settes aldri (skjermleseren får ikke vite det)
+    endret: apps/web/src/pages/mealplan/MealPlanPage.tsx
+    enhetstester: Tests  1 failed | 1057 passed (1058)
+    API-tester:   Tests  101 passed (101)
+      feilet: |web| src/pages/mealplan/MealPlanPage.test.tsx > FR-PLAN-001 the week > removes an entry, says so and moves focus, also when the entry is gone after the refetch
+exit 0

@@ -38,6 +38,7 @@ function line(over: Partial<ShoppingItemResponse>): ShoppingItemResponse {
     checkedAt: '2026-10-21T09:00:00.000Z',
     createdAt: '2026-10-21T08:00:00.000Z',
     recipes: [],
+    meals: [],
     ...over,
   };
 }
@@ -59,6 +60,8 @@ function setup(
       recipeWrites.push(write);
       return { created: write.length, merged: 0, skipped: 0 };
     }),
+    mealContributions: vi.fn(async () => []),
+    addFromMealPlan: vi.fn(async () => ({ created: 0, merged: 0, skipped: 0 })),
     itemUnits: vi.fn(
       async (_h, ids: string[]) =>
         new Map(ids.filter((id) => id === ITEM).map((id) => [id, 'ml' as const])),

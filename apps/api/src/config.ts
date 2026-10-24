@@ -62,6 +62,8 @@ export interface AppConfig {
     /** Receipts waiting or being read on the whole server; more gives 503. */
     maxQueued: number;
   };
+  /** ADR-0016 (spec 09): false hides external recipes nobody in the team has checked yet. */
+  recipes: { includeUnreviewed: boolean };
 }
 
 const MINUTE = 60_000;
@@ -114,6 +116,7 @@ const envSchema = z.object({
   RECEIPT_LINE_SUGGESTIONS: z.enum(['true', 'false']).default('false'),
   RECEIPT_UPLOADS_PER_HOUR: z.coerce.number().int().positive().default(10),
   RECEIPT_MAX_QUEUED: z.coerce.number().int().positive().default(20),
+  RECIPES_INCLUDE_UNREVIEWED: z.enum(['true', 'false']).default('true'),
 });
 
 /** "172.26.0.0/16" or "127.0.0.1". */
@@ -171,5 +174,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       uploadsPerUserPerHour: e.RECEIPT_UPLOADS_PER_HOUR,
       maxQueued: e.RECEIPT_MAX_QUEUED,
     },
+    recipes: { includeUnreviewed: e.RECIPES_INCLUDE_UNREVIEWED === 'true' },
   };
 }

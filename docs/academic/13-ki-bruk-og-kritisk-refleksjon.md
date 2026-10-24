@@ -59,6 +59,23 @@
     kvitteringene den ble målt på. Tallene i ADR-0017 er derfor sannsynligvis for gode, og det står der.
 - Teamets refleksjon over dette er ikke skrevet.
 
+- Fase 9 (2026-10-24), notater:
+  - **KI som oversetter og forfatter:** de 27 oppskriftene er oversatt og tilpasset av KI fra Wikibooks. Der
+    originalen manglet porsjoner eller tid, anslo KI dem, og det står i hver oppskrift (`adaptationNote`). KI la også
+    til 45 ingredienser med allergener og omregninger som anslag. Ingenting av dette er kontrollert av teamet, og
+    appen merker det «KI-utkast».
+  - **Valg av kilde:** KI leste vilkårene til Spoonacular og TheMealDB og anbefalte bort fra begge. Ønsket om at
+    oppskrifter skal «hentes fra internett» ble tolket som en import fra en åpen kilde, ikke som oppslag mens appen
+    kjører. Teamet godkjente planen med den tolkningen.
+  - **Kontaktadressen** til Wikimedia: teamet oppga ingen, og KI brukte GitHub-profilen til repoet i stedet for en
+    e-postadresse.
+  - **Feil KI-en gjorde og fant selv:** avrundingen i frødata fra fase 5 (en halv løk ble en hel), en melding som
+    forsvant på telefon (en kjent felle som allerede stod i CLAUDE.md), landemerker med samme navn, og fire hull i
+    egne tester. Detaljer i kapittel 11.
+  - **En påstand som ble rettet før den ble levert:** et utkast til kapittel 11 sa at en ny test «feilet med den
+    gamle koden». Det var ikke kjørt, og teksten ble rettet.
+- Teamets refleksjon over fase 9 er ikke skrevet.
+
 ## Kilder i prosjektet
 
 <!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->

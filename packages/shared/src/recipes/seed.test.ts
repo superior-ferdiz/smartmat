@@ -71,6 +71,14 @@ describe('spec 05 seedQuantityBase', () => {
     expect(seedQuantityBase(amount, unit, ingredient as never)).toBe(expected);
   });
 
+  it('spec 09: a fraction through a conversion is rounded once, at the end', () => {
+    const lok = { baseUnit: 'g', conversions: [{ unit: 'stk', unitQty: 1, baseQty: 100 }] };
+    expect(seedQuantityBase('1/2', 'stk', lok as never)).toBe(50);
+    const pepper = { baseUnit: 'g', conversions: [{ unit: 'ml', unitQty: 10, baseQty: 5 }] };
+    // ⅛ ts = 0,625 ml ≈ 0,3 g: still at least 1 g, never 0.
+    expect(seedQuantityBase('1/8', 'ts', pepper as never)).toBe(1);
+  });
+
   it('a unit of another kind without a conversion is an error, not a guess', () => {
     expect(seedQuantityBase('2', 'stk', { baseUnit: 'ml', conversions: [] })).toMatch(
       /kan ikke regnes om/,
@@ -116,8 +124,86 @@ describe('spec 05 checkSeed', () => {
     expect(errorsOf({ 'vafler.json': recipe({ authors: undefined }) }).join()).toMatch(/authors/);
   });
 
-  it('only team and test are valid sources', () => {
+  it('only team, external and test are valid sources', () => {
     expect(errorsOf({ 'vafler.json': recipe({ source: 'ai' }) }).join()).toMatch(/source/);
+  });
+
+  describe('spec 09 / ADR-0016: external recipes', () => {
+    const external = (overrides: Record<string, unknown> = {}) =>
+      recipe({
+        source: 'external',
+        license: 'CC-BY-SA-4.0',
+        authors: ['Bidragsytere til Wikibooks'],
+        sourceTitle: 'Waffles',
+        sourceUrl: 'https://en.wikibooks.org/w/index.php?oldid=1',
+        retrievedOn: '2026-10-24',
+        adaptation: 'translated',
+        aiAssisted: true,
+        ...overrides,
+      });
+
+    it('a complete external recipe is accepted and keeps its source fields', () => {
+      const result = checkSeed(ingredients, new Map([['vafler.json', external()]]));
+      expect(result.ok).toBe(true);
+      expect(result.ok && result.data.recipes[0]).toMatchObject({
+        sourceUrl: 'https://en.wikibooks.org/w/index.php?oldid=1',
+        retrievedOn: '2026-10-24',
+        reviewedBy: [],
+      });
+    });
+
+    it.each(['sourceTitle', 'sourceUrl', 'retrievedOn', 'adaptation', 'aiAssisted'])(
+      'without %s it is refused',
+      (field) => {
+        expect(errorsOf({ 'vafler.json': external({ [field]: undefined }) }).join()).toMatch(
+          new RegExp(`${field} er påkrevd`),
+        );
+      },
+    );
+
+    it('only the licences in ADR-0016', () => {
+      expect(errorsOf({ 'vafler.json': external({ license: 'egen' }) }).join()).toMatch(
+        /lisensen må være/,
+      );
+      expect(errorsOf({ 'vafler.json': external({ license: 'CC-BY-NC-4.0' }) }).join()).toMatch(
+        /lisensen må være/,
+      );
+      expect(errorsOf({ 'vafler.json': external({ license: 'CC0-1.0' }) })).toEqual([]);
+    });
+
+    it('the source link must be https', () => {
+      expect(
+        errorsOf({ 'vafler.json': external({ sourceUrl: 'http://en.wikibooks.org/x' }) }),
+      ).not.toEqual([]);
+      expect(
+        errorsOf({ 'vafler.json': external({ sourceUrl: 'javascript:alert(1)' }) }),
+      ).not.toEqual([]);
+    });
+
+    it('"adapted" must say what was changed', () => {
+      expect(errorsOf({ 'vafler.json': external({ adaptation: 'adapted' }) }).join()).toMatch(
+        /adaptationNote/,
+      );
+      expect(
+        errorsOf({
+          'vafler.json': external({ adaptation: 'adapted', adaptationNote: 'Tidene er anslått.' }),
+        }),
+      ).toEqual([]);
+    });
+
+    it('reviewedOn is given when, and only when, someone has reviewed it', () => {
+      expect(errorsOf({ 'vafler.json': external({ reviewedBy: ['Linus'] }) }).join()).toMatch(
+        /reviewedOn/,
+      );
+      expect(errorsOf({ 'vafler.json': external({ reviewedOn: '2026-10-25' }) }).join()).toMatch(
+        /reviewedOn/,
+      );
+      expect(
+        errorsOf({
+          'vafler.json': external({ reviewedBy: ['Linus'], reviewedOn: '2026-10-25' }),
+        }),
+      ).toEqual([]);
+    });
   });
 
   it('lists every problem at once', () => {

@@ -2,6 +2,27 @@
 
 ## [Ikke utgitt]
 
+### Fase 9 – 2026-10-24 (grenen `fase-9`)
+- **Oppskrifter fra åpne kilder** ([ADR-0016](architecture-decisions/0016-oppskrifter-fra-apne-kilder.md), akseptert,
+  erstatter ADR-0009):
+  - importskript `npm run recipes:fetch -w @smartmat/api` (Wikibooks, MediaWiki-API, lisensen sjekkes)
+  - 27 oppskrifter oversatt av KI med kilde, revisjonslenke, lisens (CC BY-SA 4.0) og hva som er endret
+  - 45 nye ingredienser (KI-utkast)
+  - «KI-utkast – ikke kontrollert av teamet» på oppskriften og kortet, og siden `/oppskrifter/kilder`
+  - `RECIPES_INCLUDE_UNREVIEWED=false` skjuler ukontrollerte oppskrifter
+- **Måltidsplan** (`/maltidsplan`):
+  - uke mandag–søndag (ISO-uke, Europe/Oslo) med `?uke=`, middag som standard, frokost og lunsj bak en bryter
+  - oppskrift med porsjoner eller fritekst («Rester», «Spise ute»), flytte og endre i en dialog, fjerne
+  - oppskriftsvelger rangert for dagen (`GET /recipes?for=`), med grunn og allergenfilter
+  - «Hva mangler for uka»: behov skalert og rundet opp, matlageret fordelt etter siste forbruksdag, forslag som i
+    fase 6, «Legg på handlelisten» etter bekreftelse, aldri dobbelt
+  - «Går ut denne uka» for det ingen planlagt oppskrift bruker
+- **Oppskriftssiden:** porsjonsvelger (`?porsjoner=`) med skalerte mengder, og «Legg i måltidsplanen».
+- **Handlelisten** viser hvilken planlagt rett en linje kommer fra.
+- **Migreringer** `recipe_sources` og `meal_plan`: `meal_plan_entries`, `shopping_list_item_meals`, kildefelt på
+  `recipes`, CHECK.
+- **Rettet:** frødata rundet av før omregningen («½ løk» ble 100 g).
+
 ### Fase 8 – 2026-10-24 (grenen `fase-8`)
 - **Pilotmåling av OCR** på 3 ekte kvitteringer (2 Extra, 1 Kiwi), med fasit kontrollert av Ferdinand Risan:
   - Tesseract 5.3.0 med norsk modell i Docker uten nettverk

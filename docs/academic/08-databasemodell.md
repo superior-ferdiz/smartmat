@@ -309,6 +309,20 @@ blir igjen, som koblingen til kjøpet. Bildene ligger i databasen og ikke som fi
 Duplikatnøkkelen ligger på kjøpet (`purchases.dedupe_key`), fordi det er kjøpet som ikke må finnes to ganger. Den er
 en sha256 av kvitteringsnummer, klokkeslett, dato og total, så kvitteringsnummeret ikke står i klartekst.
 
+### Måltidsplan og oppskriftskilder (fase 9)
+
+- **`meal_plan_entries`:** én oppføring per dag og måltid. En CHECK sørger for at den enten er en oppskrift (med
+  kopi av tittelen og antall porsjoner) eller fritekst. Når seed-skriptet fjerner en oppskrift, blir `recipe_id` tom
+  (SET NULL), men tittelen står igjen, så brukeren ser hva som var planlagt.
+- **`shopping_list_item_meals`:** hvor mye en planlagt rett har lagt på en handlelistelinje. Den gjør at samme behov
+  ikke blir lagt til to ganger, og at bare økningen legges til hvis porsjonene økes. Sammensatte fremmednøkler med
+  CASCADE til både linjen og oppføringen: slettes én av dem, forsvinner bidraget, men linjen eller oppføringen blir
+  stående.
+- **`recipes`** har fått feltene for kilde og lisens fra ADR-0016. En CHECK krever kilde, lenke, hentedato og
+  tilpasning for eksterne oppskrifter.
+
+Behovet for uka lagres ikke. Det regnes ut fra planen, oppskriftene og matlageret, som budsjettet i fase 4.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -349,6 +363,8 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261021200000_shopping_list` | Handleliste: 3 tabeller, sammensatte fremmednøkler, CHECK, delvis unik indeks (én åpen linje per ingrediens) og én liste for hver husholdning som fantes |
 | `20261022000000_barcodes` | Strekkoder: `products`, `product_lookup_misses`, `household_barcodes` og `inventory_batches.dedupe_key` |
 | `20261024120000_receipts` | Kvitteringer: 3 tabeller, enum `receipt_status`, sammensatte fremmednøkler (også `(purchase_id, household_id)` med `ON DELETE CASCADE`) og CHECK (feilkode bare ved `failed`, bekreftet bare med kjøp og uten bildehash, bildestørrelse, sikkerhet 0–100) |
+| `20261024150000_recipe_sources` | Kilde og lisens på oppskrifter: enum `recipe_adaptation`, verdien `external` i `recipe_source`, 8 kolonner og CHECK (ekstern krever kilde; kontrollert krever dato) |
+| `20261024180000_meal_plan` | Måltidsplan: `meal_plan_entries`, `shopping_list_item_meals`, enum `meal`, sammensatte fremmednøkler, `recipe_id` med SET NULL, CHECK (oppskrift eller fritekst, porsjoner 1–50, positiv mengde) |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

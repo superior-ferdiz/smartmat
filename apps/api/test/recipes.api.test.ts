@@ -104,7 +104,7 @@ describe('FR-REC-001 browse', () => {
       ['Hvetemel', 150, 'g'],
       ['Melk', 500, 'ml'],
       ['Egg', 3, 'stk'],
-      ['Salt', 4, 'g'],
+      ['Salt', 3, 'g'], // ½ ts × 6/5 g per ml, rounded once (spec 09)
     ]);
   });
 

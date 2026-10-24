@@ -339,3 +339,45 @@ describe('FR-SHOP-003 into the inventory', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('spec 09 FR-PLAN-004 lines from the meal plan', () => {
+  it('says which planned meal put what on the line', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/shopping-list')
+        ? {
+            status: 200,
+            body: {
+              items: [
+                shoppingItem('Lammekjøtt', {
+                  quantityBase: 2500,
+                  unit: 'g',
+                  meals: [
+                    {
+                      entryId: '0199f0a0-0000-7000-8000-0000000000f1',
+                      date: '2026-10-26',
+                      meal: 'dinner',
+                      title: 'Fårikål',
+                      quantityBase: 1500,
+                    },
+                    {
+                      entryId: '0199f0a0-0000-7000-8000-0000000000f2',
+                      date: '2026-10-29',
+                      meal: 'dinner',
+                      title: 'Lammegryte',
+                      quantityBase: 1000,
+                    },
+                  ],
+                }),
+              ],
+            },
+          }
+        : undefined,
+    );
+    renderApp('/handleliste');
+    expect(
+      await screen.findByText(
+        'Måltidsplan man. 26. okt.: Fårikål, 1,5 kg og Måltidsplan tor. 29. okt.: Lammegryte, 1 kg',
+      ),
+    ).toBeInTheDocument();
+  });
+});

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MEALS } from '../mealplan/needs';
 import { BASE_UNITS } from '../quantity/quantity';
 
 /* Response shapes for the shopping list (phase 6, spec 06). */
@@ -7,6 +8,15 @@ export const shoppingRecipeShareSchema = z.object({
   recipeId: z.uuid(),
   title: z.string(),
   /** What the recipe added, in the ingredient's base unit (null = no amount). */
+  quantityBase: z.number().int().nullable(),
+});
+
+/** FR-PLAN-004 (spec 09): what a planned meal put on the line. */
+export const shoppingMealShareSchema = z.object({
+  entryId: z.uuid(),
+  date: z.iso.date(),
+  meal: z.enum(MEALS),
+  title: z.string(),
   quantityBase: z.number().int().nullable(),
 });
 
@@ -21,6 +31,7 @@ export const shoppingItemResponseSchema = z.object({
   checkedAt: z.string().nullable(),
   createdAt: z.string(),
   recipes: z.array(shoppingRecipeShareSchema),
+  meals: z.array(shoppingMealShareSchema),
 });
 export type ShoppingItemResponse = z.infer<typeof shoppingItemResponseSchema>;
 

@@ -517,6 +517,50 @@ Har noen bekreftet den samme kvitteringen i mellomtiden, kaster repoet `ReceiptN
 tilbake. Servicen svarer da med kjøpet som ble laget først (200). Testen sender to bekreftelser samtidig og
 sjekker at det blir ett kjøp.
 
+## Fase 9: oppskrifter fra åpne kilder og måltidsplan
+
+## Eksempel 35: skalering med heltall, rundet opp (FR-PLAN-002)
+
+```ts
+const product = quantityBase * servings;
+const scaled = Math.ceil(product / recipeServings);
+return { quantityBase: Math.min(scaled, MAX_QUANTITY_BASE), rounded: product % recipeServings !== 0 };
+```
+
+Mengdene er heltall i grunnenhet (ADR-0006), så skaleringen ganger først og deler til slutt. Da blir det bare én
+avrunding. Den går **opp**, fordi det er bedre å kjøpe ett egg for mye enn ett for lite. `rounded` gjør at appen
+skriver «ca.». «Etter smak» (ingen mengde) skaleres ikke.
+
+## Eksempel 36: matlageret fordeles grådig etter siste forbruksdag (FR-PLAN-003)
+
+Et parti med siste forbruksdag 28. oktober kan brukes til middag 27., men ikke 30. Behovet regnes derfor ikke bare
+som «sum minus sum». Måltidene gås gjennom i datorekkefølge. Hvert måltid får først det partiet som må brukes
+tidligst, blant dem som fortsatt kan brukes den dagen. Partier uten slik dato kommer sist. Testen «shares out
+greedily» viser hvorfor rekkefølgen betyr noe: tar det første måltidet partiet uten dato, er det bare et for gammelt
+parti igjen til det neste.
+
+## Eksempel 37: samme behov blir ikke doblet (FR-PLAN-004)
+
+Hver oppføring husker hvor mye den har lagt på listen (`shopping_list_item_meals`). Det som legges til, er bare det
+som fortsatt mangler:
+
+```ts
+export function entryDelta(need) {
+  return Math.max(0, (need.shortfallBase ?? 0) - (need.addedBase ?? 0));
+}
+```
+
+Bidragene leses på nytt **inne i transaksjonen**, etter at listen er låst (`SELECT … FOR UPDATE`, som i fase 6). Ellers
+kan to samtidige forespørsler begge se «ingenting lagt til ennå». Testen sender to forespørsler samtidig og sjekker at
+det blir én linje med riktig mengde. Økes porsjonene, legges bare økningen til. Behovet trekkes aldri fra listen, så
+`Math.max(0, …)` hindrer en negativ endring.
+
+## Eksempel 38: oppskrifter med kilde som kan spores (FR-REC-005)
+
+Importskriptet lagrer originalen med revisjons-id, og oppskriftsfilen lenker til akkurat den versjonen. En test
+sammenligner lenken, datoen og lisensen i hver oppskrift med originalfilen. `checkSeed` krever alle kildefeltene for
+eksterne oppskrifter og godtar bare lisensene i ADR-0016. Databasen har en CHECK med samme regel.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert

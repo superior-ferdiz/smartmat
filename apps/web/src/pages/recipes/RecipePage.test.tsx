@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { RecipeDetail } from '@smartmat/shared';
 import { renderApp } from '../../test/renderApp';
@@ -284,5 +284,108 @@ describe('FR-SHOP-002 add what is missing to the shopping list', () => {
     expect(
       screen.queryByRole('button', { name: 'Legg manglende i handlelisten' }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe('spec 09 FR-PLAN-002 servings on the recipe page', () => {
+  const pot = recipeDetail(
+    'Gryte',
+    [
+      recipeLine('Ris', {
+        displayText: '250 g ris',
+        quantityBase: 250,
+        status: 'enough',
+        haveBase: 300,
+        itemNames: ['Ris'],
+      }),
+      recipeLine('Løk', {
+        displayText: '1 løk',
+        baseUnit: 'stk',
+        quantityBase: 1,
+        status: 'missing',
+      }),
+    ],
+    { servings: 4 },
+  );
+
+  it('scales the amounts, rounds up, works out have/missing again, and keeps the choice in the URL', async () => {
+    show(pot);
+    const select = await screen.findByRole('combobox', { name: 'Porsjoner' });
+    expect(select).toHaveValue('4');
+    expect(screen.queryByText(/Til 6 porsjoner/)).not.toBeInTheDocument();
+
+    await userEvent.selectOptions(select, '6');
+    expect(await screen.findByText('Til 6 porsjoner: 375 g')).toBeInTheDocument();
+    expect(screen.getByText('Til 6 porsjoner: ca. 2 stk')).toBeInTheDocument();
+    // 300 g is no longer enough for 375 g.
+    expect(
+      within(group('For lite eller usikker mengde')).getByText('250 g ris'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Mengdene er regnet om til 6 porsjoner og rundet opp/),
+    ).toBeInTheDocument();
+  });
+
+  it('reads the servings from the URL, and ignores values out of range', async () => {
+    mockApi((r) =>
+      r.path.endsWith(`/recipes/${pot.id}`) ? { status: 200, body: pot } : undefined,
+    );
+    const first = renderApp(`/oppskrifter/${pot.id}?porsjoner=2`);
+    expect(await screen.findByRole('combobox', { name: 'Porsjoner' })).toHaveValue('2');
+    expect(screen.getByText('Til 2 porsjoner: 125 g')).toBeInTheDocument();
+    first.unmount();
+
+    mockApi((r) =>
+      r.path.endsWith(`/recipes/${pot.id}`) ? { status: 200, body: pot } : undefined,
+    );
+    renderApp(`/oppskrifter/${pot.id}?porsjoner=500`);
+    expect(await screen.findByRole('combobox', { name: 'Porsjoner' })).toHaveValue('4');
+  });
+
+  it('"Legg i måltidsplanen" sends the chosen servings, day and meal', async () => {
+    const posts: unknown[] = [];
+    mockApi((r) => {
+      if (r.path.endsWith(`/recipes/${pot.id}`)) return { status: 200, body: pot };
+      if (r.method === 'POST' && r.path.endsWith('/meal-plan/entries')) {
+        posts.push(r.body);
+        return {
+          status: 201,
+          body: {
+            id: '0199f0a0-0000-7000-8000-0000000000f1',
+            date: '2026-11-02',
+            meal: 'dinner',
+            kind: 'recipe',
+            recipeId: pot.id,
+            recipeTitle: 'Gryte',
+            recipeServings: 4,
+            servings: 6,
+            note: null,
+            allergenWarnings: [],
+            createdAt: '2026-10-24T10:00:00.000Z',
+          },
+        };
+      }
+      return undefined;
+    });
+    renderApp(`/oppskrifter/${pot.id}?porsjoner=6`);
+    await userEvent.click(await screen.findByRole('button', { name: 'Legg i måltidsplanen' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Legg i måltidsplanen' });
+    expect(within(dialog).getByText('Gryte · 6 porsjoner')).toBeInTheDocument();
+    const date = within(dialog).getByLabelText('Dato');
+    await userEvent.clear(date);
+    await userEvent.type(date, '2026-11-02');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Legg til' }));
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toMatchObject({
+      kind: 'recipe',
+      recipeId: pot.id,
+      servings: 6,
+      date: '2026-11-02',
+      meal: 'dinner',
+    });
+    expect(await screen.findByRole('link', { name: 'Åpne uka' })).toHaveAttribute(
+      'href',
+      '/maltidsplan?uke=2026-W45',
+    );
   });
 });

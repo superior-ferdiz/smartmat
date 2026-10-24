@@ -1,0 +1,63 @@
+{
+  "slug": "eggerore",
+  "title": "Eggerøre",
+  "description": "Enkel eggerøre stekt i smør. Til frokost eller lunsj.",
+  "servings": 1,
+  "prepMinutes": 3,
+  "cookMinutes": 5,
+  "tags": ["frokost", "lunsj", "egg", "vegetar"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Basic Scrambled Eggs",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4523414",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Tidene er anslått av KI (originalen oppgir ingen).",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "egg",
+      "amount": "3",
+      "unit": "stk",
+      "text": "3 egg"
+    },
+    {
+      "ingredient": "melk",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2–3 ss melk",
+      "optional": true
+    },
+    {
+      "ingredient": "smor",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss smør"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "1/4",
+      "unit": "ts",
+      "text": "¼ ts salt (eller etter smak)"
+    },
+    {
+      "ingredient": "pepper",
+      "amount": "1/8",
+      "unit": "ts",
+      "text": "⅛ ts sort pepper (eller etter smak)"
+    }
+  ],
+  "steps": [
+    "Knekk eggene i et litermål.",
+    "Ha i melk (hvis du vil) og salt.",
+    "Visp blandingen med en visp eller gaffel til den skummer.",
+    "Smelt smøret i en stekepanne på middels varme.",
+    "Hell eggene i pannen.",
+    "Rør i eggemassen mens den stivner, så mer av den kommer i kontakt med den varme pannen. Rask røring gir små klumper, langsom røring gir større.",
+    "Ta pannen av varmen litt før du synes eggerøren er ferdig, fordi den fortsetter å stivne. Den er ferdig når den ikke lenger er blank.",
+    "Ha eggerøren på en tallerken, og krydre med sort pepper (pepper kan bli bittert hvis det steker).",
+    "Spis den som den er, eller med ketchup, salsa eller på brødskive med smør."
+  ]
+}

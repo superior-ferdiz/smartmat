@@ -1,21 +1,26 @@
-import { useParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import type { RecipeDetail, RecipeLine } from '@smartmat/shared';
+import { SERVINGS_MAX, SERVINGS_MIN, type RecipeDetail, type RecipeLine } from '@smartmat/shared';
 import { ApiError } from '../../api/client';
 import { LinkButton } from '../../components/Button/Button';
 import { EmptyState } from '../../components/EmptyState/EmptyState';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
 import { Icon, type IconName } from '../../components/Icon/Icon';
 import { LoadingState } from '../../components/LoadingState/LoadingState';
+import { Select } from '../../components/Select/Select';
 import { Tag } from '../../components/Tag/Tag';
 import { RECIPES_PATH } from '../../app/navigation';
 import { useFormatQuantity } from '../../inventory/formatHooks';
 import { Page } from '../../layout/Page';
 import { AllergenBox } from '../../recipes/AllergenNotice';
+import { AddToMealPlan } from '../../recipes/AddToMealPlan';
 import { AddToShoppingList } from '../../recipes/AddToShoppingList';
+import { RecipeOriginNote } from '../../recipes/RecipeOriginNote';
+import { RecipeBadge } from '../../recipes/RecipeBadge';
 import { useRecipe } from '../../recipes/api';
 import { useFormatMinutes, useJoinList, useReasonText } from '../../recipes/formatHooks';
 import { LINE_GROUPS, lineGroup, type LineGroup } from '../../recipes/lines';
+import { scaleLines, type ScaledLine } from '../../recipes/scale';
 import styles from '../../recipes/recipes.module.css';
 
 /** FR-REC-001/002/003/004: one recipe, with what the household has, what is missing and why it ranks. */
@@ -64,20 +69,29 @@ const GROUP_ICONS: Record<LineGroup, IconName> = {
   staple: 'info',
 };
 
+const SERVING_CHOICES = Array.from(
+  { length: SERVINGS_MAX - SERVINGS_MIN + 1 },
+  (_, i) => SERVINGS_MIN + i,
+);
+
+/** FR-PLAN-002: `?porsjoner=6`, or the recipe's own number when missing or out of range. */
+function servingsFromUrl(value: string | null, fallback: number): number {
+  const n = Number(value);
+  return Number.isInteger(n) && n >= SERVINGS_MIN && n <= SERVINGS_MAX ? n : fallback;
+}
+
 function RecipeView({ recipe }: { recipe: RecipeDetail }) {
   const { t } = useTranslation();
   const reasonText = useReasonText();
   const minutes = useFormatMinutes();
   const join = useJoinList();
+  const [params, setParams] = useSearchParams();
+  const servings = servingsFromUrl(params.get('porsjoner'), recipe.servings);
+  const scaled = servings !== recipe.servings;
+  const lines = scaleLines(recipe.lines, servings, recipe.servings);
 
   return (
-    <Page
-      title={recipe.title}
-      lead={recipe.description}
-      badge={
-        recipe.source === 'test' ? <Tag tone="sample">{t('recipes.testData')}</Tag> : undefined
-      }
-    >
+    <Page title={recipe.title} lead={recipe.description} badge={<RecipeBadge recipe={recipe} />}>
       <div>
         <LinkButton to={RECIPES_PATH} variant="ghost" icon={<Icon name="chevronLeft" size={20} />}>
           {t('recipes.backToList')}
@@ -99,6 +113,25 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
         </div>
       </dl>
 
+      <div className={styles.planRow}>
+        <Select
+          id="recipe-servings"
+          label={t('recipes.planServings')}
+          value={String(servings)}
+          onChange={(e) => {
+            const next = new URLSearchParams(params);
+            if (Number(e.target.value) === recipe.servings) next.delete('porsjoner');
+            else next.set('porsjoner', e.target.value);
+            setParams(next, { replace: true });
+          }}
+          options={SERVING_CHOICES.map((n) => ({
+            value: String(n),
+            label: t('recipes.servings', { count: n }),
+          }))}
+        />
+        <AddToMealPlan recipe={recipe} servings={servings} />
+      </div>
+
       <AllergenBox recipe={recipe} />
 
       <div className={styles.columns}>
@@ -106,9 +139,10 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
           <h2 id="ingredients-title" className={styles.sectionTitle}>
             {t('recipes.ingredients')}
           </h2>
+          {scaled && <p className={styles.meta}>{t('recipes.scaledNote', { count: servings })}</p>}
           {LINE_GROUPS.map((group) => {
-            const lines = recipe.lines.filter((l) => lineGroup(l) === group);
-            if (lines.length === 0) return null;
+            const inGroup = lines.filter((l) => lineGroup(l) === group);
+            if (inGroup.length === 0) return null;
             return (
               <div key={group} className={styles.group}>
                 <h3 className={styles.groupTitle}>
@@ -116,14 +150,19 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
                   {t(`recipes.groups.${group}`)}
                 </h3>
                 <ul role="list" className={styles.lines}>
-                  {lines.map((line) => (
-                    <IngredientLine key={line.position} line={line} recipe={recipe} />
+                  {inGroup.map((line) => (
+                    <IngredientLine
+                      key={line.position}
+                      line={line}
+                      recipe={recipe}
+                      servings={scaled ? servings : null}
+                    />
                   ))}
                 </ul>
               </div>
             );
           })}
-          <AddToShoppingList recipe={recipe} />
+          <AddToShoppingList recipe={{ ...recipe, lines }} />
         </section>
 
         <section aria-labelledby="score-title" className={styles.section}>
@@ -163,16 +202,29 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
         </ol>
       </section>
 
-      <p className={styles.meta}>
-        {t('recipes.writtenBy', { names: join(recipe.authors) })}
-        {' · '}
-        {t('recipes.license', { license: recipe.license })}
-      </p>
+      {recipe.origin ? (
+        <RecipeOriginNote origin={recipe.origin} authors={recipe.authors} />
+      ) : (
+        <p className={styles.meta}>
+          {t('recipes.writtenBy', { names: join(recipe.authors) })}
+          {' · '}
+          {t('recipes.license', { license: recipe.license })}
+        </p>
+      )}
     </Page>
   );
 }
 
-function IngredientLine({ line, recipe }: { line: RecipeLine; recipe: RecipeDetail }) {
+function IngredientLine({
+  line,
+  recipe,
+  servings,
+}: {
+  line: ScaledLine;
+  recipe: RecipeDetail;
+  /** Set when the page shows another number of servings than the recipe's (FR-PLAN-002). */
+  servings: number | null;
+}) {
   const { t } = useTranslation();
   const formatQuantity = useFormatQuantity();
   const join = useJoinList();
@@ -201,6 +253,14 @@ function IngredientLine({ line, recipe }: { line: RecipeLine; recipe: RecipeDeta
         {line.optional && <Tag>{t('recipes.line.optional')}</Tag>}
         {userAllergens.length > 0 && <AllergenTag allergens={userAllergens} />}
       </span>
+      {servings !== null && line.quantityBase !== null && (
+        <span className={styles.meta}>
+          {t(line.rounded ? 'recipes.scaledToApprox' : 'recipes.scaledTo', {
+            count: servings,
+            amount: formatQuantity(line.quantityBase, line.baseUnit),
+          })}
+        </span>
+      )}
       {detail && <span className={styles.meta}>{detail}</span>}
       {line.itemNames.length > 0 && line.status !== 'unknownAmount' && (
         <span className={styles.meta}>

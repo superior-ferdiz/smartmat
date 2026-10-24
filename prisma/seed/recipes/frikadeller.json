@@ -1,0 +1,77 @@
+{
+  "slug": "frikadeller",
+  "title": "Frikadeller",
+  "description": "Danske kjøttkaker av kalve- og svinekjøttdeig, tradisjonelt servert med kokte poteter, saus og rødkål.",
+  "servings": 4,
+  "prepMinutes": 15,
+  "cookMinutes": 20,
+  "tags": ["middag", "kjøttdeig", "dansk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Frikadeller (Danish Meatballs)",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4513507",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir verken porsjoner eller tid. Antall porsjoner (4) og tidene er anslått av KI. Kalvekjøttdeig er koblet til kjøttdeig i matlageret, fordi kalvekjøttdeig er vanskelig å få tak i.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "kjottdeig",
+      "amount": "250",
+      "unit": "g",
+      "text": "250 g kalvekjøttdeig (eller storfekjøttdeig)"
+    },
+    {
+      "ingredient": "svinekjottdeig",
+      "amount": "250",
+      "unit": "g",
+      "text": "250 g svinekjøttdeig"
+    },
+    {
+      "ingredient": "egg",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 stort egg"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 løk, finhakket"
+    },
+    {
+      "ingredient": "brodsmuler",
+      "amount": "1,8",
+      "unit": "dl",
+      "text": "ca. 1,8 dl griljermel"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Pepper etter smak"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt etter smak"
+    },
+    {
+      "ingredient": "hvitlok",
+      "text": "Finhakket hvitløk",
+      "optional": true
+    },
+    {
+      "ingredient": "persille",
+      "text": "Hakket persille etter smak"
+    },
+    {
+      "ingredient": "smor",
+      "text": "Smør til steking"
+    }
+  ],
+  "steps": [
+    "Bland alle ingrediensene unntatt smøret.",
+    "Form farsen til små kaker.",
+    "Stek dem i en varm panne med godt med smør."
+  ]
+}

@@ -1,0 +1,23 @@
+$ npm run typecheck && npm run lint
+Kjørt 2026-10-24T19:39:52Z (etter formateringen)
+
+> smartmat@0.1.0 typecheck
+> tsc -p tsconfig.json && npm run typecheck --workspaces --if-present
+
+
+> @smartmat/shared@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @smartmat/api@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @smartmat/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit
+
+
+> smartmat@0.1.0 lint
+> eslint .
+
+exit 0

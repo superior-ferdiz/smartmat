@@ -29,3 +29,7 @@ export * from './receipts/parse';
 export * from './receipts/redact';
 export * from './schemas/receipts';
 export * from './api/receipts';
+export * from './dates/week';
+export * from './mealplan/needs';
+export * from './schemas/mealPlan';
+export * from './api/mealPlan';

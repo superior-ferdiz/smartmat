@@ -86,12 +86,17 @@ function moreUrgent(a: Expiring | null, b: Expiring): Expiring {
   return a === null || b.daysLeft < a.daysLeft ? b : a;
 }
 
-/** Ingredient id → what the household has of it. Items that are not linked are left out. */
+/**
+ * Ingredient id → what the household has of it. Items that are not linked are left out.
+ * `usableOn` (spec 09, FR-PLAN-005) is the day the food is for: a batch whose use-by date is before that day
+ * is not counted either. It defaults to today; "going off" is always counted from today.
+ */
 export function stockByIngredient(
   items: readonly StockItem[],
   index: AliasIndex,
   ingredients: ReadonlyMap<string, StockIngredient>,
   today: string,
+  usableOn: string = today,
 ): Map<string, Stock> {
   const stock = new Map<string, Stock>();
 
@@ -110,6 +115,9 @@ export function stockByIngredient(
         useByPassed = true;
         continue;
       }
+      // Still fine today, but not on the planned day: never counted for that day.
+      if (batch.expiryKind === 'use_by' && batch.expiryDate !== null && batch.expiryDate < usableOn)
+        continue;
       usable += batch.quantityBase;
       const goingOff =
         status === 'today' ||

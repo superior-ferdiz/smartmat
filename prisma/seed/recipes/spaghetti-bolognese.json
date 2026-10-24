@@ -1,0 +1,142 @@
+{
+  "slug": "spaghetti-bolognese",
+  "title": "Spaghetti bolognese",
+  "description": "Nord-italiensk kjøttsaus (ragù alla bolognese) som småkoker lenge, servert med spaghetti og parmesan.",
+  "servings": 4,
+  "prepMinutes": 30,
+  "cookMinutes": 90,
+  "tags": ["middag", "pasta", "kjøttdeig", "italiensk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Spaghetti with Bolognese Meat Sauce",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4630833",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 2 timer totalt. Delingen i forberedelse og koking er gjort av KI. Løk, selleri og gulrot er regnet om fra volum til antall og gram av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "bacon",
+      "amount": "125",
+      "unit": "g",
+      "text": "125 g skinke eller bacon i terninger"
+    },
+    {
+      "ingredient": "kjottdeig",
+      "amount": "450",
+      "unit": "g",
+      "text": "450 g mager eller middels feit kjøttdeig"
+    },
+    {
+      "ingredient": "olje",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss olivenolje"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "2,25 dl grovhakket løk (ca. 1 stor løk)"
+    },
+    {
+      "ingredient": "stangselleri",
+      "amount": "25",
+      "unit": "g",
+      "text": "0,5 dl grovhakket stangselleri"
+    },
+    {
+      "ingredient": "gulrot",
+      "amount": "25",
+      "unit": "g",
+      "text": "0,5 dl grovhakket gulrot"
+    },
+    {
+      "ingredient": "fennikel",
+      "amount": "25",
+      "unit": "g",
+      "text": "0,5 dl grovhakket fennikel, hvis du har",
+      "optional": true
+    },
+    {
+      "ingredient": "smor",
+      "amount": "50",
+      "unit": "ml",
+      "text": "0,5 dl smør"
+    },
+    {
+      "ingredient": "hakkede-tomater",
+      "amount": "2,25",
+      "unit": "dl",
+      "text": "2,25 dl plommetomater fra boks"
+    },
+    {
+      "ingredient": "rodvin",
+      "amount": "1,25",
+      "unit": "dl",
+      "text": "1,25 dl rødvin"
+    },
+    {
+      "ingredient": "buljong",
+      "amount": "5",
+      "unit": "dl",
+      "text": "5 dl oksekraft"
+    },
+    {
+      "ingredient": "tomatpure",
+      "amount": "50",
+      "unit": "ml",
+      "text": "0,5 dl tomatpuré"
+    },
+    {
+      "ingredient": "sitron",
+      "text": "1 strimmel sitronskall"
+    },
+    {
+      "ingredient": "laurbaerblad",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 laurbærblad"
+    },
+    {
+      "ingredient": "pasta",
+      "amount": "450",
+      "unit": "g",
+      "text": "450 g spaghetti, helst av durumhvete"
+    },
+    {
+      "ingredient": "parmesan",
+      "amount": "2,4",
+      "unit": "dl",
+      "text": "2,4 dl revet parmesan til servering"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt etter smak"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Nykvernet pepper etter smak"
+    }
+  ],
+  "steps": [
+    "Bland løk, gulrot, selleri og eventuelt fennikel, og finhakk det (på italiensk kalles det en battuto).",
+    "Skjær skinken eller baconet i små terninger, og fres i en tykkbunnet kjele.",
+    "Ha i smøret og la det smelte. Ha så i grønnsakene.",
+    "Stek under omrøring til grønnsakene er lett brunet. Ha blandingen over i en stor gryte.",
+    "Varm olivenoljen i pannen du brukte. Når oljen er varm, har du i kjøttdeigen og rører den løs til den er godt brunet.",
+    "Ha kjøttdeigen i gryta.",
+    "Hell vinen i pannen og rør på høy varme, så du får med deg det som har satt seg fast.",
+    "Rør inn tomatpuré og kraft, og ha alt i gryta.",
+    "Hell av og grovhakk plommetomatene, og ha dem i gryta.",
+    "Ha i laurbærblad og sitronskall. Kok opp, og skru ned til den så vidt småkoker.",
+    "La sausen småkoke i en time eller mer, og rør innimellom, til den er tykk.",
+    "Smak til med salt og pepper.",
+    "Når sausen er klar, koker du opp 4 liter vann i en stor kjele.",
+    "Ha i pastaen og rør raskt, så den ikke klumper seg. Kok den i 10–12 minutter, til den er al dente.",
+    "Hell av pastaen og server den med en gang.",
+    "Ta ut laurbærbladet og sitronskallet, og ha sausen over pastaen. Strø revet parmesan over ved bordet."
+  ]
+}

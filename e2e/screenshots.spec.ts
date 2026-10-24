@@ -1,17 +1,16 @@
-import sharp from 'sharp';
-import { COOP_RECEIPT } from '@smartmat/shared/test-fixtures/receipts';
 import { apiAs, test, type Account } from './fixtures';
 
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
- * Only runs when asked for:  SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 8 pages (receipts), with a seeded inventory, purchases and budget. The receipt photo is generated here from
- * the made-up Coop receipt text that the e2e API's fake OCR "reads" (no real receipt). (The phase 1–7 screenshots in
- * docs/evidence/screenshots/ were made by earlier versions of this file; see Git history.)
+ * Only runs when asked for:  E2E_RECIPE_SEED=repo SCREENSHOTS=1 npm run test:e2e -- screenshots
+ * Phase 9 pages (meal plan, recipes from Wikibooks), with a seeded inventory, purchases and budget. With
+ * E2E_RECIPE_SEED=repo the e2e API has the translated recipes from prisma/seed/ instead of the test fixtures.
+ * (The phase 1–8 screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git
+ * history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-8';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-9';
 
 function inDays(days: number) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date());
@@ -88,81 +87,100 @@ async function seed(
   return { created, purchaseId: purchase.id };
 }
 
-/** A picture of the made-up receipt: its lines (without the confidence) on light paper on a dark table. */
-async function receiptPhoto(seed: number, width = 620) {
-  const rows = COOP_RECEIPT.map((line) => line.text.replace(/&/g, '&amp;').replace(/</g, '&lt;'));
-  const height = 60 + rows.length * 30;
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-    '<rect width="100%" height="100%" fill="#f4f2ec"/><g font-family="DejaVu Sans Mono" font-size="19" fill="#222">' +
-    rows
-      .map((row, i) => `<text x="24" y="${44 + i * 30}" xml:space="preserve">${row}</text>`)
-      .join('') +
-    `</g><rect x="${seed % 40}" y="2" width="2" height="2" fill="#f4f2ec"/></svg>`;
-  const paper = await sharp(Buffer.from(svg)).png().toBuffer();
-  return sharp({
-    create: { width: width + 160, height: height + 160, channels: 3, background: '#2a2a2a' },
-  })
-    .composite([{ input: paper, left: 80, top: 80 }])
-    .jpeg({ quality: 85 })
-    .toBuffer();
+/** Monday of the week after this one, so every day of the shown week is still to come. */
+function nextMonday() {
+  const today = inDays(0);
+  const weekday = (new Date(`${today}T00:00:00Z`).getUTCDay() + 6) % 7;
+  return inDays(7 - weekday);
 }
 
+const addDays = (date: string, days: number) => {
+  const [y = 0, m = 1, d = 1] = date.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+};
+
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – receipts`, () => {
+  test.describe(`${colorScheme} – meal plan`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('kvittering', async ({ page, playwright, account }, testInfo) => {
+    test('maltidsplan', async ({ page, playwright, account }, testInfo) => {
       await seed(playwright, account);
+      const api = await apiAs(playwright, account);
+      const bySlug = new Map((await api.recipes()).map((r) => [r.slug, r.id]));
+      const monday = nextMonday();
+      const plan = [
+        [0, 'farikal', 4],
+        [1, 'rod-linsesuppe', 4],
+        [3, 'svenske-kjottboller', 2],
+        [4, 'laks-med-ris-og-saus', 3],
+      ] as const;
+      for (const [day, slug, servings] of plan) {
+        const recipeId = bySlug.get(slug);
+        if (!recipeId) throw new Error(`run with E2E_RECIPE_SEED=repo (no recipe ${slug})`);
+        await api.addMealEntry({
+          kind: 'recipe',
+          recipeId,
+          servings,
+          date: addDays(monday, day),
+          meal: 'dinner',
+        });
+      }
+      await api.addMealEntry({
+        kind: 'note',
+        note: 'Rester',
+        date: addDays(monday, 2),
+        meal: 'dinner',
+      });
+      await api.addMealEntry({
+        kind: 'note',
+        note: 'Spise ute',
+        date: addDays(monday, 5),
+        meal: 'dinner',
+      });
+      await api.dispose();
+
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
-      const shot = (name: string, fullPage = false) =>
+      const shot = (name: string, fullPage = true) =>
         page.screenshot({
           path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
           fullPage,
         });
       const ready = () => page.evaluate(() => document.fonts.ready);
 
-      // FR-RCPT-001: the upload page.
-      await page.goto('/budsjett/kvittering');
-      await page.getByRole('button', { name: 'Ta bilde' }).waitFor();
+      // FR-PLAN-001/003: next week, with what is missing.
+      await page.goto('/maltidsplan');
+      await page.getByRole('link', { name: 'Neste uke' }).click();
+      await page.getByRole('checkbox', { name: /^Lammekjøtt/ }).waitFor();
       await ready();
-      await shot('kvittering-start', true);
+      await shot('maltidsplan-uke');
 
-      // FR-RCPT-003: a photo that cannot be read.
-      await page.locator('#receipt-file').setInputFiles({
-        name: 'liten.jpg',
-        mimeType: 'image/jpeg',
-        buffer: await sharp({
-          create: { width: 120, height: 180, channels: 3, background: '#f0eee6' },
-        })
-          .jpeg()
-          .toBuffer(),
-      });
-      await page.getByText(/Vi fant ingen tekst i bildet/).waitFor({ timeout: 15_000 });
+      // FR-PLAN-005: the add dialog, ranked for the day.
+      await page.getByRole('button', { name: /^Legg til Middag, søndag/ }).click();
+      await page.getByRole('radio', { name: /Fårikål/ }).waitFor();
       await ready();
-      await shot('kvittering-feilet');
+      await shot('maltidsplan-legg-til', false);
+      await page.keyboard.press('Escape');
 
-      // FR-RCPT-005: the review, filled in with store, date and total (ADR-0017).
-      await page.goto('/budsjett/kvittering');
-      await page.locator('#receipt-file').setInputFiles({
-        name: 'kvittering.jpg',
-        mimeType: 'image/jpeg',
-        buffer: await receiptPhoto(testInfo.workerIndex + (colorScheme === 'light' ? 1 : 2)),
-      });
+      // FR-PLAN-004: on the shopping list.
+      await page.getByRole('button', { name: 'Legg på handlelisten' }).click();
+      await page.getByText(/Lagt på handlelisten:/).waitFor();
+      await page.goto('/handleliste');
       await page
-        .getByLabel(/^Butikk/)
-        .and(page.locator('[value="Extra"]'))
-        .waitFor({ timeout: 15_000 });
-      await page
-        .getByRole('img', { name: 'Bildet av kvitteringen' })
-        .evaluate((img: HTMLImageElement) => img.decode());
+        .getByText(/Måltidsplan .*: Fårikål/)
+        .first()
+        .waitFor();
       await ready();
-      await shot('kvittering-sjekk', true);
+      await shot('maltidsplan-handleliste');
 
-      // FR-RCPT-006: confirmed.
-      await page.getByRole('button', { name: 'Bekreft kjøpet' }).click();
-      await page.getByText('Kjøpet er registrert.').waitFor();
+      // FR-REC-006 / FR-PLAN-002: a translated recipe for 6 servings, with source and licence.
+      await page.goto(`/oppskrifter/${bySlug.get('farikal')}?porsjoner=6`);
+      await page.getByRole('heading', { name: 'Kilde og lisens' }).waitFor();
       await ready();
-      await shot('kvittering-bekreftet', true);
+      await shot('oppskrift-wikibooks');
+
+      await page.goto('/oppskrifter/kilder');
+      await page.getByRole('link', { name: 'Fårikål', exact: true }).waitFor();
+      await ready();
+      await shot('oppskrifter-kilder');
     });
   });
 }

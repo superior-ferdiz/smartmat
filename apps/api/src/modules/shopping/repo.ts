@@ -1,12 +1,15 @@
 import {
+  entryDelta,
   mergeQuantity,
   type BaseUnit,
   type CategoryKey,
   type IngredientMatchMode,
+  type PlanContribution,
   type ShoppingItemResponse,
 } from '@smartmat/shared';
 import type { Db } from '../../db';
 import type { Prisma } from '../../generated/prisma/client';
+import { fromDbDate } from '../../lib/dbDates';
 import { insertBatchWithEvent, type NewBatch } from '../inventory/repo';
 import { isPrismaError } from '../purchases/repo';
 
@@ -37,6 +40,20 @@ export interface RecipeLineWrite {
   text: string;
   quantityBase: number | null;
   unit: BaseUnit;
+}
+
+/**
+ * FR-PLAN-004 (spec 09): one ingredient from the meal plan. `shortfalls` is what the inventory does not cover
+ * per entry; what each entry already added is read again inside the transaction and subtracted.
+ */
+export interface PlanLineWrite {
+  ingredientId: string;
+  /** The ingredient's name, used as the text of a new line. */
+  text: string;
+  unit: BaseUnit;
+  /** The amount the user chose; undefined = the sum of what is left to add. */
+  quantityOverride: number | null | undefined;
+  shortfalls: { entryId: string; shortfallBase: number | null; unmet: boolean }[];
 }
 
 /** FR-SHOP-003: one checked line into the inventory, onto an existing item or as a new one. */
@@ -80,6 +97,13 @@ export interface ShoppingRepo {
     recipeId: string,
     lines: RecipeLineWrite[],
   ): Promise<{ created: number; merged: number; skipped: number }>;
+  /** FR-PLAN-004: what these entries already put on the household's list, per ingredient. */
+  mealContributions(householdId: string, entryIds: string[]): Promise<PlanContribution[]>;
+  addFromMealPlan(
+    householdId: string,
+    actorId: string,
+    lines: PlanLineWrite[],
+  ): Promise<{ created: number; merged: number; skipped: number }>;
   /** The unit of each of these inventory items that belongs to the household (others are left out). */
   itemUnits(householdId: string, itemIds: string[]): Promise<Map<string, BaseUnit>>;
   /** The new batches' item ids, or null if a line was no longer there and checked (nothing is saved then). */
@@ -99,6 +123,14 @@ const itemSelect = {
     orderBy: { recipe: { title: 'asc' } },
     select: { recipeId: true, quantityBase: true, recipe: { select: { title: true } } },
   },
+  meals: {
+    orderBy: [{ entry: { date: 'asc' } }, { entry: { meal: 'asc' } }],
+    select: {
+      entryId: true,
+      quantityBase: true,
+      entry: { select: { date: true, meal: true, recipeTitle: true } },
+    },
+  },
 } satisfies Prisma.ShoppingListItemSelect;
 
 type ItemRow = Prisma.ShoppingListItemGetPayload<{ select: typeof itemSelect }>;
@@ -117,6 +149,14 @@ function toItem(row: ItemRow): ShoppingItemResponse {
       recipeId: r.recipeId,
       title: r.recipe.title,
       quantityBase: r.quantityBase,
+    })),
+    meals: row.meals.map((m) => ({
+      entryId: m.entryId,
+      date: fromDbDate(m.entry.date),
+      meal: m.entry.meal,
+      // Only recipe entries add to the list, so the title is always there.
+      title: m.entry.recipeTitle ?? '',
+      quantityBase: m.quantityBase,
     })),
   };
 }
@@ -269,6 +309,129 @@ export function createShoppingRepo(db: Db): ShoppingRepo {
           await tx.shoppingListItemRecipe.create({
             data: { itemId, householdId, recipeId, quantityBase: line.quantityBase },
           });
+        }
+        return result;
+      });
+    },
+
+    async mealContributions(householdId, entryIds) {
+      if (entryIds.length === 0) return [];
+      const rows = await db.shoppingListItemMeal.findMany({
+        where: { householdId, entryId: { in: entryIds } },
+        select: { entryId: true, quantityBase: true, item: { select: { ingredientId: true } } },
+      });
+      return rows.flatMap((r) =>
+        r.item.ingredientId
+          ? [
+              {
+                entryId: r.entryId,
+                ingredientId: r.item.ingredientId,
+                quantityBase: r.quantityBase,
+              },
+            ]
+          : [],
+      );
+    },
+
+    async addFromMealPlan(householdId, actorId, lines) {
+      return db.$transaction(async (tx) => {
+        const listId = await lockList(tx, householdId);
+        const result = { created: 0, merged: 0, skipped: 0 };
+        for (const line of lines) {
+          // Read under the list lock: two requests at once cannot both see "nothing added yet".
+          const shares = await tx.shoppingListItemMeal.findMany({
+            where: {
+              householdId,
+              entryId: { in: line.shortfalls.map((s) => s.entryId) },
+              item: { ingredientId: line.ingredientId },
+            },
+            select: { entryId: true, quantityBase: true },
+          });
+          const addedBy = new Map<string, { quantityBase: number; any: boolean }>();
+          for (const share of shares) {
+            const sum = addedBy.get(share.entryId) ?? { quantityBase: 0, any: false };
+            addedBy.set(share.entryId, {
+              quantityBase: sum.quantityBase + (share.quantityBase ?? 0),
+              any: true,
+            });
+          }
+          const deltas: { entryId: string; quantityBase: number | null }[] = [];
+          for (const s of line.shortfalls) {
+            const added = addedBy.get(s.entryId);
+            const delta = entryDelta({
+              shortfallBase: s.shortfallBase,
+              addedBase: added?.quantityBase ?? null,
+            });
+            if (delta > 0) deltas.push({ entryId: s.entryId, quantityBase: delta });
+            // "Etter smak" with nothing in the house: added once, without an amount.
+            else if (s.shortfallBase === null && s.unmet && !added?.any)
+              deltas.push({ entryId: s.entryId, quantityBase: null });
+          }
+          if (deltas.length === 0) {
+            // Everything this plan needs of it was added before (FR-PLAN-004).
+            result.skipped++;
+            continue;
+          }
+          const sum = deltas.reduce((total, d) => total + (d.quantityBase ?? 0), 0);
+          const quantityBase =
+            line.quantityOverride !== undefined ? line.quantityOverride : sum > 0 ? sum : null;
+
+          const open = await tx.shoppingListItem.findFirst({
+            where: { householdId, listId, ingredientId: line.ingredientId, checked: false },
+            select: { id: true, quantityBase: true, unit: true },
+          });
+          let itemId: string;
+          if (open) {
+            const merged = mergeQuantity(open, { quantityBase, unit: line.unit });
+            await tx.shoppingListItem.update({
+              where: { id: open.id },
+              data: { quantityBase: merged.quantityBase, unit: merged.unit },
+            });
+            itemId = open.id;
+            result.merged++;
+          } else {
+            const created = await tx.shoppingListItem.create({
+              data: {
+                householdId,
+                listId,
+                text: line.text,
+                ingredientId: line.ingredientId,
+                quantityBase,
+                unit: quantityBase === null ? null : line.unit,
+                createdById: actorId,
+              },
+              select: { id: true },
+            });
+            itemId = created.id;
+            result.created++;
+          }
+          for (const delta of deltas) {
+            const key = { itemId_entryId: { itemId, entryId: delta.entryId } };
+            const existing = await tx.shoppingListItemMeal.findUnique({
+              where: key,
+              select: { quantityBase: true },
+            });
+            if (existing) {
+              await tx.shoppingListItemMeal.update({
+                where: key,
+                data: {
+                  quantityBase:
+                    delta.quantityBase === null
+                      ? existing.quantityBase
+                      : (existing.quantityBase ?? 0) + delta.quantityBase,
+                },
+              });
+            } else {
+              await tx.shoppingListItemMeal.create({
+                data: {
+                  itemId,
+                  entryId: delta.entryId,
+                  householdId,
+                  quantityBase: delta.quantityBase,
+                },
+              });
+            }
+          }
         }
         return result;
       });

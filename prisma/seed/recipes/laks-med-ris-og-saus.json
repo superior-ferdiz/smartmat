@@ -1,0 +1,78 @@
+{
+  "slug": "laks-med-ris-og-saus",
+  "title": "Laks med ris og sterk saus",
+  "description": "Ovnsbakt laks med en saus av crème fraîche og chilisaus, servert med ris, gulrot og erter.",
+  "servings": 3,
+  "prepMinutes": 20,
+  "cookMinutes": 20,
+  "tags": ["middag", "fisk", "laks", "ovn"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Salmon with Rice and Sauce",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4494430",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Tidene er anslått av KI (originalen oppgir ingen samlet tid). Originalen beskriver hvert håndgrep svært detaljert. KI har slått sammen noen trinn.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "laks",
+      "amount": "250",
+      "unit": "g",
+      "text": "250 g laksefilet (fersk eller tint)"
+    },
+    {
+      "ingredient": "ris",
+      "amount": "3",
+      "unit": "dl",
+      "text": "3 dl jasminris"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "5,75",
+      "unit": "dl",
+      "text": "5,75 dl vann"
+    },
+    {
+      "ingredient": "creme-fraiche",
+      "amount": "1",
+      "unit": "dl",
+      "text": "1 dl crème fraîche"
+    },
+    {
+      "ingredient": "chilisaus",
+      "amount": "0,5",
+      "unit": "dl",
+      "text": "0,5 dl chilisaus (hot sauce)"
+    },
+    {
+      "ingredient": "gulrot",
+      "amount": "100",
+      "unit": "g",
+      "text": "100 g gulrøtter"
+    },
+    {
+      "ingredient": "erter",
+      "amount": "100",
+      "unit": "g",
+      "text": "100 g frosne erter"
+    }
+  ],
+  "steps": [
+    "Er laksen frossen, legger du den i pakken i en vask eller kjele med 40 °C vann og lar den ligge til den er tint.",
+    "Sett ovnen på 170 °C over- og undervarme.",
+    "Skyll risen i en sil med kaldt vann, og ha den tilbake i kjelen.",
+    "Ha vannet i kjelen, rør om og legg på lokk.",
+    "Sett kjelen på høyeste varme. Følg med, og skru ned til lav varme når det koker. Det skal bare så vidt småkoke.",
+    "Kok risen i 20 minutter, til vannet er borte og risen er kokt.",
+    "Skrell gulrøttene. Del dem i fire like lange biter, og del hver bit på midten.",
+    "Tin ertene i en sil med kaldt vann.",
+    "Hell av eventuell væske fra laksen, og legg den i en ildfast form.",
+    "Bland crème fraîche og chilisaus til en jevn saus.",
+    "Hell sausen over laksen, så den er helt dekket.",
+    "Stek laksen i 15 minutter.",
+    "Server laksen med risen, gulrøttene og ertene."
+  ]
+}

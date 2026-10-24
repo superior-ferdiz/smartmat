@@ -1,6 +1,14 @@
-import type { Allergen, BaseUnit, CategoryKey, Conversion, RecipeSource } from '@smartmat/shared';
+import type {
+  Allergen,
+  BaseUnit,
+  CategoryKey,
+  Conversion,
+  RecipeOrigin,
+  RecipeSource,
+} from '@smartmat/shared';
 import type { Db } from '../../db';
 import type { Prisma } from '../../generated/prisma/client';
+import { fromDbDate } from '../../lib/dbDates';
 
 /*
  * Database access for recipes (spec 05). Recipes and ingredients are global and read-only here: they are
@@ -41,6 +49,8 @@ export interface RecipeRecord {
   source: RecipeSource;
   license: string;
   authors: string[];
+  /** ADR-0016: null unless the recipe is external. */
+  origin: RecipeOrigin | null;
   lines: RecipeLineRecord[];
 }
 
@@ -66,6 +76,14 @@ const recipeSelect = {
   source: true,
   license: true,
   authors: true,
+  sourceTitle: true,
+  sourceUrl: true,
+  retrievedOn: true,
+  adaptation: true,
+  adaptationNote: true,
+  aiAssisted: true,
+  reviewedBy: true,
+  reviewedOn: true,
   ingredients: {
     orderBy: { position: 'asc' },
     select: {
@@ -80,11 +98,53 @@ const recipeSelect = {
 
 type RecipeRow = Prisma.RecipeGetPayload<{ select: typeof recipeSelect }>;
 
-function toRecipe({ ingredients, ...row }: RecipeRow): RecipeRecord {
-  return { ...row, lines: ingredients };
+function toRecipe(row: RecipeRow): RecipeRecord {
+  const { ingredients, sourceTitle, sourceUrl, retrievedOn, adaptation, ...rest } = row;
+  const origin =
+    row.source === 'external' && sourceTitle && sourceUrl && retrievedOn && adaptation
+      ? {
+          title: sourceTitle,
+          url: sourceUrl,
+          // The seed check only lets ADR-0016 licences in for external recipes.
+          license: row.license as RecipeOrigin['license'],
+          retrievedOn: fromDbDate(retrievedOn),
+          adaptation,
+          adaptationNote: row.adaptationNote,
+          aiAssisted: row.aiAssisted,
+          reviewedBy: row.reviewedBy,
+          reviewedOn: row.reviewedOn ? fromDbDate(row.reviewedOn) : null,
+        }
+      : null;
+  return {
+    id: rest.id,
+    slug: rest.slug,
+    title: rest.title,
+    description: rest.description,
+    servings: rest.servings,
+    prepMinutes: rest.prepMinutes,
+    cookMinutes: rest.cookMinutes,
+    steps: rest.steps,
+    tags: rest.tags,
+    source: rest.source,
+    license: rest.license,
+    authors: rest.authors,
+    origin,
+    lines: ingredients,
+  };
 }
 
-export function createRecipeRepo(db: Db): RecipeRepo {
+export interface RecipeRepoOptions {
+  /** ADR-0016 (spec 09): false hides external recipes that nobody in the team has checked. */
+  includeUnreviewed: boolean;
+}
+
+export function createRecipeRepo(
+  db: Db,
+  options: RecipeRepoOptions = { includeUnreviewed: true },
+): RecipeRepo {
+  const visible: Prisma.RecipeWhereInput = options.includeUnreviewed
+    ? {}
+    : { NOT: { source: 'external', reviewedBy: { isEmpty: true } } };
   return {
     async catalog() {
       const rows = await db.ingredient.findMany({
@@ -110,12 +170,15 @@ export function createRecipeRepo(db: Db): RecipeRepo {
     },
 
     async recipes() {
-      const rows = await db.recipe.findMany({ select: recipeSelect });
+      const rows = await db.recipe.findMany({ where: visible, select: recipeSelect });
       return rows.map(toRecipe);
     },
 
     async recipe(recipeId) {
-      const row = await db.recipe.findUnique({ where: { id: recipeId }, select: recipeSelect });
+      const row = await db.recipe.findFirst({
+        where: { id: recipeId, ...visible },
+        select: recipeSelect,
+      });
       return row ? toRecipe(row) : null;
     },
 

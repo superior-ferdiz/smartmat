@@ -79,24 +79,69 @@ export const recipeIngredientSeedSchema = z
     message: 'amount og unit må stå sammen (eller begge mangle)',
   });
 
-export const RECIPE_SEED_SOURCES = ['team', 'test'] as const;
+/** `external` = from an openly licensed source (ADR-0016, spec 09); `test` = fictional, test databases only. */
+export const RECIPE_SEED_SOURCES = ['team', 'external', 'test'] as const;
 export type RecipeSource = (typeof RECIPE_SEED_SOURCES)[number];
 
-export const recipeSeedSchema = z.object({
-  slug: z.string().regex(KEY).max(80),
-  title: text(120),
-  description: text(500),
-  servings: z.number().int().min(1).max(50),
-  prepMinutes: z.number().int().min(0).max(1440),
-  cookMinutes: z.number().int().min(0).max(1440),
-  tags: z.array(z.string().trim().toLowerCase().min(1).max(30)).max(10).default([]),
-  source: z.enum(RECIPE_SEED_SOURCES),
-  license: text(50),
-  /** ADR-0009: the people who really wrote it. */
-  authors: z.array(text(100)).min(1).max(10),
-  ingredients: z.array(recipeIngredientSeedSchema).min(1).max(50),
-  steps: z.array(text(1000)).min(1).max(30),
-});
+/** ADR-0016: the only licences an external recipe may have (SPDX ids). */
+export const RECIPE_LICENSES = ['CC0-1.0', 'CC-BY-4.0', 'CC-BY-SA-4.0', 'public-domain'] as const;
+export type RecipeLicense = (typeof RECIPE_LICENSES)[number];
+
+/** How much the recipe differs from the original: not at all, only translated, or also changed. */
+export const RECIPE_ADAPTATIONS = ['none', 'translated', 'adapted'] as const;
+export type RecipeAdaptation = (typeof RECIPE_ADAPTATIONS)[number];
+
+const isoDate = z.iso.date();
+
+export const recipeSeedSchema = z
+  .object({
+    slug: z.string().regex(KEY).max(80),
+    title: text(120),
+    description: text(500),
+    servings: z.number().int().min(1).max(50),
+    prepMinutes: z.number().int().min(0).max(1440),
+    cookMinutes: z.number().int().min(0).max(1440),
+    tags: z.array(z.string().trim().toLowerCase().min(1).max(30)).max(10).default([]),
+    source: z.enum(RECIPE_SEED_SOURCES),
+    license: text(50),
+    /** ADR-0009: the people who really wrote it. For an external recipe: the original's authors. */
+    authors: z.array(text(100)).min(1).max(10),
+    /** ADR-0016, required for `external`: the original, when it was fetched, and what was done to it. */
+    sourceTitle: text(200).optional(),
+    sourceUrl: z
+      .url({ protocol: /^https$/ })
+      .max(500)
+      .optional(),
+    retrievedOn: isoDate.optional(),
+    adaptation: z.enum(RECIPE_ADAPTATIONS).optional(),
+    /** What was changed, in Norwegian. Required when `adaptation` is `adapted`. */
+    adaptationNote: text(1000).optional(),
+    aiAssisted: z.boolean().optional(),
+    /** The team members who have checked the recipe (spec 09, decision 6). Empty = an AI draft. */
+    reviewedBy: z.array(text(100)).max(10).default([]),
+    reviewedOn: isoDate.optional(),
+    ingredients: z.array(recipeIngredientSeedSchema).min(1).max(50),
+    steps: z.array(text(1000)).min(1).max(30),
+  })
+  .superRefine((recipe, ctx) => {
+    const issue = (path: string, message: string) =>
+      ctx.addIssue({ code: 'custom', path: [path], message });
+    if (recipe.reviewedBy.length > 0 !== (recipe.reviewedOn !== undefined))
+      issue('reviewedOn', 'reviewedOn står når, og bare når, reviewedBy har navn');
+    if (recipe.source !== 'external') return;
+    for (const field of [
+      'sourceTitle',
+      'sourceUrl',
+      'retrievedOn',
+      'adaptation',
+      'aiAssisted',
+    ] as const)
+      if (recipe[field] === undefined) issue(field, `${field} er påkrevd for eksterne oppskrifter`);
+    if (!(RECIPE_LICENSES as readonly string[]).includes(recipe.license))
+      issue('license', `lisensen må være én av ${RECIPE_LICENSES.join(', ')} (ADR-0016)`);
+    if (recipe.adaptation === 'adapted' && recipe.adaptationNote === undefined)
+      issue('adaptationNote', 'adaptationNote må si hva som er endret');
+  });
 export type RecipeSeed = z.output<typeof recipeSeedSchema>;
 
 /** The checked data the seed script writes: aliases normalised (name included), quantities in base units. */
@@ -141,14 +186,20 @@ export function seedQuantityBase(
   const parsed = parseSeedAmount(amount);
   if (!parsed) return `mengden «${amount}» er ikke et positivt tall`;
   const { base, factor } = SEED_UNITS[unit];
-  const inUnitBase = Math.round((parsed.num * factor) / parsed.den);
-  if (inUnitBase < 1) return `«${amount} ${unit}» blir mindre enn 1 ${base}`;
-  if (base === ingredient.baseUnit) return inUnitBase;
+  if (base === ingredient.baseUnit) {
+    const value = Math.round((parsed.num * factor) / parsed.den);
+    if (value < 1) return `«${amount} ${unit}» blir mindre enn 1 ${base}`;
+    return value > MAX_QUANTITY_BASE ? 'mengden er for stor' : value;
+  }
   const conversion = ingredient.conversions.find((c) => c.unit === base);
   if (!conversion)
     return `${unit} kan ikke regnes om til ${ingredient.baseUnit} (ingrediensen mangler omregning fra ${base})`;
-  // Rounded to nearest, not down: this is what the recipe needs, not what the household has.
-  const value = Math.max(1, Math.round((inUnitBase * conversion.baseQty) / conversion.unitQty));
+  // Rounded once, at the end, so "½ stk løk" is 50 g and not a whole onion. Rounded to nearest, not down:
+  // this is what the recipe needs, not what the household has.
+  const value = Math.max(
+    1,
+    Math.round((parsed.num * factor * conversion.baseQty) / (parsed.den * conversion.unitQty)),
+  );
   return value > MAX_QUANTITY_BASE ? 'mengden er for stor' : value;
 }
 

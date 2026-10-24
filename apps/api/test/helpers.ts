@@ -45,6 +45,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       uploadsPerUserPerHour: 1000,
       maxQueued: 1000,
     },
+    recipes: { includeUnreviewed: true },
     ...overrides,
   };
 }

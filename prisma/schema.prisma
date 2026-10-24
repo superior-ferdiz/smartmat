@@ -45,6 +45,7 @@ model User {
   purchases       Purchase[]
   allergens       UserAllergen[]
   shoppingItems   ShoppingListItem[]
+  mealEntries     MealPlanEntry[]
   receipts        Receipt[]
 
   @@map("users")
@@ -67,6 +68,8 @@ model Household {
   shoppingList     ShoppingList?
   shoppingItems    ShoppingListItem[]
   shoppingShares   ShoppingListItemRecipe[]
+  mealEntries      MealPlanEntry[]
+  mealShares       ShoppingListItemMeal[]
   barcodes         HouseholdBarcode[]
   receipts         Receipt[]
   receiptImages    ReceiptImage[]
@@ -419,9 +422,20 @@ enum Allergen {
 /// team = written by the students (ADR-0009); test = fictional recipes that only exist in the test databases.
 enum RecipeSource {
   team
+  /// From an openly licensed source, translated (ADR-0016, spec 09)
+  external
   test
 
   @@map("recipe_source")
+}
+
+/// How much an external recipe differs from its original (ADR-0016).
+enum RecipeAdaptation {
+  none
+  translated
+  adapted
+
+  @@map("recipe_adaptation")
 }
 
 /// A normalised food that recipes use ("melk"). Quantities of it are whole units of base_unit (ADR-0006).
@@ -480,25 +494,36 @@ model UnitConversion {
 }
 
 model Recipe {
-  id          String       @id @default(uuid(7)) @db.Uuid
+  id             String            @id @default(uuid(7)) @db.Uuid
   /// Stable id in the seed files; the seed script upserts on it, so the id survives a re-seed.
-  slug        String       @unique @db.VarChar(80)
-  title       String       @db.VarChar(120)
-  description String       @db.VarChar(500)
-  servings    Int
-  prepMinutes Int          @map("prep_minutes")
-  cookMinutes Int          @map("cook_minutes")
-  steps       String[]
-  tags        String[]
-  source      RecipeSource
-  license     String       @db.VarChar(50)
-  /// Who really wrote the recipe (ADR-0009). Never empty (CHECK).
-  authors     String[]
-  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+  slug           String            @unique @db.VarChar(80)
+  title          String            @db.VarChar(120)
+  description    String            @db.VarChar(500)
+  servings       Int
+  prepMinutes    Int               @map("prep_minutes")
+  cookMinutes    Int               @map("cook_minutes")
+  steps          String[]
+  tags           String[]
+  source         RecipeSource
+  license        String            @db.VarChar(50)
+  /// Who really wrote the recipe (ADR-0009); for an external recipe, the original's authors. Never empty (CHECK).
+  authors        String[]
+  /// ADR-0016 (spec 09): the original of an external recipe, when it was fetched and what was done to it.
+  sourceTitle    String?           @map("source_title") @db.VarChar(200)
+  sourceUrl      String?           @map("source_url") @db.VarChar(500)
+  retrievedOn    DateTime?         @map("retrieved_on") @db.Date
+  adaptation     RecipeAdaptation?
+  adaptationNote String?           @map("adaptation_note") @db.VarChar(1000)
+  aiAssisted     Boolean           @default(false) @map("ai_assisted")
+  /// Team members who checked the recipe. Empty = an AI draft ("KI-utkast – ikke kontrollert av teamet").
+  reviewedBy     String[]          @default([]) @map("reviewed_by")
+  reviewedOn     DateTime?         @map("reviewed_on") @db.Date
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   ingredients    RecipeIngredient[]
   shoppingShares ShoppingListItemRecipe[]
+  mealEntries    MealPlanEntry[]
 
   @@map("recipes")
 }
@@ -574,6 +599,7 @@ model ShoppingListItem {
   ingredient Ingredient?              @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
   createdBy  User?                    @relation(fields: [createdById], references: [id], onDelete: SetNull)
   recipes    ShoppingListItemRecipe[]
+  meals      ShoppingListItemMeal[]
 
   @@unique([id, householdId])
   @@unique([householdId, dedupeKey])
@@ -598,6 +624,66 @@ model ShoppingListItemRecipe {
   @@id([itemId, recipeId])
   @@index([recipeId])
   @@map("shopping_list_item_recipes")
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Phase 9: meal plan (spec 09)
+// ---------------------------------------------------------------------------------------------------------------
+
+enum Meal {
+  breakfast
+  lunch
+  dinner
+
+  @@map("meal")
+}
+
+/// One thing on one day and one meal: a recipe with servings, or a note ("Rester"). Exactly one of the two
+/// (CHECK). `recipe_title` is a copy, so the entry still says what it was if the seed removes the recipe.
+model MealPlanEntry {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  householdId String   @map("household_id") @db.Uuid
+  date        DateTime @db.Date
+  meal        Meal
+  /// SET NULL: a recipe removed by the seed script leaves the entry with its title (spec 09).
+  recipeId    String?  @map("recipe_id") @db.Uuid
+  recipeTitle String?  @map("recipe_title") @db.VarChar(120)
+  servings    Int?
+  note        String?  @db.VarChar(100)
+  /// Unique per household: a form sent twice gives one entry (NFR-DATA-002).
+  dedupeKey   String?  @map("dedupe_key") @db.VarChar(100)
+  createdById String?  @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  household Household              @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  recipe    Recipe?                @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  createdBy User?                  @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  shares    ShoppingListItemMeal[]
+
+  @@unique([id, householdId])
+  @@unique([householdId, dedupeKey])
+  @@index([householdId, date])
+  @@index([recipeId])
+  @@map("meal_plan_entries")
+}
+
+/// FR-PLAN-004: how much a planned meal put on a shopping line. What an entry already added is subtracted the
+/// next time, so the same need added twice never doubles. Deleting the line or the entry removes the share.
+model ShoppingListItemMeal {
+  itemId       String @map("item_id") @db.Uuid
+  entryId      String @map("entry_id") @db.Uuid
+  householdId  String @map("household_id") @db.Uuid
+  /// In the ingredient's base unit; null = added without an amount.
+  quantityBase Int?   @map("quantity_base")
+
+  household Household        @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  item      ShoppingListItem @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
+  entry     MealPlanEntry    @relation(fields: [entryId, householdId], references: [id, householdId], onDelete: Cascade)
+
+  @@id([itemId, entryId])
+  @@index([entryId])
+  @@map("shopping_list_item_meals")
 }
 
 // ---------------------------------------------------------------------------------------------------------------

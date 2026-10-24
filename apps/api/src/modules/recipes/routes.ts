@@ -5,6 +5,7 @@ import {
   allergensBodySchema,
   ingredientResponseSchema,
   recipeDetailSchema,
+  recipeListQuerySchema,
   recipeListResponseSchema,
 } from '@smartmat/shared';
 import { householdOf } from '../../authz/household';
@@ -32,8 +33,16 @@ export const recipeRoutes: FastifyPluginAsyncZod<RecipeRoutesOptions> = async (a
 
   app.get(
     BASE,
-    { preHandler, schema: { params: household, response: { 200: recipeListResponseSchema } } },
-    async (request) => service.list(householdOf(request).id, authOf(request).userId),
+    {
+      preHandler,
+      schema: {
+        params: household,
+        querystring: recipeListQuerySchema,
+        response: { 200: recipeListResponseSchema },
+      },
+    },
+    async (request) =>
+      service.list(householdOf(request).id, authOf(request).userId, request.query.for),
   );
 
   app.get(

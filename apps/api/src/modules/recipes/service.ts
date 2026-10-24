@@ -56,10 +56,11 @@ export class RecipeService {
     }));
   }
 
-  async list(householdId: string, userId: string): Promise<RecipeListResponse> {
+  /** FR-REC-002; with `usableOn` (FR-PLAN-005) ranked for a planned day instead of today. */
+  async list(householdId: string, userId: string, usableOn?: string): Promise<RecipeListResponse> {
     const [recipes, context] = await Promise.all([
       this.deps.repo.recipes(),
-      this.context(householdId, userId),
+      this.context(householdId, userId, usableOn),
     ]);
     return {
       recipes: recipes.map((recipe) => this.evaluate(recipe, context).summary).sort(compareRanked),
@@ -110,18 +111,21 @@ export class RecipeService {
     return this.allergens(userId);
   }
 
-  private async context(householdId: string, userId: string) {
+  private async context(householdId: string, userId: string, usableOn?: string) {
     const [catalogRows, items, userAllergens] = await Promise.all([
       this.deps.repo.catalog(),
       this.deps.inventory.listItems(householdId),
       this.allergens(userId),
     ]);
     const catalog = new Map<string, CatalogIngredient>(catalogRows.map((i) => [i.id, i]));
+    const today = osloDate(this.deps.now());
     const stock = stockByIngredient(
       items,
       buildAliasIndex(catalogRows),
       catalog as ReadonlyMap<string, StockIngredient>,
-      osloDate(this.deps.now()),
+      today,
+      // A day in the past is ranked as today: use-by passed already never counts.
+      usableOn !== undefined && usableOn > today ? usableOn : today,
     );
     return { catalog, stock, userAllergens: userAllergens.allergens };
   }
@@ -166,6 +170,7 @@ export class RecipeService {
         cookMinutes: recipe.cookMinutes,
         tags: recipe.tags,
         source: recipe.source,
+        origin: recipe.origin,
         ingredientNames: ingredientsOf.map((i) => i.name),
         allergens: ALLERGENS.filter((a) => registered.includes(a)),
         allergenWarnings: allergenConflicts(registered, context.userAllergens),

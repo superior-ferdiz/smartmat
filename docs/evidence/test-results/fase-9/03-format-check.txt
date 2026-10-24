@@ -1,0 +1,9 @@
+$ npm run format:check
+Kjørt 2026-10-24T19:39:48Z (forsøk 2, etter prettier --write på apps/api/scripts/e2e-server.ts)
+
+> smartmat@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+exit 0

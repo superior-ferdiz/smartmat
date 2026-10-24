@@ -484,3 +484,75 @@ Bevis ligger i `docs/evidence/test-results/fase-8/`, skjermbilder i `docs/eviden
 **Neste:** Teamet går gjennom fasen, tar stilling til ADR-0017, og legger de andre kvitteringene i den private
 mappen. Deretter fase 9 (måltidsplan), helst i en ny chat.
 
+
+**Oppfølging 2026-10-24:** Ferdinand ba om commit og push av `fase-8` («Commit og push fase 8»). Den ble committet
+(f590468) og pushet samme dag, i chatten der fase 9 startet.
+
+---
+
+## 2026-10-24 – Fase 9: oppskrifter fra åpne kilder og måltidsplan
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 9 med prompten for måltidsplanen og en beslutning om oppskriftene: «Oppskrifter på matretter
+  skal hentes fra internett slik at det automatisk kommer opp oppskrifer på matretter som brukeren kan lage basert
+  på hva de har.» Linjene om gjennomgang siden fase 8 og om ADR-0017 var ikke fylt ut. Claude registrerte dem som
+  «ingen» og «ikke godkjent ennå».
+- **Planen:**
+  - Claude leste vilkårene til Spoonacular og TheMealDB og anbefalte bort fra begge (Spoonacular tillater ikke å
+    lagre ingredienser, TheMealDB er bare for utvikling og på engelsk).
+  - Forslaget var å importere fra Wikibooks (CC BY-SA 4.0), oversette med KI og merke oppskriftene som KI-utkast.
+    Rangeringen fra fase 5 viser dem da automatisk etter matlageret.
+  - Ferdinand svarte: «Godkjent i plenum av Ferdinand og Linus». Det er registrert ordrett som hans erklæring.
+    Linus har ikke bekreftet det selv i en økt. Anbefalingene i de seks åpne spørsmålene gjelder.
+  - Ingen kontaktadresse ble oppgitt. Importskriptet bruker GitHub-profilen til repoet i User-Agent.
+- **Spesifikasjon 09 ble skrevet før koden.** ADR-0016 er akseptert og erstatter ADR-0009.
+- **Oppskriftene:**
+  - 46 sider ble hentet fra Wikibooks i to omganger, og originalene ble lest før oversettelsen. 27 ble oversatt.
+  - Valgt bort fra første henting (13 av 32): 20-Minute Beef Stroganoff (ferdigprodukter), Chicken Tikka Masala
+    (krever en annen oppskrift), Chicken with Paprika and Cream (bearbeidet ost, svært kort), Fried Rice, Tacos og
+    Chicken Soup I (ingen mengder), Fried Fish (mikrobølgeovn og frityr), Dal, Lasagne, Chili con Carne og Meatloaf
+    (oversikter, ikke oppskrifter), Chicken Curry (mange krydder som ellers ikke brukes) og Fish Pie (kamskjell og
+    blåskjell).
+  - Valgt bort fra andre henting (6 av 14): Meatloaf II (ferdig fyll), Pasta with Budget Bolognese Sauce (frosne
+    hamburgere), Honey Mustard Salmon (bare forhold, ingen mengder), Cabbie Claw (ufullstendig, fisken skal henges
+    i et døgn), Home Fries (en lenke som så ut som reklame) og Beef and Barley Stew (to blandede varianter).
+  - Originalene til de som ble valgt bort, er slettet fra repoet.
+- **All kode i fasen er skrevet av KI.** Oversettelsene og de 45 nye ingrediensene er også laget av KI.
+
+**Avvik og funn underveis** (detaljer i spesifikasjon 09 og kapittel 11)
+- Frødata rundet av før omregningen («½ løk» ble 100 g). Det ble rettet, og to eldre tester ble oppdatert.
+- Meldingen etter «Fjern» kom ikke på telefon. Årsaken var fellen fra fase 7 (TanStack hopper over `onSuccess` når
+  komponenten avmonteres). Playwright fant det.
+- axe fant sju landemerker med samme navn.
+- **Kontrollen av testene:** første kjøring fanget 31 av 35. Hullene var repoer som ikke filtrerte på husholdning selv,
+  og en skjult oppskrift i måltidsplanen. Nye tester ble lagt til, og andre kjøring fanget 35 av 35.
+- Første formateringssjekk feilet på én fil. Den feilede kjøringen er lagret.
+- Et utkast til kapittel 11 sa at en ny test feilet med den gamle koden. Det var ikke kjørt, og teksten ble rettet.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 1058 |
+| API-tester mot database | 317 |
+| Bygg | Vellykket (hovedfil 803 kB) |
+| Playwright-tester | 167 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-9/`, skjermbilder i `docs/evidence/screenshots/fase-9/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 9 (pull request)
+- **kontroll av de 27 oppskriftene og de nye ingrediensene** (mengder, tider, oversettelse, allergener). Til det er
+  gjort, står de som KI-utkast.
+- commit og push av `fase-9` (ikke bedt om ennå)
+- test på ekte telefon
+- fortsatt utestående fra tidligere faser: testmiljøet (DNS, passord, oppsett), kontaktadresse til Open Food Facts,
+  kontroll av OFF-kategoritabellen og `ingredients.json`, ADR-0017 og de 3 kvitteringene som mangler, sletting av
+  pilotdataene senest 2026-11-23
+
+**Neste:** Teamet går gjennom fasen og kontrollerer oppskriftene. Deretter fase 10 (husholdning: invitasjoner,
+roller, deling), helst i en ny chat.

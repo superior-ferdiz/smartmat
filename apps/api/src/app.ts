@@ -32,6 +32,9 @@ import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
 import { createProfileRepo } from './modules/profile/repo';
 import { createPurchaseRepo } from './modules/purchases/repo';
+import { createMealPlanRepo } from './modules/mealplan/repo';
+import { mealPlanRoutes } from './modules/mealplan/routes';
+import { MealPlanService } from './modules/mealplan/service';
 import { createRecipeRepo } from './modules/recipes/repo';
 import { recipeRoutes } from './modules/recipes/routes';
 import { RecipeService } from './modules/recipes/service';
@@ -177,7 +180,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const householdAccess = createHouseholdAccess(householdRepo);
   const locationRepo = createLocationRepo(db);
   const inventoryRepo = createInventoryRepo(db);
-  const recipeRepo = createRecipeRepo(db);
+  const recipeRepo = createRecipeRepo(db, config.recipes);
   const inventoryService = new InventoryService({
     repo: inventoryRepo,
     locations: locationRepo,
@@ -212,10 +215,18 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     uploadLimiter: new WindowLimiter(config.receipts.uploadsPerUserPerHour, 60 * MINUTE, now),
     now,
   });
+  const shoppingRepo = createShoppingRepo(db);
   const shoppingService = new ShoppingService({
-    repo: createShoppingRepo(db),
+    repo: shoppingRepo,
     locations: locationRepo,
     recipes: recipeRepo,
+    now,
+  });
+  const mealPlanService = new MealPlanService({
+    repo: createMealPlanRepo(db),
+    recipes: recipeRepo,
+    inventory: inventoryRepo,
+    shopping: shoppingRepo,
     now,
   });
 
@@ -254,6 +265,11 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(receiptRoutes, { service: receiptService, requireAuth, householdAccess });
       await api.register(shoppingRoutes, {
         service: shoppingService,
+        requireAuth,
+        householdAccess,
+      });
+      await api.register(mealPlanRoutes, {
+        service: mealPlanService,
         requireAuth,
         householdAccess,
       });

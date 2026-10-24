@@ -81,11 +81,25 @@ Avvik fra planen:
 - `ReceiptExtraction.raw_text` lagres uten betalingslinjer. `parsed` er JSON med tolkede linjer og konfidens.
 - **pg-boss** har sitt eget skjema `pgboss` i samme database. Jobbene inneholder bare kvitteringens id.
 
+**Implementert i fase 9 (2026-10-24):** `MealPlanEntry` og i tillegg `ShoppingListItemMeal`, og nye felt på `Recipe`
+([spesifikasjon 09](requirements/09-maltidsplan.md), ADR-0016). Avvik fra planen:
+- `MealPlanEntry` har `meal` (`breakfast`/`lunch`/`dinner`), enten `recipe_id` + `recipe_title` + `servings` eller
+  `note` (CHECK), og `dedupe_key` unik per husholdning. `recipe_title` er en kopi, så oppføringen beholder navnet hvis
+  seed-skriptet fjerner oppskriften (`recipe_id` SET NULL). `position` fra planen er ikke laget: rekkefølgen innenfor
+  et måltid er rekkefølgen oppføringene ble lagt til.
+- `ShoppingListItemMeal` (`item_id`, `entry_id`, `household_id`, `quantity_base`) sier hvor mye en oppføring har lagt
+  på en handlelistelinje. Den trekkes fra neste gang, så samme behov lagt til to ganger blir ikke doblet. Sammensatte
+  fremmednøkler med CASCADE til både linjen og oppføringen.
+- `Recipe` fikk `source_title`, `source_url`, `retrieved_on`, `adaptation`, `adaptation_note`, `ai_assisted`,
+  `reviewed_by` og `reviewed_on`, og `source` kan være `external`. CHECK: en ekstern oppskrift har kilde, lenke,
+  hentedato og tilpasning, og `reviewed_on` står når og bare når `reviewed_by` har navn. `original_author` fra
+  ADR-0016 er ikke laget (`authors` har den rollen).
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–8)
+## Kjernemodell (fase 2–9)
 
 ```mermaid
 erDiagram
@@ -119,6 +133,10 @@ erDiagram
   Receipt ||--o| ReceiptImage : bilde
   Receipt ||--o| ReceiptExtraction : uttrekk
   Purchase ||--o| Receipt : fra_kvittering
+  Household ||--o{ MealPlanEntry : planlegger
+  Recipe |o--o{ MealPlanEntry : planlagt_som
+  MealPlanEntry ||--o{ ShoppingListItemMeal : bidrar
+  ShoppingListItem ||--o{ ShoppingListItemMeal : fra_plan
 ```
 
 ## Entiteter
@@ -144,16 +162,18 @@ erDiagram
 | `FoodBudget` | household_id, valid_from, amount_ore? | Gjelder fra en måned og fremover | 4 |
 | `Ingredient` / `IngredientAlias` | key, name, base_unit, is_staple, category_key? / alias (unik) | Normalisering: "lettmelk", "melk 1%" → melk | 5 |
 | `UnitConversion` | ingredient_id?, from_unit, to_base_factor | f.eks. 1 dl melk = 100 ml, 1 egg ≈ 60 g | 5 |
-| `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image? | Frødata fra teamet | 5 |
+| `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image?; fra fase 9: source_title?, source_url?, retrieved_on?, adaptation?, adaptation_note?, ai_assisted, reviewed_by, reviewed_on? | Frødata (fra fase 9: oversatt fra Wikibooks, ADR-0016) | 5/9 |
 | `RecipeIngredient` | recipe_id, ingredient_id, quantity_base, display_text, optional | | 5 |
 | `ShoppingList` / `ShoppingListItem` / `ShoppingListItemRecipe` | household_id (unik) / household_id, list_id, text, ingredient_id?, quantity_base?, unit?, checked, checked_at?, dedupe_key? / item_id, recipe_id, quantity_base? | Én liste per husholdning; én åpen linje per ingrediens | 6 |
 | `Receipt` | household_id, status, failure_code?, image_sha256?, uploaded_by?, purchase_id?, delete_after, confirmed_at? | Én opplastet kvittering. Etter bekreftelse bare koblingen til kjøpet. | 8 |
 | `ReceiptImage` | receipt_id (PK), household_id, bytes, width, height | Bildet uten metadata. Slettes ved bekreftelse, forkasting eller etter 7 dager. | 8 |
+| `MealPlanEntry` | household_id, date, meal, recipe_id?, recipe_title?, servings?, note?, dedupe_key? | Oppskrift med porsjoner eller fritekst (CHECK) | 9 |
+| `ShoppingListItemMeal` | item_id, entry_id, household_id, quantity_base? | Hva en planlagt rett la på en handlelistelinje | 9 |
 | `ReceiptExtraction` | receipt_id (PK), household_id, engine, raw_text, parsed (JSON), mean_confidence, duration_ms | Det OCR og parseren fant. Uten betalingslinjer. | 8 |
 
 ## Senere
 
-`MealPlanEntry` (9), `Invitation` (10), `Notification` / `NotificationPreference` (11),
+`Invitation` (10), `Notification` / `NotificationPreference` (11),
 `PriceObservation` (12: product_id, chain, price_ore, unit_price, observed_at, source).
 
 ## Åpne spørsmål

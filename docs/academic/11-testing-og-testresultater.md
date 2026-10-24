@@ -779,6 +779,99 @@ Feil i målingen og testene:
 - forventninger i testene som ikke stemte med regelen, for eksempel kantord med siffer
 - loggtesten var ustabil (se over)
 
+## Testtyper og sporbarhet (fase 9)
+
+Testene refererer til krav-ID-ene i [09-maltidsplan.md](../development/requirements/09-maltidsplan.md). API- og
+ende-til-ende-testene bruker fortsatt bare de fiktive testoppskriftene (`source=test`). API-testene for kilde og lisens
+lager to fiktive eksterne oppskrifter for seg selv og sletter dem etterpå. Ingen test kontakter Wikibooks.
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-PLAN-001 | ISO-uker: årsskifte, uke 53, uker som ikke finnes, bla frem og tilbake, dager over måneds- og sommertidsskifte, perioden for behov (fra i dag, hele uka i fremtiden, ingen for en uke som er over) | `shared/src/dates/week.test.ts` | 24 |
+| FR-PLAN-002/003/004/005 | Skalering (rundet opp, «ca.», «etter smak», tak), behov minus matlager, siste forbruksdag bare for måltider før datoen, grådig fordeling, passert siste forbruksdag teller aldri, omregning parti for parti, ukjent mengde, basisvarer og valgfrie, bidrag trekkes fra, bare økningen legges til, aldri negativt, forslag med samme regler som fase 6, «går ut denne uka» | `shared/src/mealplan/needs.test.ts` | 27 |
+| FR-PLAN-001/004, KURS-04 | De delte skjemaene: oppskrift eller fritekst, porsjoner 1–50, tekst 1–100 tegn, måltid, dato, periode på høyst 42 dager, linjer til handlelisten | `shared/src/schemas/mealPlan.test.ts` | 14 |
+| FR-REC-005 | Frødata: kildefeltene kreves for eksterne oppskrifter, bare lisensene i ADR-0016, https-lenke, «adapted» krever forklaring, `reviewedOn` følger `reviewedBy`, avrunding én gang etter omregningen | `shared/src/recipes/seed.test.ts` | 39 (13 nye) |
+| FR-REC-005 | Alle filene i `prisma/seed/` er gyldige, ingen testdata, og hver ekstern oppskrift lenker til den revisjonen originalfilen har | `api/src/modules/recipes/seed.test.ts` | 5 |
+| FR-PLAN-002 | Oppskriftssiden: skalerte mengder, har/mangler regnet om, «etter smak», basisvarer | `web/src/recipes/scale.test.ts` | 4 |
+| FR-PLAN-001/003/004/005 | Siden: uka mandag–søndag, i dag markert, bla mellom uker, ugyldig uke, tom uke, frokost og lunsj bak en bryter, legge til fritekst (én gang, med melding), velge oppskrift rangert for dagen med grunn og allergenfilter, porsjoner kontrolleres, flytte (bare det som endres sendes), fjerne (melding og fokus også når oppføringen forsvinner), behovet med forklaring, bare det avkryssede sendes, uke som er over, behov fra i dag. Axe på to av dem. | `web/src/pages/mealplan/MealPlanPage.test.tsx` | 11 |
+| FR-PLAN-002, FR-PLAN-001 | Porsjonsvelger, skalering og URL-en på oppskriftssiden, «Legg i måltidsplanen» | `web/src/pages/recipes/RecipePage.test.tsx` | 3 nye |
+| FR-REC-006 | Kilde og lisens med trygge lenker, «KI-utkast», kontrollert av teamet, merket på kortet, siden «Kilder og lisenser» og tom tilstand. Axe på to av dem. | `web/src/pages/recipes/RecipeSourcesPage.test.tsx` | 6 |
+| FR-PLAN-004 | Handlelisten viser hvilken planlagt rett en linje kommer fra | `web/src/pages/shopping/ShoppingListPage.test.tsx` | 1 ny |
+| FR-PLAN-001–004, NFR-SEC-001/004 | API mot database: legge til, liste etter dato og måltid, dobbel innsending, flytte, endre, fjerne, porsjoner bare på oppskrifter, ni ugyldige skjemaer, 20 per dag (også ved flytting), periode, fjernet oppskrift beholder tittelen, ingen fritekst i loggen, behovet skalert og fra i dag, siste forbruksdag før dagen, «går ut denne uka», legge på handlelisten (samme behov to ganger, flere porsjoner, samtidig, slå sammen med en linje som finnes, slette oppføring eller linje), ingrediens planen ikke trenger, IDOR for alle seks endepunktene i begge retninger, repoene filtrerer selv, 401 | `api/test/mealPlan.api.test.ts` | 28 |
+| FR-REC-006, FR-PLAN-005 | Kilde og lisens i API-svaret, `RECIPES_INCLUDE_UNREVIEWED=false` (også per id og i måltidsplanen), CHECK i databasen, rangering for en dag, ugyldig dato, IDOR | `api/test/recipeSources.api.test.ts` | 8 |
+| FR-PLAN-001–004, NFR-UX-001/002, KURS-02 | Ende-til-ende: planlegg neste uke (oppskrift for 2 porsjoner og fritekst) → behovet halvert → legg på handlelisten → det står der med hvor det kommer fra. Flytte og fjerne med tastaturet, fokus etterpå. 360 px uten vannrett rulling og axe. | `e2e/mealplan.spec.ts` | 2 (× 2 skjermstørrelser) |
+
+**Sum etter fase 9:** 1058 enhetstester (436 shared, 190 api, 432 web), 317 API-tester mot database, 167
+ende-til-ende-tester.
+
+Eksisterende tester som ble endret:
+- **To tester forventet 4 g salt** for «½ ts» i den fiktive pannekakeoppskriften. Etter at avrundingen i frødata ble
+  rettet, er det 3 g (2,5 ml × 6/5 g per ml).
+- **Navigasjonstesten** for «Kommer senere» brukte måltidsplanen. Den bruker nå husholdningen.
+- **Testoppsettet:** `testConfig` fikk `recipes`, `mockApi` svarer på måltidsplanen, og fiksturene fikk `origin` og
+  `meals`.
+- `e2e/fixtures.ts` fikk `recipes()` og `addMealEntry()`.
+
+### Kontroll av testene (fase 9)
+
+Samme metode som før ([skript](../evidence/test-results/fase-9/10-mutation-check.sh)), med 35 endringer. Som i fase 8
+ble alle enhetstestene kjørt, men bare API-testene fasen berører (måltidsplan, kilder, oppskrifter og handleliste).
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-9/10-mutation-check-run1.txt)): 31 av 35 ble fanget.
+- **Runde 21, 22 og 29 ble ikke fanget:** repoet filtrerte ikke selv på husholdning ved henting og endring av en
+  oppføring og ved lesing av bidrag. Rutene og servicen sperret allerede, så svaret ble det samme. Ny test som kaller
+  repoene direkte med en annen husholdning.
+- **Runde 32 ble ikke fanget:** en oppskrift som er skjult fordi den ikke er kontrollert, ble fortsatt vist med id i
+  måltidsplanen. Testen dekket bare en slettet oppskrift, og da er id-en tom uansett. Ny test med
+  `RECIPES_INCLUDE_UNREVIEWED=false`.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-9/10-mutation-check.txt)): 35 av 35 ble fanget.
+
+Runde 35 (meldingen etter fjerning) fanger at meldingen mangler. Den fanger ikke direkte feilen Playwright fant (at
+meldingen satt i en komponent som avmonteres). Enhetstesten simulerer nå at oppføringen forsvinner, men det er
+**ikke kjørt** at den feiler med den gamle koden. Feilen ble bekreftet rettet med Playwright på 360 px (begge testene
+to ganger hver). Kontrollen dekker ikke Playwright, CHECK-begrensningene og importskriptet.
+
+## Resultater fase 9 (kjørt 2026-10-24)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Bilder i repoet | Ingen utenfor skjermbildemappen | `00-check-files.txt` |
+| Typesjekk, lint, formatering | Ingen feil. Første formateringssjekk feilet på én fil (`03-format-check-forsok1.txt`). Typesjekk og lint ble kjørt på nytt etter formateringen. | `01`–`03`, `01-02-etter-formatering.txt` |
+| Enhet/komponent | 1058 av 1058 | `04-unit-tests.txt` |
+| API mot testdatabase | 317 av 317 | `05-api-tests.txt` |
+| Bygg | Vellykket. Hovedfilen er 803 kB (244 kB gzip). | `06-build.txt` |
+| Ende-til-ende | 167 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse) | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (10 migreringer) | `09-migrate-status.txt` |
+| Frødata | 106 ingredienser og 27 oppskrifter godkjent av `db:seed -- --check`, og lagt inn i utviklingsdatabasen | (kjørt i økten, ikke lagret som egen fil; dekket av `seed.test.ts` i `04`) |
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-9/](../evidence/screenshots/fase-9/). De viser de oversatte Wikibooks-oppskriftene
+(`E2E_RECIPE_SEED=repo`), en planlagt uke, dialogen for å legge til, handlelisten og siden for kilder og lisenser.
+
+**Ikke testet:**
+- ekte telefon
+- at oversettelsene, mengdene, tidene og allergenene i de 27 oppskriftene er riktige (det er teamets kontroll)
+- importskriptet automatisk (det ble kjørt for hånd mot Wikibooks to ganger)
+
+## Feil funnet i fase 9
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-24.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | Frødata rundet av før omregningen: «½ stk løk» ble 100 g (en hel løk) | Utskrift av alle mengdene i grunnenhet etter oversettelsen | Én avrunding, etter omregningen. To eldre tester rettet (4 g → 3 g salt). |
+| 2 | Meldingen «… er fjernet fra planen» kom ikke på telefon: oppføringen ble avmontert når planen ble hentet på nytt, og TanStack Query hoppet over `onSuccess` | Playwright (360 px) | Siden kjører slettingen. Enhetstest der oppføringen forsvinner. |
+| 3 | Sju landemerker med samme navn («Middag») | axe i komponenttesten | Måltidene er vanlige blokker med overskrift |
+| 4 | En etikett der teksten lå for dypt for lint-regelen (jsx-a11y) | ESLint | Enklere oppbygning |
+| 5 | Fire hull i testene (se kontrollen over) | Mutasjonskontrollen | Nye tester |
+| 6 | 19 av 46 hentede Wikibooks-sider var ikke brukbare (uten mengder, oversikter, ferdigprodukter, en lenke som så ut som reklame) | Gjennomlesing av hver original før oversettelse | Valgt bort. Originalene er slettet. |
+
+Feil i testene: testindeksen manglet aliaser («Jasminris», «Lettmelk»), uker ble lest før planen var lastet, to
+render i samme test fant den første, et vanlig mellomrom i stedet for U+00A0 i en Playwright-regex, `check()` på en
+avkrysningsboks som styres av URL-en, og en lenke React Router normaliserer (`?` fjernes).
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser

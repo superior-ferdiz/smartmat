@@ -128,6 +128,27 @@ Workeren er et eget startpunkt i API-pakken, fordi den bruker samme databasekode
 container på det interne nettverket uten internett. Uten OCR (`OCR_PROVIDER=off`) tar API-et ikke imot kvitteringer,
 og siden viser det vanlige skjemaet (NFR-REL-002).
 
+## Oppskrifter fra åpne kilder og måltidsplan (fase 9)
+
+**Oppskriftene** hentes ikke mens appen kjører. En utvikler kjører et importskript som henter sider fra Wikibooks
+(CC BY-SA 4.0) og lagrer originalen med revisjons-id. KI oversetter dem til oppskriftsfiler, og `npm run db:seed`
+legger dem inn som før (ADR-0016). Appen er derfor ikke avhengig av en ekstern tjeneste, og hver oppskrift kan
+spores til akkurat den versjonen den er oversatt fra.
+
+```mermaid
+flowchart LR
+  WB[(Wikibooks)] -- "MediaWiki-API,<br/>1 per sekund" --> S[Importskript]
+  S --> O[sources/wikibooks/*.json<br/>original + revisjon]
+  O -- "KI oversetter,<br/>teamet kontrollerer" --> R[recipes/*.json]
+  R -- "db:seed (checkSeed)" --> DB[(recipes)]
+  DB --> A[API: rangering, plan, handleliste]
+```
+
+**Måltidsplanen** følger samme mønster som resten av API-et: ruter, service og repo, med de rene reglene i
+`packages/shared/src/mealplan/`. Behovet lagres ikke. Det regnes ut ved hver forespørsel fra planen, oppskriftene,
+matlageret og det planen allerede har lagt på handlelisten. Når noe legges på listen, skriver handlelistens repo både
+linjen og bidraget i én transaksjon, med listen låst.
+
 ## Sikkerhetsgrenser
 
 - **All tilgangskontroll skjer i API-et.** `RequireAuth` i React bestemmer bare hva som vises. Den beskytter ingenting.

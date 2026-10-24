@@ -1,0 +1,65 @@
+{
+  "slug": "amerikanske-pannekaker",
+  "title": "Amerikanske pannekaker",
+  "description": "Tykke, luftige pannekaker med bakepulver. Gir 12–14 små pannekaker.",
+  "servings": 3,
+  "prepMinutes": 5,
+  "cookMinutes": 10,
+  "tags": ["frokost", "pannekaker", "vegetar"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Pancakes (North American)",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4671208",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 15 minutter totalt. Delingen i forberedelse og steking er gjort av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "hvetemel",
+      "amount": "120",
+      "unit": "g",
+      "text": "120 g hvetemel (fint, sammalt eller halvt av hver)"
+    },
+    {
+      "ingredient": "bakepulver",
+      "amount": "1,5",
+      "unit": "ts",
+      "text": "1½ ts bakepulver"
+    },
+    {
+      "ingredient": "salt",
+      "text": "1 klype salt"
+    },
+    {
+      "ingredient": "melk",
+      "amount": "2,5",
+      "unit": "dl",
+      "text": "2,5 dl melk (eller kulturmelk, eller halvt av hver)"
+    },
+    {
+      "ingredient": "egg",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 egg, delt i plomme og hvite"
+    },
+    {
+      "ingredient": "sukker",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss sukker",
+      "optional": true
+    }
+  ],
+  "steps": [
+    "Bland de tørre ingrediensene godt i en stor bolle.",
+    "Ha i melken og rør til røren er jevn.",
+    "Del egget. Ha hviten i en middels bolle og plommen i røren. Rør godt.",
+    "Pisk hviten stiv, og vend den forsiktig inn i røren. Hopp over dette for tyngre pannekaker, eller hvis du bruker kulturmelk.",
+    "Hell en øse røre i en stekepanne med slippbelegg, én om gangen.",
+    "Stek til kantene er tørre og det kommer bobler på overflaten. Snu, og stek til de er gylne.",
+    "Server med smør, sirup, frukt, sjokoladepålegg, syltetøy eller ost."
+  ]
+}

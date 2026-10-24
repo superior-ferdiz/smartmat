@@ -1,0 +1,77 @@
+{
+  "slug": "kyllingfajitas",
+  "title": "Kyllingfajitas",
+  "description": "Kylling stekt med spisskummen og chili, med paprika og løk. Serveres i tortillalefser.",
+  "servings": 4,
+  "prepMinutes": 15,
+  "cookMinutes": 15,
+  "tags": ["middag", "kylling", "tex-mex"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Chicken Fajitas",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4513985",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir verken porsjoner eller tid. Antall porsjoner (4) og tidene er anslått av KI. Gurkemeien står bare i fremgangsmåten i originalen («en skje»). KI har satt mengden til 1 ts og lagt den i ingredienslisten.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "olje",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss olivenolje"
+    },
+    {
+      "ingredient": "kyllingfilet",
+      "amount": "500",
+      "unit": "g",
+      "text": "500 g–1 kg kyllingfilet uten skinn"
+    },
+    {
+      "ingredient": "paprika",
+      "amount": "2",
+      "unit": "stk",
+      "text": "1 rød og 1 grønn paprika"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1/2",
+      "unit": "stk",
+      "text": "½ gul løk"
+    },
+    {
+      "ingredient": "spisskummen",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ts malt spisskummen (eller etter smak)"
+    },
+    {
+      "ingredient": "chiliflak",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss chiliflak (eller etter smak)"
+    },
+    {
+      "ingredient": "gurkemeie",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ts gurkemeie til marinaden"
+    },
+    {
+      "ingredient": "tortilla",
+      "text": "Tortillalefser til servering",
+      "optional": true
+    }
+  ],
+  "steps": [
+    "Skjær kyllingen i biter på omtrent 2,5 × 2,5 cm.",
+    "Mariner kyllingen med en skje gurkemeie, salt og sort pepper.",
+    "Stek kyllingen i olivenolje med spisskummen og chiliflak på høy varme i en stor stekepanne eller wok.",
+    "Mens kjøttet steker, skjærer du paprika og løk i strimler.",
+    "Når kjøttet er gjennomstekt, har du i grønnsakene og rører ofte, så alt blir jevnt stekt.",
+    "Ta pannen av varmen når grønnsakene er myke.",
+    "Server med tortillalefser og tilbehør som ost, rømme, salat, tomat, løk eller guacamole."
+  ]
+}

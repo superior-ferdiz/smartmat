@@ -18,6 +18,7 @@ import type { FieldErrors } from '../../forms/fieldErrors';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
 import { useFormatQuantity } from '../../inventory/formatHooks';
 import { Page } from '../../layout/Page';
+import { useShortDayLabel } from '../../mealplan/format';
 import { useJoinList } from '../../recipes/formatHooks';
 import {
   useAddShoppingItem,
@@ -226,6 +227,7 @@ function Rows({ items, version }: { items: ShoppingItemResponse[]; version: numb
   const { t } = useTranslation();
   const formatQuantity = useFormatQuantity();
   const join = useJoinList();
+  const shortDay = useShortDayLabel();
 
   return (
     <ul role="list" className={styles.list}>
@@ -243,6 +245,18 @@ function Rows({ items, version }: { items: ShoppingItemResponse[]; version: numb
                       amount: formatQuantity(r.quantityBase, item.unit),
                     }),
               );
+        // Spec 09: what planned meals put on the line.
+        for (const m of item.meals) {
+          shares.push(
+            m.quantityBase === null || item.unit === null
+              ? t('shopping.mealShare', { day: shortDay(m.date), title: m.title })
+              : t('shopping.mealShareAmount', {
+                  day: shortDay(m.date),
+                  title: m.title,
+                  amount: formatQuantity(m.quantityBase, item.unit),
+                }),
+          );
+        }
         return (
           <li
             key={item.id}

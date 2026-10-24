@@ -186,6 +186,19 @@
     },
     "receipt": {
       "imageRequired": "Choose a photo of the receipt."
+    },
+    "mealPlan": {
+      "meal": "Choose a meal.",
+      "noteRequired": "Write a text.",
+      "noteTooLong": "The text can have at most 100 characters.",
+      "servings": "Servings must be a whole number from 1 to 50.",
+      "recipe": "Choose a recipe.",
+      "recipeNotFound": "The recipe was not found. It may have been removed.",
+      "range": "The end date cannot be before the start date.",
+      "rangeTooLong": "The period can be at most six weeks.",
+      "notARecipe": "Only recipes have servings.",
+      "notANote": "Only notes can be changed like this.",
+      "notInPlan": "The plan does not need this ingredient in the period."
     }
   },
   "pages": {
@@ -248,9 +261,7 @@
       "lead": "What you spend on food, and how much is left this month."
     },
     "mealPlan": {
-      "lead": "Plan the week's dinners.",
-      "emptyTitle": "The meal plan comes later",
-      "emptyText": "The meal plan is planned as an optional extension after the first submission."
+      "lead": "Plan the week, see what is missing, and put it on the shopping list."
     },
     "household": {
       "lead": "Share the pantry and shopping list with the people you live with.",
@@ -474,6 +485,9 @@
       "duplicate": "This receipt is already saved.",
       "possibleDuplicate": "You already have a purchase with the same date and total. Is this the same purchase?",
       "cannotRetry": "The receipt cannot be read again right now."
+    },
+    "mealPlan": {
+      "dayFull": "This day already has 20 entries. Remove something or choose another day."
     }
   },
   "units": {
@@ -845,7 +859,7 @@
     "listLabel": "Recipes, best fit first",
     "empty": {
       "title": "No recipes yet",
-      "text": "The recipes are written by the team and will be added later."
+      "text": "No recipes have been added yet."
     },
     "noMatch": {
       "title": "No recipe matches the search",
@@ -945,6 +959,55 @@
       "sulphites": "sulphites",
       "lupin": "lupin",
       "molluscs": "molluscs"
+    },
+    "aiDraft": "AI draft",
+    "origin": {
+      "title": "Source and licence",
+      "source": "Source:",
+      "fromSite": "from {{site}}, written by {{authors}}",
+      "license": "Licence:",
+      "adaptation": {
+        "none": "Not changed",
+        "translated": "Translated",
+        "adapted": "Translated and adapted"
+      },
+      "withAi": "with AI",
+      "retrieved": "Retrieved {{date}}",
+      "changes": "Changed (in Norwegian): {{note}}",
+      "aiDraft": "AI draft – not checked by the team. Amounts, times and allergens may be wrong.",
+      "reviewed": "Checked by {{names}} on {{date}}",
+      "aboutSources": "About the sources and licences"
+    },
+    "sources": {
+      "title": "Sources and licences",
+      "lead": "The recipes come from open sources. They are translated into Norwegian and marked with their source and licence.",
+      "wikibooks": {
+        "title": "Wikibooks Cookbook",
+        "text": "The cookbook on the English Wikibooks is written by volunteers. Its licence, CC BY-SA 4.0, allows copying and adapting the content when the source is credited and the adaptation gets the same licence. The translations in SmartMat are therefore also CC BY-SA 4.0.",
+        "link": "Wikibooks Cookbook",
+        "license": "The CC BY-SA 4.0 licence"
+      },
+      "whatWeDid": "The recipes were translated and adapted with AI (Claude). Amounts are converted to grams, millilitres and pieces, and each recipe says what was changed. Allergens are worked out from the ingredients, not taken from the source.",
+      "draftExplained": "Recipes marked “AI draft” have not been checked by the team yet.",
+      "listTitle": "Recipes from open sources",
+      "original": "Original:",
+      "siteAndLicense": "({{site}}) · {{license}}",
+      "emptyTitle": "No recipes from open sources",
+      "emptyText": "Recipes from open sources will be listed here once they are added."
+    },
+    "planServings": "Servings",
+    "scaledTo": "For {{count}} servings: {{amount}}",
+    "scaledToApprox": "For {{count}} servings: about {{amount}}",
+    "scaledNote": "The amounts are scaled to {{count}} servings and rounded up. The score is for the recipe's own servings.",
+    "toPlan": {
+      "button": "Add to the meal plan",
+      "title": "Add to the meal plan",
+      "date": "Date",
+      "meal": "Meal",
+      "submit": "Add",
+      "added": "Added to the meal plan.",
+      "open": "Open the week",
+      "summary": "{{title}} · {{servings}}"
     }
   },
   "shopping": {
@@ -1039,7 +1102,9 @@
       "nothing": "You have everything the recipe needs.",
       "submit": "Add to the shopping list",
       "open": "Go to the shopping list"
-    }
+    },
+    "mealShare": "Meal plan {{day}}: {{title}}",
+    "mealShareAmount": "Meal plan {{day}}: {{title}}, {{amount}}"
   },
   "scan": {
     "camera": {
@@ -1208,6 +1273,96 @@
       "confirm": "Discard",
       "done": "The receipt was discarded.",
       "failed": "Could not discard the receipt. Try again."
+    }
+  },
+  "mealPlan": {
+    "lead": "Plan the week, see what is missing, and put it on the shopping list.",
+    "weekNav": "Choose week",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "week": "Week {{number}}",
+    "weekRange": "{{from}}–{{to}}",
+    "thisWeek": "Go to this week",
+    "showAllMeals": "Show breakfast and lunch",
+    "loading": "Loading the meal plan …",
+    "emptyWeek": "Nothing is planned this week. Press plus under a day to add a recipe or a note.",
+    "hiddenMeals": "The week also has breakfast or lunch. Tick “Show breakfast and lunch” to see them.",
+    "today": "Today",
+    "meals": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner"
+    },
+    "addTo": "Add {{meal}}, {{day}}",
+    "recipeGone": "{{title}} (the recipe no longer exists)",
+    "edit": "Change or move {{name}}",
+    "remove": "Remove {{name}}",
+    "removed": "{{name}} was removed from the plan.",
+    "removeFailed": "Could not remove it. Try again.",
+    "added": "{{name}} was added to the plan.",
+    "add": {
+      "title": "{{meal}}, {{day}}",
+      "what": "What do you want to add?",
+      "modes": {
+        "recipe": "Recipe",
+        "note": "Note"
+      },
+      "noRecipes": "No recipes yet. You can write a note instead.",
+      "search": "Search recipes",
+      "recipe": "Choose a recipe",
+      "rankedFor": "Best fit first, based on what you have that can be used that day.",
+      "servings": "Servings",
+      "servingsHint_one": "The recipe is for {{count}} serving.",
+      "servingsHint_other": "The recipe is for {{count}} servings.",
+      "quick": {
+        "leftovers": "Leftovers",
+        "eatingOut": "Eating out"
+      },
+      "note": "Text",
+      "noteHint": "For example “Leftovers” or “Eating out”. At most 100 characters.",
+      "submit": "Add"
+    },
+    "editDialog": {
+      "title": "Change {{name}}",
+      "date": "Date",
+      "day": "Day",
+      "meal": "Meal",
+      "otherWeek": "Move to another week",
+      "submit": "Save"
+    },
+    "needs": {
+      "title": "What the week needs",
+      "loading": "Working out what is missing …",
+      "weekOver": "This week is over. Needs are only worked out for days to come.",
+      "noRecipes": "Add recipes to the plan to see here what is missing.",
+      "period": "Worked out from {{from}} to {{to}}. Days that are over do not count.",
+      "allCovered": "You have what the plan needs, or it is on the shopping list.",
+      "intro": "Tick what you want to buy. Nothing goes on the shopping list until you press the button.",
+      "reasons": {
+        "missing": "Missing",
+        "notEnough": "Not enough",
+        "unknownAmount": "You have some, but the amount cannot be compared",
+        "staple": "Staple – check that you have it",
+        "optional": "Optional",
+        "onList": "Already added to the shopping list from the plan"
+      },
+      "need": "Needs {{amount}}",
+      "needApprox": "Needs about {{amount}} (rounded up)",
+      "have": "you have {{amount}}",
+      "haveApprox": "you have about {{amount}}",
+      "onList": "{{amount}} added before",
+      "entry": "{{day}} {{meal}}: {{title}}, {{amount}}",
+      "toTaste": "to taste",
+      "submit": "Add to the shopping list",
+      "added": "Added to the shopping list: {{created}} new lines, {{merged}} merged with lines already there.",
+      "addedNothing": "Nothing new to add. It is already on the shopping list.",
+      "openList": "Open the shopping list",
+      "covered_one": "You have enough of this ({{count}})",
+      "covered_other": "You have enough of these ({{count}})",
+      "coveredLine": "{{name}}: {{amount}}",
+      "coveredLineNoAmount": "{{name}}",
+      "unplannedTitle": "Going off this week",
+      "unplannedText": "No recipe in the plan uses these. Something to cook with?"
     }
   }
 }

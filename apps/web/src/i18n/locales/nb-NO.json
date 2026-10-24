@@ -186,6 +186,19 @@
     },
     "receipt": {
       "imageRequired": "Velg et bilde av kvitteringen."
+    },
+    "mealPlan": {
+      "meal": "Velg måltid.",
+      "noteRequired": "Skriv en tekst.",
+      "noteTooLong": "Teksten kan ha høyst 100 tegn.",
+      "servings": "Antall porsjoner må være et helt tall fra 1 til 50.",
+      "recipe": "Velg en oppskrift.",
+      "recipeNotFound": "Fant ikke oppskriften. Den kan være fjernet.",
+      "range": "Sluttdatoen kan ikke være før startdatoen.",
+      "rangeTooLong": "Perioden kan være høyst seks uker.",
+      "notARecipe": "Bare oppskrifter har porsjoner.",
+      "notANote": "Bare fritekst kan endres slik.",
+      "notInPlan": "Planen trenger ikke denne ingrediensen i perioden."
     }
   },
   "pages": {
@@ -248,9 +261,7 @@
       "lead": "Hva du bruker på mat, og hvor mye som er igjen denne måneden."
     },
     "mealPlan": {
-      "lead": "Planlegg ukens middager.",
-      "emptyTitle": "Måltidsplanen kommer senere",
-      "emptyText": "Måltidsplan er planlagt som en valgfri utvidelse etter første innlevering."
+      "lead": "Planlegg uka, se hva som mangler, og legg det på handlelisten."
     },
     "household": {
       "lead": "Del matlager og handleliste med dem du bor med.",
@@ -474,6 +485,9 @@
       "duplicate": "Denne kvitteringen er allerede registrert.",
       "possibleDuplicate": "Du har allerede et kjøp med samme dato og sum. Er dette det samme kjøpet?",
       "cannotRetry": "Kvitteringen kan ikke leses på nytt nå."
+    },
+    "mealPlan": {
+      "dayFull": "Dagen har allerede 20 oppføringer. Fjern noe eller velg en annen dag."
     }
   },
   "units": {
@@ -845,7 +859,7 @@
     "listLabel": "Oppskrifter, best egnet først",
     "empty": {
       "title": "Ingen oppskrifter ennå",
-      "text": "Oppskriftene skrives av teamet og legges inn senere."
+      "text": "Ingen oppskrifter er lagt inn ennå."
     },
     "noMatch": {
       "title": "Ingen oppskrifter passer søket",
@@ -945,6 +959,55 @@
       "sulphites": "sulfitt",
       "lupin": "lupin",
       "molluscs": "bløtdyr"
+    },
+    "aiDraft": "KI-utkast",
+    "origin": {
+      "title": "Kilde og lisens",
+      "source": "Kilde:",
+      "fromSite": "fra {{site}}, skrevet av {{authors}}",
+      "license": "Lisens:",
+      "adaptation": {
+        "none": "Ikke endret",
+        "translated": "Oversatt",
+        "adapted": "Oversatt og tilpasset"
+      },
+      "withAi": "med KI",
+      "retrieved": "Hentet {{date}}",
+      "changes": "Endret: {{note}}",
+      "aiDraft": "KI-utkast – ikke kontrollert av teamet. Mengder, tider og allergener kan være feil.",
+      "reviewed": "Kontrollert av {{names}} {{date}}",
+      "aboutSources": "Om kildene og lisensene"
+    },
+    "sources": {
+      "title": "Kilder og lisenser",
+      "lead": "Oppskriftene er hentet fra åpne kilder, oversatt til norsk og merket med kilde og lisens.",
+      "wikibooks": {
+        "title": "Wikibooks Cookbook",
+        "text": "Kokeboka på engelske Wikibooks er skrevet av frivillige. Den har lisensen CC BY-SA 4.0, som tillater å kopiere og bearbeide innholdet når kilden nevnes og bearbeidelsen får samme lisens. Oversettelsene i SmartMat har derfor også CC BY-SA 4.0.",
+        "link": "Wikibooks Cookbook",
+        "license": "Lisensen CC BY-SA 4.0"
+      },
+      "whatWeDid": "Oppskriftene er oversatt og tilpasset med KI (Claude). Mengdene er gjort om til gram, milliliter og stykk, og hver oppskrift sier hva som er endret. Allergenene regnes ut fra ingrediensene, ikke fra kilden.",
+      "draftExplained": "Oppskrifter merket «KI-utkast» er ikke kontrollert av teamet ennå.",
+      "listTitle": "Oppskrifter fra åpne kilder",
+      "original": "Original:",
+      "siteAndLicense": "({{site}}) · {{license}}",
+      "emptyTitle": "Ingen oppskrifter fra åpne kilder",
+      "emptyText": "Når oppskrifter fra åpne kilder er lagt inn, står de her."
+    },
+    "planServings": "Porsjoner",
+    "scaledTo": "Til {{count}} porsjoner: {{amount}}",
+    "scaledToApprox": "Til {{count}} porsjoner: ca. {{amount}}",
+    "scaledNote": "Mengdene er regnet om til {{count}} porsjoner og rundet opp. Poengsummen gjelder oppskriftens egne porsjoner.",
+    "toPlan": {
+      "button": "Legg i måltidsplanen",
+      "title": "Legg i måltidsplanen",
+      "date": "Dato",
+      "meal": "Måltid",
+      "submit": "Legg til",
+      "added": "Lagt i måltidsplanen.",
+      "open": "Åpne uka",
+      "summary": "{{title}} · {{servings}}"
     }
   },
   "shopping": {
@@ -1039,7 +1102,9 @@
       "nothing": "Du har alt oppskriften trenger.",
       "submit": "Legg i handlelisten",
       "open": "Gå til handlelisten"
-    }
+    },
+    "mealShare": "Måltidsplan {{day}}: {{title}}",
+    "mealShareAmount": "Måltidsplan {{day}}: {{title}}, {{amount}}"
   },
   "scan": {
     "camera": {
@@ -1208,6 +1273,96 @@
       "confirm": "Forkast",
       "done": "Kvitteringen er forkastet.",
       "failed": "Kunne ikke forkaste kvitteringen. Prøv igjen."
+    }
+  },
+  "mealPlan": {
+    "lead": "Planlegg uka, se hva som mangler, og legg det på handlelisten.",
+    "weekNav": "Velg uke",
+    "previousWeek": "Forrige uke",
+    "nextWeek": "Neste uke",
+    "week": "Uke {{number}}",
+    "weekRange": "{{from}}–{{to}}",
+    "thisWeek": "Gå til denne uka",
+    "showAllMeals": "Vis frokost og lunsj",
+    "loading": "Henter måltidsplanen …",
+    "emptyWeek": "Ingenting er planlagt denne uka. Trykk på pluss under en dag for å legge til en oppskrift eller fritekst.",
+    "hiddenMeals": "Uka har også frokost eller lunsj. Kryss av for «Vis frokost og lunsj» for å se dem.",
+    "today": "I dag",
+    "meals": {
+      "breakfast": "Frokost",
+      "lunch": "Lunsj",
+      "dinner": "Middag"
+    },
+    "addTo": "Legg til {{meal}}, {{day}}",
+    "recipeGone": "{{title}} (oppskriften finnes ikke lenger)",
+    "edit": "Endre eller flytt {{name}}",
+    "remove": "Fjern {{name}}",
+    "removed": "{{name}} er fjernet fra planen.",
+    "removeFailed": "Kunne ikke fjerne. Prøv igjen.",
+    "added": "{{name}} er lagt til i planen.",
+    "add": {
+      "title": "{{meal}}, {{day}}",
+      "what": "Hva vil du legge til?",
+      "modes": {
+        "recipe": "Oppskrift",
+        "note": "Fritekst"
+      },
+      "noRecipes": "Ingen oppskrifter ennå. Du kan skrive fritekst i stedet.",
+      "search": "Søk i oppskrifter",
+      "recipe": "Velg oppskrift",
+      "rankedFor": "Best egnet først, etter det du har som kan brukes den dagen.",
+      "servings": "Porsjoner",
+      "servingsHint_one": "Oppskriften er til {{count}} porsjon.",
+      "servingsHint_other": "Oppskriften er til {{count}} porsjoner.",
+      "quick": {
+        "leftovers": "Rester",
+        "eatingOut": "Spise ute"
+      },
+      "note": "Tekst",
+      "noteHint": "For eksempel «Rester» eller «Spise ute». Høyst 100 tegn.",
+      "submit": "Legg til"
+    },
+    "editDialog": {
+      "title": "Endre {{name}}",
+      "date": "Dato",
+      "day": "Dag",
+      "meal": "Måltid",
+      "otherWeek": "Flytt til en annen uke",
+      "submit": "Lagre"
+    },
+    "needs": {
+      "title": "Hva mangler for uka",
+      "loading": "Regner ut hva som mangler …",
+      "weekOver": "Uka er over. Behovet regnes bare for dager som kommer.",
+      "noRecipes": "Legg oppskrifter i planen, så ser du her hva som mangler.",
+      "period": "Regnet fra {{from}} til {{to}}. Dager som har vært, telles ikke.",
+      "allCovered": "Du har det planen trenger, eller det er lagt på handlelisten.",
+      "intro": "Kryss av for det du vil kjøpe. Ingenting legges på handlelisten før du trykker på knappen.",
+      "reasons": {
+        "missing": "Mangler",
+        "notEnough": "Mangler litt",
+        "unknownAmount": "Du har noe, men mengden kan ikke sammenlignes",
+        "staple": "Basisvare – sjekk at du har",
+        "optional": "Valgfri",
+        "onList": "Lagt på handlelisten fra planen før"
+      },
+      "need": "Trenger {{amount}}",
+      "needApprox": "Trenger ca. {{amount}} (rundet opp)",
+      "have": "har {{amount}}",
+      "haveApprox": "har ca. {{amount}}",
+      "onList": "{{amount}} lagt til fra før",
+      "entry": "{{day}} {{meal}}: {{title}}, {{amount}}",
+      "toTaste": "etter smak",
+      "submit": "Legg på handlelisten",
+      "added": "Lagt på handlelisten: {{created}} nye linjer, {{merged}} slått sammen med linjer som stod der.",
+      "addedNothing": "Ingenting nytt å legge til. Det står allerede på handlelisten.",
+      "openList": "Åpne handlelisten",
+      "covered_one": "Dette har du nok av ({{count}})",
+      "covered_other": "Dette har du nok av ({{count}})",
+      "coveredLine": "{{name}}: {{amount}}",
+      "coveredLineNoAmount": "{{name}}",
+      "unplannedTitle": "Går ut denne uka",
+      "unplannedText": "Ingen oppskrift i planen bruker disse. Kanskje noe å lage mat av?"
     }
   }
 }

@@ -10,6 +10,7 @@ import { ReceiptProcessor } from '../src/modules/receipts/processor';
 import { createReceiptRepo } from '../src/modules/receipts/repo';
 import type { OcrProvider } from '../src/providers/ocr/types';
 import { fakeOffFetch, testBarcodeProvider } from '../test/fakeOff';
+import { applySeed, readSeedDirectory } from '../src/modules/recipes/seed';
 import { seedFixtureRecipes } from '../test/fixtureSeed';
 import { testDatabaseUrl } from '../test/testDatabase';
 
@@ -45,7 +46,16 @@ await db.$executeRawUnsafe(
 );
 await db.$executeRawUnsafe('TRUNCATE TABLE products, product_lookup_misses');
 // Spec 05: the fictional test recipes, never the team's (the e2e tests must not depend on real content).
-await seedFixtureRecipes(db);
+// Spec 09: only the screenshot run (E2E_RECIPE_SEED=repo) uses the recipes in prisma/seed/, so the report can
+// show a translated Wikibooks recipe with its source and licence. The next normal run seeds the fixtures again.
+if (process.env.E2E_RECIPE_SEED === 'repo') {
+  await applySeed(
+    db,
+    readSeedDirectory(fileURLToPath(new URL('../../../prisma/seed', import.meta.url))),
+  );
+} else {
+  await seedFixtureRecipes(db);
+}
 // Spec 07: never the real Open Food Facts. The fake one answers for the made-up codes in test/fakeOff.ts.
 // Spec 08: never a real OCR engine and never real receipts. Every image "reads" as the made-up Coop receipt in
 // packages/shared/src/receipts/fixtures.ts, after a short pause so the "reading" state can be seen; an image

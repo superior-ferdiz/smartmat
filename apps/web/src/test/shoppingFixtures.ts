@@ -17,6 +17,7 @@ export function shoppingItem(
     checkedAt: null,
     createdAt: `2026-10-21T08:00:${String(counter % 60).padStart(2, '0')}.000Z`,
     recipes: [],
+    meals: [],
     ...overrides,
   };
 }

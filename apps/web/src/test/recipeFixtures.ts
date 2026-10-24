@@ -1,4 +1,4 @@
-import type { RecipeDetail, RecipeLine, RecipeSummary } from '@smartmat/shared';
+import type { RecipeDetail, RecipeLine, RecipeOrigin, RecipeSummary } from '@smartmat/shared';
 
 /* Recipe responses for web tests (phase 5). Ids are fixed so tests can build URLs. */
 
@@ -19,6 +19,7 @@ export function recipeSummary(
     cookMinutes: 20,
     tags: ['middag'],
     source: 'team',
+    origin: null,
     ingredientNames: ['Kyllingfilet', 'Ris'],
     allergens: [],
     allergenWarnings: [],
@@ -75,6 +76,22 @@ export function recipeDetail(
     authors: ['Linus Saxe Huseby'],
     lines: lines.map((line, position) => ({ ...line, position })),
     userAllergens: [],
+    ...overrides,
+  };
+}
+
+/** ADR-0016 (spec 09): the origin of an external recipe, as an unchecked AI draft unless overridden. */
+export function recipeOrigin(overrides: Partial<RecipeOrigin> = {}): RecipeOrigin {
+  return {
+    title: 'Fårikål (Norwegian Lamb and Cabbage Stew)',
+    url: 'https://en.wikibooks.org/w/index.php?oldid=4630337',
+    license: 'CC-BY-SA-4.0',
+    retrievedOn: '2026-10-24',
+    adaptation: 'adapted',
+    adaptationNote: 'Tidene er anslått av KI.',
+    aiAssisted: true,
+    reviewedBy: [],
+    reviewedOn: null,
     ...overrides,
   };
 }

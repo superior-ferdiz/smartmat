@@ -21,7 +21,9 @@ import { NewPurchasePage } from '../pages/budget/NewPurchasePage';
 import { PurchasePage } from '../pages/budget/PurchasePage';
 import { ReceiptPage } from '../pages/receipts/ReceiptPage';
 import { ReceiptsPage } from '../pages/receipts/ReceiptsPage';
+import { MealPlanPage } from '../pages/mealplan/MealPlanPage';
 import { RecipePage } from '../pages/recipes/RecipePage';
+import { RecipeSourcesPage } from '../pages/recipes/RecipeSourcesPage';
 import { RecipesPage } from '../pages/recipes/RecipesPage';
 import { ScanPage } from '../pages/scan/ScanPage';
 import { ShoppingListPage } from '../pages/shopping/ShoppingListPage';
@@ -30,11 +32,13 @@ import {
   DESIGN_SYSTEM_PATH,
   LOCATIONS_PATH,
   LOGIN_PATH,
+  MEAL_PLAN_PATH,
   MORE_PATH,
   NEW_ITEM_PATH,
   NEW_PURCHASE_PATH,
   PROFILE_PATH,
   RECEIPTS_PATH,
+  RECIPE_SOURCES_PATH,
   RECIPES_PATH,
   REGISTER_PATH,
   SCAN_PATH,
@@ -79,6 +83,7 @@ export const routes: RouteObject[] = [
           { path: 'matlager/:itemId', element: <ItemPage /> },
           { path: SCAN_PATH.slice(1), element: <ScanPage /> },
           { path: RECIPES_PATH.slice(1), element: <RecipesPage /> },
+          { path: RECIPE_SOURCES_PATH.slice(1), element: <RecipeSourcesPage /> },
           { path: 'oppskrifter/:recipeId', element: <RecipePage /> },
           { path: SHOPPING_LIST_PATH.slice(1), element: <ShoppingListPage /> },
           { path: BUDGET_PATH.slice(1), element: <BudgetPage /> },
@@ -87,7 +92,7 @@ export const routes: RouteObject[] = [
           { path: 'budsjett/kjop/:purchaseId/rett', element: <EditPurchasePage /> },
           { path: RECEIPTS_PATH.slice(1), element: <ReceiptsPage /> },
           { path: `${RECEIPTS_PATH.slice(1)}/:receiptId`, element: <ReceiptPage /> },
-          { path: 'maltidsplan', element: <SectionPage section="mealPlan" /> },
+          { path: MEAL_PLAN_PATH.slice(1), element: <MealPlanPage /> },
           { path: 'husholdning', element: <SectionPage section="household" /> },
           { path: 'innstillinger', element: <SettingsPage /> },
           { path: MORE_PATH.slice(1), element: <MorePage /> },

@@ -12,7 +12,8 @@
     "test": "vitest run",
     "e2e-server": "tsx scripts/e2e-server.ts",
     "seed": "tsx scripts/seed.ts",
-    "create-user": "tsx scripts/create-user.ts"
+    "create-user": "tsx scripts/create-user.ts",
+    "recipes:fetch": "tsx scripts/fetch-wikibooks.ts"
   },
   "dependencies": {
     "@fastify/cookie": "11.1.3",

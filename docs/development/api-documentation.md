@@ -347,6 +347,54 @@ ConfirmReceipt  = { storeName|null, purchasedOn, lines: PurchaseLineInput[] | to
 - **Logger:** ingen tekst, beløp eller butikk fra kvitteringen. Workeren logger id, utfall og varighet. Fra fase 8
   logges URL-er uten spørrestreng.
 
+## Oppskrifter fra åpne kilder og måltidsplan (fase 9)
+
+Se [spesifikasjon 09](requirements/09-maltidsplan.md). Alle ruter krever innlogging og medlemskap i husholdningen.
+En fremmed husholdning eller en oppføring fra en annen husholdning gir 404.
+
+### Endringer i eksisterende svar
+- `RecipeSummary` (og `RecipeDetail`) har `origin`: `null` for teamets og testoppskriftene, ellers
+  `{ title, url, license, retrievedOn, adaptation, adaptationNote, aiAssisted, reviewedBy, reviewedOn }`
+  (ADR-0016). `source` kan være `external`.
+- `GET /households/:h/recipes?for=YYYY-MM-DD` rangerer for en planlagt dag: partier med siste forbruksdag før dagen
+  regnes ikke med. En dag som har vært, rangeres som i dag (FR-PLAN-005).
+- `ShoppingItem` har `meals: { entryId, date, meal, title, quantityBase }[]`: hva planlagte måltider la på linjen.
+
+### Typer
+```ts
+type Meal = 'breakfast' | 'lunch' | 'dinner';
+MealEntry = { id, date, meal: Meal, kind: 'recipe' | 'note', recipeId: string | null, recipeTitle: string | null,
+              recipeServings: number | null, servings: number | null, note: string | null,
+              allergenWarnings: Allergen[], createdAt }
+CreateMealEntry = { date, meal, clientRequestId?: uuid }
+                  & ({ kind: 'recipe', recipeId, servings: 1–50 } | { kind: 'note', note: 1–100 tegn })
+UpdateMealEntry = { date?, meal?, servings?, note? }      // minst ett felt
+MealPlanNeeds = { from, to, recipeEntryCount, ingredients: IngredientNeed[], suggestions: PlanSuggestion[],
+                  unplannedExpiring: { itemId, itemName, expiryKind, expiryDate, daysLeft }[] }
+AddPlanToShopping = { from, to, lines: { ingredientId, quantityBase: number | null }[] }   // 1–100 linjer
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/meal-plan?from=&to=` | – | `{ from, to, entries: MealEntry[] }` (dato, måltid, rekkefølge) | 400 (høyst 42 dager, `from` ≤ `to`) |
+| POST | `/households/:h/meal-plan/entries` | `CreateMealEntry` | 201 `MealEntry`, 200 ved gjentatt `clientRequestId` | 400 (`recipeId` → `validation.mealPlan.recipeNotFound`); 409 `errors.mealPlan.dayFull` (20 per dag) |
+| PATCH | `/households/:h/meal-plan/entries/:id` | `UpdateMealEntry` | `MealEntry` | 400 `servings` på fritekst / `note` på oppskrift; 404; 409 `dayFull` |
+| DELETE | `/households/:h/meal-plan/entries/:id` | – | 204 | 404 |
+| GET | `/households/:h/meal-plan/needs?from=&to=` | – | `MealPlanNeeds` (fra i dag, dager som har vært telles ikke) | 400 |
+| POST | `/households/:h/meal-plan/shopping` | `AddPlanToShopping` | `{ created, merged, skipped }` | 400 `lines.N.ingredientId` → `validation.mealPlan.notInPlan` |
+
+- **`shopping`:** serveren regner behovet ut på nytt. For hver oppføring legges bare det til som mangler utover det
+  oppføringen har lagt på listen før (`shopping_list_item_meals`). Samme forespørsel to ganger gir `skipped`.
+  Listen låses (`FOR UPDATE`), og bidragene leses på nytt inne i transaksjonen.
+- **Logger:** fritekst og titler kommer aldri i logger eller feilmeldinger.
+
+| Variabel | Standard | Virkning |
+|---|---|---|
+| `RECIPES_INCLUDE_UNREVIEWED` | `true` | `false` skjuler eksterne oppskrifter som ingen i teamet har kontrollert (ADR-0016) |
+| `WIKIMEDIA_CONTACT` | GitHub-profilen til repoet | Kontakt i User-Agent for importskriptet (bare skriptet bruker den) |
+
 ### Innstillinger for testmiljøet (ADR-0015)
 
 | Variabel | Lokalt | Testmiljø | Virkning |
