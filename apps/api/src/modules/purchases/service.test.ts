@@ -24,6 +24,7 @@ function stored(lines: PurchaseResponse['lines'] = []): PurchaseResponse {
     source: 'manual',
     createdAt: '',
     updatedAt: '',
+    createdBy: { kind: 'unknown', displayName: null },
     lines,
   };
 }

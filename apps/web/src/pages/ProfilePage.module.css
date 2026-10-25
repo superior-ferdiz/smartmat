@@ -64,3 +64,13 @@
   padding: 0;
   font-weight: var(--font-weight-semibold);
 }
+
+/* Spec 10: sharing the allergies with the household, under the allergy form. */
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}

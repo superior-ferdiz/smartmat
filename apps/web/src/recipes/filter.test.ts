@@ -97,3 +97,23 @@ describe('FR-REC-003 lineGroup', () => {
     expect(LINE_GROUPS).toEqual(['have', 'short', 'missing', 'staple']);
   });
 });
+
+describe('spec 10 FR-HH-006 allergens the household shares', () => {
+  const eggy = recipeSummary('Omelett', { householdAllergenWarnings: ['egg'], score: score(90) });
+  const filter = { q: '', tag: '', showAllergens: false };
+
+  it('hides them by default, counts them, and the switch shows them', () => {
+    expect(filterRecipes([eggy, wok], filter, 'nb')).toEqual({
+      shown: [wok],
+      hiddenByAllergens: 1,
+    });
+    expect(filterRecipes([eggy, wok], { ...filter, showAllergens: true }, 'nb').shown).toEqual([
+      eggy,
+      wok,
+    ]);
+  });
+
+  it('is never the dinner suggestion', () => {
+    expect(dinnerSuggestion([eggy, wok])).toBe(wok);
+  });
+});

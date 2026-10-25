@@ -44,7 +44,9 @@ export function RecipesPage() {
       ) : (
         <RecipeList
           recipes={recipes.data.recipes}
-          hasAllergens={recipes.data.userAllergens.length > 0}
+          hasAllergens={
+            recipes.data.userAllergens.length > 0 || recipes.data.householdAllergens.length > 0
+          }
         />
       )}
     </Page>
@@ -193,7 +195,10 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
       </p>
       {score.reasons[0] && <p className={styles.meta}>{reasonText(score.reasons[0])}</p>}
       <div className={styles.tags}>
-        <AllergenWarningTag allergens={recipe.allergenWarnings} />
+        <AllergenWarningTag
+          allergens={recipe.allergenWarnings}
+          household={recipe.householdAllergenWarnings}
+        />
         <RecipeBadge recipe={recipe} />
         {recipe.tags.map((tag) => (
           <Tag key={tag}>{tag}</Tag>

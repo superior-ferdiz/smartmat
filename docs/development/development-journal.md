@@ -556,3 +556,81 @@ Bevis ligger i `docs/evidence/test-results/fase-9/`, skjermbilder i `docs/eviden
 
 **Neste:** Teamet går gjennom fasen og kontrollerer oppskriftene. Deretter fase 10 (husholdning: invitasjoner,
 roller, deling), helst i en ny chat.
+
+**Oppfølging 2026-10-24:** Ferdinand ba om commit og push av `fase-9`. Den ble committet (92a8a34) og pushet samme
+dag, og han fikk prompten til fase 10. Ingen gjennomgang av fase 9 er oppgitt, og ingen pull request er merget til
+`main`.
+
+---
+
+## 2026-10-24/25 – Fase 10: husholdning – invitasjoner, roller og deling
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 10 i en ny chat. Før planen førte Claude inn commit og push av fase 9 i journalen, KI-loggen
+  og veikartet. Grenen `fase-10` ble laget fra `fase-9`, fordi ingenting er merget til `main`.
+- **Plassholderne i prompten var ikke fylt ut:** gjennomgang siden fase 9, kontroll av oppskriftene og ADR-0017.
+  Claude registrerte dem som «ingen», «ingen ennå» og «ikke godkjent ennå», og sa fra i svaret.
+- **Planen:** fasemalen med sju åpne spørsmål og anbefalinger. Ferdinand godkjente med «godkjennt» uten å svare på
+  spørsmålene enkeltvis, så anbefalingene gjelder (se [spesifikasjon 10](requirements/10-husholdning.md)):
+  - flere husholdninger per bruker (høyst 5)
+  - lenke som varer i 48 timer
+  - nøyaktig én eier
+  - automatisk overføring av eierskapet når en eier sletter kontoen
+  - frivillig deling av allergier
+  - medlemmer kan endre budsjettet
+- **Spesifikasjon 10 og ADR-0018 ble skrevet før koden.** ADR-0018 er akseptert gjennom godkjenningen av planen.
+- **All kode i fasen er skrevet av KI.**
+- Ferdinand spurte underveis hvordan det lå an, og ba deretter om prompten til neste fase, og om commit og push
+  hvis fasen var over. Fasen ble gjort ferdig først.
+
+**Avvik og funn underveis** (detaljer i kapittel 11)
+- **Løkke i nettappen:** den første regelen «en 404 henter sesjonen på nytt» gjaldt også sesjonsspørringen selv. Det
+  ble en uendelig løkke i en komponenttest, til testprosessen gikk tom for minne. Regelen gjelder nå bare
+  husholdningsdata.
+- **`RequireAuth`** byttet ut hele siden med en feilmelding når en ny henting av sesjonen feilet i bakgrunnen. Det er
+  rettet.
+- **Navnet på et tidligere medlem** ble vist i varehistorikken. Det er rettet.
+- **Knappenavn som «FjernOla»** for skjermlesere. Rettet på de nye sidene. Samme mønster finnes på stedssiden fra
+  fase 3, og det er ikke rettet.
+- **Kontroll av testene:**
+  - første kjøring fanget 32 av 34, og to nye tester ble lagt til
+  - andre kjøring fanget 33 av 34
+  - runde 3 (manglende lås) ble bare fanget av en test som avhenger av timing. Det kom en ny test der en annen
+    transaksjon holder låsen, og den fanger runde 3 hver gang.
+  - alle kjøringene er lagret
+- **Playwright under høy last:** serveren var hardt belastet av et annet prosjekt (`redis-server`), og det ble ikke
+  rørt. To forsøk feilet og er lagret. Den ene feilen var en svakhet i en test fra fase 1, og den ble rettet. Det
+  tredje forsøket besto.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 1104 |
+| API-tester mot database | 356 |
+| Bygg | Vellykket (hovedfil 836 kB) |
+| Playwright-tester | 175 (tredje forsøk) |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-10/`, skjermbilder i `docs/evidence/screenshots/fase-10/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 10 (pull request), og teamets vurdering av behandlingsgrunnlaget for deling av
+  allergier (art. 9)
+- test med to ekte telefoner og telefonens delingsmeny
+- fortsatt utestående fra tidligere faser:
+  - testmiljøet (DNS, passord, oppsett)
+  - kontaktadresse til Open Food Facts
+  - kontroll av OFF-kategoritabellen, `ingredients.json` og de 27 oppskriftene
+  - ADR-0017 og de 3 kvitteringene som mangler
+  - sletting av pilotdataene senest 2026-11-23
+
+**Neste:** Teamet går gjennom fasen. Deretter fase 11 (svinnstatistikk og varsler i appen), i en ny chat.
+
+**Oppfølging 2026-10-25:** Ferdinand ba om prompten til fase 11, og om commit og push hvis fasen var over («Gi meg
+promptet til neste fase, Inkludert push og committ dersom denne fasen er over»). Fasen ble gjort ferdig (andre
+kontroll av testene, test for låsen, dokumentasjon), og `fase-10` ble så committet og pushet. Ingen gjennomgang av
+fase 10 er oppgitt.

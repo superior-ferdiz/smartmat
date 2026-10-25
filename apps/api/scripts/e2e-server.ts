@@ -36,13 +36,15 @@ const config = loadConfig({
   RATE_LIMIT_LOGIN_MAX: '10000',
   RATE_LIMIT_REGISTER_MAX: '10000',
   RATE_LIMIT_SENSITIVE_MAX: '10000',
+  RATE_LIMIT_INVITATION_MAX: '10000',
+  INVITATION_ATTEMPTS_PER_USER: '10000',
   // Spec 08: receipts are accepted; the "OCR" below is a fake that never reads the image's text.
   OCR_PROVIDER: 'tesseract',
   RECEIPT_UPLOADS_PER_HOUR: '1000',
 });
 const db = createDb(databaseUrl);
 await db.$executeRawUnsafe(
-  'TRUNCATE TABLE sessions, household_members, households, users RESTART IDENTITY CASCADE',
+  'TRUNCATE TABLE sessions, household_invitations, household_members, households, users RESTART IDENTITY CASCADE',
 );
 await db.$executeRawUnsafe('TRUNCATE TABLE products, product_lookup_misses');
 // Spec 05: the fictional test recipes, never the team's (the e2e tests must not depend on real content).

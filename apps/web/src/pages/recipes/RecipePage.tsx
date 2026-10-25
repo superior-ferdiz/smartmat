@@ -232,7 +232,10 @@ function IngredientLine({
     line.approximate
       ? t('recipes.line.approx', { amount: formatQuantity(base, line.baseUnit) })
       : formatQuantity(base, line.baseUnit);
-  const userAllergens = line.allergens.filter((a) => recipe.userAllergens.includes(a));
+  // The user's own and the household's shared allergens (spec 10) are both marked on the line.
+  const userAllergens = line.allergens.filter(
+    (a) => recipe.userAllergens.includes(a) || recipe.householdAllergens.includes(a),
+  );
 
   let detail: string | null = null;
   if (line.status === 'enough' && line.haveBase !== null && line.quantityBase !== null)

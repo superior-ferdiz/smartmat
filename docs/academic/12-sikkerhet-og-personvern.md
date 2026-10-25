@@ -1,6 +1,6 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 10 (2026-10-24). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -115,6 +115,22 @@
 husholdningens egne data, de vises ikke for andre, og de slettes med husholdningen (cascade). Teamet har ikke vurdert
 om dette krever noe mer.
 
+### Nytt i fase 10: delte husholdninger
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se eller endre en annen husholdnings medlemmer og invitasjoner | Bytte husholdnings-ID i URL-en | `householdAccess` på alle nye ruter (404) | `households.security.api.test.ts` (A: 12 endepunkter) |
+| Et medlem gjør eierhandlinger | Medlemmet sender DELETE eller POST til eierrutene | `requireOwner` (403), og rollen sjekkes på nytt under låsen | Samme fil (B: 8 endepunkter, ingenting endres) |
+| Bruke egen husholdning med andres ID-er | Fjerne et medlem av en annen husholdning, trekke tilbake andres invitasjon, overføre til noen utenfor | Medlemmer og invitasjoner slås opp med `household_id` | Samme fil (C) |
+| Gjette en invitasjon | Prøve mange tokener | 256 bit tilfeldig. 10 forsøk per bruker og 30 per IP-adresse på 15 minutter. | `households.api.test.ts` |
+| Finne ut om en invitasjon har eksistert | Sammenligne svar for ukjent, utløpt og brukt | Samme svar (404 `invitationInvalid`) for alle | Samme fil |
+| Stjålet database eller logg | Lese tokenet i en kopi av databasen eller i loggen | Bare SHA-256 lagres. Tokenet står i fragmentet (`#`), så det sendes aldri i en URL til serveren. | Samme fil (databasen og loggen sjekkes) |
+| Bruke samme lenke flere ganger | Videresende lenken, eller to som trykker samtidig | Betinget oppdatering under lås. Én gang, 48 timer, kan trekkes tilbake. | Samme fil (10 samtidige → 1 medlem) |
+| To eiere, eller ingen | Overføring samtidig med utmelding, eller to overføringer | Delvis unik indeks, lås på husholdningen, den gamle eieren settes til medlem først | Samme fil (samtidige overføringer) |
+| Data lekker etter utmelding | Gamle sider, hurtiglager i nettleseren, en åpen fane | Medlemskapet sjekkes i databasen ved hver forespørsel (ingen hurtiglager på serveren). I nettappen fører en 404 til at sesjonen hentes på nytt, og alt for den gamle husholdningen fjernes. | `households.api.test.ts` (10 endepunkter gir 404 straks), `HouseholdPage.test.tsx`, `e2e/household.spec.ts` |
+| Skrive i feil husholdning | Et skjema åpnet før et bytte | Husholdnings-ID-en ligger i URL-en til hver forespørsel. Navnet på den aktive vises når brukeren har flere. | `households.api.test.ts`, `HouseholdPage.test.tsx` |
+| Overta andres sesjon via aktiv husholdning | `PUT /me/active-household` med en fremmed ID | Medlemskapet sjekkes (404), og ved lesing igjen | `households.security.api.test.ts` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
@@ -123,7 +139,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 [fase 6](../evidence/test-results/fase-6/10-mutation-check.txt),
 [fase 7](../evidence/test-results/fase-7/10-mutation-check.txt),
 [fase 8](../evidence/test-results/fase-8/10-mutation-check.txt),
-[fase 9](../evidence/test-results/fase-9/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 9](../evidence/test-results/fase-9/10-mutation-check.txt),
+[fase 10](../evidence/test-results/fase-10/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -148,6 +165,11 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Teksten fra kvitteringen og tolkede linjer (fase 8) | Gjennomgangen | `receipt_extractions`, uten betalingslinjer | Som bildet |
 | At en kvittering er brukt (fase 8) | Hindre to kjøp av samme kvittering | `receipts` (kobling til kjøpet) og `purchases.dedupe_key` (hash) | Til kjøpet slettes |
 | Bruker-ID per opplasting (fase 8) | Grensen på 10 i timen | Bare i minnet i API-prosessen, i én time | Lagres ikke og logges ikke |
+| Medlemskap og rolle (fase 10) | Deling av husholdningen | `household_members` | Til medlemmet går ut, fjernes eller sletter kontoen |
+| Invitasjoner: hvem som laget og brukte dem, og når (fase 10) | Eieren ser hva som skjedde med lenken | `household_invitations` (bare hash av tokenet) | 30 dager. Slettes med husholdningen. Navnet til den som brukte den, vises bare mens hen er medlem. |
+| Valg om deling av allergier (fase 10) | Ta hensyn til allergiene i husholdningen | `household_members.share_allergens` | Som medlemskapet |
+| Aktiv husholdning (fase 10) | Hvilken husholdning sidene viser | `users.active_household_id` | Til kontoen slettes |
+| Bruker-ID per invitasjonsforsøk (fase 10) | Grensen på 10 forsøk | Bare i minnet i API-prosessen, i 15 minutter | Lagres ikke og logges ikke |
 
 Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Alt kjørte lokalt.
 
@@ -174,6 +196,51 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 - En kvittering kan vise de siste sifrene i et kortnummer og autorisasjonskoden. Bildet beholdes bare til kjøpet er
   bekreftet. Råteksten lagres uten slike linjer.
 
+## Delte husholdninger (fase 10)
+
+**Dette er KI-ens forslag og ikke en juridisk vurdering. Teamet må vurdere det selv.**
+
+### Hva andre medlemmer ser
+
+| Opplysning | Andre medlemmer ser det? |
+|---|---|
+| Matlager, kjøp, budsjett, handleliste, måltidsplan og kvitteringer | Ja. Det er husholdningens data, og det er formålet med å dele. |
+| Visningsnavn og rolle, og når man ble med | Ja (medlemslisten) |
+| E-postadresse | Nei |
+| Hvem som la til noe | Ja, navnet, men bare mens personen er medlem. Etter utmelding står det «Tidligere medlem». |
+| Allergier | Bare hvis medlemmet har slått på deling, og da bare *hvilke* allergener som er registrert i husholdningen, aldri *hvem* sine. I en husholdning med to personer kan det likevel skjønnes. Teksten sier det. |
+| Andre husholdninger man er med i | Nei |
+
+### Behandlingsgrunnlag (forslag)
+- **Kontoen og husholdningens data:** avtale (art. 6 nr. 1 b). Brukeren har bedt om tjenesten, også om å dele den.
+- **Allergier** kan være helseopplysninger (art. 9). Å dele dem med andre er en ny behandling, så forslaget er
+  **uttrykkelig samtykke** (art. 9 nr. 2 a):
+  - eget valg per husholdning
+  - av som standard
+  - med en forklaring av hva som deles
+  - kan trekkes tilbake med ett klikk, og virker straks (ingen hurtiglager)
+
+  Teamet har ikke vurdert om dette holder, og per 2026-10-24 er det ingen ekte brukere.
+- **Det andre har lagt inn:** et medlem ser det andre medlemmer har registrert. Det er en del av tjenesten de har
+  valgt å dele, og ingen får se noe fra en husholdning de ikke er med i.
+
+### Innsyn
+- Hver bruker ser sine egne opplysninger på profilsiden, og alt i husholdningene sine i appen.
+- En egen eksport (art. 15 og 20) finnes ikke ennå. Den hører til fase 13.
+
+### Utmelding, fjerning og sletting
+- **Forlate eller bli fjernet:** tilgangen forsvinner straks. Det personen har lagt inn, blir i husholdningen, fordi
+  det er husholdningens historikk og budsjett, men navnet vises ikke lenger. Delte allergier slutter å telle med en
+  gang.
+- **Slette husholdningen** (bare eieren, med passord): alt i den slettes for alle. Alle beholder kontoen sin, og den
+  som ikke har en annen husholdning, får en ny og tom.
+- **Slette kontoen som eier av en delt husholdning:** eierskapet går til medlemmet som har vært med lengst, og
+  husholdningen blir værende. Dialogen sier det før brukeren bekrefter. Retten til sletting (art. 17) blir altså
+  ikke blokkert av at andre bruker husholdningen. Kontoen, sesjonene og medlemskapene slettes, og `created_by` blir
+  tom («Ukjent»).
+- **Ikke håndtert:** om de andre medlemmene skal få beskjed når noen går ut eller sletter kontoen. Varsler hører til
+  fase 11.
+
 ## Sletting
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
@@ -184,7 +251,8 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   slettes alt etter 7 dager av en jobb hver 15. minutt, og utløpte kvitteringer vises ikke selv før jobben har
   kjørt. Slettes kjøpet, slettes også kvitteringsraden. Dette er testet (unntatt selve tidsplanen i pg-boss).
 - Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
-- **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt) og eierskap i delte husholdninger (fase 10).
+- **Fra fase 10:** eierskap i delte husholdninger (se over).
+- **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt).
 
 ## Kjente svakheter og utsatte tiltak
 
@@ -209,13 +277,19 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   maskinen. En vurdering av behovet for kryptering eller kortere lagringstid hører til fase 13.
 - **Allergier kan være helseopplysninger** (særlige kategorier, GDPR art. 9). I SmartMat er de frivillige, brukes
   bare til å skjule eller varsle om oppskrifter, vises bare for brukeren selv, logges ikke (testet) og slettes med
-  kontoen. **Behandlingsgrunnlaget er ikke vurdert av teamet.** Uttrykkelig samtykke (art. 9 nr. 2 a) er den
+  kontoen. Fra fase 10 kan brukeren velge å dele dem med en husholdning (se «Delte husholdninger»). **Behandlingsgrunnlaget er ikke vurdert av teamet.** Uttrykkelig samtykke (art. 9 nr. 2 a) er den
   nærliggende løsningen, men det er en vurdering teamet må gjøre selv, og den er ikke gjort per 2026-10-21. Appen
   kjører bare lokalt og har ingen ekte brukere.
 - **Allergenmerkingen er et KI-utkast som ikke er kontrollert** (`prisma/seed/ingredients.json`). Forbeholdet sier
   at informasjonen er veiledende, men det erstatter ikke at teamet kontrollerer merkingen.
-- **Retting av samme kjøp fra to steder:** siste lagring vinner, uten varsel. Betyr lite før husholdninger kan ha
-  flere medlemmer (fase 10).
+- **Retting av samme kjøp fra to steder:** siste lagring vinner, uten varsel. Fra fase 10 kan to medlemmer gjøre
+  det samtidig. Det er ikke håndtert.
+- **Invitasjonslenken kan videresendes.** Den som har lenken, kan bli med. Den virker bare én gang og i 48 timer,
+  kan trekkes tilbake, og eieren ser hvem som brukte den og kan fjerne vedkommende. Uten e-posttjeneste kan lenken
+  ikke knyttes til en bestemt adresse.
+- **Ingen sanntid:** et medlem ser endringer fra andre først når siden henter data på nytt (ved fokus, eller etter
+  30 sekunder). En som er fjernet, kan se data som allerede er lastet inn, til neste forespørsel. Serveren gir ingen
+  nye data.
 - **Kvitteringsbilder i databasen:** bildene ligger i Postgres i opptil 7 dager. Det finnes ikke sikkerhetskopier
   lokalt. Når sikkerhetskopier innføres (fase 13), må de enten ikke ta med `receipt_images`, eller ha en
   slettefrist som er like kort.

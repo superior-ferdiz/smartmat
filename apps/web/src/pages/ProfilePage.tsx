@@ -10,7 +10,6 @@ import {
   type Allergen,
   type Locale,
 } from '@smartmat/shared';
-import { ApiError } from '../api/client';
 import { Alert } from '../components/Alert/Alert';
 import { Button } from '../components/Button/Button';
 import { Card } from '../components/Card/Card';
@@ -31,18 +30,10 @@ import {
 import { fieldErrorsFromZod, summaryItems, type FieldErrors } from '../forms/fieldErrors';
 import { useValidationMessage } from '../i18n/useValidationMessage';
 import { Page } from '../layout/Page';
+import { useHousehold, useSetShareAllergens } from '../household/api';
+import { apiErrorState } from '../household/format';
 import { useAllergens, useSetAllergens } from '../recipes/api';
 import styles from './ProfilePage.module.css';
-
-/** Turns a failed request into field errors (shown at the fields) or one message for the whole form. */
-function apiErrorState(error: unknown): { fields: FieldErrors; form: string | null } {
-  if (error instanceof ApiError) {
-    return Object.keys(error.fields).length > 0
-      ? { fields: error.fields, form: null }
-      : { fields: {}, form: error.code };
-  }
-  return { fields: {}, form: 'errors.internal' };
-}
 
 /** FR-AUTH-004 (name, language, password), FR-REC-004 (allergies) and FR-AUTH-005 (delete account), plus log out. */
 export function ProfilePage() {
@@ -124,7 +115,62 @@ function AllergiesForm() {
           </div>
         </form>
       )}
+      <ShareWithHousehold />
     </Card>
+  );
+}
+
+/**
+ * Spec 10 (FR-HH-006): the allergies count for the whole active household only if the user says so. Off by
+ * default, per household, and the text says what the others can and cannot see (GDPR art. 9).
+ */
+function ShareWithHousehold() {
+  const { t } = useTranslation();
+  const message = useValidationMessage();
+  const { show } = useToast();
+  const user = useCurrentUser();
+  const household = useHousehold();
+  const share = useSetShareAllergens();
+  const [error, setError] = useState<string | null>(null);
+  const name = user.households.find((h) => h.id === user.householdId)?.name ?? '';
+
+  if (household.isPending) return <LoadingState />;
+  if (household.isError) {
+    return <ErrorState headingLevel={3} onRetry={() => void household.refetch()} />;
+  }
+  return (
+    <div className={styles.share}>
+      <h3 className={styles.legend}>{t('pages.profile.allergies.share.title')}</h3>
+      <p className={styles.note}>{t('pages.profile.allergies.share.text')}</p>
+      {error && (
+        <Alert variant="error" live>
+          {message(error)}
+        </Alert>
+      )}
+      <Checkbox
+        id="allergies-share"
+        label={t('pages.profile.allergies.share.label', { name })}
+        checked={household.data.shareAllergens}
+        disabled={share.isPending}
+        onChange={(e) => {
+          const on = e.target.checked;
+          setError(null);
+          share.mutate(on, {
+            onSuccess: () =>
+              show({
+                variant: 'success',
+                message: t(
+                  on ? 'pages.profile.allergies.share.on' : 'pages.profile.allergies.share.off',
+                  {
+                    name,
+                  },
+                ),
+              }),
+            onError: (err) => setError(apiErrorState(err).form ?? 'errors.internal'),
+          });
+        }}
+      />
+    </div>
   );
 }
 

@@ -561,6 +561,55 @@ Importskriptet lagrer originalen med revisjons-id, og oppskriftsfilen lenker til
 sammenligner lenken, datoen og lisensen i hver oppskrift med originalfilen. `checkSeed` krever alle kildefeltene for
 eksterne oppskrifter og godtar bare lisensene i ADR-0016. Databasen har en CHECK med samme regel.
 
+## Eksempel 39: en invitasjon som bare kan brukes én gang (FR-HH-001/002)
+
+Tokenet er 32 tilfeldige byte. Databasen lagrer bare SHA-256 av det, som for sesjonene. Lenken er
+`/bli-med#<token>`: delen etter `#` sendes ikke til serveren når siden åpnes, så tokenet havner ikke i loggen.
+Nettappen sender det i kroppen til en POST.
+
+Når noen godtar, låses først brukeren og så husholdningen. Grensene sjekkes, og til slutt merkes invitasjonen som
+brukt, men bare hvis den fortsatt er aktiv:
+
+```ts
+const used = await tx.householdInvitation.updateMany({
+  where: { id: invitation.id, ...tokenHashActive(tokenHash, now) },   // ikke brukt, ikke trukket tilbake, ikke utløpt
+  data: { usedAt: now, usedById: userId },
+});
+if (used.count !== 1) throw new MembershipRefused('invitationInvalid');
+```
+
+Testen lar ti brukere godta samme lenke samtidig. Én blir medlem, og ni får samme feil som for en ukjent lenke.
+
+## Eksempel 40: nøyaktig én eier (FR-HH-003)
+
+Regelen ligger både i koden og i databasen. En delvis unik indeks tillater bare én rad med `role = 'owner'` per
+husholdning:
+
+```sql
+CREATE UNIQUE INDEX "household_members_one_owner" ON "household_members"("household_id") WHERE "role" = 'owner';
+```
+
+Ved overføring settes den gamle eieren derfor til medlem før den nye blir eier, i samme transaksjon. Rollen leses
+på nytt etter at husholdningen er låst, fordi den kan ha endret seg siden `householdAccess` så den. Testen sender to
+overføringer samtidig: den første lykkes, og den andre får 403, fordi avsenderen da ikke lenger er eier.
+
+## Eksempel 41: aktiv husholdning uten nye feller (FR-HH-004)
+
+Alle sider brukte allerede `session.user.householdId` i URL-en (ADR-0008). Fase 10 endret bare hva verdien betyr:
+husholdningen brukeren valgte, hvis hen fortsatt er medlem, ellers den eldste (`activeHouseholdId` i
+`packages/shared/src/household/rules.ts`). En forespørsel går alltid til husholdningen i sin egen URL. Et skjema
+som ble åpnet før et bytte, lagres derfor der brukeren så det. Serveren sjekker medlemskapet ved hver forespørsel.
+
+## Eksempel 42: ingen data igjen etter utmelding (FR-HH-005)
+
+Serveren har ikke noe hurtiglager for medlemskap. Nettappen har det (TanStack Query), og ryddes i to steg:
+1. En 404 fra en spørring under `['household', …]` gjør at sesjonen hentes på nytt (`app/queryClient.ts`).
+2. `HouseholdWatcher` ser at den aktive husholdningen er en annen. Den fjerner alt under `['household', gammelId]`,
+   sier «Du er ikke lenger medlem av …» og går til oversikten.
+
+Under arbeidet kom 404-regelen først for alle spørringer. Da svarte sesjonsspørringen selv med 404 i en komponenttest,
+og appen spurte på nytt i det uendelige, til testprosessen gikk tom for minne. Regelen gjelder nå bare husholdningsdata.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert

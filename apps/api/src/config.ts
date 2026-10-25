@@ -39,7 +39,11 @@ export interface AppConfig {
     register: RateLimitRule;
     /** Password change and account deletion: both check a password. */
     sensitive: RateLimitRule;
+    /** Spec 10: previewing and accepting invitations, per IP address. */
+    invitation: RateLimitRule;
   };
+  /** Spec 10 (FR-HH-002): invitation previews and accepts per logged-in user, in 15 minutes. */
+  invitationAttemptsPerUser: number;
   /** Barcode lookups (spec 07). Without a User-Agent, Open Food Facts is not asked at all. */
   barcode: {
     offBaseUrl: string;
@@ -102,6 +106,8 @@ const envSchema = z.object({
   RATE_LIMIT_LOGIN_MAX: z.coerce.number().int().positive().default(20),
   RATE_LIMIT_REGISTER_MAX: z.coerce.number().int().positive().default(10),
   RATE_LIMIT_SENSITIVE_MAX: z.coerce.number().int().positive().default(10),
+  RATE_LIMIT_INVITATION_MAX: z.coerce.number().int().positive().default(30),
+  INVITATION_ATTEMPTS_PER_USER: z.coerce.number().int().positive().default(10),
   // Spec 07. OFF asks developers to use its staging server; the test environment sets world.openfoodfacts.org.
   OFF_BASE_URL: z.url({ protocol: /^https$/ }).default('https://world.openfoodfacts.net'),
   OFF_USER_AGENT: z.string().trim().min(1).optional(),
@@ -158,7 +164,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       login: { max: e.RATE_LIMIT_LOGIN_MAX, windowMs: 15 * MINUTE },
       register: { max: e.RATE_LIMIT_REGISTER_MAX, windowMs: 60 * MINUTE },
       sensitive: { max: e.RATE_LIMIT_SENSITIVE_MAX, windowMs: 15 * MINUTE },
+      invitation: { max: e.RATE_LIMIT_INVITATION_MAX, windowMs: 15 * MINUTE },
     },
+    invitationAttemptsPerUser: e.INVITATION_ATTEMPTS_PER_USER,
     barcode: {
       offBaseUrl: e.OFF_BASE_URL,
       offUserAgent: e.OFF_USER_AGENT ?? null,

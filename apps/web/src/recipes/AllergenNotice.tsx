@@ -25,16 +25,34 @@ export function AllergenDisclaimer() {
   );
 }
 
-/** "Inneholder melk" on a recipe card that has the user's allergens. */
-export function AllergenWarningTag({ allergens }: { allergens: readonly Allergen[] }) {
+/**
+ * "Inneholder melk" on a recipe card that has the user's allergens, and "Inneholder egg (registrert i
+ * husholdningen)" for those other members share (spec 10, FR-HH-006) – never whose they are.
+ */
+export function AllergenWarningTag({
+  allergens,
+  household = [],
+}: {
+  allergens: readonly Allergen[];
+  household?: readonly Allergen[];
+}) {
   const { t } = useTranslation();
   const names = useAllergenNames();
-  if (allergens.length === 0) return null;
   return (
-    <Tag tone="danger">
-      <Icon name="warning" size={14} />
-      {t('recipes.allergens.contains', { list: names(allergens) })}
-    </Tag>
+    <>
+      {allergens.length > 0 && (
+        <Tag tone="danger">
+          <Icon name="warning" size={14} />
+          {t('recipes.allergens.contains', { list: names(allergens) })}
+        </Tag>
+      )}
+      {household.length > 0 && (
+        <Tag tone="warning">
+          <Icon name="warning" size={14} />
+          {t('recipes.allergens.household.contains', { list: names(household) })}
+        </Tag>
+      )}
+    </>
   );
 }
 
@@ -44,6 +62,8 @@ export function AllergenBox({ recipe }: { recipe: RecipeDetail }) {
   const names = useAllergenNames();
   const join = useJoinList();
 
+  const household = recipe.householdAllergenWarnings;
+  const warned = recipe.allergenWarnings.length > 0 || household.length > 0;
   let body;
   if (recipe.userAllergens.length === 0) {
     body = (
@@ -75,14 +95,19 @@ export function AllergenBox({ recipe }: { recipe: RecipeDetail }) {
 
   return (
     <Alert
-      variant={recipe.allergenWarnings.length > 0 ? 'warning' : 'info'}
+      variant={warned ? 'warning' : 'info'}
       title={
         recipe.allergenWarnings.length > 0
           ? t('recipes.allergens.contains', { list: names(recipe.allergenWarnings) })
-          : t('recipes.allergens.title')
+          : household.length > 0
+            ? t('recipes.allergens.household.contains', { list: names(household) })
+            : t('recipes.allergens.title')
       }
     >
       {body}
+      {household.length > 0 && (
+        <p>{t('recipes.allergens.household.box', { list: names(household) })}</p>
+      )}
       <p className={styles.disclaimerText}>{t('recipes.allergens.disclaimer')}</p>
     </Alert>
   );

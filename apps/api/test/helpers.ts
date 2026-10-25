@@ -27,7 +27,9 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       login: { max: 1000, windowMs: 60_000 },
       register: { max: 1000, windowMs: 60_000 },
       sensitive: { max: 1000, windowMs: 60_000 },
+      invitation: { max: 1000, windowMs: 60_000 },
     },
+    invitationAttemptsPerUser: 1000,
     // No User-Agent: Open Food Facts is never called from tests. Tests pass a fake provider instead.
     barcode: {
       offBaseUrl: 'https://world.openfoodfacts.net',
@@ -55,7 +57,7 @@ export function useTestDatabase(): Db {
   const db = createDb(testDatabaseUrl());
   beforeEach(async () => {
     await db.$executeRawUnsafe(
-      'TRUNCATE TABLE sessions, household_members, households, users RESTART IDENTITY CASCADE',
+      'TRUNCATE TABLE sessions, household_invitations, household_members, households, users RESTART IDENTITY CASCADE',
     );
   });
   afterAll(async () => {

@@ -26,7 +26,17 @@ export interface RecipeServiceDeps {
   repo: RecipeRepo;
   /** The household's inventory (the same list the inventory page shows). */
   inventory: { listItems(householdId: string): Promise<ItemResponse[]> };
+  /** Spec 10 (FR-HH-006): allergens other members share with the household, minus the caller's own. */
+  households: HouseholdAllergens;
   now: Clock;
+}
+
+export interface HouseholdAllergens {
+  sharedAllergens(
+    householdId: string,
+    userId: string,
+    own: readonly Allergen[],
+  ): Promise<Allergen[]>;
 }
 
 interface Evaluated {
@@ -37,8 +47,8 @@ interface Evaluated {
 }
 
 /**
- * FR-REC-001–004. Recipes are global; the ranking uses the inventory of the household in the URL and
- * the allergies of the logged-in user. The pure rules live in @smartmat/shared (matching.ts, scoring.ts).
+ * FR-REC-001–004. Recipes are global; the ranking uses the inventory of the household in the URL, the
+ * allergies of the logged-in user and those other members share with the household (spec 10, FR-HH-006). The pure rules live in @smartmat/shared (matching.ts, scoring.ts).
  */
 export class RecipeService {
   constructor(private readonly deps: RecipeServiceDeps) {}
@@ -65,6 +75,7 @@ export class RecipeService {
     return {
       recipes: recipes.map((recipe) => this.evaluate(recipe, context).summary).sort(compareRanked),
       userAllergens: context.userAllergens,
+      householdAllergens: context.householdAllergens,
     };
   }
 
@@ -81,6 +92,7 @@ export class RecipeService {
       license: recipe.license,
       authors: recipe.authors,
       userAllergens: context.userAllergens,
+      householdAllergens: context.householdAllergens,
       lines: recipe.lines.map((line, i) => {
         const ingredient = context.catalog.get(line.ingredientId);
         const result = results[i];
@@ -127,7 +139,12 @@ export class RecipeService {
       // A day in the past is ranked as today: use-by passed already never counts.
       usableOn !== undefined && usableOn > today ? usableOn : today,
     );
-    return { catalog, stock, userAllergens: userAllergens.allergens };
+    const householdAllergens = await this.deps.households.sharedAllergens(
+      householdId,
+      userId,
+      userAllergens.allergens,
+    );
+    return { catalog, stock, userAllergens: userAllergens.allergens, householdAllergens };
   }
 
   private evaluate(
@@ -136,6 +153,7 @@ export class RecipeService {
       catalog: Map<string, CatalogIngredient>;
       stock: Map<string, Stock>;
       userAllergens: Allergen[];
+      householdAllergens: Allergen[];
     },
   ): Evaluated {
     const ingredientsOf = recipe.lines.map((line) => {
@@ -174,6 +192,7 @@ export class RecipeService {
         ingredientNames: ingredientsOf.map((i) => i.name),
         allergens: ALLERGENS.filter((a) => registered.includes(a)),
         allergenWarnings: allergenConflicts(registered, context.userAllergens),
+        householdAllergenWarnings: allergenConflicts(registered, context.householdAllergens),
         score: scoreRecipe(inputs, results),
       },
     };

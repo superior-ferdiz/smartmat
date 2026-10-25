@@ -1,6 +1,7 @@
-import type { Meal } from '@smartmat/shared';
+import type { CreatorRef, Meal } from '@smartmat/shared';
 import type { Db } from '../../db';
 import type { Prisma } from '../../generated/prisma/client';
+import { creatorSelect, toCreator } from '../../lib/creator';
 import { fromDbDate, toDbDate } from '../../lib/dbDates';
 import { isPrismaError } from '../purchases/repo';
 
@@ -19,6 +20,7 @@ export interface MealEntryRecord {
   servings: number | null;
   note: string | null;
   createdAt: Date;
+  createdBy: CreatorRef;
 }
 
 export type NewMealEntry =
@@ -53,6 +55,7 @@ export interface MealPlanRepo {
 
 const entrySelect = {
   id: true,
+  householdId: true,
   date: true,
   meal: true,
   recipeId: true,
@@ -60,11 +63,16 @@ const entrySelect = {
   servings: true,
   note: true,
   createdAt: true,
+  createdBy: creatorSelect,
 } satisfies Prisma.MealPlanEntrySelect;
 
 type EntryRow = Prisma.MealPlanEntryGetPayload<{ select: typeof entrySelect }>;
 
-const toEntry = (row: EntryRow): MealEntryRecord => ({ ...row, date: fromDbDate(row.date) });
+const toEntry = ({ householdId, createdBy, ...row }: EntryRow): MealEntryRecord => ({
+  ...row,
+  date: fromDbDate(row.date),
+  createdBy: toCreator(householdId, createdBy),
+});
 
 export function createMealPlanRepo(db: Db): MealPlanRepo {
   return {

@@ -95,17 +95,30 @@ Avvik fra planen:
   hentedato og tilpasning, og `reviewed_on` står når og bare når `reviewed_by` har navn. `original_author` fra
   ADR-0016 er ikke laget (`authors` har den rollen).
 
+**Implementert i fase 10 (2026-10-24):** `Invitation` (som `HouseholdInvitation`), og nye felt på
+`HouseholdMember` og `User` ([spesifikasjon 10](requirements/10-husholdning.md), ADR-0018). Avvik fra planen:
+- `household_invitations` har bare `token_hash` (SHA-256), ikke selve tokenet. Status regnes ut fra `used_at`,
+  `revoked_at` og `expires_at`. CHECK: ikke både brukt og tilbaketrukket. Rader eldre enn 30 dager slettes når en ny
+  invitasjon lages.
+- `household_members.share_allergens` (standard `false`): deling av allergier per husholdning (FR-HH-006).
+- **Nøyaktig én eier:** delvis unik indeks `household_members_one_owner` på `household_id` der `role = 'owner'`.
+- `users.active_household_id` (SET NULL) er husholdningen brukeren valgte sist. Den sjekkes mot medlemskapet ved hver
+  lesing.
+- Ingen tabeller fikk ny `household_id`: ADR-0008 hadde lagt det inn fra start.
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–9)
+## Kjernemodell (fase 2–10)
 
 ```mermaid
 erDiagram
   User ||--o{ Session : har
   User ||--o{ HouseholdMember : er
   Household ||--o{ HouseholdMember : har
+  Household ||--o{ HouseholdInvitation : inviterer
+  User |o--o{ HouseholdInvitation : lagde_og_brukte
   Household ||--o{ StorageLocation : har
   Household ||--o{ InventoryItem : eier
   Household ||--o{ Purchase : registrerer
@@ -146,7 +159,8 @@ erDiagram
 | `User` | email (unik), password_hash, display_name, locale, currency, created_at | Allergier/kosthold i egen tabell når de trengs | 2 |
 | `Session` | token_hash, user_id, expires_at, last_seen_at | Bare hash av token lagres | 2 |
 | `Household` | name | Én opprettes automatisk ved registrering | 2 |
-| `HouseholdMember` | household_id, user_id, role (`owner`/`member`) | Unik (household_id, user_id) | 2 |
+| `HouseholdMember` | household_id, user_id, role (`owner`/`member`), share_allergens | Unik (household_id, user_id). Én eier per husholdning (fase 10). | 2/10 |
+| `HouseholdInvitation` | household_id, token_hash (unik), created_by?, expires_at, used_at?, used_by?, revoked_at? | Engangslenke, 48 timer. Bare hash av tokenet. | 10 |
 | `AuditEvent` | actor_id, action, target, created_at | Ingen personopplysninger i fritekst | 3 (utsatt fra 2) |
 | `Category` | name, parent_id | Global, frødata | 3 |
 | `Product` | gtin (PK), name?, brand?, package_quantity_base?, package_unit?, category_key?, fetched_at | **Globalt mellomlager** for Open Food Facts (ODbL). Ingen husholdningsdata. | 7 |
@@ -173,7 +187,7 @@ erDiagram
 
 ## Senere
 
-`Invitation` (10), `Notification` / `NotificationPreference` (11),
+`Notification` / `NotificationPreference` (11),
 `PriceObservation` (12: product_id, chain, price_ore, unit_price, observed_at, source).
 
 ## Åpne spørsmål

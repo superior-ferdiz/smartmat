@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { creatorRefSchema } from './household';
 import { CATEGORY_KEYS } from '../schemas/inventory';
 import { PURCHASE_LINE_KINDS } from '../schemas/purchases';
 
@@ -37,6 +38,8 @@ export const purchaseResponseSchema = z.object({
   source: z.enum(PURCHASE_SOURCES),
   createdAt: z.string(),
   updatedAt: z.string(),
+  /** Spec 10 (FR-HH-007): who registered the purchase. */
+  createdBy: creatorRefSchema,
   /** Empty for a purchase registered with only a total. */
   lines: z.array(purchaseLineResponseSchema),
 });

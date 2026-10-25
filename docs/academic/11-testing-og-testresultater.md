@@ -872,6 +872,115 @@ Feil i testene: testindeksen manglet aliaser («Jasminris», «Lettmelk»), uker
 render i samme test fant den første, et vanlig mellomrom i stedet for U+00A0 i en Playwright-regex, `check()` på en
 avkrysningsboks som styres av URL-en, og en lenke React Router normaliserer (`?` fjernes).
 
+## Testtyper og sporbarhet (fase 10)
+
+Testene refererer til krav-ID-ene i [10-husholdning.md](../development/requirements/10-husholdning.md).
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-HH-001–004/007 | Rollereglene, status for en invitasjon (også det nøyaktige utløpet), lenken og tokenet, de delte skjemaene, hvem som får eierskapet ved sletting av konto, aktiv husholdning med reserve, `creatorRef` | `shared/src/household/rules.test.ts` | 15 |
+| FR-HH-001–003/006 | Servicen med en falsk repo: bare hash lagres, 48 timer, ikke fjerne seg selv, passord før overføring og sletting, alle avslag blir riktig feilkode, samme feil for ukjent og utløpt, grensen per bruker, egne allergener trekkes fra | `api/src/modules/households/service.test.ts` | 16 |
+| FR-HH-001–007, NFR-SEC-001/004 | API mot database: hele flyten med to brukere, at endringer venter på låsen på husholdningen, bare hash i databasen, token aldri i loggen, **10 samtidige som godtar samme lenke → 1 medlem**, ukjent, brukt, tilbaketrukket og utløpt gir samme svar, tilbaketrukket alene, nøyaktig utløp, grensene (5 invitasjoner, 10 medlemmer, 5 husholdninger), grense per bruker og per IP, utmelding (10 endepunkter gir 404 straks), ny husholdning ved utmelding og fjerning, eieren kan ikke forlate, fjerning, overføring (også to samtidige og en samtidig utmelding), sletting av husholdning og av konto som eier, nytt navn, aktiv husholdning, deling av allergier, «hvem la til» | `api/test/households.api.test.ts` | 30 |
+| NFR-SEC-001, FR-HH-003 | IDOR og roller: en annen husholdning i URL-en (12 endepunkter → 404), et medlem på eierrutene (8 → 403), egen husholdning med andres ID-er, en `userId` i kroppen ignoreres, 401 og 403 uten CSRF. Ingenting endres i noen av tilfellene. | `api/test/households.security.api.test.ts` | 9 |
+| FR-HH-001/003/004/005 | Siden for eier og medlem, lenken (fragment, kopiering), fjerning, skjemaet for overføring, velgeren, utmelding tømmer hurtiglageret, og en 404 fra en annen fane gjør det samme. Axe på én. | `web/src/pages/household/HouseholdPage.test.tsx` | 7 |
+| FR-HH-002 | `/bli-med`: tokenet fra fragmentet og ut av adresselinjen, ingenting før «Bli med», ugyldig invitasjon, utlogget (lenken til innlogging tar brukeren tilbake), innlimt lenke. Axe på én. | `web/src/pages/household/JoinPage.test.tsx` | 5 |
+| FR-HH-006 | Deling av allergier på profilen (av som standard, forklaring, bare valget sendes), og filteret skjuler husholdningens allergener | `web/src/pages/ProfilePage.test.tsx`, `web/src/recipes/filter.test.ts` | 1 + 2 nye |
+| FR-HH-001–007, NFR-UX-001/002 | Ende-til-ende med to nettlesere: eieren gir nytt navn og inviterer → det nye medlemmet blir med → begge ser samme matlager og handleliste → «Lagt til av» → medlemmet legger til, og eieren ser det → medlemmet forlater og ser det ikke lenger (også API-et svarer 404) → eieren beholder linjen som «Tidligere medlem». Utlogget person logger inn og kommer tilbake. Brukt lenke virker ikke. 360 px og axe. Tastatur. | `e2e/household.spec.ts` | 4 (× 2 skjermstørrelser) |
+
+**Sum etter fase 10:** 1104 enhetstester (451 shared, 206 api, 447 web), 356 API-tester mot database, 175
+ende-til-ende-tester.
+
+Eksisterende tester som ble endret:
+- **Fiksturene** fikk `householdRole` og `households` på sesjonen, `createdBy` på linjer, kjøp og måltider,
+  `householdAllergenWarnings` og `householdAllergens`, og `actor` i stedet for `actorName` i historikken.
+- **Navigasjonstesten for «Kommer senere»** er erstattet: ingen seksjoner er merket slik lenger.
+- **Teksten om skjulte oppskrifter** er endret i en komponenttest og i `e2e/recipes.spec.ts`.
+- `security.api.test.ts` venter `shareAllergens` i svaret.
+- `e2e/app-shell.spec.ts` venter nå til nettverket er stille før den måler sidehøyden (se under).
+
+### Kontroll av testene (fase 10)
+
+Samme metode som før ([skript](../evidence/test-results/fase-10/10-mutation-check.sh)), med 34 endringer i API-et,
+de delte reglene og nettappen. Alle enhetstestene ble kjørt, men bare API-testene fasen berører (husholdning,
+profil, oppskrifter, måltidsplan og handleliste).
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-10/10-mutation-check-run1.txt)): 32 av 34 ble fanget.
+- **Runde 6 ble ikke fanget:** ingen test fjernet et medlem som ikke hadde noen annen husholdning, så det ble aldri
+  sjekket at hen får en ny. Ny test.
+- **Runde 12 ble ikke fanget:** den tilbaketrukne invitasjonen ble bare prøvd etter at klokken var flyttet 48 timer
+  frem. Da var den også utløpt. Ny test som prøver den med en gang.
+
+Begge de nye testene ble sjekket med endringen satt inn for hånd (1 test feilet i hver), før andre kjøring.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-10/10-mutation-check.txt)): 33 av 34 ble fanget.
+- **Runde 3** (husholdningsraden låses ikke) ble fanget i første kjøring, men ikke i andre. Den eneste testen som
+  fanget den, var to samtidige overføringer. Den avslører manglende lås bare når forespørslene faktisk overlapper, og
+  det avhenger av timing.
+- **Ny, sikker test:** en annen transaksjon holder husholdningsraden låst. Overføringen skal ikke bli ferdig før
+  låsen slippes. Med endringen fra runde 3 feilet den nye testen (og denne gangen også den gamle). Uten endringen
+  besto alle 39 ([utdata](../evidence/test-results/fase-10/10-mutation-check-runde3.txt)).
+- Hele kontrollen ble ikke kjørt en tredje gang. Den nye testen endrer ingen kode, bare testene.
+
+Kontrollen dekker ikke Playwright, CHECK-begrensningene og den delvis unike indeksen. Indeksen er likevel med
+indirekte: runde 8 (overføring uten å gjøre den gamle eieren til medlem) feilet fordi databasen nektet to eiere.
+
+## Resultater fase 10 (kjørt 2026-10-25)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Bilder i repoet | Ingen utenfor skjermbildemappen | `00-check-files.txt` |
+| Typesjekk, lint, formatering | Ingen feil. Kjørt på nytt etter rettingen i `e2e/app-shell.spec.ts`. | `01`–`03` |
+| Enhet/komponent | 1104 av 1104 | `04-unit-tests.txt` |
+| API mot testdatabase | 356 av 356. Kjørt på nytt etter den nye testen for låsen. | `05-api-tests.txt` |
+| Bygg | Vellykket. Hovedfilen er 836 kB (252 kB gzip). | `06-build.txt` |
+| Ende-til-ende | 175 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse). **Tredje forsøk.** | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (11 migreringer) | `09-migrate-status.txt` |
+
+**De to første forsøkene med Playwright feilet**, og begge er lagret:
+- **Forsøk 1** ([`07-e2e-forsok1.txt`](../evidence/test-results/fase-10/07-e2e-forsok1.txt)): kameratesten fra fase 7
+  (360 px) fant ikke koden innen 20 sekunder. Serveren var da svært belastet av et annet prosjekt på maskinen (load
+  average 38 på 20 kjerner, `redis-server`). Testen ble kjørt alene tre ganger og besto alle
+  ([`07-e2e-kamera-alene.txt`](../evidence/test-results/fase-10/07-e2e-kamera-alene.txt)). Ingenting ble endret.
+- **Forsøk 2** ([`07-e2e-forsok2.txt`](../evidence/test-results/fase-10/07-e2e-forsok2.txt)): kameratesten igjen, og
+  axe fant et for lite trykkmål på måltidsplanen (360 px, mørkt tema). Det var en svakhet i testen fra fase 1: den
+  målte sidehøyden før dataene var lastet, så en knapp lå bak bunnmenyen da axe sjekket. Testen venter nå til
+  nettverket er stille. Den besto to ganger alene, og hele pakken besto i forsøk 3.
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-10/](../evidence/screenshots/fase-10/):
+- eierens side
+- invitasjonslenken
+- `/bli-med`
+- medlemmets side med to husholdninger
+- handlelisten med «Lagt til av»
+- delingen på profilen
+
+**Ikke testet:**
+- ekte telefon og telefonens delingsmeny (`navigator.share`). Chromium uten skjerm har den ikke, så Playwright tester
+  kopiering.
+- to personer på hver sin telefon samtidig
+- invitasjon over det lukkede testmiljøet (det er ikke satt opp)
+
+## Feil funnet i fase 10
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-24/25.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | Den første 404-regelen gjaldt alle spørringer. Når sesjonsspørringen selv fikk 404 (i en komponenttest), spurte appen på nytt i det uendelige, til testprosessen gikk tom for minne (4 GB). | Hele enhetstestpakken: «Worker exited unexpectedly», og så filen for seg | Regelen gjelder bare husholdningsdata og endringer |
+| 2 | `RequireAuth` byttet ut hele siden med «Kunne ikke sjekke innloggingen» når en ny henting av sesjonen feilet, selv om sesjonen var kjent | Samme komponenttest, etter retting 1 | Feilsiden vises bare når den første sjekken feiler |
+| 3 | `acceptInvitation` og `removeMember` kastet feil synkront i stedet for å avvise løftet | Enhetstest av servicen | `async` |
+| 4 | Knappene «Fjern» og «Bruk» fikk navnet «FjernOla» for skjermlesere (skjult `<span> Ola</span>`) | Komponenttesten fant ikke knappen | `aria-label` fra en oversettelse med navnet. Samme mønster står igjen på stedssiden fra fase 3. Det er ikke rettet. |
+| 5 | Historikken på varesiden viste navnet til den som gjorde noe, også etter at personen hadde forlatt husholdningen | Gjennomgang av `created_by`-feltene før koden | `actor` som `CreatorRef` |
+| 6 | Feil forventning i en egen e2e-test: en brukt lenke gir «virker ikke», ikke «allerede medlem» | Playwright | Testen rettet. Spesifikasjonen sier samme svar for brukte lenker. |
+| 7 | Tre hull i testene, ett av dem avhengig av timing | Mutasjonskontrollen | Nye tester |
+| 8 | En test fra fase 1 målte sidehøyden før dataene var lastet | Playwright under høy last | Venter på stille nettverk |
+
+Feil i testene: `getByText` med en tekst som var delt i flere tekstnoder, user-event som erstatter
+`navigator.clipboard`, en tom husholdning i en mock som hadde et annet navn enn sesjonen, og Playwrights
+forespørselskontekst som ikke sender `Secure`-cookies over http.
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser

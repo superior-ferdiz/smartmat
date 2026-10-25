@@ -7,10 +7,11 @@ import { MorePage } from '../pages/MorePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { OverviewPage } from '../pages/OverviewPage';
 import { ProfilePage } from '../pages/ProfilePage';
-import { SectionPage } from '../pages/SectionPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
+import { HouseholdPage } from '../pages/household/HouseholdPage';
+import { JoinPage } from '../pages/household/JoinPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { ItemPage } from '../pages/inventory/ItemPage';
 import { LocationsPage } from '../pages/inventory/LocationsPage';
@@ -30,6 +31,8 @@ import { ShoppingListPage } from '../pages/shopping/ShoppingListPage';
 import {
   BUDGET_PATH,
   DESIGN_SYSTEM_PATH,
+  HOUSEHOLD_PATH,
+  JOIN_PATH,
   LOCATIONS_PATH,
   LOGIN_PATH,
   MEAL_PLAN_PATH,
@@ -67,6 +70,8 @@ export const routes: RouteObject[] = [
           </GuestOnly>
         ),
       },
+      // Spec 10: open both logged in and out (the page itself asks the logged-out visitor to log in).
+      { path: JOIN_PATH.slice(1), element: <JoinPage /> },
     ],
   },
   {
@@ -93,7 +98,7 @@ export const routes: RouteObject[] = [
           { path: RECEIPTS_PATH.slice(1), element: <ReceiptsPage /> },
           { path: `${RECEIPTS_PATH.slice(1)}/:receiptId`, element: <ReceiptPage /> },
           { path: MEAL_PLAN_PATH.slice(1), element: <MealPlanPage /> },
-          { path: 'husholdning', element: <SectionPage section="household" /> },
+          { path: HOUSEHOLD_PATH.slice(1), element: <HouseholdPage /> },
           { path: 'innstillinger', element: <SettingsPage /> },
           { path: MORE_PATH.slice(1), element: <MorePage /> },
           { path: PROFILE_PATH.slice(1), element: <ProfilePage /> },

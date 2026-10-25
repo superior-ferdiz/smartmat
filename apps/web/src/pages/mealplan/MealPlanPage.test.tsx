@@ -33,7 +33,9 @@ function entry(overrides: Partial<MealEntryResponse> = {}): MealEntryResponse {
     servings: 4,
     note: null,
     allergenWarnings: [],
+    householdAllergenWarnings: [],
     createdAt: '2026-10-24T10:00:00.000Z',
+    createdBy: { kind: 'member', displayName: 'Kari' },
     ...overrides,
   };
 }
@@ -231,6 +233,7 @@ describe('FR-PLAN-001 the week', () => {
           recipeSummary('Melkerett', { allergenWarnings: ['milk'] }),
         ],
         userAllergens: ['milk'],
+        householdAllergens: [],
       },
       onWrite: (r) => {
         posts.push(r.body);

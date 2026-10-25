@@ -395,6 +395,63 @@ AddPlanToShopping = { from, to, lines: { ingredientId, quantityBase: number | nu
 | `RECIPES_INCLUDE_UNREVIEWED` | `true` | `false` skjuler eksterne oppskrifter som ingen i teamet har kontrollert (ADR-0016) |
 | `WIKIMEDIA_CONTACT` | GitHub-profilen til repoet | Kontakt i User-Agent for importskriptet (bare skriptet bruker den) |
 
+## Husholdning: invitasjoner, roller og deling (fase 10)
+
+Se [spesifikasjon 10](requirements/10-husholdning.md) og [ADR-0018](architecture-decisions/0018-delte-husholdninger-og-invitasjoner.md).
+Rutene under `/households/:h` krever innlogging og medlemskap (ikke medlem gir 404, som før). Eierhandlinger krever
+i tillegg rollen `owner`. Et medlem får da 403 `errors.household.ownerOnly`.
+
+### Endringer i eksisterende svar
+- `SessionUser` (`GET /auth/session`, `/me`) har `householdRole` og `households: { id, name, role }[]`.
+  `householdId` er den **aktive** husholdningen.
+- `GET /households/:h` har `shareAllergens`: om den innloggede brukeren deler allergiene sine med husholdningen.
+- `RecipeSummary` og `MealEntry` har `householdAllergenWarnings`, og oppskriftslisten og `RecipeDetail` har
+  `householdAllergens`. Det er allergener som andre medlemmer deler, og som brukeren ikke har selv. Svaret sier
+  aldri hvem.
+- `ShoppingItem.createdBy`, `Purchase.createdBy`, `MealEntry.createdBy` og `HistoryEvent.actor` (erstatter
+  `actorName`) er `CreatorRef`.
+
+### Typer
+```ts
+type CreatorRef = { kind: 'member', displayName: string } | { kind: 'former' | 'unknown', displayName: null };
+HouseholdMember = { userId, displayName, role: 'owner' | 'member', joinedAt, isYou }   // ingen e-post
+Invitation = { id, createdAt, expiresAt, status: 'active' | 'used' | 'revoked' | 'expired',
+               usedBy: CreatorRef | null }
+InvitationPreview = { householdName, invitedBy: string | null, memberCount, expiresAt, alreadyMember }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/members` | – | `{ members: HouseholdMember[] }` (eldste først) | 404 |
+| PATCH | `/households/:h/members/me` | `{ shareAllergens: boolean }` | `Household` | 404 |
+| POST | `/households/:h/leave` | – | 204 | 409 `ownerMustTransfer` (eieren) |
+| PATCH | `/households/:h` | `{ name: 1–100 tegn }` | `Household` | 400, 403 |
+| DELETE | `/households/:h` | `{ password }` | 204 | 400 `wrongPassword`, 403, 429 |
+| DELETE | `/households/:h/members/:userId` | – | 204 | 400 `cannotRemoveSelf`, 403, 404 |
+| POST | `/households/:h/transfer-ownership` | `{ userId, password }` | 204 | 400 `wrongPassword` / `userId` → `notAMember`, 403, 429 |
+| GET | `/households/:h/invitations` | – | `{ invitations: Invitation[] }` (siste 30 dager) | 403 |
+| POST | `/households/:h/invitations` | – | 201 `{ invitation, token }` – tokenet vises bare her | 403, 409 `tooManyInvitations` (5 aktive) |
+| DELETE | `/households/:h/invitations/:id` | – | 204 (også når den ikke er aktiv lenger) | 403, 404 |
+| POST | `/invitations/preview` | `{ token }` | `InvitationPreview` | 400, 404 `invitationInvalid`, 429 |
+| POST | `/invitations/accept` | `{ token }` | `{ householdId }` (nå aktiv) | 400, 404 `invitationInvalid`, 409 `alreadyMember` / `full` / `tooManyHouseholds`, 429 |
+| PUT | `/me/active-household` | `{ householdId }` | `SessionUser` | 404 |
+
+- **Token:** 32 tilfeldige byte i base64url (43 tegn). Bare SHA-256 lagres. Lenken er `<origin>/bli-med#<token>`,
+  og tokenet sendes bare i kroppen til en POST. Ukjent, utløpt (48 timer), brukt og tilbaketrukket gir samme svar.
+- **Grenser:** 10 forsøk per bruker og 30 per IP-adresse på 15 minutter for `preview` og `accept` til sammen.
+  Høyst 10 medlemmer per husholdning og 5 husholdninger per bruker.
+- **Låsing:** alle endringer i medlemskap låser husholdningsraden (`FOR UPDATE`). Samtidig bruk av samme invitasjon
+  gir ett medlem.
+- **Minst én husholdning:** den som står uten husholdning etter utmelding, fjerning eller sletting, får en ny og tom
+  husholdning av én.
+
+| Variabel | Standard | Virkning |
+|---|---|---|
+| `RATE_LIMIT_INVITATION_MAX` | 30 | `preview` + `accept` per IP-adresse på 15 minutter |
+| `INVITATION_ATTEMPTS_PER_USER` | 10 | `preview` + `accept` per bruker på 15 minutter (i minnet) |
+
 ### Innstillinger for testmiljøet (ADR-0015)
 
 | Variabel | Lokalt | Testmiljø | Virkning |

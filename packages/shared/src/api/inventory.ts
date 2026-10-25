@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { creatorRefSchema } from './household';
 import { EXPIRY_KINDS } from '../quantity/expiry';
 import { BASE_UNITS } from '../quantity/quantity';
 import { INGREDIENT_MATCH_MODES } from '../recipes/matching';
@@ -67,8 +68,8 @@ export const historyEventSchema = z.object({
   batchId: z.uuid().nullable(),
   fromLocationId: z.uuid().nullable(),
   toLocationId: z.uuid().nullable(),
-  /** The member who did it; null if that account has been deleted. */
-  actorName: z.string().nullable(),
+  /** Who did it (spec 10, FR-HH-007): the name only while they are still a member. */
+  actor: creatorRefSchema,
   createdAt: z.string(),
   revertsEventId: z.uuid().nullable(),
   /** The type of the event an undo reverted, so the history can say "Angret: brukt 200 g". */

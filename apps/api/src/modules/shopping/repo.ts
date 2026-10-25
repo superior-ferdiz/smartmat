@@ -10,6 +10,7 @@ import {
 import type { Db } from '../../db';
 import type { Prisma } from '../../generated/prisma/client';
 import { fromDbDate } from '../../lib/dbDates';
+import { creatorSelect, toCreator } from '../../lib/creator';
 import { insertBatchWithEvent, type NewBatch } from '../inventory/repo';
 import { isPrismaError } from '../purchases/repo';
 
@@ -112,6 +113,7 @@ export interface ShoppingRepo {
 
 const itemSelect = {
   id: true,
+  householdId: true,
   text: true,
   ingredientId: true,
   quantityBase: true,
@@ -119,6 +121,7 @@ const itemSelect = {
   checked: true,
   checkedAt: true,
   createdAt: true,
+  createdBy: creatorSelect,
   recipes: {
     orderBy: { recipe: { title: 'asc' } },
     select: { recipeId: true, quantityBase: true, recipe: { select: { title: true } } },
@@ -145,6 +148,7 @@ function toItem(row: ItemRow): ShoppingItemResponse {
     checked: row.checked,
     checkedAt: row.checkedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
+    createdBy: toCreator(row.householdId, row.createdBy),
     recipes: row.recipes.map((r) => ({
       recipeId: r.recipeId,
       title: r.recipe.title,

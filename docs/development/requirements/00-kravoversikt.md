@@ -64,6 +64,16 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-PLAN-004 | Det som mangler, legges på handlelisten etter bekreftelse, uten å bli doblet | K | 9 |
 | FR-PLAN-005 | Det som går ut snart, foreslås først, med forklaring | K | 9 |
 
+| ID | Krav (husholdning, lagt til i fase 10) | Prio | Fase |
+|---|---|---|---|
+| FR-HH-001 | Eieren kan invitere med en engangslenke som utløper, kan trekkes tilbake, og som bare lagres som hash | K | 10 |
+| FR-HH-002 | Den inviterte ser hvem og hva før hen blir med, og beholder sine egne data | K | 10 |
+| FR-HH-003 | Rollene eier og medlem kontrolleres på serveren | K | 10 |
+| FR-HH-004 | En bruker kan være med i flere husholdninger og bytte hvilken som er aktiv | K | 10 |
+| FR-HH-005 | Medlemmer kan forlate og fjernes, uten at data lekker etterpå | K | 10 |
+| FR-HH-006 | Allergier kan deles med husholdningen etter eget valg, uten navn | K | 10 |
+| FR-HH-007 | Det vises hvem som la til noe, men bare for nåværende medlemmer | K | 10 |
+
 ## Ikke-funksjonelle krav
 
 | ID | Krav | Fase |

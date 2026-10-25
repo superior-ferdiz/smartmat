@@ -14,8 +14,14 @@ export const sessionUserSchema = z.object({
   email: z.string(),
   displayName: z.string(),
   locale: localeSchema,
-  /** The household the user's data belongs to. Phase 2: always the household of one created at registration. */
+  /**
+   * The active household (spec 10, FR-HH-004): the one the user chose, or the oldest membership. Every page
+   * reads and writes this household's data.
+   */
   householdId: z.uuid(),
+  householdRole: householdRoleSchema,
+  /** All the user's households, oldest first, for the switcher (at most MAX_HOUSEHOLDS_PER_USER). */
+  households: z.array(z.object({ id: z.uuid(), name: z.string(), role: householdRoleSchema })),
 });
 export type SessionUser = z.infer<typeof sessionUserSchema>;
 
@@ -31,6 +37,8 @@ export const householdResponseSchema = z.object({
   name: z.string(),
   role: householdRoleSchema,
   memberCount: z.number().int().positive(),
+  /** Spec 10 (FR-HH-006): whether the caller shares their allergies with this household. */
+  shareAllergens: z.boolean(),
 });
 export type HouseholdResponse = z.infer<typeof householdResponseSchema>;
 

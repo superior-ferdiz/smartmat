@@ -37,6 +37,8 @@ import {
 import { neighbourRowId, useDelegatedListEvents } from '../../shopping/listEvents';
 import styles from '../../shopping/shopping.module.css';
 import { ToInventoryDialog } from './ToInventoryDialog';
+import { useIsShared } from '../../household/api';
+import { useAddedBy } from '../../household/format';
 
 const QUICK_ADD_TEXT_ID = 'shopping-quick-text';
 const checkboxId = (itemId: string) => `shopping-check-${itemId}`;
@@ -228,6 +230,8 @@ function Rows({ items, version }: { items: ShoppingItemResponse[]; version: numb
   const formatQuantity = useFormatQuantity();
   const join = useJoinList();
   const shortDay = useShortDayLabel();
+  // Spec 10 (FR-HH-007): "Lagt til av Kari" when the list is shared.
+  const addedBy = useAddedBy(useIsShared());
 
   return (
     <ul role="list" className={styles.list}>
@@ -257,6 +261,8 @@ function Rows({ items, version }: { items: ShoppingItemResponse[]; version: numb
                 }),
           );
         }
+        const by = addedBy(item.createdBy);
+        if (by) shares.push(by);
         return (
           <li
             key={item.id}

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { MEALS } from '../mealplan/needs';
 import { BASE_UNITS } from '../quantity/quantity';
+import { creatorRefSchema } from './household';
 
 /* Response shapes for the shopping list (phase 6, spec 06). */
 
@@ -30,6 +31,8 @@ export const shoppingItemResponseSchema = z.object({
   checked: z.boolean(),
   checkedAt: z.string().nullable(),
   createdAt: z.string(),
+  /** Spec 10 (FR-HH-007): who added the line. */
+  createdBy: creatorRefSchema,
   recipes: z.array(shoppingRecipeShareSchema),
   meals: z.array(shoppingMealShareSchema),
 });

@@ -9,7 +9,7 @@ import type { RecipeSummary } from '@smartmat/shared';
 export interface RecipeFilter {
   q: string;
   tag: string;
-  /** false (default) = recipes with the user's allergens are hidden. */
+  /** false (default) = recipes with the user's allergens, or the household's shared ones, are hidden. */
   showAllergens: boolean;
 }
 
@@ -28,6 +28,14 @@ export function recipeFilterToParams(filter: RecipeFilter): URLSearchParams {
   if (filter.tag) params.set('tagg', filter.tag);
   if (filter.showAllergens) params.set('allergener', 'vis');
   return params;
+}
+
+/** FR-REC-004 and spec 10 (FR-HH-006): one of the user's allergens, or one another member shares. */
+export function hasRegisteredAllergens(
+  recipe: Pick<RecipeSummary, 'allergenWarnings'> &
+    Pick<RecipeSummary, 'householdAllergenWarnings'>,
+): boolean {
+  return recipe.allergenWarnings.length > 0 || recipe.householdAllergenWarnings.length > 0;
 }
 
 const normalize = (text: string, locale: string) => text.toLocaleLowerCase(locale).trim();
@@ -57,12 +65,12 @@ export function filterRecipes(
         r.ingredientNames.some((name) => normalize(name, locale).includes(q))),
   );
   if (filter.showAllergens) return { shown: matching, hiddenByAllergens: 0 };
-  const shown = matching.filter((r) => r.allergenWarnings.length === 0);
+  const shown = matching.filter((r) => !hasRegisteredAllergens(r));
   return { shown, hiddenByAllergens: matching.length - shown.length };
 }
 
 /** FR-DASH-001: the best-ranked recipe the user can see (not hidden by allergens), if it scores at all. */
 export function dinnerSuggestion(recipes: readonly RecipeSummary[]): RecipeSummary | null {
-  const best = recipes.find((r) => r.allergenWarnings.length === 0);
+  const best = recipes.find((r) => !hasRegisteredAllergens(r));
   return best && best.score.total > 0 ? best : null;
 }

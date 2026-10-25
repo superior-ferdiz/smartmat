@@ -31,13 +31,7 @@ export const SECTIONS: readonly NavSection[] = [
   { id: 'shoppingList', path: '/handleliste', icon: 'shoppingList', inBottomNav: false },
   { id: 'budget', path: '/budsjett', icon: 'budget', inBottomNav: false },
   { id: 'mealPlan', path: '/maltidsplan', icon: 'mealPlan', inBottomNav: false },
-  {
-    id: 'household',
-    path: '/husholdning',
-    icon: 'household',
-    inBottomNav: false,
-    comingLater: true,
-  },
+  { id: 'household', path: '/husholdning', icon: 'household', inBottomNav: false },
   { id: 'settings', path: '/innstillinger', icon: 'settings', inBottomNav: false },
 ];
 
@@ -46,6 +40,9 @@ export const DESIGN_SYSTEM_PATH = '/designsystem';
 export const LOGIN_PATH = '/logg-inn';
 export const REGISTER_PATH = '/registrer';
 export const PROFILE_PATH = '/profil';
+/** Spec 10: the household page, and the page an invitation link opens (`/bli-med#<token>`). */
+export const HOUSEHOLD_PATH = '/husholdning';
+export { JOIN_PATH } from '@smartmat/shared';
 export const INVENTORY_PATH = '/matlager';
 export const NEW_ITEM_PATH = '/matlager/ny';
 export const LOCATIONS_PATH = '/matlager/steder';

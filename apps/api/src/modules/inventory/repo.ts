@@ -12,6 +12,7 @@ import type {
 import type { Db } from '../../db';
 import { fromDbDate, toDbDate } from '../../lib/dbDates';
 import type { Prisma } from '../../generated/prisma/client';
+import { creatorSelect, toCreator } from '../../lib/creator';
 
 /*
  * Database access for the inventory. Every function takes the household id and every query filters on it
@@ -418,7 +419,7 @@ export function createInventoryRepo(db: Db): InventoryRepo {
           wasteReason: true,
           wasteValueOre: true,
           wasteValueBasis: true,
-          actor: { select: { displayName: true } },
+          actor: creatorSelect,
           revertsEvent: { select: { type: true } },
           revertedBy: { select: { id: true } },
         },
@@ -430,7 +431,7 @@ export function createInventoryRepo(db: Db): InventoryRepo {
         batchId: r.batchId,
         fromLocationId: r.fromLocationId,
         toLocationId: r.toLocationId,
-        actorName: r.actor?.displayName ?? null,
+        actor: toCreator(householdId, r.actor),
         createdAt: r.createdAt.toISOString(),
         revertsEventId: r.revertsEventId,
         revertedType: r.revertsEvent?.type ?? null,

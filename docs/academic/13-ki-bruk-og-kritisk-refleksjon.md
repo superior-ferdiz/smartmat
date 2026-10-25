@@ -76,6 +76,28 @@
     gamle koden». Det var ikke kjørt, og teksten ble rettet.
 - Teamets refleksjon over fase 9 er ikke skrevet.
 
+- Fase 10 (2026-10-24/25), notater:
+  - **KI foreslo og bestemte i praksis reglene for deling.** Planen hadde sju åpne spørsmål. Teamet godkjente med
+    «godkjennt» uten å svare på dem enkeltvis, så anbefalingene til KI gjelder. Det gjelder blant annet:
+    - flere husholdninger per bruker
+    - at eierskapet overføres automatisk når en eier sletter kontoen
+    - at allergier deles bare etter eget valg
+
+    Dette er valg med følger for personvernet, og teamet bør ta stilling til dem selv.
+  - **Behandlingsgrunnlaget** for å dele allergier (samtykke etter art. 9) er KI-ens forslag. Det er ikke en juridisk
+    vurdering, og teamet har ikke vurdert det.
+  - **Feil KI-en gjorde og fant selv:**
+    - en løkke som spurte etter sesjonen i det uendelige, til testprosessen gikk tom for minne
+    - en funksjon som kastet feil synkront i stedet for å avvise
+    - to hull i egne tester (mutasjonskontrollen)
+    - knappenavn som skjermlesere ville lest som «FjernOla»
+    - en kappløpssituasjon i en eldre test
+
+    Detaljer i kapittel 11.
+  - **Ustabil testkjøring:** under sluttkjøringen var serveren svært belastet av et annet prosjekt. To kjøringer av
+    Playwright feilet, og begge er lagret. Den ene feilen var en svakhet i en test fra fase 1, og den ble rettet.
+- Teamets refleksjon over fase 10 er ikke skrevet.
+
 ## Kilder i prosjektet
 
 <!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->

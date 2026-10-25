@@ -23,6 +23,7 @@ export function recipeSummary(
     ingredientNames: ['Kyllingfilet', 'Ris'],
     allergens: [],
     allergenWarnings: [],
+    householdAllergenWarnings: [],
     score: {
       total: 0,
       coverage: 0,
@@ -76,6 +77,7 @@ export function recipeDetail(
     authors: ['Linus Saxe Huseby'],
     lines: lines.map((line, position) => ({ ...line, position })),
     userAllergens: [],
+    householdAllergens: [],
     ...overrides,
   };
 }

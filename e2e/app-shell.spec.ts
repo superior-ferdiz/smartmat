@@ -33,8 +33,11 @@ for (const colorScheme of ['light', 'dark'] as const) {
       }) => {
         await page.goto(path);
         await expect(page.getByRole('heading', { level: 1, name: h1 })).toBeVisible();
-        // Wait for the web font, so axe measures contrast on the final rendering.
+        // Wait for the web font, so axe measures contrast on the final rendering, and for the page's data: the
+        // tall phone viewport below is measured from the page height, which grows when the data arrives (the meal
+        // plan failed under load in phase 10 when it was measured too early).
         await page.evaluate(() => document.fonts.ready);
+        await page.waitForLoadState('networkidle');
         await expectNoHorizontalScroll(page);
         await useTallPhoneViewport(page);
         await expectNoAxeViolations(page);

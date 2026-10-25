@@ -54,6 +54,8 @@ export function createFakeStore() {
           displayName: u.displayName,
           locale: u.locale,
           householdId: u.householdId,
+          householdRole: 'owner',
+          households: [{ id: u.householdId, name: u.displayName, role: 'owner' }],
         }
       : null;
   };

@@ -2,6 +2,33 @@
 
 ## [Ikke utgitt]
 
+### Fase 10 – 2026-10-24 (grenen `fase-10`)
+- **Delte husholdninger** ([ADR-0018](architecture-decisions/0018-delte-husholdninger-og-invitasjoner.md),
+  [spesifikasjon 10](requirements/10-husholdning.md)):
+  - **invitasjon med engangslenke** `/bli-med#<token>`: 48 timer, én gang, kan trekkes tilbake, bare hash lagres,
+    begrensning av forsøk, del med telefonens delingsmeny eller kopier
+  - **siden `/bli-med`:** hvem inviterer til hva, egne data blir værende, Bli med / Nei takk, og lenkene til
+    innlogging og registrering tar brukeren tilbake
+  - **roller:** eier (invitere, fjerne, gi nytt navn, overføre med passord, slette med passord) og medlem (alle
+    husholdningsdata, forlate). Kontrolleres med `requireOwner` og under lås.
+  - **flere husholdninger** (høyst 5) med velger og «Husholdning: …» øverst på sidene når det er flere
+  - **forlate og fjerne:** tilgangen forsvinner straks, dataene blir i husholdningen, og den som står uten
+    husholdning, får en ny og tom
+  - **sletting av konto** som eier av en delt husholdning gir eierskapet til medlemmet som har vært med lengst
+  - **allergier** kan deles med husholdningen etter eget valg (Profil → Allergier). Oppskrifter og måltidsplan
+    skjuler og merker dem «registrert i husholdningen», uten navn.
+  - **«Lagt til av …»** på handlelisten, kjøp, måltidsplanen og varehistorikken, bare for nåværende medlemmer
+- **Migrering** `households_sharing`: `household_invitations`, `share_allergens`, `active_household_id`, delvis unik
+  indeks for én eier, CHECK.
+- **Endret:**
+  - `HistoryEvent.actorName` er erstattet av `actor` (`CreatorRef`)
+  - `SessionUser` har `householdRole` og `households`
+  - teksten om skjulte oppskrifter nevner husholdningen
+  - plassholdersiden `SectionPage` er fjernet, fordi alle seksjoner nå finnes
+- **Rettet:**
+  - `RequireAuth` byttet ut hele siden med en feilmelding når en ny henting av sesjonen feilet i bakgrunnen
+  - slettedialogen sa at «husholdningen din» alltid slettes
+
 ### Fase 9 – 2026-10-24 (grenen `fase-9`)
 - **Oppskrifter fra åpne kilder** ([ADR-0016](architecture-decisions/0016-oppskrifter-fra-apne-kilder.md), akseptert,
   erstatter ADR-0009):

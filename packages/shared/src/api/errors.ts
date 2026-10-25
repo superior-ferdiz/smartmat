@@ -40,6 +40,15 @@ export const API_ERRORS = {
   receiptDuplicate: 'errors.receipt.duplicate',
   receiptPossibleDuplicate: 'errors.receipt.possibleDuplicate',
   receiptCannotRetry: 'errors.receipt.cannotRetry',
+  householdOwnerOnly: 'errors.household.ownerOnly',
+  householdOwnerMustTransfer: 'errors.household.ownerMustTransfer',
+  householdCannotRemoveSelf: 'errors.household.cannotRemoveSelf',
+  householdFull: 'errors.household.full',
+  householdTooMany: 'errors.household.tooManyHouseholds',
+  householdTooManyInvitations: 'errors.household.tooManyInvitations',
+  householdAlreadyMember: 'errors.household.alreadyMember',
+  householdInvitationInvalid: 'errors.household.invitationInvalid',
+  householdNotAMember: 'errors.household.notAMember',
   internal: 'errors.internal',
 } as const;
 

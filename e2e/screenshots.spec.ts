@@ -1,16 +1,16 @@
-import { apiAs, test, type Account } from './fixtures';
+import { apiAs, BASE_URL, registerAccount, test, type Account } from './fixtures';
 
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
- * Only runs when asked for:  E2E_RECIPE_SEED=repo SCREENSHOTS=1 npm run test:e2e -- screenshots
- * Phase 9 pages (meal plan, recipes from Wikibooks), with a seeded inventory, purchases and budget. With
- * E2E_RECIPE_SEED=repo the e2e API has the translated recipes from prisma/seed/ instead of the test fixtures.
- * (The phase 1–8 screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git
+ * Only runs when asked for:  SCREENSHOTS=1 npx playwright test screenshots
+ * Phase 10 pages (shared household: members, invitation link, joining, "added by", sharing allergies), with a
+ * seeded inventory, purchases and budget, and a second person who joins through the API.
+ * (The phase 1–9 screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git
  * history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-9';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-10';
 
 function inDays(days: number) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date());
@@ -87,100 +87,131 @@ async function seed(
   return { created, purchaseId: purchase.id };
 }
 
-/** Monday of the week after this one, so every day of the shown week is still to come. */
-function nextMonday() {
-  const today = inDays(0);
-  const weekday = (new Date(`${today}T00:00:00Z`).getUTCDay() + 6) % 7;
-  return inDays(7 - weekday);
+type Playwright = Parameters<Parameters<typeof test>[2]>[0]['playwright'];
+
+/** The raw API as a logged-in account (for the invitation calls apiAs does not have). */
+async function rawApi(playwright: Playwright, account: Account) {
+  const cookie = account.storageState.cookies.find((c) => c.name === 'smartmat_session');
+  const api = await playwright.request.newContext({
+    baseURL: BASE_URL,
+    extraHTTPHeaders: { origin: BASE_URL, cookie: `smartmat_session=${cookie?.value ?? ''}` },
+  });
+  const session = await (await api.get('/api/v1/auth/session')).json();
+  const headers = { 'x-csrf-token': session.csrfToken as string };
+  return {
+    householdId: session.user.householdId as string,
+    post: (path: string, data?: unknown) =>
+      api.post(`/api/v1${path}`, { headers, ...(data === undefined ? {} : { data }) }),
+    patch: (path: string, data: unknown) => api.patch(`/api/v1${path}`, { headers, data }),
+    put: (path: string, data: unknown) => api.put(`/api/v1${path}`, { headers, data }),
+    dispose: () => api.dispose(),
+  };
 }
 
-const addDays = (date: string, days: number) => {
-  const [y = 0, m = 1, d = 1] = date.split('-').map(Number);
-  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
-};
+async function renamed(playwright: Playwright, displayName: string): Promise<Account> {
+  const account = await registerAccount(playwright, 'skjerm');
+  const api = await rawApi(playwright, account);
+  await api.patch('/me', { displayName });
+  await api.patch(`/households/${api.householdId}`, { name: `${displayName}s` });
+  await api.dispose();
+  return { ...account, displayName };
+}
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – meal plan`, () => {
+  test.describe(`${colorScheme} – shared household`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('maltidsplan', async ({ page, playwright, account }, testInfo) => {
+    test('husholdning', async ({ page, playwright, account, browser }, testInfo) => {
       await seed(playwright, account);
-      const api = await apiAs(playwright, account);
-      const bySlug = new Map((await api.recipes()).map((r) => [r.slug, r.id]));
-      const monday = nextMonday();
-      const plan = [
-        [0, 'farikal', 4],
-        [1, 'rod-linsesuppe', 4],
-        [3, 'svenske-kjottboller', 2],
-        [4, 'laks-med-ris-og-saus', 3],
-      ] as const;
-      for (const [day, slug, servings] of plan) {
-        const recipeId = bySlug.get(slug);
-        if (!recipeId) throw new Error(`run with E2E_RECIPE_SEED=repo (no recipe ${slug})`);
-        await api.addMealEntry({
-          kind: 'recipe',
-          recipeId,
-          servings,
-          date: addDays(monday, day),
-          meal: 'dinner',
-        });
-      }
-      await api.addMealEntry({
-        kind: 'note',
-        note: 'Rester',
-        date: addDays(monday, 2),
-        meal: 'dinner',
-      });
-      await api.addMealEntry({
-        kind: 'note',
-        note: 'Spise ute',
-        date: addDays(monday, 5),
-        meal: 'dinner',
-      });
-      await api.dispose();
+      const kari = await rawApi(playwright, account);
+      await kari.patch('/me', { displayName: 'Kari' });
+      await kari.patch(`/households/${kari.householdId}`, { name: 'Familien Nordmann' });
+
+      // Ola joins through the API and adds a shopping line.
+      const olaAccount = await renamed(playwright, 'Ola');
+      const ola = await rawApi(playwright, olaAccount);
+      const first = (await (
+        await kari.post(`/households/${kari.householdId}/invitations`)
+      ).json()) as {
+        token: string;
+      };
+      await ola.post('/invitations/accept', { token: first.token });
+      await ola.post(`/households/${kari.householdId}/shopping-list/items`, { text: 'Kaffe' });
+      await kari.post(`/households/${kari.householdId}/shopping-list/items`, { text: 'Brød' });
+      // A second, unused invitation for the join page.
+      const second = (await (
+        await kari.post(`/households/${kari.householdId}/invitations`)
+      ).json()) as {
+        token: string;
+      };
 
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
-      const shot = (name: string, fullPage = true) =>
-        page.screenshot({
+      const shot = (target: typeof page, name: string, fullPage = true) =>
+        target.screenshot({
           path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
           fullPage,
         });
-      const ready = () => page.evaluate(() => document.fonts.ready);
+      const ready = (target: typeof page) => target.evaluate(() => document.fonts.ready);
 
-      // FR-PLAN-001/003: next week, with what is missing.
-      await page.goto('/maltidsplan');
-      await page.getByRole('link', { name: 'Neste uke' }).click();
-      await page.getByRole('checkbox', { name: /^Lammekjøtt/ }).waitFor();
-      await ready();
-      await shot('maltidsplan-uke');
+      // FR-HH-001/003: the owner's page with members and invitations.
+      await page.goto('/husholdning');
+      await page.getByText(/Brukt av Ola/).waitFor();
+      await ready(page);
+      await shot(page, 'husholdning-eier');
 
-      // FR-PLAN-005: the add dialog, ranked for the day.
-      await page.getByRole('button', { name: /^Legg til Middag, søndag/ }).click();
-      await page.getByRole('radio', { name: /Fårikål/ }).waitFor();
-      await ready();
-      await shot('maltidsplan-legg-til', false);
+      // FR-HH-001: the link, shown once.
+      await page.getByRole('button', { name: 'Lag invitasjonslenke' }).click();
+      await page.getByRole('dialog', { name: 'Invitasjonslenken er klar' }).waitFor();
+      await ready(page);
+      await shot(page, 'husholdning-lenke', false);
       await page.keyboard.press('Escape');
 
-      // FR-PLAN-004: on the shopping list.
-      await page.getByRole('button', { name: 'Legg på handlelisten' }).click();
-      await page.getByText(/Lagt på handlelisten:/).waitFor();
+      // FR-HH-007: who added what.
       await page.goto('/handleliste');
-      await page
-        .getByText(/Måltidsplan .*: Fårikål/)
-        .first()
-        .waitFor();
-      await ready();
-      await shot('maltidsplan-handleliste');
+      await page.getByText(/Lagt til av Ola/).waitFor();
+      await ready(page);
+      await shot(page, 'handleliste-lagt-til-av');
 
-      // FR-REC-006 / FR-PLAN-002: a translated recipe for 6 servings, with source and licence.
-      await page.goto(`/oppskrifter/${bySlug.get('farikal')}?porsjoner=6`);
-      await page.getByRole('heading', { name: 'Kilde og lisens' }).waitFor();
-      await ready();
-      await shot('oppskrift-wikibooks');
+      // FR-HH-006: sharing allergies on the profile.
+      await page.goto('/profil');
+      await page.getByLabel('Ta hensyn til allergiene mine i «Familien Nordmann»').waitFor();
+      await page.getByRole('heading', { name: 'Del med husholdningen' }).scrollIntoViewIfNeeded();
+      await ready(page);
+      await shot(page, 'profil-del-allergier', false);
 
-      await page.goto('/oppskrifter/kilder');
-      await page.getByRole('link', { name: 'Fårikål', exact: true }).waitFor();
-      await ready();
-      await shot('oppskrifter-kilder');
+      // FR-HH-002/004: Per opens the second link; Ola's view as a member with two households.
+      const perAccount = await renamed(playwright, 'Per');
+      const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = testInfo.project.use;
+      const context = (state: Account['storageState']) =>
+        browser.newContext({
+          baseURL: BASE_URL,
+          locale: 'nb-NO',
+          timezoneId: 'Europe/Oslo',
+          colorScheme,
+          storageState: state,
+          ...(viewport ? { viewport } : {}),
+          ...(userAgent ? { userAgent } : {}),
+          ...(deviceScaleFactor ? { deviceScaleFactor } : {}),
+          ...(isMobile !== undefined ? { isMobile } : {}),
+          ...(hasTouch !== undefined ? { hasTouch } : {}),
+        });
+      const perContext = await context(perAccount.storageState);
+      const perPage = await perContext.newPage();
+      await perPage.goto(`/bli-med#${second.token}`);
+      await perPage.getByRole('button', { name: 'Bli med' }).waitFor();
+      await ready(perPage);
+      await shot(perPage, 'bli-med');
+      await perContext.close();
+
+      const olaContext = await context(olaAccount.storageState);
+      const olaPage = await olaContext.newPage();
+      await olaPage.goto('/husholdning');
+      await olaPage.getByRole('heading', { name: 'Dine husholdninger' }).waitFor();
+      await ready(olaPage);
+      await shot(olaPage, 'husholdning-medlem');
+      await olaContext.close();
+
+      await kari.dispose();
+      await ola.dispose();
     });
   });
 }

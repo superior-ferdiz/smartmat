@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ErrorState } from '../components/ErrorState/ErrorState';
 import { LoadingState } from '../components/LoadingState/LoadingState';
 import { LOGIN_PATH } from '../app/navigation';
+import { HouseholdWatcher } from '../household/HouseholdWatcher';
 import { loginPathFor, safeNextPath } from './safeNextPath';
 import { useSession } from './session';
 
@@ -17,7 +18,9 @@ export function RequireAuth() {
   const location = useLocation();
 
   if (session.isPending) return <LoadingState label={t('auth.checkingSession')} />;
-  if (session.isError) {
+  // Only the first check: if a later refetch fails (spec 10 refetches after a 404), the session we have
+  // still counts, and the page stays.
+  if (session.isError && session.data === undefined) {
     return (
       <ErrorState
         description={t('auth.sessionCheckFailed')}
@@ -30,7 +33,12 @@ export function RequireAuth() {
       <Navigate to={loginPathFor(LOGIN_PATH, `${location.pathname}${location.search}`)} replace />
     );
   }
-  return <Outlet />;
+  return (
+    <>
+      <HouseholdWatcher />
+      <Outlet />
+    </>
+  );
 }
 
 /**

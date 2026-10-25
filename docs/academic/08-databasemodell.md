@@ -1,6 +1,6 @@
 # Databasemodell
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet i fase 5–7. Skjemaet og teksten er laget
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet i fase 5–10. Skjemaet og teksten er laget
 > av KI (Claude) og ikke gjennomgått av teamet ennå. Kapittelet utvides med tabellene for oppskrifter i senere faser.
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
 
@@ -323,6 +323,21 @@ en sha256 av kvitteringsnummer, klokkeslett, dato og total, så kvitteringsnumme
 
 Behovet for uka lagres ikke. Det regnes ut fra planen, oppskriftene og matlageret, som budsjettet i fase 4.
 
+### Delte husholdninger (fase 10)
+
+- **`household_invitations`:** en invitasjonslenke. Bare SHA-256 av tokenet lagres (`token_hash`, unik), som for
+  sesjoner. Status (aktiv, brukt, tilbaketrukket, utløpt) regnes ut fra tre tidspunkter. En CHECK hindrer at en
+  invitasjon er både brukt og tilbaketrukket. `created_by` og `used_by` blir tomme (SET NULL) hvis kontoen slettes.
+- **`household_members.share_allergens`:** om medlemmets allergier skal telle for hele husholdningen. Standard
+  `false`, fordi allergier kan være helseopplysninger.
+- **Én eier:** den delvis unike indeksen `household_members_one_owner` (`WHERE role = 'owner'`) gjør at databasen
+  selv nekter to eiere. En overføring setter derfor den gamle eieren til medlem før den nye blir eier.
+- **`users.active_household_id`:** husholdningen brukeren valgte sist. Den er bare et ønske: hver gang sesjonen
+  leses, sjekkes den mot medlemskapene, og den eldste husholdningen brukes hvis brukeren ikke er medlem lenger.
+- **Låsing:** alle endringer i hvem som er medlem, låser husholdningsraden (`SELECT … FOR UPDATE`) i transaksjonen.
+  To personer som godtar samme invitasjon samtidig, eller en overføring samtidig med en utmelding, skjer da etter
+  hverandre.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -333,6 +348,8 @@ Behovet for uka lagres ikke. Det regnes ut fra planen, oppskriftene og matlagere
 | CHECK `failed_login_count >= 0` | Telleren for sperre kan ikke manipuleres til et negativt tall |
 | CHECK `btrim(display_name) <> ''`, `btrim(name) <> ''` | Ingen tomme navn |
 | Primærnøkkel (`household_id`, `user_id`) i `household_members` | Samme person kan ikke være medlem to ganger |
+| Delvis unik indeks `household_members_one_owner` (fase 10) | Nøyaktig én eier per husholdning |
+| `household_invitations.token_hash` er unik (fase 10) | En lenke peker på én invitasjon. Bare hashen lagres. |
 | `ON DELETE CASCADE` fra `users` og `households` | Sletting av konto fjerner sesjoner og medlemskap. Sletting av en husholdning fjerner alt den eier (FR-AUTH-005). |
 | `sessions.token_hash` er unik og indeksert | Hver forespørsel slår opp sesjonen på hash av cookien |
 
@@ -345,6 +362,8 @@ Alle tabeller med husholdningsdata har `household_id`: matlageret fra fase 3, og
 - Hver bruker får en husholdning ved registrering, i samme transaksjon som brukeren, sammen med tre standardsteder.
 - Tilgang avgjøres av en rad i `household_members`, ikke av hvem som opprettet noe.
 - Når deling kommer i fase 10, trengs bare nye medlemsrader. Tabellene og spørringene trenger ikke endres.
+  **Slik ble det:** fase 10 la ikke `household_id` til noen tabell. Det som er nytt, er invitasjoner, roller,
+  aktiv husholdning og deling av allergier (ADR-0018).
 
 ## ID-er
 
@@ -365,6 +384,7 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261024120000_receipts` | Kvitteringer: 3 tabeller, enum `receipt_status`, sammensatte fremmednøkler (også `(purchase_id, household_id)` med `ON DELETE CASCADE`) og CHECK (feilkode bare ved `failed`, bekreftet bare med kjøp og uten bildehash, bildestørrelse, sikkerhet 0–100) |
 | `20261024150000_recipe_sources` | Kilde og lisens på oppskrifter: enum `recipe_adaptation`, verdien `external` i `recipe_source`, 8 kolonner og CHECK (ekstern krever kilde; kontrollert krever dato) |
 | `20261024180000_meal_plan` | Måltidsplan: `meal_plan_entries`, `shopping_list_item_meals`, enum `meal`, sammensatte fremmednøkler, `recipe_id` med SET NULL, CHECK (oppskrift eller fritekst, porsjoner 1–50, positiv mengde) |
+| `20261024210000_households_sharing` | Delte husholdninger: `household_invitations`, `share_allergens`, `active_household_id`, indeksen for én eier og CHECK (ikke både brukt og tilbaketrukket, `used_by` bare med `used_at`) |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

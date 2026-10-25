@@ -68,6 +68,7 @@ import {
   useLocationName,
   useToday,
 } from '../../inventory/formatHooks';
+import { useCreatorName } from '../../household/format';
 import formStyles from '../../inventory/inventory.module.css';
 import { Page } from '../../layout/Page';
 import styles from './ItemPage.module.css';
@@ -746,6 +747,7 @@ function History({ item, location }: { item: ItemResponse; location: (id: string
   const undo = useUndo(item.id);
   const { show } = useToast();
   const formatQuantity = useFormatQuantity();
+  const creatorName = useCreatorName();
   const [undoError, setUndoError] = useState<string | null>(null);
   const message = useValidationMessage();
   const time = new Intl.DateTimeFormat(i18n.resolvedLanguage === 'en' ? 'en-GB' : 'nb-NO', {
@@ -850,7 +852,7 @@ function History({ item, location }: { item: ItemResponse; location: (id: string
               <p className={formStyles.small}>
                 {[
                   wasteValue(event),
-                  event.actorName ?? t('inventory.history.deletedUser'),
+                  creatorName(event.actor),
                   time.format(new Date(event.createdAt)),
                 ]
                   .filter(Boolean)

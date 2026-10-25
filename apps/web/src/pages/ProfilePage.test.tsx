@@ -145,3 +145,32 @@ describe('FR-REC-004 allergies on the profile', () => {
     await expectNoAxeViolations(container);
   });
 });
+
+describe('spec 10 FR-HH-006 sharing allergies with the household', () => {
+  it('is off by default, explains what others see, and sends only the choice', async () => {
+    const requests = mockApi((r) =>
+      r.method === 'PATCH' && r.path.endsWith('/members/me')
+        ? {
+            status: 200,
+            body: {
+              id: TEST_SESSION.user.householdId,
+              name: 'Kari',
+              role: 'owner',
+              memberCount: 2,
+              shareAllergens: true,
+            },
+          }
+        : undefined,
+    );
+    const user = userEvent.setup();
+    renderApp('/profil');
+    const toggle = await screen.findByLabelText('Ta hensyn til allergiene mine i «Kari»');
+    expect(toggle).not.toBeChecked();
+    expect(screen.getByText(/men ikke hvem som har dem/)).toBeInTheDocument();
+    await user.click(toggle);
+    expect(await screen.findByText('Allergiene dine deles nå med «Kari».')).toBeInTheDocument();
+    const patch = changes(requests).find((r) => r.path.endsWith('/members/me'))!;
+    expect(patch.path).toBe(`/households/${TEST_SESSION.user.householdId}/members/me`);
+    expect(patch.body).toEqual({ shareAllergens: true });
+  });
+});

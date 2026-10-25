@@ -30,6 +30,7 @@ export function purchase(overrides: Partial<PurchaseResponse> = {}): PurchaseRes
     storeName: 'Rema 1000',
     purchasedOn: '2026-10-20',
     totalOre: lines.reduce((sum, l) => sum + l.amountOre, 0),
+    createdBy: { kind: 'member', displayName: 'Kari' },
     source: 'manual',
     createdAt: '2026-10-20T10:00:00.000Z',
     updatedAt: '2026-10-20T10:00:00.000Z',

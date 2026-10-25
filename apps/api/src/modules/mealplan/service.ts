@@ -24,6 +24,7 @@ import {
 import type { Clock } from '../../lib/clock';
 import { AppError, notFound } from '../../lib/errors';
 import type { CatalogIngredient, RecipeRecord, RecipeRepo } from '../recipes/repo';
+import type { HouseholdAllergens } from '../recipes/service';
 import type { ShoppingRepo } from '../shopping/repo';
 import type { MealEntryRecord, MealPlanRepo } from './repo';
 
@@ -32,6 +33,7 @@ export interface MealPlanServiceDeps {
   recipes: Pick<RecipeRepo, 'catalog' | 'recipes' | 'recipe' | 'userAllergens'>;
   inventory: { listItems(householdId: string): Promise<ItemResponse[]> };
   shopping: Pick<ShoppingRepo, 'mealContributions' | 'addFromMealPlan'>;
+  households: HouseholdAllergens;
   now: Clock;
 }
 
@@ -49,7 +51,7 @@ export class MealPlanService {
   async list(householdId: string, userId: string, range: MealPlanRange): Promise<MealPlanResponse> {
     const [entries, context] = await Promise.all([
       this.deps.repo.list(householdId, range.from, range.to),
-      this.recipeContext(userId),
+      this.recipeContext(householdId, userId),
     ]);
     return { ...range, entries: entries.map((e) => this.toResponse(e, context)) };
   }
@@ -57,7 +59,7 @@ export class MealPlanService {
   async get(householdId: string, userId: string, entryId: string): Promise<MealEntryResponse> {
     const [entry, context] = await Promise.all([
       this.deps.repo.get(householdId, entryId),
-      this.recipeContext(userId),
+      this.recipeContext(householdId, userId),
     ]);
     if (!entry) throw notFound();
     return this.toResponse(entry, context);
@@ -251,16 +253,23 @@ export class MealPlanService {
     return { from, to, entryCount: planned.length, needs, unplanned };
   }
 
-  private async recipeContext(userId: string) {
-    const [recipes, catalog, userAllergens] = await Promise.all([
+  private async recipeContext(householdId: string, userId: string) {
+    const [recipes, catalog, ownList] = await Promise.all([
       this.deps.recipes.recipes(),
       this.deps.recipes.catalog(),
       this.deps.recipes.userAllergens(userId),
     ]);
+    const userAllergens = ALLERGENS.filter((a) => ownList.includes(a));
     return {
       recipes: new Map(recipes.map((r) => [r.id, r])),
       catalog: new Map<string, CatalogIngredient>(catalog.map((i) => [i.id, i])),
-      userAllergens: ALLERGENS.filter((a) => userAllergens.includes(a)),
+      userAllergens,
+      // Spec 10 (FR-HH-006): what other current members share with this household.
+      householdAllergens: await this.deps.households.sharedAllergens(
+        householdId,
+        userId,
+        userAllergens,
+      ),
     };
   }
 
@@ -270,6 +279,7 @@ export class MealPlanService {
       recipes: Map<string, RecipeRecord>;
       catalog: Map<string, CatalogIngredient>;
       userAllergens: Allergen[];
+      householdAllergens: Allergen[];
     },
   ): MealEntryResponse {
     const recipe = entry.recipeId ? context.recipes.get(entry.recipeId) : undefined;
@@ -288,7 +298,9 @@ export class MealPlanService {
       servings: entry.servings,
       note: entry.note,
       allergenWarnings: allergenConflicts(registered, context.userAllergens),
+      householdAllergenWarnings: allergenConflicts(registered, context.householdAllergens),
       createdAt: entry.createdAt.toISOString(),
+      createdBy: entry.createdBy,
     };
   }
 }

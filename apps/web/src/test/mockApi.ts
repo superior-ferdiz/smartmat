@@ -33,8 +33,18 @@ export const EMPTY_SUMMARY = {
  * no purchases and no budget, no recipes, no allergies, an empty shopping list),
  * so a test only has to describe the requests it is about.
  */
+/** Spec 10: the test user's household of one. */
+export const TEST_HOUSEHOLD = {
+  id: '0199f0a0-0000-7000-8000-000000000002',
+  name: 'Kari',
+  role: 'owner',
+  memberCount: 1,
+  shareAllergens: false,
+};
+
 export const defaultApi: Handler = (request) => {
   if (request.method !== 'GET') return undefined;
+  if (/^\/households\/[^/]+$/.test(request.path)) return { status: 200, body: TEST_HOUSEHOLD };
   if (/^\/households\/[^/]+\/inventory$/.test(request.path))
     return { status: 200, body: { items: [] } };
   if (/^\/households\/[^/]+\/locations$/.test(request.path))
@@ -49,7 +59,7 @@ export const defaultApi: Handler = (request) => {
     return { status: 200, body: { month: '2026-10', purchases: [] } };
   }
   if (/^\/households\/[^/]+\/recipes(\?for=[\d-]+)?$/.test(request.path))
-    return { status: 200, body: { recipes: [], userAllergens: [] } };
+    return { status: 200, body: { recipes: [], userAllergens: [], householdAllergens: [] } };
   // Spec 09: an empty meal plan.
   const plan = /^\/households\/[^/]+\/meal-plan(\/needs)?\?from=([\d-]+)&to=([\d-]+)$/.exec(
     request.path,

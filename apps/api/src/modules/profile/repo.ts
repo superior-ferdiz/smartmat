@@ -1,5 +1,6 @@
 import type { Locale, SessionUser } from '@smartmat/shared';
 import type { Db } from '../../db';
+import { handOverBeforeAccountDeletion } from '../households/repo';
 import { findSessionUser } from '../users/sessionUser';
 
 export interface ProfileRepo {
@@ -12,7 +13,10 @@ export interface ProfileRepo {
     passwordHash: string,
     keepSessionId: string,
   ): Promise<void>;
-  /** FR-AUTH-005: deletes the user and every household where they are the only member. */
+  /**
+   * FR-AUTH-005: deletes the user and every household where they are the only member. A shared household the
+   * user owns goes to the member who has been there longest (spec 10, decision 4).
+   */
   deleteUserAndSoleHouseholds(userId: string): Promise<void>;
 }
 
@@ -41,19 +45,11 @@ export function createProfileRepo(db: Db): ProfileRepo {
 
     async deleteUserAndSoleHouseholds(userId) {
       await db.$transaction(async (tx) => {
-        const memberships = await tx.householdMember.findMany({
-          where: { userId },
-          select: {
-            householdId: true,
-            household: { select: { _count: { select: { members: true } } } },
-          },
-        });
-        const soleHouseholdIds = memberships
-          .filter((m) => m.household._count.members === 1)
-          .map((m) => m.householdId);
+        // Locks the user and each household, hands over ownership where others are left, and returns the
+        // households where the user is alone.
+        const soleHouseholdIds = await handOverBeforeAccountDeletion(tx, userId);
         // Deleting a household removes everything that belongs to it (ON DELETE CASCADE, ADR-0008).
         // Households shared with others are kept; only this user's membership goes.
-        // (Ownership transfer when the owner leaves a shared household is phase 10.)
         await tx.household.deleteMany({ where: { id: { in: soleHouseholdIds } } });
         // Sessions and memberships go with the user (ON DELETE CASCADE).
         await tx.user.delete({ where: { id: userId } });

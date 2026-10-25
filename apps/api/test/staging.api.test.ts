@@ -210,5 +210,6 @@ function testLimits() {
     login: { max: 1000, windowMs: 60_000 },
     register: { max: 1000, windowMs: 60_000 },
     sensitive: { max: 1000, windowMs: 60_000 },
+    invitation: { max: 1000, windowMs: 60_000 },
   };
 }

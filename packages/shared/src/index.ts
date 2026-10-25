@@ -33,3 +33,6 @@ export * from './dates/week';
 export * from './mealplan/needs';
 export * from './schemas/mealPlan';
 export * from './api/mealPlan';
+export * from './household/rules';
+export * from './schemas/household';
+export * from './api/household';

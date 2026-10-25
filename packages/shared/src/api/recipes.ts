@@ -101,6 +101,11 @@ export const recipeSummarySchema = z.object({
   allergens: z.array(z.enum(ALLERGENS)),
   /** The ones the user has registered. Non-empty → hidden by default, or shown with a warning. */
   allergenWarnings: z.array(z.enum(ALLERGENS)),
+  /**
+   * Spec 10 (FR-HH-006): allergens other members share with the household, registered for this recipe and not
+   * among the user's own. Never says whose.
+   */
+  householdAllergenWarnings: z.array(z.enum(ALLERGENS)),
   score: recipeScoreSchema,
 });
 export type RecipeSummary = z.infer<typeof recipeSummarySchema>;
@@ -115,6 +120,8 @@ export const recipeListQuerySchema = z.object({ for: z.iso.date().optional() });
 export const recipeListResponseSchema = z.object({
   recipes: z.array(recipeSummarySchema),
   userAllergens: z.array(z.enum(ALLERGENS)),
+  /** Spec 10: the household's shared allergens that are not the user's own. */
+  householdAllergens: z.array(z.enum(ALLERGENS)),
 });
 export type RecipeListResponse = z.infer<typeof recipeListResponseSchema>;
 
@@ -144,5 +151,6 @@ export const recipeDetailSchema = recipeSummarySchema.extend({
   authors: z.array(z.string()),
   lines: z.array(recipeLineSchema),
   userAllergens: z.array(z.enum(ALLERGENS)),
+  householdAllergens: z.array(z.enum(ALLERGENS)),
 });
 export type RecipeDetail = z.infer<typeof recipeDetailSchema>;

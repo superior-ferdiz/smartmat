@@ -201,7 +201,10 @@ function AddEntryForm({
                         {recipe.score.reasons[0] && ` · ${reasonText(recipe.score.reasons[0])}`}
                       </span>
                       <span>
-                        <AllergenWarningTag allergens={recipe.allergenWarnings} />
+                        <AllergenWarningTag
+                          allergens={recipe.allergenWarnings}
+                          household={recipe.householdAllergenWarnings}
+                        />
                         <RecipeBadge recipe={recipe} />
                       </span>
                     </label>

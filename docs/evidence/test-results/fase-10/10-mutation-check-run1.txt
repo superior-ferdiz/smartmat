@@ -1,0 +1,216 @@
+Kjørt 2026-10-24T22:40:10Z (kjøring 1)
+1. Et medlem slipper gjennom eiersjekken på ruten
+    endret: apps/api/src/authz/requireOwner.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.security.api.test.ts > B) a member tries the owner actions > gives 403 on every owner endpoint and changes nothing
+2. Rollen sjekkes ikke på nytt under låsen
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > two transfers at the same time: one owner afterwards
+3. Husholdningsraden låses ikke (FOR UPDATE)
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > two transfers at the same time: one owner afterwards
+4. Eieren kan forlate husholdningen
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  2 failed | 128 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > ownership transfer needs the password and leaves exactly one owner
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > the owner cannot leave without transferring first
+5. Den som forlater, får ingen ny husholdning
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > someone who leaves their only household gets a new, empty household of one
+6. Den som fjernes, får ingen ny husholdning
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  130 passed (130)
+7. Medlemmene får ingen ny husholdning når den slettes
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > the owner deletes the household: everything goes, every member keeps a household
+8. Overføring gjør den nye til eier uten å gjøre den gamle til medlem
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  2 failed | 128 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > ownership transfer needs the password and leaves exactly one owner
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > two transfers at the same time: one owner afterwards
+9. Overføring til noen som ikke er medlem
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  2 failed | 128 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > ownership transfer needs the password and leaves exactly one owner
+      feilet: |api-db| test/households.security.api.test.ts > C) Ola's own household with K's ids > cannot remove a member of K, revoke K's invitation or hand O to someone in K
+10. Invitasjonen kan brukes flere ganger (ingen betingelse når den merkes som brukt)
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > one invitation can be used once – also by 10 people at the same time
+11. En utløpt invitasjon virker
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  2 failed | 128 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > an invitation stops working at the exact moment it expires
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > unknown, used, revoked and expired invitations give the same answer
+12. En tilbaketrukket invitasjon virker
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  130 passed (130)
+13. «Allerede medlem» sjekkes ikke før invitasjonen brukes
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > already a member: 409, and the invitation still works for someone else
+14. Grensen på 10 medlemmer gjelder ikke
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > limits: 5 active invitations, 10 members, 5 households
+15. Grensen på 5 husholdninger per bruker gjelder ikke
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > limits: 5 active invitations, 10 members, 5 households
+16. Grensen på 5 aktive invitasjoner gjelder ikke
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > limits: 5 active invitations, 10 members, 5 households
+17. Tilbaketrekking slår opp invitasjonen uten husholdningen
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.security.api.test.ts > C) Ola's own household with K's ids > cannot remove a member of K, revoke K's invitation or hand O to someone in K
+18. Allergier deles uten at medlemmet har valgt det
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-006 allergies shared with the household > only shared, only current members, never the caller own ones, never who
+19. Aktiv husholdning kan settes uten medlemskap
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  2 failed | 128 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-004 active household > switches, refuses a household the user is not in, and falls back when removed
+      feilet: |api-db| test/households.security.api.test.ts > A) another household in the URL > cannot make another household the active one
+20. Ved sletting av konto får ingen andre eierskapet
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > FR-AUTH-005: deleting the owner account hands the shared household to the longest member
+21. Tokenet lagres i stedet for hashen
+    endret: apps/api/src/modules/households/service.ts
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  32 failed | 98 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > already a member: 409, and the invitation still works for someone else
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > an invitation stops working at the exact moment it expires
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > limits: 5 active invitations, 10 members, 5 households
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > one invitation can be used once – also by 10 people at the same time
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > only the hash is stored; the token is never logged or answered again
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > owner invites → the new member joins, the household becomes active, both see the same data
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > revoking a used or expired invitation changes nothing
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > unknown, used, revoked and expired invitations give the same answer
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > a member leaves → no longer sees the household; their data stays with it
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > a transfer and a leave by the new owner at the same time keep one owner
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > FR-AUTH-005: deleting the owner account hands the shared household to the longest member
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > ownership transfer needs the password and leaves exactly one owner
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > rename: the owner only, validated with the shared schema
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > someone who leaves their only household gets a new, empty household of one
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > the owner deletes the household: everything goes, every member keeps a household
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > the owner removes a member; not themselves
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > two transfers at the same time: one owner afterwards
+      feilet: |api-db| test/households.api.test.ts > FR-HH-004 active household > switches, refuses a household the user is not in, and falls back when removed
+      feilet: |api-db| test/households.api.test.ts > FR-HH-004 active household > the choice is kept on the account, so a new login lands in it
+      feilet: |api-db| test/households.api.test.ts > FR-HH-006 allergies shared with the household > only shared, only current members, never the caller own ones, never who
+      feilet: |api-db| test/households.api.test.ts > FR-HH-006 allergies shared with the household > the members list says nothing about allergies
+      feilet: |api-db| test/households.api.test.ts > FR-HH-007 who added what > names current members, hides former ones, and says unknown for deleted accounts
+      feilet: |api-db| test/households.api.test.ts > FR-HH-007 who added what > the inventory history uses the same rule
+      feilet: |api-db| test/households.security.api.test.ts > A) another household in the URL > cannot make another household the active one
+      feilet: |api-db| test/households.security.api.test.ts > A) another household in the URL > gives 404 on every endpoint and changes nothing
+      feilet: |api-db| test/households.security.api.test.ts > B) a member tries the owner actions > gives 403 on every owner endpoint and changes nothing
+      feilet: |api-db| test/households.security.api.test.ts > B) a member tries the owner actions > may do what every member may (read, own sharing choice)
+      feilet: |api-db| test/households.security.api.test.ts > C) Ola's own household with K's ids > a userId or householdId in the body is ignored where the URL decides
+      feilet: |api-db| test/households.security.api.test.ts > C) Ola's own household with K's ids > cannot remove a member of K, revoke K's invitation or hand O to someone in K
+      feilet: |api-db| test/households.security.api.test.ts > C) Ola's own household with K's ids > O's invitation list never shows K's invitations
+      feilet: |api-db| test/households.security.api.test.ts > D) not logged in, no CSRF token > 401 without a session on every endpoint, including the invitation ones
+      feilet: |api-db| test/households.security.api.test.ts > D) not logged in, no CSRF token > 403 without the CSRF token on every change
+      feilet: |api| src/modules/households/service.test.ts > HouseholdService > makes a 256-bit token, stores only its hash and an expiry 48 hours later
+22. Forhåndsvisning teller ikke mot grensen per bruker
+    endret: apps/api/src/modules/households/service.ts
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > preview and accept are limited per user
+      feilet: |api| src/modules/households/service.test.ts > HouseholdService > limits preview and accept together, per user
+23. Egne allergener regnes også som husholdningens
+    endret: apps/api/src/modules/households/service.ts
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-006 allergies shared with the household > only shared, only current members, never the caller own ones, never who
+      feilet: |api| src/modules/households/service.test.ts > HouseholdService > shared allergens leave out the caller's own, in the fixed order
+24. Eieren kan fjerne seg selv
+    endret: apps/api/src/modules/households/service.ts
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > the owner removes a member; not themselves
+      feilet: |api| src/modules/households/service.test.ts > HouseholdService > refuses to remove yourself before asking the database
+25. Ingen grense per IP på forhåndsvisning
+    endret: apps/api/src/modules/households/routes.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-001/002 invitation and joining > preview and accept are limited per IP address
+26. Den valgte husholdningen brukes selv om brukeren ikke er medlem lenger
+    endret: packages/shared/src/household/rules.ts
+    enhetstester: Tests  2 failed | 1102 passed (1104)
+    API-tester:   Tests  2 failed | 128 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > a member leaves → no longer sees the household; their data stays with it
+      feilet: |api-db| test/households.api.test.ts > FR-HH-004 active household > switches, refuses a household the user is not in, and falls back when removed
+      feilet: |shared| src/household/rules.test.ts > FR-HH-004 activeHouseholdId > falls back to the oldest membership
+      feilet: |shared| src/household/rules.test.ts > FR-HH-004 activeHouseholdId > is null without memberships
+27. Et medlem kan invitere (rollereglene)
+    endret: packages/shared/src/household/rules.ts
+    enhetstester: Tests  2 failed | 1102 passed (1104)
+    API-tester:   Tests  130 passed (130)
+      feilet: |shared| src/household/rules.test.ts > FR-HH-003 canPerform > a member may only leave
+      feilet: |web| src/pages/household/HouseholdPage.test.tsx > FR-HH-003 member view > no owner actions, can leave, and sees the switcher
+28. Tidligere medlemmer vises med navn
+    endret: apps/api/src/lib/creator.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  3 failed | 127 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > a member leaves → no longer sees the household; their data stays with it
+      feilet: |api-db| test/households.api.test.ts > FR-HH-007 who added what > names current members, hides former ones, and says unknown for deleted accounts
+      feilet: |api-db| test/households.api.test.ts > FR-HH-007 who added what > the inventory history uses the same rule
+29. Oppskriftene tar ikke hensyn til husholdningens allergier
+    endret: apps/api/src/modules/recipes/service.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-006 allergies shared with the household > only shared, only current members, never the caller own ones, never who
+30. Måltidsplanen tar ikke hensyn til husholdningens allergier
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1104 passed (1104)
+    API-tester:   Tests  1 failed | 129 passed (130)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-006 allergies shared with the household > only shared, only current members, never the caller own ones, never who
+31. Nettappen skjuler ikke oppskrifter med husholdningens allergener
+    endret: apps/web/src/recipes/filter.ts
+    enhetstester: Tests  2 failed | 1102 passed (1104)
+    API-tester:   Tests  130 passed (130)
+      feilet: |web| src/recipes/filter.test.ts > spec 10 FR-HH-006 allergens the household shares > hides them by default, counts them, and the switch shows them
+      feilet: |web| src/recipes/filter.test.ts > spec 10 FR-HH-006 allergens the household shares > is never the dinner suggestion
+32. Hurtiglageret for en husholdning man har forlatt, beholdes
+    endret: apps/web/src/household/HouseholdWatcher.tsx
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  130 passed (130)
+      feilet: |web| src/pages/household/HouseholdPage.test.tsx > FR-HH-003 member view > FR-HH-005: leaving drops the household from the cache and says so
+33. En 404 får ikke sesjonen til å hentes på nytt
+    endret: apps/web/src/app/queryClient.ts
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  130 passed (130)
+      feilet: |web| src/pages/household/HouseholdPage.test.tsx > FR-HH-003 member view > a 404 from the household (removed elsewhere) refetches the session
+34. Tokenet blir stående i adresselinjen
+    endret: apps/web/src/pages/household/JoinPage.tsx
+    enhetstester: Tests  1 failed | 1103 passed (1104)
+    API-tester:   Tests  130 passed (130)
+      feilet: |web| src/pages/household/JoinPage.test.tsx > FR-HH-002 join page > reads the token from the fragment, removes it from the address, and previews

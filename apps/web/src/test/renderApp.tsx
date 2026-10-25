@@ -17,6 +17,8 @@ export const TEST_SESSION: SessionResponse = {
     displayName: 'Kari',
     locale: 'nb-NO',
     householdId: '0199f0a0-0000-7000-8000-000000000002',
+    householdRole: 'owner',
+    households: [{ id: '0199f0a0-0000-7000-8000-000000000002', name: 'Kari', role: 'owner' }],
   },
   csrfToken: 'test-csrf-token',
 };

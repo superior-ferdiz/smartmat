@@ -5,6 +5,7 @@ import { MEALS } from '../mealplan/needs';
 import { ALLERGENS } from '../recipes/allergens';
 import { LINE_STATUSES } from '../recipes/scoring';
 import { SUGGESTION_REASONS } from '../shopping/list';
+import { creatorRefSchema } from './household';
 
 /* Response shapes for the meal plan (phase 9, spec 09). */
 
@@ -24,7 +25,11 @@ export const mealEntryResponseSchema = z.object({
   note: z.string().nullable(),
   /** The logged-in user's allergens registered for the recipe's ingredients (spec 05). */
   allergenWarnings: z.array(z.enum(ALLERGENS)),
+  /** Spec 10 (FR-HH-006): allergens other members share with the household (never whose). */
+  householdAllergenWarnings: z.array(z.enum(ALLERGENS)),
   createdAt: z.string(),
+  /** Spec 10 (FR-HH-007): who planned it. */
+  createdBy: creatorRefSchema,
 });
 export type MealEntryResponse = z.infer<typeof mealEntryResponseSchema>;
 

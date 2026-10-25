@@ -1,0 +1,9 @@
+Kjørt 2026-10-25T01:42:48Z – runde 3 på nytt, etter den nye testen «a membership change waits for the household lock»
+3. Husholdningsraden låses ikke (FOR UPDATE)
+    endret: apps/api/src/modules/households/repo.ts
+    API-tester (households*): Tests  2 failed | 37 passed (39)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > a membership change waits for the household lock (FOR UPDATE)
+      feilet: |api-db| test/households.api.test.ts > FR-HH-003/005 roles, leaving, removing, transfer and deletion > two transfers at the same time: one owner afterwards
+
+Uten endring (kontroll):
+    API-tester (households*): Tests  39 passed (39)

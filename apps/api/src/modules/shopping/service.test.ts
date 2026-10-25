@@ -37,6 +37,7 @@ function line(over: Partial<ShoppingItemResponse>): ShoppingItemResponse {
     checked: true,
     checkedAt: '2026-10-21T09:00:00.000Z',
     createdAt: '2026-10-21T08:00:00.000Z',
+    createdBy: { kind: 'member', displayName: 'Kari' },
     recipes: [],
     meals: [],
     ...over,

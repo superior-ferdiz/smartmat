@@ -127,13 +127,15 @@ test.describe('FR-REC-004 allergens', () => {
     await expect(cards(page)).toHaveCount(1);
     await expect(cards(page).first()).toContainText('Testrett: pasta med tomat');
     await expect(
-      page.getByText('2 oppskrifter er skjult fordi en ingrediens har et av dine allergener.'),
+      page.getByText(
+        '2 oppskrifter er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).',
+      ),
     ).toBeVisible();
     await expect(page.getByText(DISCLAIMER)).toBeVisible();
 
     // The hidden count links to the list with the switch on (the switch itself sits under "Filtrer").
     await page.getByRole('link', { name: 'Vis dem likevel' }).click();
-    await expect(page.getByLabel('Vis oppskrifter med mine allergener')).toBeChecked();
+    await expect(page.getByLabel('Vis oppskrifter med registrerte allergener')).toBeChecked();
     await expect(cards(page)).toHaveCount(3);
     const pancakes = cards(page).filter({ hasText: 'Testrett: pannekaker' });
     await expect(pancakes).toContainText('Inneholder melk');

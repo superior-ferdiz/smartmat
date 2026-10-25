@@ -77,10 +77,9 @@ describe('FR-UI-002 placeholder pages', () => {
     },
   );
 
-  it('marks later sections as "Kommer senere"', () => {
-    renderApp('/husholdning');
-    const main = screen.getByRole('main');
-    expect(within(main).getByText('Kommer senere')).toBeInTheDocument();
+  it('no section is marked "Kommer senere" any more (household came in phase 10)', () => {
+    renderApp('/mer');
+    expect(screen.queryByText('Senere')).not.toBeInTheDocument();
   });
 
   it('"Mer" lists the five sections that are not in the bottom menu', () => {

@@ -441,7 +441,7 @@ describe('FR-INV-008 history and undo', () => {
       body: { quantityBase: 200 },
     });
     const h = await history(client, item.id);
-    expect(h.events.map((e) => [e.type, e.deltaBase, e.actorName])).toEqual([
+    expect(h.events.map((e) => [e.type, e.deltaBase, e.actor.displayName])).toEqual([
       ['consume', -200, 'Kari'],
       ['add', 1000, 'Kari'],
     ]);

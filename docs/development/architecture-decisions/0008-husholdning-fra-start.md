@@ -12,3 +12,6 @@ Personlige data (profil, allergier, personlig budsjett) knyttes til `user_id`.
 
 ## Konsekvenser
 Delingsfunksjonen i fase 10 blir i hovedsak brukergrensesnitt og invitasjoner. Tester for "ingen datalekkasje mellom husholdninger" skrives fra fase 3.
+
+**Fase 10 (2026-10-24):** delingen er bygd som planlagt, med invitasjoner, roller og bytte av husholdning. Se
+[ADR-0018](0018-delte-husholdninger-og-invitasjoner.md). Ingen tabeller måtte få ny `household_id`.

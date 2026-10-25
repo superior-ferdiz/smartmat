@@ -199,6 +199,12 @@
       "notARecipe": "Bare oppskrifter har porsjoner.",
       "notANote": "Bare fritekst kan endres slik.",
       "notInPlan": "Planen trenger ikke denne ingrediensen i perioden."
+    },
+    "household": {
+      "nameRequired": "Skriv inn et navn på husholdningen.",
+      "nameTooLong": "Navnet kan være høyst 100 tegn.",
+      "invitationInvalid": "Dette er ikke en gyldig invitasjonslenke.",
+      "memberRequired": "Velg et medlem."
     }
   },
   "pages": {
@@ -264,9 +270,7 @@
       "lead": "Planlegg uka, se hva som mangler, og legg det på handlelisten."
     },
     "household": {
-      "lead": "Del matlager og handleliste med dem du bor med.",
-      "emptyTitle": "Husholdning kommer senere",
-      "emptyText": "Deling med andre i husstanden er planlagt etter første innlevering. Frem til da har hver bruker sin egen husholdning."
+      "lead": "«{{name}}»: del matlager, kjøp, budsjett, handleliste og måltidsplan med dem du bor med."
     },
     "more": {
       "lead": "Flere deler av SmartMat.",
@@ -398,7 +402,7 @@
       },
       "delete": {
         "title": "Slett konto",
-        "text": "Kontoen, husholdningen din og alt som er lagret i den, slettes for godt. Dette kan ikke angres.",
+        "text": "Kontoen og husholdninger der du er alene, slettes for godt med alt i dem. Eier du en husholdning sammen med andre, går eierskapet til medlemmet som har vært med lengst, og husholdningen blir værende. Dette kan ikke angres.",
         "password": "Skriv inn passordet ditt for å bekrefte",
         "confirm": "Jeg forstår at alt slettes og ikke kan gjenopprettes",
         "submit": "Slett kontoen for godt",
@@ -409,7 +413,14 @@
         "text": "Velg det du ikke tåler. Det brukes bare til å skjule eller varsle om oppskrifter. Det er frivillig, og slettes sammen med kontoen.",
         "legend": "Mine allergener",
         "save": "Lagre allergier",
-        "saved": "Allergiene er lagret"
+        "saved": "Allergiene er lagret",
+        "share": {
+          "title": "Del med husholdningen",
+          "label": "Ta hensyn til allergiene mine i «{{name}}»",
+          "text": "Andre medlemmer ser hvilke allergener som er registrert i husholdningen, men ikke hvem som har dem. I en liten husholdning kan de likevel skjønne det. Du kan slå dette av når som helst, og det gjelder bare denne husholdningen.",
+          "on": "Allergiene dine deles nå med «{{name}}».",
+          "off": "Allergiene dine deles ikke lenger med «{{name}}»."
+        }
       }
     }
   },
@@ -488,6 +499,17 @@
     },
     "mealPlan": {
       "dayFull": "Dagen har allerede 20 oppføringer. Fjern noe eller velg en annen dag."
+    },
+    "household": {
+      "ownerOnly": "Bare eieren av husholdningen kan gjøre dette.",
+      "ownerMustTransfer": "Du er eier. Gi eierskapet til et annet medlem før du forlater husholdningen.",
+      "cannotRemoveSelf": "Du kan ikke fjerne deg selv. Forlat husholdningen i stedet.",
+      "full": "Husholdningen er full (høyst 10 medlemmer).",
+      "tooManyHouseholds": "Du er allerede med i 5 husholdninger. Forlat en før du blir med i en ny.",
+      "tooManyInvitations": "Det finnes allerede 5 aktive invitasjoner. Trekk tilbake en før du lager en ny.",
+      "alreadyMember": "Du er allerede medlem av denne husholdningen.",
+      "invitationInvalid": "Invitasjonen er ugyldig, utløpt, trukket tilbake eller allerede brukt. Be om en ny lenke.",
+      "notAMember": "Velg et medlem av husholdningen."
     }
   },
   "units": {
@@ -703,8 +725,7 @@
       },
       "valueActual": "verdi {{value}}",
       "valueEstimated": "anslått verdi {{value}}",
-      "valueUnknown": "verdi ukjent",
-      "deletedUser": "Slettet bruker"
+      "valueUnknown": "verdi ukjent"
     },
     "locations": {
       "manage": "Lagringssteder",
@@ -875,14 +896,14 @@
       "searchHint": "Tittel eller ingrediens",
       "tag": "Tagg",
       "allTags": "Alle tagger",
-      "showAllergens": "Vis oppskrifter med mine allergener",
+      "showAllergens": "Vis oppskrifter med registrerte allergener",
       "reset": "Nullstill søket",
       "more": "Filtrer ({{count}} i bruk)",
       "showHidden": "Vis dem likevel"
     },
     "count": "{{shown}} av {{count}} oppskrifter",
-    "hiddenByAllergens_one": "{{count}} oppskrift er skjult fordi en ingrediens har et av dine allergener.",
-    "hiddenByAllergens_other": "{{count}} oppskrifter er skjult fordi en ingrediens har et av dine allergener.",
+    "hiddenByAllergens_one": "{{count}} oppskrift er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).",
+    "hiddenByAllergens_other": "{{count}} oppskrifter er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).",
     "card": {
       "have": "Har {{enough}} av {{required}}",
       "missing_one": "{{count}} mangler",
@@ -942,7 +963,11 @@
       "disclaimer": "Allergeninformasjonen er veiledende og kan være ufullstendig. Sjekk alltid ingredienslisten på varene du bruker.",
       "noneRegistered": "Ingen av dine registrerte allergener er registrert i ingrediensene.",
       "noUserAllergens": "Du har ikke registrert allergener.",
-      "register": "Registrer allergener"
+      "register": "Registrer allergener",
+      "household": {
+        "contains": "Inneholder {{list}} (registrert i husholdningen)",
+        "box": "Registrert i husholdningen: {{list}}"
+      }
     },
     "allergenNames": {
       "gluten": "gluten",
@@ -1364,5 +1389,123 @@
       "unplannedTitle": "Går ut denne uka",
       "unplannedText": "Ingen oppskrift i planen bruker disse. Kanskje noe å lage mat av?"
     }
+  },
+  "household": {
+    "activeIn": "Husholdning: {{name}}",
+    "change": "Bytt",
+    "lost": "Du er ikke lenger medlem av {{name}}.",
+    "lostUnknown": "Du er ikke lenger medlem av husholdningen du så på.",
+    "roles": {
+      "owner": "Eier",
+      "member": "Medlem"
+    },
+    "creator": {
+      "addedBy": "Lagt til av {{name}}",
+      "former": "Tidligere medlem",
+      "unknown": "Slettet bruker"
+    },
+    "switcher": {
+      "title": "Dine husholdninger",
+      "text": "Du er med i flere husholdninger. Sidene viser og lagrer data i den aktive.",
+      "active": "Aktiv",
+      "use": "Bruk",
+      "switched": "Du bruker nå {{name}}.",
+      "useNamed": "Bruk {{name}}"
+    },
+    "members": {
+      "title": "Medlemmer",
+      "you": "deg",
+      "joined": "Med siden {{date}}",
+      "aloneTitle": "Du er alene i husholdningen",
+      "aloneText": "Inviter dem du bor med, så deler dere matlager, kjøp, budsjett, handleliste og måltidsplan.",
+      "remove": "Fjern",
+      "removeTitle": "Fjerne {{name}}?",
+      "removeText": "{{name}} mister tilgangen til husholdningen med en gang. Det {{name}} har lagt inn, blir værende.",
+      "removeConfirm": "Fjern fra husholdningen",
+      "removed": "{{name}} er fjernet fra husholdningen.",
+      "removeNamed": "Fjern {{name}}"
+    },
+    "name": {
+      "title": "Navn",
+      "label": "Navn på husholdningen",
+      "save": "Lagre navnet",
+      "saved": "Navnet er lagret."
+    },
+    "invite": {
+      "title": "Inviter",
+      "text": "Lag en lenke og send den til den du vil invitere, for eksempel i en melding. Lenken virker én gang og i 48 timer.",
+      "create": "Lag invitasjonslenke",
+      "createdTitle": "Invitasjonslenken er klar",
+      "createdText": "Lenken vises bare nå. Send den til én person. Den virker til {{time}}.",
+      "linkLabel": "Invitasjonslenke",
+      "share": "Del lenken",
+      "copy": "Kopier lenken",
+      "copied": "Lenken er kopiert.",
+      "copyFailed": "Kunne ikke kopiere. Merk lenken i feltet og kopier den selv.",
+      "shareText": "Bli med i husholdningen min i SmartMat",
+      "listTitle": "Invitasjoner de siste 30 dagene",
+      "none": "Ingen invitasjoner ennå.",
+      "made": "Laget {{time}}",
+      "status": {
+        "active": "Aktiv til {{time}}",
+        "used": "Brukt av {{name}}",
+        "usedFormer": "Brukt av et tidligere medlem",
+        "usedUnknown": "Brukt av en slettet bruker",
+        "revoked": "Trukket tilbake",
+        "expired": "Utløpt"
+      },
+      "revoke": "Trekk tilbake",
+      "revoked": "Invitasjonen er trukket tilbake.",
+      "ownerOnly": "Bare eieren kan invitere nye medlemmer."
+    },
+    "leave": {
+      "title": "Forlat husholdningen",
+      "text": "Du mister tilgangen til matlageret, kjøpene, handlelisten og måltidsplanen her. Det du har lagt inn, blir værende i husholdningen.",
+      "ownerText": "Som eier må du gi eierskapet til et annet medlem før du kan forlate husholdningen.",
+      "submit": "Forlat husholdningen",
+      "confirmTitle": "Forlate {{name}}?",
+      "confirm": "Ja, forlat husholdningen",
+      "left": "Du har forlatt {{name}}."
+    },
+    "transfer": {
+      "title": "Overfør eierskapet",
+      "text": "Den nye eieren kan invitere, fjerne medlemmer og slette husholdningen. Du blir vanlig medlem.",
+      "member": "Ny eier",
+      "choose": "Velg et medlem",
+      "password": "Passordet ditt",
+      "submit": "Overfør eierskapet",
+      "done": "{{name}} er nå eier av husholdningen.",
+      "noMembers": "Det er ingen andre medlemmer å overføre til."
+    },
+    "delete": {
+      "title": "Slett husholdningen",
+      "text": "Alt i husholdningen slettes for alle medlemmene: matlager, kjøp, budsjett, handleliste, måltidsplan og kvitteringer. Dette kan ikke angres. Alle beholder kontoen sin, og den som ikke har en annen husholdning, får en ny og tom.",
+      "password": "Skriv inn passordet ditt for å bekrefte",
+      "confirm": "Jeg forstår at alt i husholdningen slettes for alle",
+      "submit": "Slett husholdningen for godt",
+      "deleted": "Husholdningen er slettet."
+    }
+  },
+  "join": {
+    "title": "Bli med i en husholdning",
+    "checking": "Sjekker invitasjonen …",
+    "invalidTitle": "Invitasjonen virker ikke",
+    "missing": "Det står ingen invitasjon i lenken. Åpne lenken du fikk, eller lim den inn her.",
+    "pasteLabel": "Invitasjonslenke",
+    "pasteSubmit": "Åpne invitasjonen",
+    "loggedOut": "Logg inn eller lag en konto for å se invitasjonen og bli med.",
+    "login": "Logg inn",
+    "register": "Lag konto",
+    "invitedBy": "{{name}} inviterer deg til «{{household}}».",
+    "invited": "Du er invitert til «{{household}}».",
+    "members_one": "Husholdningen har {{count}} medlem.",
+    "members_other": "Husholdningen har {{count}} medlemmer.",
+    "expires": "Invitasjonen virker til {{time}}.",
+    "ownData": "Det du har i din egen husholdning, blir værende der. Ingenting slås sammen eller slettes. Du kan bytte mellom husholdningene under Husholdning.",
+    "accept": "Bli med",
+    "decline": "Nei takk",
+    "alreadyMember": "Du er allerede medlem av «{{household}}».",
+    "goToApp": "Gå til oversikten",
+    "joined": "Du er nå med i {{household}}."
   }
 }

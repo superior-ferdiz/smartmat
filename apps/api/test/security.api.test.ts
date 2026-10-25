@@ -83,6 +83,7 @@ describe('FR-AUTH-003 rate limiting per IP address', () => {
           login: { max: 3, windowMs: 60_000 },
           register: { max: 2, windowMs: 60_000 },
           sensitive: { max: 2, windowMs: 60_000 },
+          invitation: { max: 1000, windowMs: 60_000 },
         },
       },
     });
@@ -250,6 +251,7 @@ describe("NFR-SEC-001 no access to another user's data", () => {
       name: 'Kari',
       role: 'owner',
       memberCount: 1,
+      shareAllergens: false,
     });
   });
 

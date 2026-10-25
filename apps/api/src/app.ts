@@ -30,6 +30,7 @@ import { budgetRoutes } from './modules/budget/routes';
 import { BudgetService } from './modules/budget/service';
 import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
+import { HouseholdService } from './modules/households/service';
 import { createProfileRepo } from './modules/profile/repo';
 import { createPurchaseRepo } from './modules/purchases/repo';
 import { createMealPlanRepo } from './modules/mealplan/repo';
@@ -174,8 +175,16 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     config.cookieHostPrefix ? HOST_SESSION_COOKIE : SESSION_COOKIE,
   );
   const authService = new AuthService({ repo: createAuthRepo(db), hasher, now });
-  const profileService = new ProfileService({ repo: createProfileRepo(db), hasher });
+  const profileRepo = createProfileRepo(db);
+  const profileService = new ProfileService({ repo: profileRepo, hasher });
   const householdRepo = createHouseholdRepo(db);
+  const householdService = new HouseholdService({
+    repo: householdRepo,
+    passwords: profileRepo,
+    hasher,
+    invitationLimiter: new WindowLimiter(config.invitationAttemptsPerUser, 15 * MINUTE, now),
+    now,
+  });
   const requireAuth = createRequireAuth(authService, cookies);
   const householdAccess = createHouseholdAccess(householdRepo);
   const locationRepo = createLocationRepo(db);
@@ -187,7 +196,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     ingredients: { exists: (id) => recipeRepo.ingredientExists(id) },
     now,
   });
-  const recipeService = new RecipeService({ repo: recipeRepo, inventory: inventoryRepo, now });
+  const recipeService = new RecipeService({
+    repo: recipeRepo,
+    inventory: inventoryRepo,
+    households: householdService,
+    now,
+  });
   const purchaseService = new PurchaseService({
     repo: createPurchaseRepo(db),
     locations: locationRepo,
@@ -227,6 +241,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     recipes: recipeRepo,
     inventory: inventoryRepo,
     shopping: shoppingRepo,
+    households: householdService,
     now,
   });
 
@@ -246,7 +261,13 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         requireAuth,
         rateLimits: config.rateLimits,
       });
-      await api.register(householdRoutes, { repo: householdRepo, requireAuth, householdAccess });
+      await api.register(householdRoutes, {
+        service: householdService,
+        profile: profileService,
+        requireAuth,
+        householdAccess,
+        rateLimits: config.rateLimits,
+      });
       await api.register(categoryRoutes, { db });
       await api.register(locationRoutes, { repo: locationRepo, requireAuth, householdAccess });
       await api.register(inventoryRoutes, {

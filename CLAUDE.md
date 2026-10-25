@@ -45,6 +45,9 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - **`Purchase` is the single source of spending** in the MVP (no separate FinancialTransaction table).
 - **Every household-owned row has `household_id`** from the first migration; a single user gets a household of one.
   Every query on household data filters by the caller's membership — server-side.
+- Shared households (ADR-0018, accepted 2026-10-24): one-time invitation link `/bli-med#<token>` (48 h, SHA-256 stored),
+  exactly one owner, up to 5 households per user with `users.active_household_id`, account deletion hands a shared
+  household to the longest member, allergies shared only by opt-in per membership and never with names.
 - Recipes (ADR-0016, **accepted 2026-10-24**, replaces ADR-0009): imported from openly licensed sources (English
   Wikibooks Cookbook, CC BY-SA 4.0) by a developer-run script, translated by AI, stored with source, revision link,
   licence and what was changed (`source=external`), shown as "KI-utkast" until a team member is in `reviewedBy`.
@@ -229,6 +232,33 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - Web tests that need a fixed "today": `vi.useFakeTimers({ toFake: ['Date'], now })` (only Date, so Testing Library's
   waits still work). Playwright `getByText` with a regex must use `\s` between amount and unit (U+00A0).
 - Screenshots with the real recipes: `E2E_RECIPE_SEED=repo SCREENSHOTS=1 npx playwright test screenshots`.
+
+## Code conventions (added in phase 10)
+
+- Households: API module `apps/api/src/modules/households/` (repo/service/routes), pure rules in
+  `packages/shared/src/household/rules.ts`. Owner-only routes add `requireOwner` after `householdAccess` (member → 403,
+  non-member still 404). The repo re-reads the role **under the household lock** (`FOR UPDATE`); every membership
+  change locks the household row, and a user's row is locked before a household's, never the other way.
+- Invariants: exactly one owner (partial unique index `household_members_one_owner` – demote before promote) and every
+  user has ≥ 1 household (`ensureHousehold` after leave/remove/delete). Registration uses `householdOfOneData`.
+- Invitation tokens: never in a URL the server sees, never logged; `preview`/`accept` take `{ token }` in the body.
+  Unknown/used/revoked/expired all answer 404 `invitationInvalid`. Refusals are `MembershipRefused(reason)` in the repo,
+  mapped to `AppError` in the service.
+- `SessionUser.householdId` = the **active** household (checked against memberships on every read);
+  `householdRole` and `households` feed the switcher. Existing pages need nothing new.
+- "Who added this": select `creatorSelect` and map with `toCreator(householdId, row.createdBy)` (`lib/creator.ts`):
+  name only for current members, `former`/`unknown` otherwise. Web: `useAddedBy(useIsShared())`.
+- Web cache: a 404 from a `['household', …]` query (or any mutation) refetches the session; `HouseholdWatcher` (in
+  `RequireAuth`) drops `['household', oldId]` when the active household changes. Never apply the 404 rule to the session
+  query itself (it looped until the test worker ran out of memory). `RequireAuth` shows the session error only when there
+  is no session data yet.
+- A visually-hidden `<span> {name}</span>` inside `Button` gives "FjernOla" as the accessible name in jsdom; use an
+  `aria-label` from an i18n key with `{{name}}` instead. user-event replaces `navigator.clipboard` – read it back with
+  `navigator.clipboard.readText()` in tests.
+- API tests: `householdHelpers.ts` (`invite`, `accept`, `join`, `refreshed`, `inHousehold`). Old helpers use
+  `client.user.householdId`, which is stale after joining – refresh or use `inHousehold`. E2E: `secondBrowser()` in
+  `e2e/household.spec.ts` for a second person; check server refusals with `page.evaluate(fetch)` (the request context
+  drops Secure cookies).
 
 ## Integrity rules (non-negotiable)
 

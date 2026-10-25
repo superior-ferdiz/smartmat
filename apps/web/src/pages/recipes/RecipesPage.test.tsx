@@ -45,7 +45,7 @@ function withRecipes(body: RecipeListResponse) {
 
 describe('FR-REC-001/002 recipe list', () => {
   it('shows the ranked recipes with status, first reason and the disclaimer', async () => {
-    withRecipes({ recipes: [wok], userAllergens: [] });
+    withRecipes({ recipes: [wok], userAllergens: [], householdAllergens: [] });
     const { container } = renderApp('/oppskrifter');
     const card = (await screen.findByRole('link', { name: 'Kyllingwok' })).closest('li')!;
     expect(within(card).getByText('60 poeng')).toBeInTheDocument();
@@ -67,7 +67,11 @@ describe('FR-REC-001/002 recipe list', () => {
   });
 
   it('marks fictional test recipes as test data', async () => {
-    withRecipes({ recipes: [recipeSummary('Testrett', { source: 'test' })], userAllergens: [] });
+    withRecipes({
+      recipes: [recipeSummary('Testrett', { source: 'test' })],
+      userAllergens: [],
+      householdAllergens: [],
+    });
     renderApp('/oppskrifter');
     expect(await screen.findByText('Testdata')).toBeInTheDocument();
   });
@@ -76,6 +80,7 @@ describe('FR-REC-001/002 recipe list', () => {
     withRecipes({
       recipes: [wok, recipeSummary('Ertesuppe', { ingredientNames: ['Erter'] })],
       userAllergens: [],
+      householdAllergens: [],
     });
     const user = userEvent.setup();
     const { router } = renderApp('/oppskrifter');
@@ -88,7 +93,7 @@ describe('FR-REC-001/002 recipe list', () => {
 
 describe('FR-REC-004 allergens in the list', () => {
   it('hides recipes with the user’s allergens by default and says how many', async () => {
-    withRecipes({ recipes: [vafler, wok], userAllergens: ['milk'] });
+    withRecipes({ recipes: [vafler, wok], userAllergens: ['milk'], householdAllergens: [] });
     const user = userEvent.setup();
     renderApp('/oppskrifter');
     expect(await screen.findByRole('link', { name: 'Kyllingwok' })).toBeInTheDocument();
@@ -97,7 +102,7 @@ describe('FR-REC-004 allergens in the list', () => {
 
     // The hidden count links straight to the switched-on list.
     await user.click(screen.getByRole('link', { name: 'Vis dem likevel' }));
-    expect(screen.getByLabelText('Vis oppskrifter med mine allergener')).toBeChecked();
+    expect(screen.getByLabelText('Vis oppskrifter med registrerte allergener')).toBeChecked();
     const card = screen.getByRole('link', { name: 'Vafler' }).closest('li')!;
     expect(within(card).getByText('Inneholder melk')).toBeInTheDocument();
     expect(screen.getByText(DISCLAIMER)).toBeInTheDocument();
@@ -105,15 +110,21 @@ describe('FR-REC-004 allergens in the list', () => {
 
   it('without registered allergens there is no switch, and nothing is hidden', async () => {
     // The API only sends warnings for allergens the user has registered.
-    withRecipes({ recipes: [{ ...vafler, allergenWarnings: [] }], userAllergens: [] });
+    withRecipes({
+      recipes: [{ ...vafler, allergenWarnings: [] }],
+      userAllergens: [],
+      householdAllergens: [],
+    });
     renderApp('/oppskrifter');
     expect(await screen.findByRole('link', { name: 'Vafler' })).toBeInTheDocument();
-    expect(screen.queryByLabelText('Vis oppskrifter med mine allergener')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Vis oppskrifter med registrerte allergener'),
+    ).not.toBeInTheDocument();
     expect(screen.getByText(DISCLAIMER)).toBeInTheDocument();
   });
 
   it('when every recipe is hidden, the empty state still says why', async () => {
-    withRecipes({ recipes: [vafler], userAllergens: ['milk'] });
+    withRecipes({ recipes: [vafler], userAllergens: ['milk'], householdAllergens: [] });
     renderApp('/oppskrifter');
     expect(
       await screen.findByRole('heading', { name: 'Ingen oppskrifter passer søket' }),

@@ -18,6 +18,8 @@ import { Page } from '../../layout/Page';
 import { useDeletePurchase, usePurchase } from '../../purchases/api';
 import { PurchaseError } from './EditPurchasePage';
 import styles from './PurchasePage.module.css';
+import { useIsShared } from '../../household/api';
+import { useAddedBy } from '../../household/format';
 
 /** One purchase: its lines, what went into the inventory, and "Rett" / "Slett" (FR-BUD-005). */
 export function PurchasePage() {
@@ -43,6 +45,8 @@ function PurchaseView({ purchase }: { purchase: PurchaseResponse }) {
   const formatDate = useFormatDate();
   const [deleting, setDeleting] = useState(false);
   const month = purchase.purchasedOn.slice(0, 7);
+  // Spec 10 (FR-HH-007): who registered it, in a shared household.
+  const addedBy = useAddedBy(useIsShared())(purchase.createdBy);
 
   return (
     <Page
@@ -52,6 +56,7 @@ function PurchaseView({ purchase }: { purchase: PurchaseResponse }) {
           {formatDate(purchase.purchasedOn, true)}
           {' · '}
           <span className="tabular-nums">{formatOre(purchase.totalOre)}</span>
+          {addedBy && ` · ${addedBy}`}
         </>
       }
     >

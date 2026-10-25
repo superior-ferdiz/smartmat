@@ -199,6 +199,12 @@
       "notARecipe": "Only recipes have servings.",
       "notANote": "Only notes can be changed like this.",
       "notInPlan": "The plan does not need this ingredient in the period."
+    },
+    "household": {
+      "nameRequired": "Enter a name for the household.",
+      "nameTooLong": "The name can be at most 100 characters.",
+      "invitationInvalid": "This is not a valid invitation link.",
+      "memberRequired": "Choose a member."
     }
   },
   "pages": {
@@ -264,9 +270,7 @@
       "lead": "Plan the week, see what is missing, and put it on the shopping list."
     },
     "household": {
-      "lead": "Share the pantry and shopping list with the people you live with.",
-      "emptyTitle": "Households come later",
-      "emptyText": "Sharing with others is planned after the first submission. Until then, each user has their own household."
+      "lead": "“{{name}}”: share inventory, purchases, budget, shopping list and meal plan with the people you live with."
     },
     "more": {
       "lead": "More parts of SmartMat.",
@@ -398,7 +402,7 @@
       },
       "delete": {
         "title": "Delete account",
-        "text": "Your account, your household and everything stored in it are deleted for good. This cannot be undone.",
+        "text": "The account and households where you are alone are deleted for good with everything in them. If you own a household together with others, ownership goes to the member who has been there longest, and the household stays. This cannot be undone.",
         "password": "Enter your password to confirm",
         "confirm": "I understand that everything is deleted and cannot be restored",
         "submit": "Delete my account for good",
@@ -409,7 +413,14 @@
         "text": "Choose what you cannot eat. It is only used to hide or warn about recipes. It is voluntary, and is deleted together with your account.",
         "legend": "My allergens",
         "save": "Save allergies",
-        "saved": "Your allergies are saved"
+        "saved": "Your allergies are saved",
+        "share": {
+          "title": "Share with the household",
+          "label": "Take my allergies into account in “{{name}}”",
+          "text": "Other members see which allergens are registered in the household, but not who has them. In a small household they may still work it out. You can turn this off at any time, and it applies only to this household.",
+          "on": "Your allergies are now shared with “{{name}}”.",
+          "off": "Your allergies are no longer shared with “{{name}}”."
+        }
       }
     }
   },
@@ -488,6 +499,17 @@
     },
     "mealPlan": {
       "dayFull": "This day already has 20 entries. Remove something or choose another day."
+    },
+    "household": {
+      "ownerOnly": "Only the owner of the household can do this.",
+      "ownerMustTransfer": "You are the owner. Give ownership to another member before you leave the household.",
+      "cannotRemoveSelf": "You cannot remove yourself. Leave the household instead.",
+      "full": "The household is full (at most 10 members).",
+      "tooManyHouseholds": "You are already in 5 households. Leave one before you join another.",
+      "tooManyInvitations": "There are already 5 active invitations. Revoke one before you make a new one.",
+      "alreadyMember": "You are already a member of this household.",
+      "invitationInvalid": "The invitation is invalid, expired, revoked or already used. Ask for a new link.",
+      "notAMember": "Choose a member of the household."
     }
   },
   "units": {
@@ -703,8 +725,7 @@
       },
       "valueActual": "value {{value}}",
       "valueEstimated": "estimated value {{value}}",
-      "valueUnknown": "value unknown",
-      "deletedUser": "Deleted user"
+      "valueUnknown": "value unknown"
     },
     "locations": {
       "manage": "Storage places",
@@ -875,14 +896,14 @@
       "searchHint": "Title or ingredient",
       "tag": "Tag",
       "allTags": "All tags",
-      "showAllergens": "Show recipes with my allergens",
+      "showAllergens": "Show recipes with registered allergens",
       "reset": "Clear the search",
       "more": "Filter ({{count}} in use)",
       "showHidden": "Show them anyway"
     },
     "count": "{{shown}} of {{count}} recipes",
-    "hiddenByAllergens_one": "{{count}} recipe is hidden because an ingredient has one of your allergens.",
-    "hiddenByAllergens_other": "{{count}} recipes are hidden because an ingredient has one of your allergens.",
+    "hiddenByAllergens_one": "{{count}} recipe is hidden because an ingredient has a registered allergen (yours or the household's).",
+    "hiddenByAllergens_other": "{{count}} recipes are hidden because an ingredient has a registered allergen (yours or the household's).",
     "card": {
       "have": "Have {{enough}} of {{required}}",
       "missing_one": "{{count}} missing",
@@ -942,7 +963,11 @@
       "disclaimer": "The allergen information is a guide and may be incomplete. Always check the ingredient list on the products you use.",
       "noneRegistered": "None of your registered allergens are registered for the ingredients.",
       "noUserAllergens": "You have not registered any allergens.",
-      "register": "Register allergens"
+      "register": "Register allergens",
+      "household": {
+        "contains": "Contains {{list}} (registered in the household)",
+        "box": "Registered in the household: {{list}}"
+      }
     },
     "allergenNames": {
       "gluten": "gluten",
@@ -1364,5 +1389,123 @@
       "unplannedTitle": "Going off this week",
       "unplannedText": "No recipe in the plan uses these. Something to cook with?"
     }
+  },
+  "household": {
+    "activeIn": "Household: {{name}}",
+    "change": "Change",
+    "lost": "You are no longer a member of {{name}}.",
+    "lostUnknown": "You are no longer a member of the household you were viewing.",
+    "roles": {
+      "owner": "Owner",
+      "member": "Member"
+    },
+    "creator": {
+      "addedBy": "Added by {{name}}",
+      "former": "Former member",
+      "unknown": "Deleted user"
+    },
+    "switcher": {
+      "title": "Your households",
+      "text": "You are in more than one household. Pages show and save data in the active one.",
+      "active": "Active",
+      "use": "Use",
+      "switched": "You are now using {{name}}.",
+      "useNamed": "Use {{name}}"
+    },
+    "members": {
+      "title": "Members",
+      "you": "you",
+      "joined": "Member since {{date}}",
+      "aloneTitle": "You are alone in the household",
+      "aloneText": "Invite the people you live with, and you will share inventory, purchases, budget, shopping list and meal plan.",
+      "remove": "Remove",
+      "removeTitle": "Remove {{name}}?",
+      "removeText": "{{name}} loses access to the household at once. What {{name}} has added stays.",
+      "removeConfirm": "Remove from the household",
+      "removed": "{{name}} has been removed from the household.",
+      "removeNamed": "Remove {{name}}"
+    },
+    "name": {
+      "title": "Name",
+      "label": "Name of the household",
+      "save": "Save the name",
+      "saved": "The name has been saved."
+    },
+    "invite": {
+      "title": "Invite",
+      "text": "Make a link and send it to the person you want to invite, for example in a message. The link works once and for 48 hours.",
+      "create": "Make an invitation link",
+      "createdTitle": "The invitation link is ready",
+      "createdText": "The link is shown only now. Send it to one person. It works until {{time}}.",
+      "linkLabel": "Invitation link",
+      "share": "Share the link",
+      "copy": "Copy the link",
+      "copied": "The link has been copied.",
+      "copyFailed": "Could not copy. Select the link in the field and copy it yourself.",
+      "shareText": "Join my household in SmartMat",
+      "listTitle": "Invitations in the last 30 days",
+      "none": "No invitations yet.",
+      "made": "Made {{time}}",
+      "status": {
+        "active": "Active until {{time}}",
+        "used": "Used by {{name}}",
+        "usedFormer": "Used by a former member",
+        "usedUnknown": "Used by a deleted user",
+        "revoked": "Revoked",
+        "expired": "Expired"
+      },
+      "revoke": "Revoke",
+      "revoked": "The invitation has been revoked.",
+      "ownerOnly": "Only the owner can invite new members."
+    },
+    "leave": {
+      "title": "Leave the household",
+      "text": "You lose access to the inventory, purchases, shopping list and meal plan here. What you have added stays in the household.",
+      "ownerText": "As the owner you must give ownership to another member before you can leave the household.",
+      "submit": "Leave the household",
+      "confirmTitle": "Leave {{name}}?",
+      "confirm": "Yes, leave the household",
+      "left": "You have left {{name}}."
+    },
+    "transfer": {
+      "title": "Transfer ownership",
+      "text": "The new owner can invite, remove members and delete the household. You become an ordinary member.",
+      "member": "New owner",
+      "choose": "Choose a member",
+      "password": "Your password",
+      "submit": "Transfer ownership",
+      "done": "{{name}} now owns the household.",
+      "noMembers": "There are no other members to transfer to."
+    },
+    "delete": {
+      "title": "Delete the household",
+      "text": "Everything in the household is deleted for all members: inventory, purchases, budget, shopping list, meal plan and receipts. This cannot be undone. Everyone keeps their account, and anyone without another household gets a new, empty one.",
+      "password": "Enter your password to confirm",
+      "confirm": "I understand that everything in the household is deleted for everyone",
+      "submit": "Delete the household for good",
+      "deleted": "The household has been deleted."
+    }
+  },
+  "join": {
+    "title": "Join a household",
+    "checking": "Checking the invitation …",
+    "invalidTitle": "The invitation does not work",
+    "missing": "There is no invitation in the link. Open the link you got, or paste it here.",
+    "pasteLabel": "Invitation link",
+    "pasteSubmit": "Open the invitation",
+    "loggedOut": "Log in or create an account to see the invitation and join.",
+    "login": "Log in",
+    "register": "Create account",
+    "invitedBy": "{{name}} invites you to “{{household}}”.",
+    "invited": "You are invited to “{{household}}”.",
+    "members_one": "The household has {{count}} member.",
+    "members_other": "The household has {{count}} members.",
+    "expires": "The invitation works until {{time}}.",
+    "ownData": "What you have in your own household stays there. Nothing is merged or deleted. You can switch between the households under Household.",
+    "accept": "Join",
+    "decline": "No thanks",
+    "alreadyMember": "You are already a member of “{{household}}”.",
+    "goToApp": "Go to the overview",
+    "joined": "You have joined {{household}}."
   }
 }

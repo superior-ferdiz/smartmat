@@ -10,6 +10,7 @@ import type { Db } from '../../db';
 import { fromDbDate, toDbDate } from '../../lib/dbDates';
 import type { Prisma } from '../../generated/prisma/client';
 import { insertBatchWithEvent, type NewBatch } from '../inventory/repo';
+import { creatorSelect, toCreator } from '../../lib/creator';
 
 /*
  * Database access for purchases (spec 04). Every function takes the household id and every query filters on
@@ -90,12 +91,14 @@ export interface PurchaseRepo {
 
 const purchaseSelect = {
   id: true,
+  householdId: true,
   storeName: true,
   purchasedOn: true,
   totalOre: true,
   source: true,
   createdAt: true,
   updatedAt: true,
+  createdBy: creatorSelect,
   lines: {
     orderBy: { position: 'asc' },
     select: {
@@ -130,6 +133,7 @@ function toPurchase(row: PurchaseRow): PurchaseResponse {
     totalOre: row.totalOre,
     source: row.source,
     createdAt: row.createdAt.toISOString(),
+    createdBy: toCreator(row.householdId, row.createdBy),
     updatedAt: row.updatedAt.toISOString(),
     lines: row.lines.map((line) => ({
       id: line.id,

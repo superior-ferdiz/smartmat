@@ -29,6 +29,8 @@ import { useMealPlan, useRemoveMealEntry } from '../../mealplan/api';
 import { useDayLabel } from '../../mealplan/format';
 import styles from '../../mealplan/mealplan.module.css';
 import { AllergenDisclaimer, AllergenWarningTag } from '../../recipes/AllergenNotice';
+import { useAddedBy } from '../../household/format';
+import { useIsShared } from '../../household/api';
 
 /** Meals shown when "Vis frokost og lunsj" is off (decision 3 in spec 09). */
 const DINNER_ONLY: readonly Meal[] = ['dinner'];
@@ -252,6 +254,8 @@ function Entry({
 }) {
   const { t } = useTranslation();
   const name = entry.kind === 'note' ? (entry.note ?? '') : (entry.recipeTitle ?? '');
+  // Spec 10 (FR-HH-007): who planned it, in a shared household.
+  const addedBy = useAddedBy(useIsShared())(entry.createdBy);
 
   return (
     <li className={styles.entry}>
@@ -270,9 +274,13 @@ function Entry({
         {entry.servings !== null && (
           <span className={styles.meta}>{t('recipes.servings', { count: entry.servings })}</span>
         )}
-        {entry.allergenWarnings.length > 0 && (
+        {addedBy && <span className={styles.meta}>{addedBy}</span>}
+        {(entry.allergenWarnings.length > 0 || entry.householdAllergenWarnings.length > 0) && (
           <span>
-            <AllergenWarningTag allergens={entry.allergenWarnings} />
+            <AllergenWarningTag
+              allergens={entry.allergenWarnings}
+              household={entry.householdAllergenWarnings}
+            />
           </span>
         )}
       </span>
