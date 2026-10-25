@@ -54,6 +54,18 @@ const paths = {
       <circle cx="16" cy="13.5" r="1.25" />
     </>
   ),
+  waste: (
+    <>
+      <path d="M4 20h16" />
+      <path d="M7 16v-5M12 16V6M17 16v-8" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z" />
+      <path d="M10 20.5a2 2 0 0 0 4 0" />
+    </>
+  ),
   mealPlan: (
     <>
       <rect x="4" y="5" width="16" height="15" rx="2" />

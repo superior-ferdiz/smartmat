@@ -1,6 +1,6 @@
 # Testing og testresultater
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21). Testene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 11 (2026-10-25). Testene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Alle resultater under er fra faktiske kjøringer. Utdataene er lagret ordrett i
 > [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/),
 > [fase-3/](../evidence/test-results/fase-3/) og [fase-4/](../evidence/test-results/fase-4/).
@@ -980,6 +980,108 @@ Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-24/25.
 Feil i testene: `getByText` med en tekst som var delt i flere tekstnoder, user-event som erstatter
 `navigator.clipboard`, en tom husholdning i en mock som hadde et annet navn enn sesjonen, og Playwrights
 forespørselskontekst som ikke sender `Secure`-cookies over http.
+
+## Testtyper og sporbarhet (fase 11)
+
+Testene refererer til krav-ID-ene i [11-svinn-og-varsler.md](../development/requirements/11-svinn-og-varsler.md).
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-WASTE-001–004 | Største rest (går alltid opp i 100, rester og like rester, store tall), `floor` og «under 1 %», faktisk/anslått/ukjent hver for seg, mengde per enhet, sortering ved likhet, tom måned, for store summer, 12 måneder med tomme måneder og over årsskiftet | `shared/src/waste/stats.test.ts` | 14 |
+| FR-NOTIF-001–004 | Dagsgrenser for begge datotyper og 0–7 dager før, aldri best før etter datoen, bryterne, «i dag» i Oslo ved midnatt og ved sommer-/vintertid (også natten til 2026-10-25), faste nøkler (samme trinn = samme nøkkel, nytt trinn eller ny dato = ny), nøkler som databasen godtar, rekkefølge og grensen på 50, budsjettgrensene, handlelisten | `shared/src/notifications/rules.test.ts` | 41 |
+| FR-WASTE-001–004, NFR-SEC-004 | API mot database: faktisk, anslått og ukjent, angret kassering og forbruk teller ikke, slettet vare forsvinner, månedsgrensen i norsk tid (også etter overgangen til vintertid), 12 måneder, «mest kastet», validering av måned, ingen varenavn i loggen | `api/test/waste.api.test.ts` | 9 |
+| FR-NOTIF-001–006, NFR-SEC-004 | API mot database: nøkkel og innhold, ulik type for de to datoene, varselet forsvinner når partiet er brukt opp, rettet dato gir nytt varsel, sett og avvist, nøkler som ikke er aktive, validering, **10 samtidige avvisninger → 1 rad**, samtidig «sett» og «avvis», rydding etter 45 dager, innstillinger (standard, virkning, validering, `userId` ignoreres), budsjett 80 % og 100 %, handlelisten (navn, ikke egne linjer, åpne listen, gammel nøkkel flytter aldri merket bakover, tidligere medlem uten navn), avvisning per person, utmelding og fjerning sletter tilstanden, sletting av konto, loggen | `api/test/notifications.api.test.ts` | 23 |
+| NFR-SEC-001 | IDOR: en annen husholdning i URL-en (5 endepunkter → 404), egen husholdning med en annens partinøkkel, ingenting fra K i Olas tall, `/me` er alltid den som spør, medlemmer har hver sin tilstand, 401 og 403 uten CSRF. Ingenting endres. | `api/test/notifications.security.api.test.ts` | 7 |
+| FR-NOTIF-001/003/004 | Varselsiden: ordlyd for siste forbruksdag og best før (og at «se, lukt og smak» bare står ved best før), budsjett og handleliste med tidligere medlem, «Nytt» som blir stående mens siden er åpen, «Avvis» med melding og fokus, tom og feil, bjella med antall i navnet og live-regionen. Axe på to. | `web/src/pages/notifications/NotificationsPage.test.tsx` | 6 |
+| FR-WASTE-001–005 | Svinnsiden: tallene som tekst, «under 1 %», årsaker med skjulte søyler, «mest kastet» med lenke, tabellen (overskrifter, 12 rader, nyeste først, «herav … anslått»), tom måned og månedsvelger, feil. Axe på to. | `web/src/pages/waste/WastePage.test.tsx` | 6 |
+| FR-NOTIF-005 | Innstillingene: viser lagrede valg, sender hele objektet med CSRF-token, «dager før» av når begge datovarslene er av, serverfeil | `web/src/pages/SettingsPage.test.tsx` | 3 nye |
+| FR-NOTIF-001 | Ordlyden: ingen tekst om siste forbruksdag sier at maten kan spises, i begge språk, og de to datotypene har ulik tekst | `web/src/i18n/locales.test.ts` | 2 nye |
+| FR-NOTIF-003 | Handlelisten sier fra til serveren at den er sett | `web/src/pages/shopping/ShoppingListPage.test.tsx` | 1 ny |
+| FR-NOTIF-001–005, FR-WASTE-001–005, NFR-UX-001/002 | Ende-til-ende: vare med siste forbruksdag i morgen → bjella viser 1 → varselet → åpne varen → tilbake → avvis → borte, også etter ny innlasting. Innstillingen «3 dager før» gir et tidligere varsel. Et annet medlem legger til på handlelisten → varsel med navn → åpne listen → borte. Svinnsiden fra forsiden med tall, årsaker og tabell. 360 px og axe. | `e2e/notifications.spec.ts` | 4 (× 2 skjermstørrelser) |
+
+**Sum etter fase 11:** 1178 enhetstester (506 shared, 206 api, 466 web), 395 API-tester mot database, 183
+ende-til-ende-tester. Av de 19 nye i nettappen er 18 nye tester. Den siste er en ekstra rad i en eksisterende test
+som går gjennom alle seksjonene, og det er nå ti seksjoner.
+
+Eksisterende tester som ble endret:
+- **Navigasjonen** har ti seksjoner, og «Mer» har seks.
+- **Toast-testen** finner regionen «Meldinger» (het «Varsler», se avvik 3 i spesifikasjon 11).
+- **Innstillingene og handlelisten:** to tester så på «alle forespørsler» eller «den første POST-en». Siden gjør nå
+  også lesinger og en POST i bakgrunnen, så testene filtrerer på stien.
+- `defaultApi` i `test/mockApi.ts` svarer på varslene, svinnstatistikken og innstillingene.
+- `e2e/fixtures.ts` har hjelpere for kassering og invitasjon, og skjermbildeskriptet viser fase 11.
+
+### Kontroll av testene (fase 11)
+
+Samme metode som før ([skript](../evidence/test-results/fase-11/10-mutation-check.sh)), med 29 endringer i
+varselreglene, statistikken, API-et og nettappen. Alle enhetstestene ble kjørt, men bare API-testene fasen berører
+(`notifications*` og `waste`).
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-11/10-mutation-check-run1.txt)): 28 av 29 ble fanget.
+- **Runde 22 ble ikke fanget** («sett handlelisten» kan flytte merket bakover). Testen for en gammel nøkkel flyttet
+  merket tilbake til nøyaktig tidspunktet for linjen som var sett, og da kom ingen linje fram igjen. Testen har nå en
+  linje mellom den gamle nøkkelen og åpningen av listen. Med endringen satt inn for hånd feilet den, og uten endringen
+  besto alle ([utdata](../evidence/test-results/fase-11/10-mutation-check-runde22.txt)).
+- I samme omgang kom en test for at sletting av konto også sletter innstillingene og tilstandene. Kapittel 12 sa det,
+  men det var ikke testet.
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-11/10-mutation-check.txt)): 29 av 29 ble fanget.
+
+Kontrollen dekker ikke Playwright, CHECK-begrensningene og CASCADE-fremmednøkkelen direkte. CASCADE er testet i
+API-testene (utmelding, fjerning og sletting av konto).
+
+## Resultater fase 11 (kjørt 2026-10-25)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Bilder i repoet | Ingen utenfor skjermbildemappen | `00-check-files.txt` |
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 1178 av 1178 | `04-unit-tests.txt` |
+| API mot testdatabase | 395 av 395 | `05-api-tests.txt` |
+| Bygg | Vellykket. Hovedfilen er 864 kB (260 kB gzip). | `06-build.txt` |
+| Ende-til-ende | 183 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse). **Tredje kjøring.** | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (12 migreringer) | `09-migrate-status.txt` |
+
+**Playwright ble kjørt tre ganger**, og alle kjøringene er lagret:
+- **Forsøk 1** ([`07-e2e-forsok1.txt`](../evidence/test-results/fase-11/07-e2e-forsok1.txt)): 182 bestått, 1 feilet.
+  Sletting av et kjøp (fase 4, 360 px) ga ikke meldingen, og siden ble stående på «Fant ikke kjøpet». Serveren var
+  belastet av et annet prosjekt (load average rundt 19). Årsaken var en feil i nettappen (funn 4 under). Budsjett-
+  testen besto tre ganger alene etter rettingen.
+- **Forsøk 2** ([`07-e2e-forsok2.txt`](../evidence/test-results/fase-11/07-e2e-forsok2.txt)): 183 bestått.
+- **Kjøring 3** (`07-e2e.txt`): 183 bestått, kjørt på nytt med den endelige koden etter de siste testendringene
+  (bare API-tester), slik at alle bevisfilene gjelder samme kode.
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-11/](../evidence/screenshots/fase-11/):
+- forsiden med bjella
+- varselsiden med alle typene
+- svinnsiden med tabellen
+- innstillingene for varsler
+
+**Ikke testet:**
+- ekte skjermleser (VoiceOver eller TalkBack) og ekte telefon. Testene sjekker navn og `aria-live`, ikke hvordan det
+  faktisk høres.
+- to personer på hver sin telefon samtidig
+- varsler over tid (en vare som går fra «snart» til «i dag» til «passert» i appen over flere dager). Det er testet med
+  falsk klokke i API-testene og enhetstestene.
+
+## Feil funnet i fase 11
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-25.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | «Avvis» på handlelistevarselet ga 404 når en ny linje hadde kommet etter at siden ble lastet | API-test | En eldre nøkkel godtas, og merket flyttes bare fram |
+| 2 | To landemerker het «Varsler» (toast-regionen fra fase 1 og varselkortet) | axe i en komponenttest | Toast-regionen heter «Meldinger» |
+| 3 | Lint: en ref ble lest under rendering på varselsiden | ESLint (`react-hooks/refs`) | Tilstand i stedet for ref |
+| 4 | Sletting av kjøp mistet melding og navigering. Hooken ventet på at alle husholdningsdata var hentet på nytt, og da var siden allerede «Fant ikke kjøpet», og dialogen var borte. Feilen fantes fra fase 4. Varselspørringen gjorde ventetiden lengre. | Playwright under høy last | Venter ikke på den nye hentingen. Samme retting for sletting av vare. |
+| 5 | Ett hull i testene (runde 22) | Mutasjonskontrollen | Sterkere test |
+| 6 | Kapittel 12 sa at sletting av konto sletter varseldataene, uten at det var testet | Gjennomgang av teksten | Ny test (besto) |
+
+Feil i testene: for bred regel mot farlig ordlyd («trygg» traff «mattrygghet»), feil forventning om at en ny avvisning
+skal gi 404 (den gir 204), og bjella som finnes to ganger
+(toppfeltet og sidemenyen).
 
 ## Begrensninger
 

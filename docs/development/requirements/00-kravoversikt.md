@@ -74,6 +74,20 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-HH-006 | Allergier kan deles med husholdningen etter eget valg, uten navn | K | 10 |
 | FR-HH-007 | Det vises hvem som la til noe, men bare for nåværende medlemmer | K | 10 |
 
+| ID | Krav (svinn og varsler, lagt til i fase 11) | Prio | Fase |
+|---|---|---|---|
+| FR-WASTE-001 | Månedsoversikt over svinn: antall, kjent verdi (faktisk og anslått hver for seg), ukjent verdi og mengde per enhet | K | 11 |
+| FR-WASTE-002 | Fordeling per årsak og kategori, og det som kastes oftest | K | 11 |
+| FR-WASTE-003 | Utvikling over de siste 12 månedene | K | 11 |
+| FR-WASTE-004 | Ærlige tall: hvor mye som er anslått og hvor mye som mangler verdi, uten å regne ut ukjente verdier | K | 11 |
+| FR-WASTE-005 | Diagrammene har tekst og tabell, ikke bare farger, og virker på 360 px | K | 11 |
+| FR-NOTIF-001 | Varsler i appen om siste forbruksdag og best før, med ulik ordlyd og aldri råd om å spise etter siste forbruksdag | K | 11 |
+| FR-NOTIF-002 | Varsel når 80 % og 100 % av matbudsjettet er brukt | K | 11 |
+| FR-NOTIF-003 | Varsel når andre har lagt til på handlelisten, med navn bare for nåværende medlemmer | K | 11 |
+| FR-NOTIF-004 | Varsler kan leses og avvises, og samme varsel kommer ikke igjen | K | 11 |
+| FR-NOTIF-005 | Brukeren velger hvilke varsler hen vil ha, og hvor mange dager før | K | 11 |
+| FR-NOTIF-006 | Bare nåværende medlemmer ser varsler, og ingenting blir igjen etter utmelding | K | 11 |
+
 ## Ikke-funksjonelle krav
 
 | ID | Krav | Fase |

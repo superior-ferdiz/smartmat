@@ -17,6 +17,7 @@ import { RECIPES_PATH } from '../../app/navigation';
 import type { FieldErrors } from '../../forms/fieldErrors';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
 import { useFormatQuantity } from '../../inventory/formatHooks';
+import { useShoppingSeen } from '../../notifications/api';
 import { Page } from '../../layout/Page';
 import { useShortDayLabel } from '../../mealplan/format';
 import { useJoinList } from '../../recipes/formatHooks';
@@ -56,6 +57,15 @@ function formErrors(error: unknown): FieldErrors | null {
 export function ShoppingListPage() {
   const { t } = useTranslation();
   const list = useShoppingList();
+  const shoppingSeen = useShoppingSeen();
+
+  // Spec 11 (FR-NOTIF-003): seeing the list clears "others added to the shopping list" – also when a refetch
+  // brings lines someone added while the page was open.
+  const { mutate: markShoppingSeen } = shoppingSeen;
+  const loadedAt = list.dataUpdatedAt;
+  useEffect(() => {
+    if (loadedAt > 0) markShoppingSeen();
+  }, [loadedAt, markShoppingSeen]);
 
   return (
     <Page title={t('nav.sections.shoppingList')} lead={t('pages.shoppingList.lead')}>

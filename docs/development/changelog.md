@@ -2,6 +2,26 @@
 
 ## [Ikke utgitt]
 
+### Fase 11 – 2026-10-25 (grenen `fase-11`)
+- **Svinnstatistikk** (`/svinn`, [spesifikasjon 11](requirements/11-svinn-og-varsler.md)):
+  - per måned: antall, kjent verdi med faktisk og anslått hver for seg, ukjent verdi og mengde per enhet
+  - per årsak og per kategori, med andeler som går opp i 100 (største rest), og «mest kastet»
+  - de siste 12 månedene som tabell, med skravert søyle for anslått verdi
+  - lenke fra forsidekortet «Kastet denne måneden»
+- **Varsler i appen** ([ADR-0019](architecture-decisions/0019-varsler-beregnes-ved-lesing.md)):
+  - siste forbruksdag (snart, i dag, passert) og best før (snart, i dag), med ulik ordlyd
+  - budsjettet ved 80 % og 100 %
+  - «… la til … på handlelisten», med navn bare for nåværende medlemmer
+  - bjelle med antall i toppfeltet og sidemenyen, siden `/varsler`, «Avvis», og en live-region for nye varsler
+  - innstillinger per bruker under Innstillinger → Varsler (hvilke varsler, 0–7 dager før)
+- **Migrering** `notifications`: `notification_settings`, `notification_states` (CASCADE fra medlemskapet),
+  `household_members.shopping_seen_at`, CHECK.
+- **Endret:**
+  - toast-regionen heter «Meldinger» (het «Varsler»)
+  - menyen har ti seksjoner
+- **Rettet:** sletting av et kjøp eller en vare kunne miste meldingen og navigeringen når den nye hentingen av
+  husholdningens data var treg (spesifikasjon 11, avvik 5).
+
 ### Fase 10 – 2026-10-24 (grenen `fase-10`)
 - **Delte husholdninger** ([ADR-0018](architecture-decisions/0018-delte-husholdninger-og-invitasjoner.md),
   [spesifikasjon 10](requirements/10-husholdning.md)):

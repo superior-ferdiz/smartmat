@@ -3,6 +3,7 @@ import { Outlet, ScrollRestoration } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ActiveHousehold } from './ActiveHousehold';
 import { BottomNav } from './BottomNav';
+import { NotificationAnnouncer } from './NotificationAnnouncer';
 import { SideNav } from './SideNav';
 import { StagingBanner } from './StagingBanner';
 import { TopBar } from './TopBar';
@@ -31,6 +32,7 @@ export function AppShell() {
         <Outlet />
       </main>
       <BottomNav className={styles.bottom} />
+      <NotificationAnnouncer />
       <ScrollRestoration />
     </div>
   );

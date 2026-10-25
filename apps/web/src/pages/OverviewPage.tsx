@@ -20,6 +20,7 @@ import {
   recipePath,
   RECIPES_PATH,
   SHOPPING_LIST_PATH,
+  WASTE_PATH,
 } from '../app/navigation';
 import { useInventory, useLocations, useWasteSummary } from '../inventory/api';
 import { ExpiryAdvice, ExpiryTag } from '../inventory/ExpiryTag';
@@ -137,7 +138,21 @@ export function OverviewPage() {
           <DinnerCard />
         </Card>
 
-        <Card id="card-waste" className={styles.waste} title={t('pages.overview.waste.title')}>
+        <Card
+          id="card-waste"
+          className={styles.waste}
+          title={t('pages.overview.waste.title')}
+          footer={
+            <LinkButton
+              to={WASTE_PATH}
+              variant="ghost"
+              size="sm"
+              icon={<Icon name="waste" size={18} />}
+            >
+              {t('pages.overview.waste.open')}
+            </LinkButton>
+          }
+        >
           <WasteSummaryCard />
         </Card>
       </div>

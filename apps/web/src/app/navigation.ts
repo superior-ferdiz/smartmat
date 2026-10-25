@@ -7,6 +7,7 @@ export type SectionId =
   | 'recipes'
   | 'shoppingList'
   | 'budget'
+  | 'waste'
   | 'mealPlan'
   | 'household'
   | 'settings';
@@ -22,7 +23,7 @@ export interface NavSection {
   comingLater?: boolean;
 }
 
-/** The nine sections of SmartMat, in menu order. Single source for routes, side menu, bottom menu and "Mer". */
+/** The ten sections of SmartMat, in menu order. Single source for routes, side menu, bottom menu and "Mer". */
 export const SECTIONS: readonly NavSection[] = [
   { id: 'overview', path: '/', icon: 'overview', inBottomNav: true },
   { id: 'inventory', path: '/matlager', icon: 'inventory', inBottomNav: true },
@@ -30,6 +31,7 @@ export const SECTIONS: readonly NavSection[] = [
   { id: 'recipes', path: '/oppskrifter', icon: 'recipes', inBottomNav: true },
   { id: 'shoppingList', path: '/handleliste', icon: 'shoppingList', inBottomNav: false },
   { id: 'budget', path: '/budsjett', icon: 'budget', inBottomNav: false },
+  { id: 'waste', path: '/svinn', icon: 'waste', inBottomNav: false },
   { id: 'mealPlan', path: '/maltidsplan', icon: 'mealPlan', inBottomNav: false },
   { id: 'household', path: '/husholdning', icon: 'household', inBottomNav: false },
   { id: 'settings', path: '/innstillinger', icon: 'settings', inBottomNav: false },
@@ -67,6 +69,12 @@ export const RECEIPTS_PATH = '/budsjett/kvittering';
 export const receiptPath = (receiptId: string) => `${RECEIPTS_PATH}/${receiptId}`;
 /** The budget page for a month ("2026-09"); the month is in the URL so it can be shared and reloaded. */
 export const budgetMonthPath = (month: string) => `${BUDGET_PATH}?maned=${month}`;
+
+/** Spec 11: food waste figures for a month ("2026-09"), and the notifications page (the bell). */
+export const WASTE_PATH = '/svinn';
+export const wasteMonthPath = (month: string) => `${WASTE_PATH}?maned=${month}`;
+export const NOTIFICATIONS_PATH = '/varsler';
+export const SETTINGS_PATH = '/innstillinger';
 
 export const BOTTOM_NAV_SECTIONS = SECTIONS.filter((section) => section.inBottomNav);
 export const MORE_SECTIONS = SECTIONS.filter((section) => !section.inBottomNav);

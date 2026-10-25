@@ -125,6 +125,20 @@ Mål: WCAG 2.2 nivå AA (NFR-UX-002). Det som er gjort i fase 1:
 - Tallfelt bruker `inputmode="decimal"` i stedet for `type="number"`, fordi `type="number"` håndterer norsk
   desimalkomma dårlig.
 
+### Varsler og svinn (fase 11)
+
+- **Bjella** står i toppfeltet på telefon og øverst i sidemenyen på bred skjerm. Antallet nye varsler står i lenkens
+  navn («Varsler, 3 nye»), så skjermlesere hører det. Merket på bjella er bare den synlige kopien.
+- **Én live-region** sier «2 nye varsler» når antallet øker mens appen er åpen, ikke ved hver innlasting.
+- **Varslene** har en farget kant etter alvor (fare, advarsel, info), men meningen står i teksten. «Avvis» har et
+  navn med hele varselet, og fokus blir i listen når et varsel forsvinner.
+- **Siste forbruksdag og best før** har ulik ordlyd. Rådet for best før («se, lukt og smak») brukes aldri om siste
+  forbruksdag.
+- **Svinnsiden:** tall som tekst, søyler som pynt, en ekte tabell for 12 måneder, og skravering i tillegg til farge for
+  det som er anslått. Fire smale kolonner, så tabellen får plass på 360 px uten å skjule noe.
+- **Toast-regionen** het «Varsler» fra fase 1. Den heter nå «Meldinger», så skjermlesere ikke får to landemerker med
+  samme navn.
+
 ## Hvordan designet ble testet og forbedret
 
 Testing i fase 1 er automatisk og gjort av KI-verktøyet, ikke av brukere:

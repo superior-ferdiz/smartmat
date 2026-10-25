@@ -36,3 +36,8 @@ export * from './api/mealPlan';
 export * from './household/rules';
 export * from './schemas/household';
 export * from './api/household';
+export * from './waste/stats';
+export * from './api/waste';
+export * from './notifications/rules';
+export * from './schemas/notifications';
+export * from './api/notifications';

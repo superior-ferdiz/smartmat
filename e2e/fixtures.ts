@@ -118,6 +118,27 @@ export async function apiAs(playwright: Playwright, account: Account) {
       );
       expect(response.status(), await response.text()).toBe(200);
     },
+    /** Spec 11: throw away from a batch (the waste log). */
+    async discard(
+      batchId: string,
+      body: { quantityBase: number; reason: string; valueOre?: number },
+    ) {
+      const response = await api.post(
+        `/api/v1/households/${householdId}/inventory/batches/${batchId}/discard`,
+        { data: body, headers },
+      );
+      expect(response.status(), await response.text()).toBe(200);
+    },
+    /** Spec 10: an invitation link token for this household (the owner only). */
+    async invite(): Promise<string> {
+      const response = await api.post(`/api/v1/households/${householdId}/invitations`, { headers });
+      expect(response.status(), await response.text()).toBe(201);
+      return ((await response.json()) as { token: string }).token;
+    },
+    async acceptInvitation(token: string) {
+      const response = await api.post('/api/v1/invitations/accept', { data: { token }, headers });
+      expect(response.status(), await response.text()).toBe(200);
+    },
     async setBudget(amountOre: number) {
       const response = await api.put(`/api/v1/households/${householdId}/budget`, {
         data: { amountOre },

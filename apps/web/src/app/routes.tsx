@@ -28,6 +28,8 @@ import { RecipeSourcesPage } from '../pages/recipes/RecipeSourcesPage';
 import { RecipesPage } from '../pages/recipes/RecipesPage';
 import { ScanPage } from '../pages/scan/ScanPage';
 import { ShoppingListPage } from '../pages/shopping/ShoppingListPage';
+import { NotificationsPage } from '../pages/notifications/NotificationsPage';
+import { WastePage } from '../pages/waste/WastePage';
 import {
   BUDGET_PATH,
   DESIGN_SYSTEM_PATH,
@@ -39,6 +41,7 @@ import {
   MORE_PATH,
   NEW_ITEM_PATH,
   NEW_PURCHASE_PATH,
+  NOTIFICATIONS_PATH,
   PROFILE_PATH,
   RECEIPTS_PATH,
   RECIPE_SOURCES_PATH,
@@ -46,6 +49,7 @@ import {
   REGISTER_PATH,
   SCAN_PATH,
   SHOPPING_LIST_PATH,
+  WASTE_PATH,
 } from './navigation';
 
 /** All routes, shared by the browser router (main.tsx) and the memory router in tests. */
@@ -98,6 +102,8 @@ export const routes: RouteObject[] = [
           { path: RECEIPTS_PATH.slice(1), element: <ReceiptsPage /> },
           { path: `${RECEIPTS_PATH.slice(1)}/:receiptId`, element: <ReceiptPage /> },
           { path: MEAL_PLAN_PATH.slice(1), element: <MealPlanPage /> },
+          { path: WASTE_PATH.slice(1), element: <WastePage /> },
+          { path: NOTIFICATIONS_PATH.slice(1), element: <NotificationsPage /> },
           { path: HOUSEHOLD_PATH.slice(1), element: <HouseholdPage /> },
           { path: 'innstillinger', element: <SettingsPage /> },
           { path: MORE_PATH.slice(1), element: <MorePage /> },

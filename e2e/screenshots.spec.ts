@@ -3,14 +3,14 @@ import { apiAs, BASE_URL, registerAccount, test, type Account } from './fixtures
 /*
  * Not a test: saves real screenshots of the app as evidence for the report.
  * Only runs when asked for:  SCREENSHOTS=1 npx playwright test screenshots
- * Phase 10 pages (shared household: members, invitation link, joining, "added by", sharing allergies), with a
- * seeded inventory, purchases and budget, and a second person who joins through the API.
- * (The phase 1–9 screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git
+ * Phase 11 pages (notifications, the bell, food waste figures, notification settings), with a seeded inventory,
+ * purchases, budget and waste log, and a second person who adds to the shopping list through the API.
+ * (The phase 1–10 screenshots in docs/evidence/screenshots/ were made by earlier versions of this file; see Git
  * history.)
  */
 test.skip(!process.env.SCREENSHOTS, 'set SCREENSHOTS=1 to save screenshots');
 
-const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-10';
+const OUT = process.env.SCREENSHOT_DIR ?? 'docs/evidence/screenshots/fase-11';
 
 function inDays(days: number) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date());
@@ -118,97 +118,95 @@ async function renamed(playwright: Playwright, displayName: string): Promise<Acc
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test.describe(`${colorScheme} – shared household`, () => {
+  test.describe(`${colorScheme} – notifications and food waste`, () => {
     test.use({ colorScheme, isolatedAccount: true });
-    test('husholdning', async ({ page, playwright, account, browser }, testInfo) => {
-      await seed(playwright, account);
+    test('varsler og svinn', async ({ page, playwright, account }, testInfo) => {
+      const { created } = await seed(playwright, account);
       const kari = await rawApi(playwright, account);
       await kari.patch('/me', { displayName: 'Kari' });
-      await kari.patch(`/households/${kari.householdId}`, { name: 'Familien Nordmann' });
+      // 84 % of the budget is used: the "nearly used" notification.
+      await kari.put(`/households/${kari.householdId}/budget`, { amountOre: 100_000 });
+      // Three days before, so the best-before milk also gives a notification.
+      await kari.put('/me/notification-settings', {
+        useBy: true,
+        bestBefore: true,
+        daysBefore: 3,
+        budget: true,
+        shopping: true,
+      });
+      // The waste log: estimated (from the price), entered and unknown values, different reasons.
+      const batch = (name: string) =>
+        created[
+          [
+            'Kyllingfilet',
+            'Kjøttdeig',
+            'Lettmelk',
+            'Yoghurt naturell',
+            'Laks',
+            'Ris',
+            'Hermetiske tomater',
+          ].indexOf(name)
+        ]!.batches[0]!.id;
+      const base = `/households/${kari.householdId}/inventory/batches`;
+      await kari.post(`${base}/${batch('Yoghurt naturell')}/discard`, {
+        quantityBase: 250,
+        reason: 'expired',
+      });
+      await kari.post(`${base}/${batch('Kjøttdeig')}/discard`, {
+        quantityBase: 400,
+        reason: 'expired',
+        valueOre: 4990,
+      });
+      await kari.post(`${base}/${batch('Ris')}/discard`, { quantityBase: 200, reason: 'tooMuch' });
+      await kari.post(`${base}/${batch('Laks')}/discard`, {
+        quantityBase: 150,
+        reason: 'leftovers',
+      });
 
       // Ola joins through the API and adds a shopping line.
       const olaAccount = await renamed(playwright, 'Ola');
       const ola = await rawApi(playwright, olaAccount);
-      const first = (await (
+      const invitation = (await (
         await kari.post(`/households/${kari.householdId}/invitations`)
-      ).json()) as {
-        token: string;
-      };
-      await ola.post('/invitations/accept', { token: first.token });
+      ).json()) as { token: string };
+      await ola.post('/invitations/accept', { token: invitation.token });
       await ola.post(`/households/${kari.householdId}/shopping-list/items`, { text: 'Kaffe' });
-      await kari.post(`/households/${kari.householdId}/shopping-list/items`, { text: 'Brød' });
-      // A second, unused invitation for the join page.
-      const second = (await (
-        await kari.post(`/households/${kari.householdId}/invitations`)
-      ).json()) as {
-        token: string;
-      };
 
       const suffix = colorScheme === 'light' ? 'lys' : 'mork';
-      const shot = (target: typeof page, name: string, fullPage = true) =>
-        target.screenshot({
+      const shot = (name: string, fullPage = true) =>
+        page.screenshot({
           path: `${OUT}/${name}-${testInfo.project.name}-${suffix}.png`,
           fullPage,
         });
-      const ready = (target: typeof page) => target.evaluate(() => document.fonts.ready);
+      const ready = () => page.evaluate(() => document.fonts.ready);
 
-      // FR-HH-001/003: the owner's page with members and invitations.
-      await page.goto('/husholdning');
-      await page.getByText(/Brukt av Ola/).waitFor();
-      await ready(page);
-      await shot(page, 'husholdning-eier');
+      // FR-NOTIF-004: the bell with the number of new notifications.
+      await page.goto('/');
+      await page
+        .getByRole('link', { name: /^Varsler, \d+ nye$/ })
+        .filter({ visible: true })
+        .waitFor();
+      await ready();
+      await shot('oversikt-bjelle', false);
 
-      // FR-HH-001: the link, shown once.
-      await page.getByRole('button', { name: 'Lag invitasjonslenke' }).click();
-      await page.getByRole('dialog', { name: 'Invitasjonslenken er klar' }).waitFor();
-      await ready(page);
-      await shot(page, 'husholdning-lenke', false);
-      await page.keyboard.press('Escape');
+      // FR-NOTIF-001–003: the list (use by passed/today/soon, best before, budget, shopping list).
+      await page.goto('/varsler');
+      await page.getByRole('link', { name: /Ola la til Kaffe/ }).waitFor();
+      await ready();
+      await shot('varsler');
 
-      // FR-HH-007: who added what.
-      await page.goto('/handleliste');
-      await page.getByText(/Lagt til av Ola/).waitFor();
-      await ready(page);
-      await shot(page, 'handleliste-lagt-til-av');
+      // FR-WASTE-001–005: this month's waste figures and the 12-month table.
+      await page.goto('/svinn');
+      await page.getByRole('table', { name: /Kastet per måned/ }).waitFor();
+      await ready();
+      await shot('svinn');
 
-      // FR-HH-006: sharing allergies on the profile.
-      await page.goto('/profil');
-      await page.getByLabel('Ta hensyn til allergiene mine i «Familien Nordmann»').waitFor();
-      await page.getByRole('heading', { name: 'Del med husholdningen' }).scrollIntoViewIfNeeded();
-      await ready(page);
-      await shot(page, 'profil-del-allergier', false);
-
-      // FR-HH-002/004: Per opens the second link; Ola's view as a member with two households.
-      const perAccount = await renamed(playwright, 'Per');
-      const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = testInfo.project.use;
-      const context = (state: Account['storageState']) =>
-        browser.newContext({
-          baseURL: BASE_URL,
-          locale: 'nb-NO',
-          timezoneId: 'Europe/Oslo',
-          colorScheme,
-          storageState: state,
-          ...(viewport ? { viewport } : {}),
-          ...(userAgent ? { userAgent } : {}),
-          ...(deviceScaleFactor ? { deviceScaleFactor } : {}),
-          ...(isMobile !== undefined ? { isMobile } : {}),
-          ...(hasTouch !== undefined ? { hasTouch } : {}),
-        });
-      const perContext = await context(perAccount.storageState);
-      const perPage = await perContext.newPage();
-      await perPage.goto(`/bli-med#${second.token}`);
-      await perPage.getByRole('button', { name: 'Bli med' }).waitFor();
-      await ready(perPage);
-      await shot(perPage, 'bli-med');
-      await perContext.close();
-
-      const olaContext = await context(olaAccount.storageState);
-      const olaPage = await olaContext.newPage();
-      await olaPage.goto('/husholdning');
-      await olaPage.getByRole('heading', { name: 'Dine husholdninger' }).waitFor();
-      await ready(olaPage);
-      await shot(olaPage, 'husholdning-medlem');
-      await olaContext.close();
+      // FR-NOTIF-005: the settings.
+      await page.goto('/innstillinger');
+      await page.getByRole('button', { name: 'Lagre varslene' }).waitFor();
+      await page.getByRole('heading', { name: 'Varsler' }).scrollIntoViewIfNeeded();
+      await ready();
+      await shot('innstillinger-varsler', false);
 
       await kari.dispose();
       await ola.dispose();

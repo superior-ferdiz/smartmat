@@ -92,13 +92,25 @@ export const useUpdatePurchase = (purchaseId: string) =>
     }),
   );
 
-export const useDeletePurchase = (purchaseId: string) =>
-  useHouseholdMutation((h, removeUntouchedBatches: boolean) =>
-    apiFetch<DeletePurchaseResponse>(
-      `${base(h)}/purchases/${purchaseId}?removeUntouchedBatches=${String(removeUntouchedBatches)}`,
-      { method: 'DELETE' },
-    ),
-  );
+/**
+ * The refetch is not awaited here: it asks for the deleted purchase again (404), and the page then shows "not
+ * found" and unmounts the dialog – TanStack drops the caller's onSuccess (toast and navigation) with it. Found by
+ * Playwright in phase 11, when the notification query made the household refetch slower.
+ */
+export function useDeletePurchase(purchaseId: string) {
+  const h = useHouseholdId();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (removeUntouchedBatches: boolean) =>
+      apiFetch<DeletePurchaseResponse>(
+        `${base(h)}/purchases/${purchaseId}?removeUntouchedBatches=${String(removeUntouchedBatches)}`,
+        { method: 'DELETE' },
+      ),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: keys.all(h) });
+    },
+  });
+}
 
 export const useSetBudget = () =>
   useHouseholdMutation((h, input: BudgetInput) =>

@@ -106,11 +106,23 @@ Avvik fra planen:
   lesing.
 - Ingen tabeller fikk ny `household_id`: ADR-0008 hadde lagt det inn fra start.
 
+**Implementert i fase 11 (2026-10-25):** `NotificationSettings` og `NotificationState`, og
+`household_members.shopping_seen_at` ([spesifikasjon 11](requirements/11-svinn-og-varsler.md), ADR-0019). Avvik
+fra planen:
+- Planen hadde `Notification` og `NotificationPreference`. **Varsler lagres ikke**: de regnes ut fra dataene ved hver
+  lesing (ADR-0019). Bare brukerens tilstand lagres i `notification_states` (`user_id`, `household_id`, `key`,
+  `seen_at`, `dismissed_at?`), med nøkkelen i primærnøkkelen og en sammensatt fremmednøkkel til
+  `household_members` med CASCADE. CHECK på nøkkelformatet. Rader eldre enn 45 dager slettes ved neste skriving.
+- `NotificationPreference` heter `NotificationSettings` og er én rad per bruker (`user_id` som primærnøkkel), ikke
+  per husholdning. Uten rad brukes standarden. CHECK: `days_before` 0–7.
+- `shopping_seen_at` (standard `now()`) på medlemskapet sier når brukeren sist så handlelisten.
+- Svinnstatistikken har ingen egen tabell: den summeres fra `inventory_events` ved hver lesing (ADR-0007).
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–10)
+## Kjernemodell (fase 2–11)
 
 ```mermaid
 erDiagram
@@ -150,6 +162,8 @@ erDiagram
   Recipe |o--o{ MealPlanEntry : planlagt_som
   MealPlanEntry ||--o{ ShoppingListItemMeal : bidrar
   ShoppingListItem ||--o{ ShoppingListItemMeal : fra_plan
+  User ||--o| NotificationSettings : velger
+  HouseholdMember ||--o{ NotificationState : sett_og_avvist
 ```
 
 ## Entiteter
@@ -159,7 +173,9 @@ erDiagram
 | `User` | email (unik), password_hash, display_name, locale, currency, created_at | Allergier/kosthold i egen tabell når de trengs | 2 |
 | `Session` | token_hash, user_id, expires_at, last_seen_at | Bare hash av token lagres | 2 |
 | `Household` | name | Én opprettes automatisk ved registrering | 2 |
-| `HouseholdMember` | household_id, user_id, role (`owner`/`member`), share_allergens | Unik (household_id, user_id). Én eier per husholdning (fase 10). | 2/10 |
+| `HouseholdMember` | household_id, user_id, role (`owner`/`member`), share_allergens, shopping_seen_at | Unik (household_id, user_id). Én eier per husholdning (fase 10). | 2/10/11 |
+| `NotificationSettings` | user_id (PK), use_by, best_before, days_before (0–7), budget, shopping | Per bruker, gjelder alle husholdningene | 11 |
+| `NotificationState` | user_id, household_id, key, seen_at, dismissed_at? | Bare tilstanden til et varsel. Varslene selv regnes ut ved lesing. | 11 |
 | `HouseholdInvitation` | household_id, token_hash (unik), created_by?, expires_at, used_at?, used_by?, revoked_at? | Engangslenke, 48 timer. Bare hash av tokenet. | 10 |
 | `AuditEvent` | actor_id, action, target, created_at | Ingen personopplysninger i fritekst | 3 (utsatt fra 2) |
 | `Category` | name, parent_id | Global, frødata | 3 |
@@ -187,7 +203,6 @@ erDiagram
 
 ## Senere
 
-`Notification` / `NotificationPreference` (11),
 `PriceObservation` (12: product_id, chain, price_ore, unit_price, observed_at, source).
 
 ## Åpne spørsmål

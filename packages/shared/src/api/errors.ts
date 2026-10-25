@@ -49,6 +49,7 @@ export const API_ERRORS = {
   householdAlreadyMember: 'errors.household.alreadyMember',
   householdInvitationInvalid: 'errors.household.invitationInvalid',
   householdNotAMember: 'errors.household.notAMember',
+  notificationNotFound: 'errors.notification.notFound',
   internal: 'errors.internal',
 } as const;
 

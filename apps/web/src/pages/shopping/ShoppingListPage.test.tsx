@@ -47,6 +47,17 @@ const section = (name: RegExp) =>
   screen.getByRole('heading', { level: 2, name }).closest('section') as HTMLElement;
 
 describe('FR-SHOP-001 the list', () => {
+  it('tells the server the list was seen (spec 11, FR-NOTIF-003)', async () => {
+    const { requests } = serve([]);
+    renderApp('/handleliste');
+    await screen.findByRole('textbox', { name: 'Vare' });
+    await waitFor(() =>
+      expect(
+        requests.some((r) => r.method === 'POST' && r.path.endsWith('/shopping-list/seen')),
+      ).toBe(true),
+    );
+  });
+
   it('empty: says so, and links to the recipes', async () => {
     serve([]);
     renderApp('/handleliste');
@@ -100,7 +111,7 @@ describe('FR-SHOP-001 the list', () => {
     await user.type(text, 'Mel{Enter}');
 
     await waitFor(() => expect(text).toHaveValue(''));
-    const post = requests.find((r) => r.method === 'POST');
+    const post = requests.find((r) => r.method === 'POST' && r.path.endsWith('/items'));
     expect(post?.body).toEqual({
       text: 'Mel',
       quantity: { quantityBase: 1500, unit: 'g' },
@@ -116,7 +127,7 @@ describe('FR-SHOP-001 the list', () => {
     renderApp('/handleliste');
     await user.click(await screen.findByRole('button', { name: 'Legg til' }));
     expect(screen.getByText('Skriv inn hva du skal kjøpe.')).toBeInTheDocument();
-    expect(requests.some((r) => r.method === 'POST')).toBe(false);
+    expect(requests.some((r) => r.method === 'POST' && r.path.endsWith('/items'))).toBe(false);
   });
 });
 

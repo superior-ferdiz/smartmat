@@ -118,3 +118,46 @@ describe('FR-REC-004 allergen wording', () => {
     }
   });
 });
+
+describe('FR-NOTIF-001 use-by wording in notifications', () => {
+  // A use-by date is about food safety: no notification about it may suggest the food can still be eaten.
+  const useByKeys = Object.keys(nbKeys).filter((key) =>
+    /^notifications\.(kinds|advice)\.useBy/.test(key),
+  );
+  const forbidden = [
+    /kan spises/i,
+    /fortsatt god/i,
+    /se, lukt og smak/i,
+    /tryg(g|t) å spise/i,
+    /frys/i,
+  ];
+  const forbiddenEn = [
+    /can (still )?be eaten/i,
+    /still good/i,
+    /look, smell/i,
+    /safe to eat/i,
+    /freez/i,
+  ];
+
+  it('exists, and never says the food can still be eaten', () => {
+    expect(useByKeys.length).toBeGreaterThanOrEqual(6);
+    for (const key of useByKeys) {
+      expect(
+        forbidden.filter((p) => p.test(nbKeys[key] ?? '')),
+        key,
+      ).toEqual([]);
+      expect(
+        forbiddenEn.filter((p) => p.test(enKeys[key] ?? '')),
+        key,
+      ).toEqual([]);
+    }
+  });
+
+  it('best before and use by are worded differently', () => {
+    expect(nbKeys['notifications.kinds.useByToday']).not.toBe(
+      nbKeys['notifications.kinds.bestBeforeToday'],
+    );
+    expect(nbKeys['notifications.kinds.useByToday']).toContain('siste forbruksdag');
+    expect(nbKeys['notifications.kinds.bestBeforeToday']).toContain('best før');
+  });
+});

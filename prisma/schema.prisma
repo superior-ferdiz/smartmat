@@ -42,17 +42,18 @@ model User {
   /// if the user is no longer a member, the oldest membership is used instead.
   activeHouseholdId String?   @map("active_household_id") @db.Uuid
 
-  activeHousehold Household?            @relation("ActiveHousehold", fields: [activeHouseholdId], references: [id], onDelete: SetNull)
-  sessions        Session[]
-  memberships     HouseholdMember[]
-  inventoryEvents InventoryEvent[]
-  purchases       Purchase[]
-  allergens       UserAllergen[]
-  shoppingItems   ShoppingListItem[]
-  mealEntries     MealPlanEntry[]
-  receipts        Receipt[]
-  invitationsMade HouseholdInvitation[] @relation("InvitationCreatedBy")
-  invitationsUsed HouseholdInvitation[] @relation("InvitationUsedBy")
+  activeHousehold      Household?            @relation("ActiveHousehold", fields: [activeHouseholdId], references: [id], onDelete: SetNull)
+  sessions             Session[]
+  memberships          HouseholdMember[]
+  inventoryEvents      InventoryEvent[]
+  purchases            Purchase[]
+  allergens            UserAllergen[]
+  shoppingItems        ShoppingListItem[]
+  mealEntries          MealPlanEntry[]
+  receipts             Receipt[]
+  invitationsMade      HouseholdInvitation[] @relation("InvitationCreatedBy")
+  invitationsUsed      HouseholdInvitation[] @relation("InvitationUsedBy")
+  notificationSettings NotificationSettings?
 
   @@map("users")
 }
@@ -94,9 +95,13 @@ model HouseholdMember {
   /// Spec 10 (FR-HH-006): the member's own allergies count for the whole household. Voluntary (GDPR art. 9),
   /// off by default, per household. Other members see which allergens, never whose.
   shareAllergens Boolean       @default(false) @map("share_allergens")
+  /// Spec 11 (FR-NOTIF-003): when the member last saw the shopping list. Lines others added after this give a
+  /// notification. Set to now() on joining, so old lines do not.
+  shoppingSeenAt DateTime      @default(now()) @map("shopping_seen_at") @db.Timestamptz(3)
 
-  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  household          Household           @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationStates NotificationState[]
 
   // Exactly one owner per household: partial unique index household_members_one_owner (raw SQL in the migration).
   @@id([householdId, userId])
@@ -860,4 +865,38 @@ model ReceiptExtraction {
 
   @@unique([receiptId, householdId])
   @@map("receipt_extractions")
+}
+
+// ─── Phase 11: notifications in the app (spec 11, ADR-0019) ───────────────────────────────────────
+
+/// FR-NOTIF-005: which notifications the user wants, for all their households. No row = the defaults.
+model NotificationSettings {
+  userId     String   @id @map("user_id") @db.Uuid
+  useBy      Boolean  @default(true) @map("use_by")
+  bestBefore Boolean  @default(true) @map("best_before")
+  /// 0–7 (CHECK in the migration): how many days before the date the "soon" notification starts.
+  daysBefore Int      @default(1) @map("days_before") @db.SmallInt
+  budget     Boolean  @default(true)
+  shopping   Boolean  @default(true)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+/// FR-NOTIF-004 (ADR-0019): notifications are computed on every read; only what the user did with one is
+/// stored, under its fixed key. No content. Belongs to the membership, so leaving the household deletes it.
+model NotificationState {
+  userId      String    @map("user_id") @db.Uuid
+  householdId String    @map("household_id") @db.Uuid
+  key         String    @db.VarChar(120)
+  seenAt      DateTime  @default(now()) @map("seen_at") @db.Timestamptz(3)
+  dismissedAt DateTime? @map("dismissed_at") @db.Timestamptz(3)
+
+  member HouseholdMember @relation(fields: [householdId, userId], references: [householdId, userId], onDelete: Cascade)
+
+  @@id([userId, householdId, key])
+  @@index([householdId, userId])
+  @@map("notification_states")
 }

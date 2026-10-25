@@ -1,0 +1,19 @@
+$ npm run test
+Kjørt 2026-10-25T04:06:18Z
+
+
+> smartmat@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  85 passed (85)
+      Tests  1178 passed (1178)
+   Start at  04:06:19
+   Duration  22.34s (transform 61.75s, setup 39.46s, import 101.31s, tests 196.82s, environment 43.19s)
+
+
+Avslutningskode: 0

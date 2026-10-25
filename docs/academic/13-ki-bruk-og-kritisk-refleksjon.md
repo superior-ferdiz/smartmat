@@ -97,6 +97,21 @@
   - **Ustabil testkjøring:** under sluttkjøringen var serveren svært belastet av et annet prosjekt. To kjøringer av
     Playwright feilet, og begge er lagret. Den ene feilen var en svakhet i en test fra fase 1, og den ble rettet.
 - Teamets refleksjon over fase 10 er ikke skrevet.
+- Fase 11 (2026-10-25), notater:
+  - **KI valgte arkitekturen for varslene.** Planen foreslo å regne dem ut ved lesing i stedet for en jobb som lagrer
+    dem (ADR-0019). Teamet godkjente med «Godkjent commit og push» uten å svare på de seks spørsmålene enkeltvis.
+  - **KI skrev ordlyden** i varslene om siste forbruksdag og best før. Det er tekst om mattrygghet, og teamet bør
+    lese den selv. En test stopper noen farlige fraser, men den kan ikke vite om teksten er god.
+  - **Hva som er «ærlige tall»** er også KI-ens forslag: ingen anslag for ukjente verdier, andelen anslått vises, ingen
+    tall per person og ikke svinn i prosent av utgiftene.
+  - **Feil KI-en gjorde og fant selv:**
+    - «Avvis» virket ikke når handlelisten hadde fått en ny linje etter at siden ble lastet (API-test)
+    - en test for farlig ordlyd som var for bred («trygg» i «mattrygghet»)
+    - to landemerker med samme navn, fordi toast-regionen fra fase 1 også het «Varsler» (axe)
+    - en eldre feil ved sletting av kjøp, som den nye varselspørringen gjorde synlig (Playwright under høy last)
+
+    Detaljer i kapittel 11.
+- Teamets refleksjon over fase 11 er ikke skrevet.
 
 ## Kilder i prosjektet
 

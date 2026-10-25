@@ -634,3 +634,71 @@ Bevis ligger i `docs/evidence/test-results/fase-10/`, skjermbilder i `docs/evide
 promptet til neste fase, Inkludert push og committ dersom denne fasen er over»). Fasen ble gjort ferdig (andre
 kontroll av testene, test for låsen, dokumentasjon), og `fase-10` ble så committet og pushet. Ingen gjennomgang av
 fase 10 er oppgitt.
+
+---
+
+## 2026-10-25 – Fase 11: svinnstatistikk og varsler i appen
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 11 i en ny chat med en detaljert prompt.
+- **Plassholderne i prompten var ikke fylt ut:** gjennomgang siden fase 10, reglene fra fase 10, behandlingsgrunnlaget
+  for deling av allergier, kontroll av oppskriftene og ADR-0017. Claude registrerte dem som «ingen», «ikke godkjent
+  ennå», «ikke vurdert ennå», «ingen ennå» og «ikke godkjent ennå», og sa fra i svaret.
+- Grenen `fase-11` ble laget fra `fase-10`, fordi ingenting er merget til `main`.
+- **Planen:** fasemalen med seks åpne spørsmål og anbefalinger. Ferdinand svarte «Godkjent commit og push». Det er
+  tolket som at planen er godkjent, og at fasen skal committes og pushes når den er ferdig. Anbefalingene gjelder
+  (se [spesifikasjon 11](requirements/11-svinn-og-varsler.md)):
+  - varsler regnes ut ved lesing, og bare brukerens tilstand lagres (ADR-0019)
+  - innstillinger per bruker
+  - faste grenser for budsjettet (80 % og 100 %)
+  - ikke svinn i prosent av utgiftene
+  - kasseringer for slettede varer forsvinner, som før
+  - ikke varsel om medlemmer som kommer og går
+- **Spesifikasjon 11 og ADR-0019 ble skrevet før koden.**
+- **All kode i fasen er skrevet av KI.** Det gjelder også ordlyden i varslene.
+
+**Avvik og funn underveis** (detaljer i spesifikasjon 11 og kapittel 11)
+- **«Avvis» på handlelistevarselet ga 404** når noen hadde lagt til en linje etter at siden ble lastet. API-testen
+  fant det. En eldre nøkkel godtas nå, og merket flyttes bare fram.
+- **To landemerker het «Varsler»:** toast-regionen fra fase 1 og det nye kortet. axe fant det. Toast-regionen heter
+  nå «Meldinger».
+- **Testmønsteret for farlig ordlyd var for bredt:** «trygg» traff «mattrygghet». Mønsteret er strammet inn.
+- **Sletting av kjøp mistet meldingen og navigeringen** på telefon i Playwright under høy last (forsøk 1, lagret).
+  Årsaken var en feil fra fase 4 som varselspørringen gjorde mer sannsynlig. Den er rettet for kjøp og varer.
+- **Kontroll av testene** (29 endringer):
+  - første kjøring fanget 28 av 29. Testen for runde 22 var for svak, og den ble gjort sterkere
+  - det kom også en test for sletting av konto, som kapittel 12 omtalte uten at det var testet
+  - andre kjøring fanget 29 av 29
+  - alle kjøringene er lagret
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 1178 |
+| API-tester mot database | 395 |
+| Bygg | Vellykket (hovedfil 864 kB) |
+| Playwright-tester | 183 (tredje kjøring, første feilet) |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-11/`, skjermbilder i `docs/evidence/screenshots/fase-11/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 11 (pull request), og kontroll av ordlyden i varslene og teksten i kapittel 12
+- test på ekte telefon med skjermleser (VoiceOver eller TalkBack), også med to telefoner i samme husholdning
+- fortsatt utestående fra tidligere faser:
+  - testmiljøet (DNS, passord, oppsett)
+  - kontaktadresse til Open Food Facts
+  - kontroll av OFF-kategoritabellen, `ingredients.json` og de 27 oppskriftene
+  - ADR-0017 og de 3 kvitteringene som mangler
+  - sletting av pilotdataene senest 2026-11-23
+  - teamets vurdering av reglene fra fase 10 og av behandlingsgrunnlaget for deling av allergier
+
+**Neste:** Teamet går gjennom fasen. Deretter fase 12 (prisdata, etter vilkårsavklaring), i en ny chat.
+
+**Oppfølging 2026-10-25:** Godkjenningen («Godkjent commit og push») gjaldt også commit og push når fasen var ferdig.
+`fase-11` ble committet og pushet etter at alle sjekkene var kjørt med den endelige koden. Ingen gjennomgang av fase
+11 er oppgitt, og ingen pull request er merget til `main`.

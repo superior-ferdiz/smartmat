@@ -48,6 +48,8 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - Shared households (ADR-0018, accepted 2026-10-24): one-time invitation link `/bli-med#<token>` (48 h, SHA-256 stored),
   exactly one owner, up to 5 households per user with `users.active_household_id`, account deletion hands a shared
   household to the longest member, allergies shared only by opt-in per membership and never with names.
+- Notifications in the app (ADR-0019, accepted 2026-10-25): computed on read, only seen/dismissed state stored per
+  user and membership, settings per user (not per household), no e-mail or push (FR-AUTH-006).
 - Recipes (ADR-0016, **accepted 2026-10-24**, replaces ADR-0009): imported from openly licensed sources (English
   Wikibooks Cookbook, CC BY-SA 4.0) by a developer-run script, translated by AI, stored with source, revision link,
   licence and what was changed (`source=external`), shown as "KI-utkast" until a team member is in `reviewedBy`.
@@ -259,6 +261,28 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   `client.user.householdId`, which is stale after joining – refresh or use `inHousehold`. E2E: `secondBrowser()` in
   `e2e/household.spec.ts` for a second person; check server refusals with `page.evaluate(fetch)` (the request context
   drops Secure cookies).
+
+## Code conventions (added in phase 11)
+
+- Notifications are **computed on read** (ADR-0019): pure rules in `packages/shared/src/notifications/rules.ts`, API
+  module `apps/api/src/modules/notifications/`. Only `notification_states` (seen/dismissed per fixed key) is stored,
+  with a composite FK to `household_members` (CASCADE) – leaving a household deletes it. The server accepts only keys
+  that are active now; a `shopping:<ms>` key may be older than the newest line, and the "seen" mark only moves forward.
+- Key format `<kind>:<details>` (letters, digits, `-`, `:`; CHECK in the database). A new date or month = a new key.
+  Use-by and best-before wording differ; `locales.test.ts` blocks "kan spises"/"fortsatt god" etc. in use-by texts.
+- Waste figures (`modules/waste/`, `packages/shared/src/waste/stats.ts`) are summed from `inventory_events` on every
+  read; months via `AT TIME ZONE 'Europe/Oslo'`; unknown values are counted, never given a value; shares by count
+  with largest remainder.
+- Web: notifications under `['household', id, 'notifications']` (refetched every 60 s and by every household
+  change). The bell is drawn twice (top bar + side nav): in tests use `getAllByRole`, in Playwright
+  `.filter({ visible: true })` with `exact: true`. One `NotificationAnnouncer` live region in `AppShell`.
+- The toast region is called "Meldinger" (not "Varsler" – that is the notifications feature).
+- A delete whose page shows "not found" after the refetch must **not await** the invalidation in the hook's
+  `onSuccess` (`useDeletePurchase`, `useDeleteItem`): TanStack drops the caller's `onSuccess` when the component
+  unmounts. The slower notification query made this race show up in Playwright.
+- `defaultApi` in `test/mockApi.ts` answers the notification, waste and settings reads and the background POSTs
+  (`/shopping-list/seen`, `/notifications/seen`); tests that look for "the POST" must filter on the path.
+- API tests that compare DB `created_at` with the app clock (shopping list "seen") must use the real clock.
 
 ## Integrity rules (non-negotiable)
 

@@ -26,3 +26,4 @@ En beslutning endres ved å skrive en ny ADR som erstatter den gamle (og markere
 | [0016](0016-oppskrifter-fra-apne-kilder.md) | Oppskrifter fra åpne kilder (Wikibooks), oversatt til norsk med kilde og lisens (akseptert 2026-10-24, erstatter 0009) |
 | [0017](0017-tesseract-pa-serveren-forelopig.md) | Tesseract på serveren, foreløpig – bare butikk, dato og total som standard (**foreslått, ikke godkjent**) |
 | [0018](0018-delte-husholdninger-og-invitasjoner.md) | Delte husholdninger med engangslenke, én eier og aktiv husholdning på brukeren (akseptert 2026-10-24) |
+| [0019](0019-varsler-beregnes-ved-lesing.md) | Varsler i appen beregnes ved lesing, og bare brukerens tilstand lagres (akseptert 2026-10-25) |

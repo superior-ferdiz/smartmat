@@ -34,8 +34,12 @@
       "budget": "Purchases & budget",
       "mealPlan": "Meal plan",
       "household": "Household",
-      "settings": "Settings"
-    }
+      "settings": "Settings",
+      "waste": "Food waste"
+    },
+    "notifications": "Notifications",
+    "notificationsUnseen_one": "Notifications, {{count}} new",
+    "notificationsUnseen_other": "Notifications, {{count}} new"
   },
   "form": {
     "optional": "optional",
@@ -50,7 +54,7 @@
     "error": "Error"
   },
   "toast": {
-    "regionLabel": "Notifications"
+    "regionLabel": "Messages"
   },
   "states": {
     "error": {
@@ -205,6 +209,12 @@
       "nameTooLong": "The name can be at most 100 characters.",
       "invitationInvalid": "This is not a valid invitation link.",
       "memberRequired": "Choose a member."
+    },
+    "notification": {
+      "key": "Invalid notification.",
+      "keys": "Invalid list of notifications.",
+      "toggle": "Choose on or off.",
+      "daysBefore": "Choose between 0 and 7 days."
     }
   },
   "pages": {
@@ -242,7 +252,8 @@
         "count_one": "{{count}} item thrown away this month",
         "count_other": "{{count}} items thrown away this month",
         "unknown_one": "{{count}} of them without a known value",
-        "unknown_other": "{{count}} of them without a known value"
+        "unknown_other": "{{count}} of them without a known value",
+        "open": "See the food waste figures"
       }
     },
     "inventory": {
@@ -284,7 +295,8 @@
         "budget": "Food budget and registered purchases",
         "mealPlan": "The week's dinners",
         "household": "Sharing with others",
-        "settings": "Language, theme and account"
+        "settings": "Language, theme, notifications and account",
+        "waste": "What is thrown away, and why"
       }
     },
     "settings": {
@@ -305,7 +317,26 @@
       "developerText": "Overview of the colours, typography and components used in SmartMat.",
       "loggedInAs": "Logged in as {{name}} ({{email}}).",
       "openProfile": "Profile and account",
-      "saveFailed": "Could not save the setting. Try again."
+      "saveFailed": "Could not save the setting. Try again.",
+      "notifications": {
+        "title": "Notifications",
+        "lead": "Notifications are only shown in the app, and these choices apply to all your households.",
+        "loading": "Loading notification settings …",
+        "useBy": "Use-by date",
+        "useByHint": "Before the date, on the day and the two days after.",
+        "bestBefore": "Best before",
+        "bestBeforeHint": "Before the date and on the day.",
+        "daysBefore": "When should the notification come?",
+        "daysBeforeHint": "Applies to both use-by and best-before dates.",
+        "daysZero": "Only on the day",
+        "days_one": "{{count}} day before",
+        "days_other": "{{count}} days before",
+        "budget": "Food budget",
+        "budgetHint": "When 80 % and when 100 % of the month’s budget is used.",
+        "shopping": "Shopping list",
+        "shoppingHint": "When others in the household add something.",
+        "save": "Save notifications"
+      }
     },
     "notFound": {
       "title": "Page not found",
@@ -510,6 +541,9 @@
       "alreadyMember": "You are already a member of this household.",
       "invitationInvalid": "The invitation is invalid, expired, revoked or already used. Ask for a new link.",
       "notAMember": "Choose a member of the household."
+    },
+    "notification": {
+      "notFound": "The notification no longer exists."
     }
   },
   "units": {
@@ -1507,5 +1541,93 @@
     "alreadyMember": "You are already a member of “{{household}}”.",
     "goToApp": "Go to the overview",
     "joined": "You have joined {{household}}."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "lead": "What needs attention in the household right now.",
+    "loading": "Loading notifications …",
+    "emptyTitle": "No notifications right now",
+    "emptyText": "You get a notification here when an item is close to its date, when the budget is nearly used, or when others add to the shopping list.",
+    "settingsLink": "Choose which notifications you want",
+    "listLabel": "Notifications",
+    "new": "New",
+    "dismiss": "Dismiss",
+    "dismissLabel": "Dismiss the notification: {{title}}",
+    "dismissed": "The notification was dismissed",
+    "dismissFailed": "Could not dismiss the notification. Try again.",
+    "announce_one": "{{count}} new notification",
+    "announce_other": "{{count}} new notifications",
+    "kinds": {
+      "useBySoon_one": "{{name}}: use by tomorrow",
+      "useBySoon_other": "{{name}}: use by in {{count}} days",
+      "useByToday": "{{name}}: use by today",
+      "useByPassed": "The use-by date of {{name}} has passed",
+      "bestBeforeSoon_one": "{{name}}: best before tomorrow",
+      "bestBeforeSoon_other": "{{name}}: best before in {{count}} days",
+      "bestBeforeToday": "{{name}}: best before today",
+      "budgetNearlyUsed": "{{percent}} % of the food budget for {{month}} is used",
+      "budgetExceeded": "The food budget for {{month}} is used up ({{percent}} %)",
+      "shoppingAdded": "{{who}} added {{items}} to the shopping list"
+    },
+    "advice": {
+      "useBySoon": "A use-by date is about food safety. Use it before the date.",
+      "useByToday": "After today it should not be eaten.",
+      "useByPassed": "Should not be eaten. A use-by date is about food safety.",
+      "bestBefore": "Often still good after the date. Look, smell and taste.",
+      "budget": "See the month’s purchases.",
+      "shopping": "Open the shopping list to see everything."
+    },
+    "who": {
+      "former": "A former member",
+      "unknown": "A deleted account",
+      "several": "Others in the household"
+    },
+    "moreItems_one": "{{count}} more",
+    "moreItems_other": "{{count}} more"
+  },
+  "waste": {
+    "lead": "What the household throws away, how much and why.",
+    "loading": "Loading the food waste figures …",
+    "monthNav": "Choose month",
+    "previous": "Previous",
+    "next": "Next",
+    "summaryTitle": "Thrown away in {{month}}",
+    "emptyTitle": "Nothing thrown away in {{month}}",
+    "emptyText": "When something is thrown away from the inventory with “Throw away”, it shows up here with reason and value.",
+    "knownValue": "Known value",
+    "count_one": "{{count}} item thrown away",
+    "count_other": "{{count}} items thrown away",
+    "valueSplit": "{{actual}} are amounts you entered, and {{estimated}} is estimated from the item’s price.",
+    "estimatedShare": "{{percent}} % of the known value is estimated.",
+    "estimatedShareBelowOne": "Less than 1 % of the known value is estimated.",
+    "unknown_one": "{{count}} has an unknown value and is not in the sum.",
+    "unknown_other": "{{count}} have an unknown value and are not in the sum.",
+    "quantity": "Quantity: {{list}}",
+    "reasonsTitle": "Why",
+    "categoriesTitle": "By category",
+    "topTitle": "Thrown away most often",
+    "trendTitle": "The last 12 months",
+    "shareRow_one": "{{count}} time ({{percent}} %)",
+    "shareRow_other": "{{count}} times ({{percent}} %)",
+    "rowUnknown_one": "{{count}} without a known value",
+    "rowUnknown_other": "{{count}} without a known value",
+    "topCount_one": "{{count}} time",
+    "topCount_other": "{{count}} times",
+    "shareNote": "The share is of the number of discards, as the value can be missing.",
+    "trendCaption": "Thrown away per month. The bar shows the known value: solid for amounts you entered, hatched for estimated.",
+    "columns": {
+      "month": "Month",
+      "count": "Discards",
+      "known": "Known value",
+      "unknown": "Unknown value"
+    },
+    "aboutTitle": "About the figures",
+    "about": {
+      "value": "The value is either the amount you entered when throwing it away, or estimated from the item’s price. Discards without a price are counted but get no value.",
+      "undo": "An undone discard does not count. Deleting an item also removes its discards.",
+      "category": "The category is the one the item has now.",
+      "household": "The figures are for the whole household. There are no figures per person."
+    },
+    "trendEstimated": "{{amount}} of it estimated"
   }
 }

@@ -467,3 +467,47 @@ InvitationPreview = { householdName, invitedBy: string | null, memberCount, expi
 | `RECEIPT_UPLOADS_PER_HOUR` / `RECEIPT_MAX_QUEUED` | 10 / 20 | 10 / 20 | Grense per bruker / for hele serveren |
 
 Alle svar har `Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=()`.
+
+## Svinnstatistikk og varsler (fase 11)
+
+Se [spesifikasjon 11](requirements/11-svinn-og-varsler.md) og
+[ADR-0019](architecture-decisions/0019-varsler-beregnes-ved-lesing.md). Rutene under `/households/:h` krever
+innlogging og medlemskap (ikke medlem gir 404, som før). Ingen av dem krever rollen `owner`.
+
+### Typer
+```ts
+WasteValue = { count, actualOre, estimatedOre, knownOre, unknownCount }   // knownOre = actual + estimated
+WasteStats = WasteValue & {
+  month: 'YYYY-MM', estimatedPercent: number | null,                    // floor(estimated × 100 / known)
+  quantities: { unit: 'g' | 'ml' | 'stk', quantityBase }[],              // aldri lagt sammen på tvers
+  byReason: (WasteValue & { reason, percent })[],                        // andel av antallet, største rest
+  byCategory: (WasteValue & { categoryKey, percent })[],
+  topItems: { itemId, name, unit, count, quantityBase, knownOre, unknownCount }[],   // høyst 5
+  trend: (WasteValue & { month })[],                                     // 12 måneder, eldst først
+}
+Notification =
+  | { kind: 'useBySoon' | 'useByToday' | 'useByPassed' | 'bestBeforeSoon' | 'bestBeforeToday',
+      key, seen, itemId, itemName, expiryDate, daysLeft }
+  | { kind: 'budgetNearlyUsed' | 'budgetExceeded', key, seen, month, usedPercent }
+  | { kind: 'shoppingAdded', key, seen, count, texts: string[], addedBy: CreatorRef[], latestAt }
+NotificationSettings = { useBy: boolean, bestBefore: boolean, daysBefore: 0–7, budget: boolean, shopping: boolean }
+```
+
+### Endepunkter
+
+| Metode | Sti | Kropp | Svar | Feil |
+|---|---|---|---|---|
+| GET | `/households/:h/waste-stats?month=YYYY-MM` | – | `WasteStats` (standard: inneværende måned i norsk tid) | 400 (måned), 404 |
+| GET | `/households/:h/notifications` | – | `{ items: Notification[], unseenCount }` (avviste er ikke med) | 404 |
+| POST | `/households/:h/notifications/seen` | `{ keys: string[] }` (1–100) | `{ marked }` – nøkler som ikke er aktive, hoppes over | 400, 404 |
+| POST | `/households/:h/notifications/dismiss` | `{ key }` | 204 (også en gang til) | 400, 404 `errors.notification.notFound` |
+| POST | `/households/:h/shopping-list/seen` | – | 204 | 404 |
+| GET | `/me/notification-settings` | – | `NotificationSettings` (standard uten rad) | 401 |
+| PUT | `/me/notification-settings` | `NotificationSettings` | `NotificationSettings` | 400 |
+
+- **Nøkkel:** `<type>:<detaljer>` med bare bokstaver, sifre, bindestrek og kolon (høyst 120 tegn, CHECK i
+  databasen). Eksempler: `useBy:soon:<parti-id>:2026-10-26`, `budget:2026-10:80`, `shopping:<ms>`.
+- **Bare aktive nøkler** kan merkes og avvises. Et parti fra en annen husholdning gir aldri en aktiv nøkkel.
+- **Handlelisten:** `shopping:<ms>` flytter brukerens «sett»-tidspunkt fram til linjen med det tidspunktet, aldri
+  bakover. En eldre nøkkel fra en side som ble lastet før, godtas derfor (spesifikasjon 11, avvik 1).
+- **Kropper og nøkler logges aldri.** URL-ene inneholder ingen varenavn.

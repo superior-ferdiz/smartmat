@@ -338,6 +338,23 @@ Behovet for uka lagres ikke. Det regnes ut fra planen, oppskriftene og matlagere
   To personer som godtar samme invitasjon samtidig, eller en overføring samtidig med en utmelding, skjer da etter
   hverandre.
 
+### Varsler og svinn (fase 11)
+
+- **Varsler lagres ikke** (ADR-0019). De regnes ut fra matlageret, budsjettet og handlelisten ved hver lesing, som
+  budsjettet (ADR-0007). Det som lagres, er brukerens tilstand:
+  - **`notification_states`** har primærnøkkelen `(user_id, household_id, key)`, så samme varsel kan bare være sett
+    eller avvist én gang, også ved samtidige forespørsler (`ON CONFLICT`).
+  - Den har en **sammensatt fremmednøkkel til `household_members (household_id, user_id)` med CASCADE**. Når et
+    medlemskap slettes (utmelding, fjerning, sletting av husholdning eller konto), forsvinner tilstanden i samme
+    setning. Databasen sørger dermed selv for at ingenting blir igjen.
+  - En CHECK sier at nøkkelen bare har bokstaver, sifre, bindestrek og kolon.
+- **`notification_settings`** er én rad per bruker. Uten rad brukes standarden, så eksisterende brukere trengte
+  ingen data i migreringen. CHECK: `days_before` mellom 0 og 7.
+- **`household_members.shopping_seen_at`** (standard `now()`): når medlemmet sist så handlelisten. Standardverdien gjør
+  at gamle linjer ikke gir varsel, verken etter migreringen eller når noen blir med.
+- **Svinnstatistikken** har ingen tabell. Den summeres fra `inventory_events` med `GROUP BY` per måned (norsk tid,
+  `AT TIME ZONE 'Europe/Oslo'`), årsak, kategori, enhet og verditype.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -385,6 +402,7 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261024150000_recipe_sources` | Kilde og lisens på oppskrifter: enum `recipe_adaptation`, verdien `external` i `recipe_source`, 8 kolonner og CHECK (ekstern krever kilde; kontrollert krever dato) |
 | `20261024180000_meal_plan` | Måltidsplan: `meal_plan_entries`, `shopping_list_item_meals`, enum `meal`, sammensatte fremmednøkler, `recipe_id` med SET NULL, CHECK (oppskrift eller fritekst, porsjoner 1–50, positiv mengde) |
 | `20261024210000_households_sharing` | Delte husholdninger: `household_invitations`, `share_allergens`, `active_household_id`, indeksen for én eier og CHECK (ikke både brukt og tilbaketrukket, `used_by` bare med `used_at`) |
+| `20261025120000_notifications` | Varsler: `notification_settings`, `notification_states` (sammensatt fremmednøkkel til medlemskapet med CASCADE), `shopping_seen_at` og CHECK (dager før 0–7, nøkkelformat) |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

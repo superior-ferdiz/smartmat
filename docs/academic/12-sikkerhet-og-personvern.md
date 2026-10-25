@@ -1,6 +1,6 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 10 (2026-10-24). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 11 (2026-10-25). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -131,6 +131,20 @@ om dette krever noe mer.
 | Skrive i feil husholdning | Et skjema åpnet før et bytte | Husholdnings-ID-en ligger i URL-en til hver forespørsel. Navnet på den aktive vises når brukeren har flere. | `households.api.test.ts`, `HouseholdPage.test.tsx` |
 | Overta andres sesjon via aktiv husholdning | `PUT /me/active-household` med en fremmed ID | Medlemskapet sjekkes (404), og ved lesing igjen | `households.security.api.test.ts` |
 
+### Nytt i fase 11: svinnstatistikk og varsler
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se en annen husholdnings svinn eller varsler | Bytte husholdnings-ID i URL-en | `householdAccess` på alle de fem nye rutene, og alle spørringer filtrerer på `household_id` | `notifications.security.api.test.ts` (A: 5 endepunkter → 404, ingenting endres) |
+| Avvise eller merke noe i en annen husholdning | Sende en nøkkel med en annen husholdnings parti-ID | Bare nøkler som er aktive nå for brukeren og husholdningen i URL-en godtas (404) | Samme fil (B), `notifications.api.test.ts` |
+| Fylle tabellen med vilkårlige nøkler | Tusenvis av oppdiktede nøkler | Bare aktive nøkler lagres, høyst 100 per forespørsel, fast alfabet (Zod og CHECK), og rydding etter 45 dager | `notifications.api.test.ts` |
+| Doble rader ved dobbeltklikk | To faner avviser samtidig | Primærnøkkel `(user_id, household_id, key)` og `ON CONFLICT` | `notifications.api.test.ts` (10 samtidige → 1 rad) |
+| Varsler etter utmelding | En som er fjernet, ser fortsatt varsler eller har tilstander igjen | Medlemskapet sjekkes ved hver lesing. Tilstanden har en fremmednøkkel til medlemskapet med CASCADE. | `notifications.api.test.ts` (utmelding og fjerning) |
+| Navn på tidligere medlemmer | «Per la til Melk» etter at Per har gått ut | `toCreator`: navn bare for nåværende medlemmer | `notifications.api.test.ts` |
+| Endre andres innstillinger | `userId` i kroppen | Bare `/me`, brukeren tas fra sesjonen, og ukjente felt fjernes | `notifications.api.test.ts`, `notifications.security.api.test.ts` |
+| Hva noen kaster, i loggen | Varenavn eller nøkler med parti-ID | Kropper logges ikke, og URL-ene har ingen navn eller nøkler | `waste.api.test.ts`, `notifications.api.test.ts` |
+| Farlige råd | «Kan fortsatt spises» om noe med siste forbruksdag | Egen ordlyd for siste forbruksdag. En test stopper slike fraser i begge språk. | `locales.test.ts`, `NotificationsPage.test.tsx` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
@@ -140,7 +154,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 [fase 7](../evidence/test-results/fase-7/10-mutation-check.txt),
 [fase 8](../evidence/test-results/fase-8/10-mutation-check.txt),
 [fase 9](../evidence/test-results/fase-9/10-mutation-check.txt),
-[fase 10](../evidence/test-results/fase-10/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 10](../evidence/test-results/fase-10/10-mutation-check.txt),
+[fase 11](../evidence/test-results/fase-11/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -170,6 +185,9 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Valg om deling av allergier (fase 10) | Ta hensyn til allergiene i husholdningen | `household_members.share_allergens` | Som medlemskapet |
 | Aktiv husholdning (fase 10) | Hvilken husholdning sidene viser | `users.active_household_id` | Til kontoen slettes |
 | Bruker-ID per invitasjonsforsøk (fase 10) | Grensen på 10 forsøk | Bare i minnet i API-prosessen, i 15 minutter | Lagres ikke og logges ikke |
+| Hvilke varsler brukeren vil ha (fase 11) | Innstillinger | `notification_settings`, knyttet til brukeren | Til kontoen slettes |
+| Hvilke varsler brukeren har sett og avvist (fase 11): nøkkel med parti-ID, dato eller måned, og tidspunkt | Samme varsel skal ikke komme igjen | `notification_states`, knyttet til medlemskapet. Ingen varenavn eller tekst. | 45 dager. Slettes straks når brukeren går ut av husholdningen, blir fjernet eller sletter kontoen. |
+| Når brukeren sist så handlelisten (fase 11) | Varselet om nye linjer | `household_members.shopping_seen_at` | Som medlemskapet |
 
 Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Alt kjørte lokalt.
 
@@ -195,6 +213,32 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   **Slettefrist:** når ADR-0017 er godkjent, senest 2026-11-23.
 - En kvittering kan vise de siste sifrene i et kortnummer og autorisasjonskoden. Bildet beholdes bare til kjøpet er
   bekreftet. Råteksten lagres uten slike linjer.
+
+## Svinn, kjøp og varsler (fase 11)
+
+**Dette er KI-ens forslag og ikke en juridisk vurdering. Teamet må vurdere det selv.**
+
+- **Svinn og kjøp sier noe om vaner.** Hva som kastes og hvorfor, sammen med kjøpene, kan si noe om kosthold, økonomi,
+  hvor ofte noen er hjemme og hvor mange som bor der. Statistikken lager ingen nye opplysninger: den summerer
+  svinnloggen fra fase 3 når siden åpnes, og ingenting lagres.
+- **Ingen tall per person.** Statistikken gjelder hele husholdningen. Hvem som kastet hva, står bare i historikken på
+  varen, som før (med navn bare for nåværende medlemmer).
+- **Varsler lagres ikke** (ADR-0019). Det som lagres, er en nøkkel per varsel brukeren har sett eller avvist, uten
+  tekst eller varenavn. Nøkkelen inneholder parti-ID og dato, og den slettes etter 45 dager eller når medlemskapet
+  opphører.
+- **Hva andre medlemmer ser:**
+
+  | Opplysning | Andre medlemmer ser det? |
+  |---|---|
+  | Svinnstatistikken | Ja, den er for husholdningen |
+  | Varsler om datoer og budsjett | Ja, hver for seg, med egne innstillinger |
+  | At du har lagt til noe på handlelisten | Ja, i et varsel med navnet ditt, men bare mens du er medlem |
+  | Hvilke varsler du har sett eller avvist | Nei |
+  | Innstillingene dine for varsler | Nei |
+
+- **Behandlingsgrunnlag (forslag):** avtale (art. 6 nr. 1 b), som for resten av husholdningens data. Varsler bruker
+  ikke allergier.
+- **Ikke håndtert:** varsel på e-post eller telefon (FR-AUTH-006), og om andre skal få beskjed når noen går ut.
 
 ## Delte husholdninger (fase 10)
 
@@ -238,15 +282,15 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   husholdningen blir værende. Dialogen sier det før brukeren bekrefter. Retten til sletting (art. 17) blir altså
   ikke blokkert av at andre bruker husholdningen. Kontoen, sesjonene og medlemskapene slettes, og `created_by` blir
   tom («Ukjent»).
-- **Ikke håndtert:** om de andre medlemmene skal få beskjed når noen går ut eller sletter kontoen. Varsler hører til
-  fase 11.
+- **Ikke håndtert:** om de andre medlemmene skal få beskjed når noen går ut eller sletter kontoen. Det ble ikke tatt
+  med i fase 11 (avgjørelse 6 i spesifikasjon 11).
 
 ## Sletting
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
   Det samme gjelder alt som hører til, på grunn av `ON DELETE CASCADE` (FR-AUTH-005). Fra fase 3 omfatter
   det hele matlageret og svinnloggen, fra fase 4 kjøp, linjer og budsjett, fra fase 5 allergiene og fra fase 8
-  kvitteringer, bilder og uttrekk. Dette er testet.
+  kvitteringer, bilder og uttrekk, og fra fase 11 innstillingene og tilstandene for varsler. Dette er testet.
 - **Kvitteringer** (fase 8): bilde og uttrekk slettes når kjøpet bekreftes eller kvitteringen forkastes. Ellers
   slettes alt etter 7 dager av en jobb hver 15. minutt, og utløpte kvitteringer vises ikke selv før jobben har
   kjørt. Slettes kjøpet, slettes også kvitteringsraden. Dette er testet (unntatt selve tidsplanen i pg-boss).

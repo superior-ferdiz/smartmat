@@ -610,6 +610,27 @@ Serveren har ikke noe hurtiglager for medlemskap. Nettappen har det (TanStack Qu
 Under arbeidet kom 404-regelen først for alle spørringer. Da svarte sesjonsspørringen selv med 404 i en komponenttest,
 og appen spurte på nytt i det uendelige, til testprosessen gikk tom for minne. Regelen gjelder nå bare husholdningsdata.
 
+## Eksempel 43: varsler uten lagrede varsler (FR-NOTIF-001–004, ADR-0019)
+
+Et varsel er en ren funksjon av dataene (`notificationsFor` i `packages/shared/src/notifications/rules.ts`):
+partier, dagens dato i Norge, budsjettet og handlelisten inn, en liste med varsler ut. Hvert varsel har en fast
+nøkkel av det det gjelder og trinnet, for eksempel `useBy:today:<parti-id>:2026-10-26`. Serveren lagrer bare hva
+brukeren har gjort med nøkkelen. Det gir tre egenskaper uten egen kode:
+- **ingen duplikater:** samme nøkkel kan bare lagres én gang (primærnøkkel)
+- **alltid riktig:** er partiet brukt opp, finnes ikke varselet lenger. Rettes datoen, er det en ny nøkkel.
+- **ingenting etter utmelding:** tilstanden har en fremmednøkkel til medlemskapet med CASCADE
+
+Serveren godtar bare nøkler som er aktive nå. Det stopper både oppdiktede nøkler og nøkler med andres parti-ID.
+
+## Eksempel 44: ærlige tall og tilgjengelige diagrammer (FR-WASTE-001–005)
+
+- **Ingen anslag for det ukjente.** En kassering uten pris telles, men får ingen verdi. Siden sier hvor mange det er,
+  og hvor stor del av den kjente verdien som er anslått.
+- **Andeler som går opp i 100.** Fordelingen per årsak og kategori bruker største rest (`largestRemainderPercents`),
+  med heltall og BigInt.
+- **Tabellen er diagrammet.** Utviklingen over 12 måneder er en `<table>` med overskrifter. Søylen i cellen er pynt
+  (`aria-hidden`), og anslått verdi er skravert. Den står også med ord: «herav 79,90 kr anslått».
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert

@@ -103,10 +103,20 @@ export const useUpdateItem = (itemId: string) =>
     }),
   );
 
-export const useDeleteItem = (itemId: string) =>
-  useHouseholdMutation<void, void>((h) =>
-    apiFetch<void>(`${base(h)}/inventory/items/${itemId}`, { method: 'DELETE' }),
-  );
+/**
+ * Like deleting a purchase (phase 11): the refetch is not awaited, because it asks for the deleted item again
+ * (404), the page shows "not found", and TanStack would drop the caller's onSuccess (toast and navigation).
+ */
+export function useDeleteItem(itemId: string) {
+  const h = useHouseholdId();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<void>(`${base(h)}/inventory/items/${itemId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: keys.all(h) });
+    },
+  });
+}
 
 export const useAddBatch = (itemId: string) =>
   useHouseholdMutation((h, input: BatchInput) =>

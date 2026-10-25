@@ -23,7 +23,7 @@ afterEach(() => {
 describe('FR-UI-007 Toast', () => {
   it('has a polite live region from the start, so later messages are announced', () => {
     setup();
-    const region = screen.getByRole('region', { name: 'Varsler' });
+    const region = screen.getByRole('region', { name: 'Meldinger' });
     expect(region.querySelector('[aria-live="polite"]')).toBeInTheDocument();
   });
 

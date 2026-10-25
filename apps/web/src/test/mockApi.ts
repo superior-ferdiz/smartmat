@@ -42,8 +42,50 @@ export const TEST_HOUSEHOLD = {
   shareAllergens: false,
 };
 
+/** Spec 11: a month without waste (all twelve months of the trend empty). */
+export function emptyWasteStats(month = '2026-10') {
+  const [y = 2026, m = 10] = month.split('-').map(Number);
+  const trend = Array.from({ length: 12 }, (_, i) => {
+    const index = y * 12 + (m - 1) - (11 - i);
+    const value = `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, '0')}`;
+    return { month: value, count: 0, actualOre: 0, estimatedOre: 0, knownOre: 0, unknownCount: 0 };
+  });
+  return {
+    month,
+    count: 0,
+    actualOre: 0,
+    estimatedOre: 0,
+    knownOre: 0,
+    unknownCount: 0,
+    estimatedPercent: null,
+    quantities: [],
+    byReason: [],
+    byCategory: [],
+    topItems: [],
+    trend,
+  };
+}
+
 export const defaultApi: Handler = (request) => {
+  // Spec 11: opening the shopping list and showing notifications are reported in the background.
+  if (
+    request.method === 'POST' &&
+    /^\/households\/[^/]+\/(shopping-list\/seen|notifications\/seen)$/.test(request.path)
+  ) {
+    return request.path.endsWith('/notifications/seen')
+      ? { status: 200, body: { marked: 0 } }
+      : { status: 204 };
+  }
   if (request.method !== 'GET') return undefined;
+  if (/^\/households\/[^/]+\/notifications$/.test(request.path))
+    return { status: 200, body: { items: [], unseenCount: 0 } };
+  if (request.path === '/me/notification-settings')
+    return {
+      status: 200,
+      body: { useBy: true, bestBefore: true, daysBefore: 1, budget: true, shopping: true },
+    };
+  const waste = /^\/households\/[^/]+\/waste-stats(?:\?month=([\d-]+))?$/.exec(request.path);
+  if (waste) return { status: 200, body: emptyWasteStats(waste[1]) };
   if (/^\/households\/[^/]+$/.test(request.path)) return { status: 200, body: TEST_HOUSEHOLD };
   if (/^\/households\/[^/]+\/inventory$/.test(request.path))
     return { status: 200, body: { items: [] } };

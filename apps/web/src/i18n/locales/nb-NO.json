@@ -34,8 +34,12 @@
       "budget": "Kjøp og budsjett",
       "mealPlan": "Måltidsplan",
       "household": "Husholdning",
-      "settings": "Innstillinger"
-    }
+      "settings": "Innstillinger",
+      "waste": "Svinn"
+    },
+    "notifications": "Varsler",
+    "notificationsUnseen_one": "Varsler, {{count}} nytt",
+    "notificationsUnseen_other": "Varsler, {{count}} nye"
   },
   "form": {
     "optional": "valgfritt",
@@ -50,7 +54,7 @@
     "error": "Feil"
   },
   "toast": {
-    "regionLabel": "Varsler"
+    "regionLabel": "Meldinger"
   },
   "states": {
     "error": {
@@ -205,6 +209,12 @@
       "nameTooLong": "Navnet kan være høyst 100 tegn.",
       "invitationInvalid": "Dette er ikke en gyldig invitasjonslenke.",
       "memberRequired": "Velg et medlem."
+    },
+    "notification": {
+      "key": "Ugyldig varsel.",
+      "keys": "Ugyldig liste over varsler.",
+      "toggle": "Velg på eller av.",
+      "daysBefore": "Velg mellom 0 og 7 dager."
     }
   },
   "pages": {
@@ -242,7 +252,8 @@
         "count_one": "{{count}} kassering denne måneden",
         "count_other": "{{count}} kasseringer denne måneden",
         "unknown_one": "{{count}} av dem uten kjent verdi",
-        "unknown_other": "{{count}} av dem uten kjent verdi"
+        "unknown_other": "{{count}} av dem uten kjent verdi",
+        "open": "Se svinnstatistikken"
       }
     },
     "inventory": {
@@ -284,7 +295,8 @@
         "budget": "Matbudsjett og registrerte kjøp",
         "mealPlan": "Ukens middager",
         "household": "Deling med andre",
-        "settings": "Språk, tema og konto"
+        "settings": "Språk, tema, varsler og konto",
+        "waste": "Hva som kastes, og hvorfor"
       }
     },
     "settings": {
@@ -305,7 +317,26 @@
       "developerText": "Oversikt over farger, typografi og komponenter i SmartMat.",
       "loggedInAs": "Logget inn som {{name}} ({{email}}).",
       "openProfile": "Profil og konto",
-      "saveFailed": "Fikk ikke lagret innstillingen. Prøv igjen."
+      "saveFailed": "Fikk ikke lagret innstillingen. Prøv igjen.",
+      "notifications": {
+        "title": "Varsler",
+        "lead": "Varslene vises bare i appen, og valgene gjelder alle husholdningene dine.",
+        "loading": "Henter varselinnstillingene …",
+        "useBy": "Siste forbruksdag",
+        "useByHint": "Før datoen, på dagen og de to dagene etter.",
+        "bestBefore": "Best før",
+        "bestBeforeHint": "Før datoen og på dagen.",
+        "daysBefore": "Når skal varselet komme?",
+        "daysBeforeHint": "Gjelder både siste forbruksdag og best før.",
+        "daysZero": "Bare på dagen",
+        "days_one": "{{count}} dag før",
+        "days_other": "{{count}} dager før",
+        "budget": "Matbudsjettet",
+        "budgetHint": "Når 80 % og når 100 % av månedens budsjett er brukt.",
+        "shopping": "Handlelisten",
+        "shoppingHint": "Når andre i husholdningen legger til noe.",
+        "save": "Lagre varslene"
+      }
     },
     "notFound": {
       "title": "Fant ikke siden",
@@ -510,6 +541,9 @@
       "alreadyMember": "Du er allerede medlem av denne husholdningen.",
       "invitationInvalid": "Invitasjonen er ugyldig, utløpt, trukket tilbake eller allerede brukt. Be om en ny lenke.",
       "notAMember": "Velg et medlem av husholdningen."
+    },
+    "notification": {
+      "notFound": "Varselet finnes ikke lenger."
     }
   },
   "units": {
@@ -1507,5 +1541,93 @@
     "alreadyMember": "Du er allerede medlem av «{{household}}».",
     "goToApp": "Gå til oversikten",
     "joined": "Du er nå med i {{household}}."
+  },
+  "notifications": {
+    "title": "Varsler",
+    "lead": "Det som trenger oppmerksomhet i husholdningen nå.",
+    "loading": "Henter varsler …",
+    "emptyTitle": "Ingen varsler nå",
+    "emptyText": "Her kommer det et varsel når en vare nærmer seg datoen, når budsjettet er nesten brukt opp, eller når andre legger til på handlelisten.",
+    "settingsLink": "Velg hvilke varsler du vil ha",
+    "listLabel": "Varsler",
+    "new": "Nytt",
+    "dismiss": "Avvis",
+    "dismissLabel": "Avvis varselet: {{title}}",
+    "dismissed": "Varselet er avvist",
+    "dismissFailed": "Fikk ikke avvist varselet. Prøv igjen.",
+    "announce_one": "{{count}} nytt varsel",
+    "announce_other": "{{count}} nye varsler",
+    "kinds": {
+      "useBySoon_one": "{{name}} har siste forbruksdag i morgen",
+      "useBySoon_other": "{{name}} har siste forbruksdag om {{count}} dager",
+      "useByToday": "{{name}} har siste forbruksdag i dag",
+      "useByPassed": "Siste forbruksdag for {{name}} er passert",
+      "bestBeforeSoon_one": "{{name}} er best før i morgen",
+      "bestBeforeSoon_other": "{{name}} er best før om {{count}} dager",
+      "bestBeforeToday": "{{name}} er best før i dag",
+      "budgetNearlyUsed": "{{percent}} % av matbudsjettet for {{month}} er brukt",
+      "budgetExceeded": "Matbudsjettet for {{month}} er brukt opp ({{percent}} %)",
+      "shoppingAdded": "{{who}} la til {{items}} på handlelisten"
+    },
+    "advice": {
+      "useBySoon": "Siste forbruksdag handler om mattrygghet. Bruk den før datoen.",
+      "useByToday": "Etter i dag bør den ikke spises.",
+      "useByPassed": "Bør ikke spises. Siste forbruksdag handler om mattrygghet.",
+      "bestBefore": "Ofte fortsatt god etter datoen. Se, lukt og smak.",
+      "budget": "Se kjøpene for måneden.",
+      "shopping": "Åpne handlelisten for å se alt."
+    },
+    "who": {
+      "former": "Et tidligere medlem",
+      "unknown": "En slettet konto",
+      "several": "Andre i husholdningen"
+    },
+    "moreItems_one": "{{count}} til",
+    "moreItems_other": "{{count}} til"
+  },
+  "waste": {
+    "lead": "Hva husholdningen kaster, hvor mye og hvorfor.",
+    "loading": "Henter svinnstatistikken …",
+    "monthNav": "Velg måned",
+    "previous": "Forrige",
+    "next": "Neste",
+    "summaryTitle": "Kastet i {{month}}",
+    "emptyTitle": "Ingenting kastet i {{month}}",
+    "emptyText": "Når noe kastes fra matlageret med «Kast», kommer det her, med årsak og verdi.",
+    "knownValue": "Kjent verdi",
+    "count_one": "{{count}} kassering",
+    "count_other": "{{count}} kasseringer",
+    "valueSplit": "{{actual}} er beløp dere skrev inn, og {{estimated}} er anslått fra prisen på varen.",
+    "estimatedShare": "{{percent}} % av den kjente verdien er anslått.",
+    "estimatedShareBelowOne": "Under 1 % av den kjente verdien er anslått.",
+    "unknown_one": "{{count}} kassering har ukjent verdi og er ikke med i summen.",
+    "unknown_other": "{{count}} kasseringer har ukjent verdi og er ikke med i summen.",
+    "quantity": "Mengde: {{list}}",
+    "reasonsTitle": "Hvorfor",
+    "categoriesTitle": "Per kategori",
+    "topTitle": "Mest kastet",
+    "trendTitle": "De siste 12 månedene",
+    "shareRow_one": "{{count}} kassering ({{percent}} %)",
+    "shareRow_other": "{{count}} kasseringer ({{percent}} %)",
+    "rowUnknown_one": "{{count}} uten kjent verdi",
+    "rowUnknown_other": "{{count}} uten kjent verdi",
+    "topCount_one": "{{count}} gang",
+    "topCount_other": "{{count}} ganger",
+    "shareNote": "Andelen er av antallet kasseringer, fordi verdien kan mangle.",
+    "trendCaption": "Kastet per måned. Søylen viser kjent verdi: hel for beløp dere skrev inn, skravert for anslått.",
+    "columns": {
+      "month": "Måned",
+      "count": "Kasseringer",
+      "known": "Kjent verdi",
+      "unknown": "Ukjent verdi"
+    },
+    "aboutTitle": "Om tallene",
+    "about": {
+      "value": "Verdien er enten beløpet dere skrev inn ved kasseringen, eller anslått ut fra prisen på varen. Kasseringer uten pris telles, men får ingen verdi.",
+      "undo": "En kassering som er angret, telles ikke. Sletter du en vare, forsvinner også kasseringene av den.",
+      "category": "Kategorien er den varen har nå.",
+      "household": "Tallene gjelder hele husholdningen. Det finnes ingen tall per person."
+    },
+    "trendEstimated": "herav {{amount}} anslått"
   }
 }

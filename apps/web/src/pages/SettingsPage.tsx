@@ -14,6 +14,7 @@ import {
 import { DESIGN_SYSTEM_PATH, PROFILE_PATH } from '../app/navigation';
 import { useCurrentUser, useLogout, useUpdateProfile } from '../auth/session';
 import { Page } from '../layout/Page';
+import { NotificationSettingsCard } from '../notifications/NotificationSettingsCard';
 import styles from './SettingsPage.module.css';
 
 /**
@@ -79,6 +80,8 @@ export function SettingsPage() {
             />
           </div>
         </Card>
+
+        <NotificationSettingsCard />
 
         <Card title={t('pages.settings.account')}>
           <p className={styles.text}>

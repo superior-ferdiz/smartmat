@@ -70,8 +70,8 @@ describe('FR-UI-005 language', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Settings' })).toBeInTheDocument();
     expect(document.documentElement.lang).toBe('en');
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('en');
-    // FR-AUTH-004: sent to the API with the CSRF token.
-    expect(requests).toEqual([
+    // FR-AUTH-004: sent to the API with the CSRF token. (The page also reads data: only the change counts.)
+    expect(requests.filter((r) => r.method !== 'GET')).toEqual([
       expect.objectContaining({
         method: 'PATCH',
         path: '/me',
@@ -95,5 +95,65 @@ describe('FR-UI-005 language', () => {
   it('ignores an unsupported stored language', () => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, 'sv');
     expect(readStoredLocale()).toBe('nb-NO');
+  });
+});
+
+describe('FR-NOTIF-005 notification settings', () => {
+  it('shows the saved choices and sends the whole object with the CSRF token', async () => {
+    const requests = mockApi((r) => {
+      if (r.path !== '/me/notification-settings') return undefined;
+      if (r.method === 'GET')
+        return {
+          status: 200,
+          body: { useBy: true, bestBefore: false, daysBefore: 2, budget: true, shopping: true },
+        };
+      return { status: 200, body: r.body };
+    });
+    const user = userEvent.setup();
+    renderApp('/innstillinger');
+    const useBy = await screen.findByRole('checkbox', { name: 'Siste forbruksdag' });
+    expect(useBy).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Best før' })).not.toBeChecked();
+    const days = screen.getByRole('combobox', { name: 'Når skal varselet komme?' });
+    expect(days).toHaveValue('2');
+
+    await user.click(screen.getByRole('checkbox', { name: 'Handlelisten' }));
+    await user.selectOptions(days, '0');
+    await user.click(screen.getByRole('button', { name: 'Lagre varslene' }));
+    expect(await screen.findByText('Innstillingen er lagret')).toBeInTheDocument();
+    const put = requests.find((r) => r.method === 'PUT');
+    expect(put).toMatchObject({
+      path: '/me/notification-settings',
+      body: { useBy: true, bestBefore: false, daysBefore: 0, budget: true, shopping: false },
+      headers: expect.objectContaining({ 'x-csrf-token': TEST_SESSION.csrfToken }),
+    });
+  });
+
+  it('turns off "how many days before" when neither date notification is on', async () => {
+    const user = userEvent.setup();
+    renderApp('/innstillinger');
+    await user.click(await screen.findByRole('checkbox', { name: 'Siste forbruksdag' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Best før' }));
+    expect(screen.getByRole('combobox', { name: 'Når skal varselet komme?' })).toBeDisabled();
+  });
+
+  it('shows a server refusal as a message', async () => {
+    mockApi((r) =>
+      r.method === 'PUT' && r.path === '/me/notification-settings'
+        ? {
+            status: 400,
+            body: {
+              error: {
+                code: 'errors.validation',
+                fields: { daysBefore: 'validation.notification.daysBefore' },
+              },
+            },
+          }
+        : undefined,
+    );
+    const user = userEvent.setup();
+    renderApp('/innstillinger');
+    await user.click(await screen.findByRole('button', { name: 'Lagre varslene' }));
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
   });
 });

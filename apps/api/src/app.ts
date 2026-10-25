@@ -28,6 +28,12 @@ import { locationRoutes } from './modules/locations/routes';
 import { createBudgetRepo } from './modules/budget/repo';
 import { budgetRoutes } from './modules/budget/routes';
 import { BudgetService } from './modules/budget/service';
+import { createNotificationRepo } from './modules/notifications/repo';
+import { notificationRoutes } from './modules/notifications/routes';
+import { NotificationService } from './modules/notifications/service';
+import { createWasteRepo } from './modules/waste/repo';
+import { wasteRoutes } from './modules/waste/routes';
+import { WasteService } from './modules/waste/service';
 import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
 import { HouseholdService } from './modules/households/service';
@@ -208,6 +214,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     now,
   });
   const budgetService = new BudgetService({ repo: createBudgetRepo(db), now });
+  const wasteService = new WasteService({ repo: createWasteRepo(db), now });
+  const notificationService = new NotificationService({
+    repo: createNotificationRepo(db),
+    budget: budgetService,
+    now,
+  });
   const barcodeService = new BarcodeService({
     repo: createBarcodeRepo(db),
     provider: deps.barcodeProvider ?? defaultBarcodeProvider(config, now),
@@ -281,6 +293,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         householdAccess,
       });
       await api.register(budgetRoutes, { service: budgetService, requireAuth, householdAccess });
+      await api.register(wasteRoutes, { service: wasteService, requireAuth, householdAccess });
+      await api.register(notificationRoutes, {
+        service: notificationService,
+        requireAuth,
+        householdAccess,
+      });
       await api.register(recipeRoutes, { service: recipeService, requireAuth, householdAccess });
       await api.register(barcodeRoutes, { service: barcodeService, requireAuth, householdAccess });
       await api.register(receiptRoutes, { service: receiptService, requireAuth, householdAccess });

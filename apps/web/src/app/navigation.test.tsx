@@ -7,15 +7,15 @@ import { SECTIONS } from './navigation';
 import { expectNoAxeViolations } from '../test/axe';
 
 describe('FR-UI-001 navigation', () => {
-  it('has nine sections with unique paths', () => {
-    expect(SECTIONS).toHaveLength(9);
-    expect(new Set(SECTIONS.map((s) => s.path)).size).toBe(9);
+  it('has ten sections with unique paths', () => {
+    expect(SECTIONS).toHaveLength(10);
+    expect(new Set(SECTIONS.map((s) => s.path)).size).toBe(10);
   });
 
-  it('side menu lists all nine sections', () => {
+  it('side menu lists all ten sections', () => {
     renderApp('/');
     const nav = screen.getByRole('navigation', { name: 'Hovedmeny' });
-    expect(within(nav).getAllByRole('link')).toHaveLength(9);
+    expect(within(nav).getAllByRole('link')).toHaveLength(10);
   });
 
   it('bottom menu has Oversikt, Matlager, Skann, Oppskrifter and Mer, in that order', () => {
@@ -82,10 +82,10 @@ describe('FR-UI-002 placeholder pages', () => {
     expect(screen.queryByText('Senere')).not.toBeInTheDocument();
   });
 
-  it('"Mer" lists the five sections that are not in the bottom menu', () => {
+  it('"Mer" lists the six sections that are not in the bottom menu', () => {
     renderApp('/mer');
     const nav = screen.getByRole('navigation', { name: 'Flere seksjoner' });
-    expect(within(nav).getAllByRole('link')).toHaveLength(5);
+    expect(within(nav).getAllByRole('link')).toHaveLength(6);
   });
 
   it('unknown URLs show a 404 page with a way back', () => {
