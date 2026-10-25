@@ -68,6 +68,16 @@ export interface AppConfig {
   };
   /** ADR-0016 (spec 09): false hides external recipes nobody in the team has checked yet. */
   recipes: { includeUnreviewed: boolean };
+  /** Prices (spec 12, ADR-0020). Without an API key, Kassalapp is never asked and only own prices are shown. */
+  prices: {
+    kassalappBaseUrl: string;
+    /** Secret: only in .env, never logged. */
+    kassalappApiKey: string | null;
+    kassalappTimeoutMs: number;
+    /** Our calls to Kassalapp per minute, for the whole server (Kassalapp allows 60 per account). */
+    kassalappMaxPerMinute: number;
+    lookupsPerUserPerMinute: number;
+  };
 }
 
 const MINUTE = 60_000;
@@ -123,6 +133,12 @@ const envSchema = z.object({
   RECEIPT_UPLOADS_PER_HOUR: z.coerce.number().int().positive().default(10),
   RECEIPT_MAX_QUEUED: z.coerce.number().int().positive().default(20),
   RECIPES_INCLUDE_UNREVIEWED: z.enum(['true', 'false']).default('true'),
+  // Spec 12. No key = no external prices. The key is sent only to this https address.
+  KASSALAPP_BASE_URL: z.url({ protocol: /^https$/ }).default('https://kassal.app/api/v1'),
+  KASSALAPP_API_KEY: z.string().trim().min(1).optional(),
+  KASSALAPP_TIMEOUT_MS: z.coerce.number().int().min(100).max(30_000).default(3000),
+  KASSALAPP_MAX_PER_MINUTE: z.coerce.number().int().positive().max(60).default(30),
+  PRICE_LOOKUPS_PER_MINUTE: z.coerce.number().int().positive().default(30),
 });
 
 /** "172.26.0.0/16" or "127.0.0.1". */
@@ -183,5 +199,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       maxQueued: e.RECEIPT_MAX_QUEUED,
     },
     recipes: { includeUnreviewed: e.RECIPES_INCLUDE_UNREVIEWED === 'true' },
+    prices: {
+      kassalappBaseUrl: e.KASSALAPP_BASE_URL,
+      kassalappApiKey: e.KASSALAPP_API_KEY ?? null,
+      kassalappTimeoutMs: e.KASSALAPP_TIMEOUT_MS,
+      kassalappMaxPerMinute: e.KASSALAPP_MAX_PER_MINUTE,
+      lookupsPerUserPerMinute: e.PRICE_LOOKUPS_PER_MINUTE,
+    },
   };
 }

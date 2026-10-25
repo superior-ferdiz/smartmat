@@ -9,6 +9,7 @@ import { pgBossReceiptQueue, RECEIPT_OCR_QUEUE, startJobs } from '../src/lib/rec
 import { ReceiptProcessor } from '../src/modules/receipts/processor';
 import { createReceiptRepo } from '../src/modules/receipts/repo';
 import type { OcrProvider } from '../src/providers/ocr/types';
+import { fakeKassalappFetch, testPriceProvider } from '../test/fakeKassalapp';
 import { fakeOffFetch, testBarcodeProvider } from '../test/fakeOff';
 import { applySeed, readSeedDirectory } from '../src/modules/recipes/seed';
 import { seedFixtureRecipes } from '../test/fixtureSeed';
@@ -46,7 +47,9 @@ const db = createDb(databaseUrl);
 await db.$executeRawUnsafe(
   'TRUNCATE TABLE sessions, household_invitations, household_members, households, users RESTART IDENTITY CASCADE',
 );
-await db.$executeRawUnsafe('TRUNCATE TABLE products, product_lookup_misses');
+await db.$executeRawUnsafe(
+  'TRUNCATE TABLE products, product_lookup_misses, price_observations, price_lookups',
+);
 // Spec 05: the fictional test recipes, never the team's (the e2e tests must not depend on real content).
 // Spec 09: only the screenshot run (E2E_RECIPE_SEED=repo) uses the recipes in prisma/seed/, so the report can
 // show a translated Wikibooks recipe with its source and licence. The next normal run seeds the fixtures again.
@@ -93,6 +96,8 @@ const app = await buildApp({
   config,
   db,
   barcodeProvider: testBarcodeProvider(fakeOffFetch().fetchFn as typeof fetch),
+  // Spec 12: never the real Kassalapp. The fake one has made-up prices for the codes in test/fakeKassalapp.ts.
+  priceProvider: testPriceProvider(fakeKassalappFetch().fetchFn as typeof fetch),
   receiptQueue: pgBossReceiptQueue(jobs),
 });
 await app.listen({ host: config.host, port: config.port });

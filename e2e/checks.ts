@@ -31,6 +31,9 @@ export async function expectNoAxeViolations(page: Page) {
 export async function useTallPhoneViewport(page: Page) {
   const viewport = page.viewportSize();
   if (!viewport || viewport.width >= 600) return;
+  // Phase 12: under heavy load the profile page's last card arrived after the height was measured, and its button
+  // ended up behind the menu again. Wait until the page has stopped fetching before measuring.
+  await page.waitForLoadState('networkidle');
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
   await page.setViewportSize({
     width: viewport.width,

@@ -18,6 +18,7 @@ import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { TextField } from '../../components/TextField/TextField';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
 import { Page } from '../../layout/Page';
+import { BarcodePrices } from '../../prices/PriceViews';
 import { useBarcodeLookup } from '../../scan/api';
 import { cameraSupport } from '../../scan/camera';
 import { ScanConfirmForm } from '../../scan/ScanConfirmForm';
@@ -187,6 +188,9 @@ export function ScanPage() {
             </div>
           </section>
         )}
+
+        {/* Spec 12: prices load after the lookup, so the form never waits for them. */}
+        {gtin !== null && !lookup.isPending && <BarcodePrices gtin={gtin} />}
 
         {/* Open Food Facts asks for credit, the licence and a link wherever its data is used (ODbL). */}
         <p className={styles.attribution}>

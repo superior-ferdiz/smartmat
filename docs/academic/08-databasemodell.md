@@ -1,6 +1,6 @@
 # Databasemodell
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet i fase 5–10. Skjemaet og teksten er laget
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet i fase 5–12. Skjemaet og teksten er laget
 > av KI (Claude) og ikke gjennomgått av teamet ennå. Kapittelet utvides med tabellene for oppskrifter i senere faser.
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
 
@@ -355,6 +355,20 @@ Behovet for uka lagres ikke. Det regnes ut fra planen, oppskriftene og matlagere
 - **Svinnstatistikken** har ingen tabell. Den summeres fra `inventory_events` med `GROUP BY` per måned (norsk tid,
   `AT TIME ZONE 'Europe/Oslo'`), årsak, kategori, enhet og verditype.
 
+### Priser (fase 12)
+
+- **`price_observations`** og **`price_lookups`** er globale tabeller, som mellomlageret for Open Food Facts. De har
+  ingen `household_id` og ingenting om brukere: en pris hos Meny for en strekkode er den samme for alle.
+  - Én rad per kilde, strekkode og kjede (unik indeks). Et nytt svar sletter og skriver alle radene for strekkoden i
+    én transaksjon, så en kjede som ikke lenger har prisen, forsvinner.
+  - To tidspunkter: `observed_at` er når Kassalapp sist sjekket prisen, `fetched_at` er når vi hentet den. Det første
+    avgjør om prisen er gammel (14 dager), det andre avgjør hurtiglageret (6 timer) og slettingen (30 dager).
+  - Pakningsstørrelsen lagres i grunnenhet, ikke enhetsprisen. Enhetsprisen regnes ut med heltall når den vises.
+  - CHECK: GTIN med 8, 13 eller 14 sifre, pris 0–10 000 000 øre, kjedekode med store bokstaver, sifre og `_`, og
+    pakningsstørrelse med enhet eller ingen av dem.
+- **Egne priser har ingen tabell.** De leses fra `inventory_batches` ved hver forespørsel, som budsjettet (ADR-0007).
+  Retter brukeren prisen på et parti, er den egne prisen riktig med en gang.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |
@@ -403,6 +417,7 @@ er sortert etter tid, noe som gir bedre indekser enn helt tilfeldige UUID-er.
 | `20261024180000_meal_plan` | Måltidsplan: `meal_plan_entries`, `shopping_list_item_meals`, enum `meal`, sammensatte fremmednøkler, `recipe_id` med SET NULL, CHECK (oppskrift eller fritekst, porsjoner 1–50, positiv mengde) |
 | `20261024210000_households_sharing` | Delte husholdninger: `household_invitations`, `share_allergens`, `active_household_id`, indeksen for én eier og CHECK (ikke både brukt og tilbaketrukket, `used_by` bare med `used_at`) |
 | `20261025120000_notifications` | Varsler: `notification_settings`, `notification_states` (sammensatt fremmednøkkel til medlemskapet med CASCADE), `shopping_seen_at` og CHECK (dager før 0–7, nøkkelformat) |
+| `20261025150000_prices` | Priser: `price_observations`, `price_lookups`, enum `price_source` og CHECK (GTIN, pris, kjedekode, pakningsstørrelse) |
 
 **Om den tredje migreringen:** `seq` ble lagt til etter at matlagermigreringen var kjørt i utviklingsdatabasen.
 `prisma migrate reset` nekter å kjøre når den startes av et KI-verktøy, fordi kommandoen sletter data. Derfor ble

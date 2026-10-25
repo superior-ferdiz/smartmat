@@ -1629,5 +1629,87 @@
       "household": "Tallene gjelder hele husholdningen. Det finnes ingen tall per person."
     },
     "trendEstimated": "herav {{amount}} anslått"
+  },
+  "prices": {
+    "title": "Priser",
+    "loading": "Henter priser …",
+    "estimateNote": "Prisene er bare til informasjon. Det du betaler, fører du som et kjøp.",
+    "per": {
+      "kg": "kg",
+      "l": "l",
+      "stk": "stk"
+    },
+    "unitPrice": "{{price}} per {{per}}",
+    "own": {
+      "title": "Det dere har betalt",
+      "forItem": "For «{{name}}» i matlageret.",
+      "emptyNoItem": "Dere har ikke lagt denne strekkoden i matlageret før, så det finnes ingen egne priser for den.",
+      "empty": "Dere har ikke ført noen pris for denne varen ennå. Prisen kommer med når du registrerer et kjøp eller skriver inn pris på et parti.",
+      "amount": "{{quantity}} for {{price}}",
+      "fromPurchase": "Fra kjøp",
+      "fromPurchaseAt": "Fra kjøp hos {{store}}",
+      "enteredOnItem": "Ført på varen",
+      "seePurchase": "Se kjøpet",
+      "old": "Over 3 måneder gammel"
+    },
+    "external": {
+      "title": "Priser hos kjedene",
+      "status": {
+        "off": "Priser fra kjedene er slått av. Bare det dere selv har betalt, vises.",
+        "notAsked": "Butikkens egen kode kan ikke slås opp hos kjedene.",
+        "noBarcode": "Varen er ikke skannet, så vi kan ikke hente priser fra kjedene. Skann varen neste gang du kjøper den.",
+        "notFound": "Kassalapp har ingen priser for denne strekkoden.",
+        "unavailable": "Prisoppslaget svarer ikke akkurat nå. Prøv igjen senere.",
+        "unavailableStored": "Prisoppslaget svarer ikke akkurat nå. Prisene under ble hentet {{date}} og kan være utdaterte.",
+        "noPrices": "Ingen kjeder har pris på denne varen.",
+        "noFresh": "Ingen kjeder har sjekket prisen de siste 14 dagene."
+      },
+      "cheapest": "Billigst sist observert: {{chain}}, {{price}} (sjekket {{date}})",
+      "cheapestOf_one": "Bare {{count}} kjede har en pris som er sjekket de siste 14 dagene.",
+      "cheapestOf_other": "Laveste av {{count}} kjeder med pris sjekket de siste 14 dagene.",
+      "caption": "Siste pris per kjede, billigst først",
+      "columns": {
+        "chain": "Kjede",
+        "price": "Pris",
+        "checked": "Sjekket"
+      },
+      "chainLink": "{{chain}}, se varen hos Kassalapp",
+      "older_one": "Eldre pris ({{count}})",
+      "older_other": "Eldre priser ({{count}})",
+      "olderNote": "Priser som ikke er sjekket på 14 dager, og kjeder Kassalapp ikke lenger henter priser fra. De kan være feil i dag.",
+      "stale": "Ikke sjekket på 14 dager",
+      "uncollected": "Kassalapp henter ikke lenger priser fra denne kjeden",
+      "coverage": "Prisene gjelder kjeden, ikke en bestemt butikk. Tilbud og medlemspriser er ikke med, og Rema 1000, Kiwi og Coop er ikke med. Dette er ikke en fullstendig sammenligning.",
+      "fetchedAt": "Hentet {{date}}.",
+      "attribution": "Priser fra",
+      "attributionLink": "Kassalapp"
+    },
+    "estimate": {
+      "title": "Anslått pris",
+      "loading": "Regner ut anslag …",
+      "error": "Klarte ikke å regne ut anslaget.",
+      "summary": "Anslag for {{estimated}} av {{open}} linjer: ca. {{amount}}",
+      "missing_one": "{{count}} linje mangler pris og er ikke med.",
+      "missing_other": "{{count}} linjer mangler pris og er ikke med.",
+      "sources": "Fra det dere har betalt: {{own}}. Fra Kassalapp: {{kassalapp}}.",
+      "none": "Ingen av linjene har pris ennå. Et anslag kommer fra det dere har betalt for samme vare, eller fra Kassalapp når varen er skannet.",
+      "note": "Et anslag, ikke det du kommer til å betale. Det blir ikke med i budsjettet.",
+      "perLine": "Vis anslag per linje",
+      "basis": {
+        "scaled": "regnet ut fra mengden",
+        "lastTime": "som sist",
+        "onePackage": "én pakke"
+      },
+      "source": {
+        "own": "det dere har betalt",
+        "kassalapp": "Kassalapp"
+      },
+      "lineEstimate": "ca. {{amount}} ({{basis}}, {{source}}, {{date}})",
+      "missingReason": {
+        "noMatch": "ingen vare i matlageret med dette navnet",
+        "noPrice": "ingen pris ennå",
+        "unitMismatch": "annen enhet enn prisen"
+      }
+    }
   }
 }

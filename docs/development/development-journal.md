@@ -702,3 +702,81 @@ Bevis ligger i `docs/evidence/test-results/fase-11/`, skjermbilder i `docs/evide
 **Oppfølging 2026-10-25:** Godkjenningen («Godkjent commit og push») gjaldt også commit og push når fasen var ferdig.
 `fase-11` ble committet og pushet etter at alle sjekkene var kjørt med den endelige koden. Ingen gjennomgang av fase
 11 er oppgitt, og ingen pull request er merget til `main`.
+
+---
+
+## 2026-10-25 – Fase 12: priser (etter vilkårsavklaring)
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 12 i en ny chat med en detaljert prompt.
+- **Plassholderne i prompten var ikke fylt ut.** Claude registrerte dem slik og sa fra i svaret:
+
+  | Plassholder | Registrert som |
+  |---|---|
+  | Gjennomgang siden fase 11 | ingen |
+  | Ordlyden i varslene | ikke lest ennå |
+  | Kapittel 12 og reglene fra fase 10 | ikke vurdert ennå |
+  | Behandlingsgrunnlaget for deling av allergier | ikke vurdert ennå |
+  | Kontroll av oppskriftene | ingen ennå |
+  | ADR-0017 | ikke godkjent ennå |
+  | Konto og nøkkel hos Kassalapp | har vi ikke |
+- Grenen `fase-12` ble laget fra `fase-11`, fordi ingenting er merget til `main`.
+- **Steg 1 – vilkår før kode:**
+  - Claude leste Kassalapps FAQ (som er bruksvilkårene for Hobby), API-sidene, OpenAPI-filen, `llms.txt`, `ai.txt`,
+    personvernerklæringen og «Om»-siden 2026-10-25.
+  - Resultatet står i [integrations/kassalapp.md](integrations/kassalapp.md), med sitat og tolkning hver for seg.
+  - Konklusjon: Hobby er lov for et studentprosjekt, og lagring er lov. Rema 1000, Kiwi og Coop er ikke med.
+- **Planen:** fasemalen med sju åpne spørsmål og anbefalinger. Ferdinand godkjente med «Godkjennt» uten å svare på
+  spørsmålene enkeltvis, så anbefalingene gjelder (se [spesifikasjon 12](requirements/12-priser.md)):
+  - Kassalapp på Hobby, av uten nøkkel
+  - bare siste pris per kjede, 6 timers hurtiglager
+  - ingen fritekstsøk
+  - gamle priser fra Rema 1000, Kiwi og Coop sammenfoldet og aldri i «billigst»
+  - ingen partipris fra Kassalapp
+  - merke på egne priser over 90 dager
+  - anslag uten nye kall
+- **Spesifikasjon 12 og ADR-0020 ble skrevet før koden.** ADR-0020 er akseptert gjennom godkjenningen av planen.
+- **All kode i fasen er skrevet av KI.**
+
+**Avvik og funn underveis** (detaljer i spesifikasjon 12 og kapittel 11)
+- **Samtidige oppslag ga 500.** Playwright fant det. Det er rettet og testet.
+- **Kontroll av testene** (36 endringer):
+  - første kjøring fanget 35 av 36, og det kom en ny test mot repoet (runde 26)
+  - andre kjøring fanget 36 av 36
+  - alle kjøringene er lagret
+- **To svakheter i eldre tester** ble synlige under høy last og med ny rekkefølge på testene:
+  - høydemålingen i `useTallPhoneViewport` (fase 3)
+  - videoen til det falske kameraet (fase 7)
+
+  Begge er rettet. To fulle Playwright-kjøringer feilet på kameratesten og er lagret. Den tredje besto.
+- **Serveren var hardt belastet** av et annet prosjekt hele økten (load average 19–28). Det ble ikke rørt.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 1293 |
+| API-tester mot database | 442 |
+| Bygg | Vellykket (hovedfil 881 kB) |
+| Playwright-tester | 187 (tredje kjøring) |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-12/`, skjermbilder i `docs/evidence/screenshots/fase-12/`.
+
+**Ikke gjort:**
+- teamets gjennomgang av fase 12 (pull request) og teamets egen lesing av Kassalapps vilkår
+- konto og nøkkel hos Kassalapp, og ett manuelt oppslag for å se svarformatet
+- test på ekte telefon med skjermleser
+- fortsatt utestående fra tidligere faser:
+  - testmiljøet (DNS, passord, oppsett)
+  - kontaktadresse til Open Food Facts (og eventuelt Wikimedia)
+  - kontroll av OFF-kategoritabellen, `ingredients.json` og de 27 oppskriftene
+  - ADR-0017 og de 3 kvitteringene som mangler
+  - sletting av pilotdataene senest 2026-11-23
+  - teamets vurdering av reglene fra fase 10, behandlingsgrunnlaget for deling av allergier og ordlyden i varslene
+
+**Neste:** Teamet går gjennom fasen. Deretter fase 13 (sikkerhet, ytelse, tilgjengelighet, backup, hosting), i en ny
+chat.

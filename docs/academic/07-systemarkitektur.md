@@ -1,6 +1,6 @@
 # Systemarkitektur
 
-> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20), utvidet i fase 7 (2026-10-22). Arkitekturen og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20), utvidet i fase 7 (2026-10-22) og fase 12 (2026-10-25). Arkitekturen og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides når flere deler kommer til. Offisielle APP2000-krav til rapporten er
 > ikke verifisert.
 
@@ -148,6 +148,26 @@ flowchart LR
 `packages/shared/src/mealplan/`. Behovet lagres ikke. Det regnes ut ved hver forespørsel fra planen, oppskriftene,
 matlageret og det planen allerede har lagt på handlelisten. Når noe legges på listen, skriver handlelistens repo både
 linjen og bidraget i én transaksjon, med listen låst.
+
+## Priser (fase 12)
+
+Kassalapp er den andre eksterne tjenesten som spørres mens appen kjører, og den følger samme mønster som Open Food
+Facts: et grensesnitt (`PriceProvider` i `apps/api/src/providers/prices/`), tidsavbrudd, Zod-validering, grenser og et
+globalt hurtiglager. Uten nøkkel er provideren av, og appen viser bare husholdningens egne priser (ADR-0020).
+
+```mermaid
+flowchart LR
+  W[Nettleser] -- "/prices/:gtin" --> A[API]
+  A -- "egne priser<br/>(lest ved hver forespørsel)" --> B[(inventory_batches)]
+  A --> C[(price_lookups<br/>price_observations<br/>6 timer)]
+  A -- "bare GTIN + nøkkel,<br/>3 s, 30 per min" --> K[Kassalapp]
+```
+
+To regler holder dataene ærlige:
+- **Egne og eksterne priser blandes aldri.** Egne priser kommer fra partiene (det husholdningen har betalt eller
+  skrevet inn). Eksterne priser er anslag og skrives aldri til kjøp, partier, budsjett eller svinn (ADR-0007).
+- **Anslaget på handlelisten spør ikke Kassalapp.** Det bruker bare det som allerede er lagret, så en lang liste ikke
+  bruker opp grensen.
 
 ## Sikkerhetsgrenser
 

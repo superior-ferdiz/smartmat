@@ -38,6 +38,9 @@ import { createHouseholdRepo } from './modules/households/repo';
 import { householdRoutes } from './modules/households/routes';
 import { HouseholdService } from './modules/households/service';
 import { createProfileRepo } from './modules/profile/repo';
+import { createPriceRepo } from './modules/prices/repo';
+import { priceRoutes } from './modules/prices/routes';
+import { PriceService } from './modules/prices/service';
 import { createPurchaseRepo } from './modules/purchases/repo';
 import { createMealPlanRepo } from './modules/mealplan/repo';
 import { mealPlanRoutes } from './modules/mealplan/routes';
@@ -73,6 +76,8 @@ import {
 } from './plugins/web';
 import { createOpenFoodFactsProvider } from './providers/barcode/openFoodFacts';
 import { disabledBarcodeProvider, type BarcodeProvider } from './providers/barcode/types';
+import { createKassalappProvider } from './providers/prices/kassalapp';
+import { disabledPriceProvider, type PriceProvider } from './providers/prices/types';
 
 export interface AppDeps {
   config: AppConfig;
@@ -84,6 +89,8 @@ export interface AppDeps {
   logStream?: DestinationStream;
   /** Tests pass a fake; otherwise Open Food Facts if a User-Agent is configured (spec 07). */
   barcodeProvider?: BarcodeProvider;
+  /** Tests pass a fake; otherwise Kassalapp if an API key is configured (spec 12). */
+  priceProvider?: PriceProvider;
   /** Spec 08: where uploaded receipts go for the worker. server.ts passes pg-boss; tests pass a fake. */
   receiptQueue?: ReceiptQueue;
 }
@@ -107,11 +114,28 @@ function defaultBarcodeProvider(config: AppConfig, now: Clock): BarcodeProvider 
   });
 }
 
+/** Spec 12 (ADR-0020): without an API key, Kassalapp is never asked; the app shows own prices only. */
+function defaultPriceProvider(config: AppConfig, now: Clock): PriceProvider {
+  const { kassalappApiKey, kassalappBaseUrl, kassalappTimeoutMs, kassalappMaxPerMinute } =
+    config.prices;
+  if (!kassalappApiKey) return disabledPriceProvider;
+  return createKassalappProvider({
+    baseUrl: kassalappBaseUrl,
+    apiKey: kassalappApiKey,
+    timeoutMs: kassalappTimeoutMs,
+    limiter: new WindowLimiter(kassalappMaxPerMinute, MINUTE, now),
+    now,
+  });
+}
+
 export const API_PREFIX = '/api/v1';
 
-/** Spec 07: a barcode says what a household has bought, so it is left out of the logged URL. */
+/** Spec 07 and 12: a barcode says what a household has bought, so it is left out of the logged URL. */
 export function redactUrl(url: string): string {
-  return url.replace(/\/barcodes\/[^/?#]*/, '/barcodes/[gtin]').replace(/\?.*$/, '');
+  return url
+    .replace(/\/barcodes\/[^/?#]*/, '/barcodes/[gtin]')
+    .replace(/\/prices\/[^/?#]*/, '/prices/[gtin]')
+    .replace(/\?.*$/, '');
 }
 
 /** Builds the API without starting it (server.ts listens; tests use app.inject). */
@@ -241,6 +265,13 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     uploadLimiter: new WindowLimiter(config.receipts.uploadsPerUserPerHour, 60 * MINUTE, now),
     now,
   });
+  const priceService = new PriceService({
+    repo: createPriceRepo(db),
+    provider: deps.priceProvider ?? defaultPriceProvider(config, now),
+    ingredients: { catalog: () => recipeRepo.catalog() },
+    userLimiter: new WindowLimiter(config.prices.lookupsPerUserPerMinute, MINUTE, now),
+    now,
+  });
   const shoppingRepo = createShoppingRepo(db);
   const shoppingService = new ShoppingService({
     repo: shoppingRepo,
@@ -301,6 +332,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       });
       await api.register(recipeRoutes, { service: recipeService, requireAuth, householdAccess });
       await api.register(barcodeRoutes, { service: barcodeService, requireAuth, householdAccess });
+      await api.register(priceRoutes, { service: priceService, requireAuth, householdAccess });
       await api.register(receiptRoutes, { service: receiptService, requireAuth, householdAccess });
       await api.register(shoppingRoutes, {
         service: shoppingService,

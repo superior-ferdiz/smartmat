@@ -40,6 +40,22 @@ Lest av KI (Claude) 2026-10-24. Ikke kontrollert av teamet. Referansestil er ikk
 - TheMealDB. *API* og *Terms of use.* https://www.themealdb.com/api.php og
   https://www.themealdb.com/terms_of_use.php (lest 2026-10-24, vurdert og valgt bort).
 
+## Kilder registrert underveis (fase 12)
+
+Lest av KI (Claude) 2026-10-25, før koden ble skrevet. Ikke kontrollert av teamet. Referansestil er ikke valgt.
+Innholdet er oppsummert i `docs/development/integrations/kassalapp.md`.
+
+- Kassalapp. *Spørsmål og svar om API-et.* https://kassal.app/api/faq (lest 2026-10-25). Bruksvilkårene for Hobby,
+  dekning, rate limit og logging.
+- Kassalapp. *API* og *Priser.* https://kassal.app/api og https://kassal.app/pris (lest 2026-10-25).
+- Kassalapp. *API-dokumentasjon* og *OpenAPI-beskrivelse.* https://kassal.app/api/docs og
+  https://kassal.app/docs/api.json (lest 2026-10-25, versjon 0.0.1 av beskrivelsen).
+- Kassalapp. *llms.txt* og *ai.txt.* https://kassal.app/llms.txt og https://kassal.app/ai.txt (lest 2026-10-25).
+- Kassalapp. *Personvernerklæring* («Sist endret: 08.06.2023»). https://kassal.app/personvern (lest 2026-10-25).
+- Kassalapp. *Om Kassalapp.* https://kassal.app/om (lest 2026-10-25).
+
+Ingen priser fra Kassalapp er brukt i rapporten eller i testene. Testene bruker oppdiktede priser.
+
 ## Kilder i prosjektet
 
 <!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->

@@ -511,3 +511,60 @@ NotificationSettings = { useBy: boolean, bestBefore: boolean, daysBefore: 0–7,
 - **Handlelisten:** `shopping:<ms>` flytter brukerens «sett»-tidspunkt fram til linjen med det tidspunktet, aldri
   bakover. En eldre nøkkel fra en side som ble lastet før, godtas derfor (spesifikasjon 11, avvik 1).
 - **Kropper og nøkler logges aldri.** URL-ene inneholder ingen varenavn.
+
+## Priser (fase 12)
+
+Se [spesifikasjon 12](requirements/12-priser.md), [ADR-0020](architecture-decisions/0020-priser-fra-kassalapp-som-anslag.md)
+og [integrations/kassalapp.md](integrations/kassalapp.md). Alle tre rutene ligger under `/households/:h`, krever
+innlogging og medlemskap (ikke medlem gir 404) og er bare lesing. Ingen av dem endrer kjøp, partier, budsjett eller
+svinn (FR-PRICE-005).
+
+### Typer
+```ts
+UnitPrice = { ore, per: 'kg' | 'l' | 'stk' }                          // heltall, rundet halvt opp
+OwnPriceEntry = {
+  batchId, priceOre, quantityBase, unit, unitPrice: UnitPrice | null,
+  date: 'YYYY-MM-DD',                                                  // kjøpsdato, ellers dagen partiet ble lagt inn
+  old: boolean,                                                        // mer enn 90 dager siden
+  origin: 'purchase' | 'item', storeName: string | null, purchaseId: uuid | null,
+}
+OwnPrices = { item: { id, name } | null, entries: OwnPriceEntry[] }   // nyeste først, høyst 10
+PriceObservation = {
+  source: 'kassalapp', chainCode, chainName, priceOre,
+  packageQuantityBase: number | null, packageUnit: 'g' | 'ml' | 'stk' | null, unitPrice: UnitPrice | null,
+  observedAt: ISO-tid,                                                 // når Kassalapp sist sjekket prisen
+  stale: boolean, uncollected: boolean, fresh: boolean,                // fresh = ikke stale og ikke uncollected
+  sourceUrl: string | null,                                            // bare https://kassal.app/…
+}
+ExternalPrices = {
+  status: 'off' | 'notAsked' | 'found' | 'notFound' | 'unavailable',
+  fetchedAt: ISO-tid | null,                                           // når vi hentet det som vises
+  observations: PriceObservation[],                                    // ferske først (billigst først), så resten
+  cheapest: PriceObservation | null, freshCount,                       // bare blant ferske
+}
+LineEstimate = {
+  shoppingItemId, estimateOre: number | null,
+  source: 'own' | 'kassalapp' | null, basis: 'scaled' | 'lastTime' | 'onePackage' | null,
+  date: 'YYYY-MM-DD' | null, missing: 'noMatch' | 'noPrice' | 'unitMismatch' | null,
+}
+```
+
+### Endepunkter
+
+| Metode | Sti | Svar | Feil |
+|---|---|---|---|
+| GET | `/households/:h/prices/:gtin` | `{ gtin, storeCode, own: OwnPrices, external: ExternalPrices }` | 400 `gtin` (kontrollsiffer, lengde), 404 |
+| GET | `/households/:h/items/:itemId/prices` | `{ own: OwnPrices, gtin: string \| null, external: ExternalPrices }` | 400, 404 (varen finnes ikke i husholdningen) |
+| GET | `/households/:h/shopping-list/price-estimate` | `{ lines: LineEstimate[], summary: { openLines, estimatedLines, missingLines, estimatedOre, fromOwn, fromKassalapp } }` | 404 |
+
+- **Eksterne priser:** et svar (også «fant ingenting») gjelder i 6 timer for hele serveren. Ellers spørres
+  Kassalapp med bare strekkoden. Butikkens egne koder spørres aldri (`notAsked`). Uten `KASSALAPP_API_KEY` er
+  status `off`.
+- **Når Kassalapp ikke svarer:** status `unavailable`, med det som er lagret fra de siste 30 dagene (og `fetchedAt`
+  for når det ble hentet), eller uten priser.
+- **Grense per bruker** (30 i minuttet): over grensen er de eksterne prisene `unavailable`, men svaret er fortsatt
+  200 med egne priser.
+- **Anslaget** spør aldri Kassalapp. Det bruker egne priser og ferske observasjoner som allerede er lagret, og bare
+  for åpne linjer. `estimatedOre` er summen av linjene som har et anslag, ikke en totalsum for listen.
+- **Logg:** `/prices/<gtin>` logges som `/prices/[gtin]`. Nøkkelen står aldri i svar eller logg.
+

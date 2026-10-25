@@ -48,6 +48,14 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       maxQueued: 1000,
     },
     recipes: { includeUnreviewed: true },
+    // No key: Kassalapp is never called from tests. Tests pass a provider with a fake fetch instead.
+    prices: {
+      kassalappBaseUrl: 'https://kassal.app/api/v1',
+      kassalappApiKey: null,
+      kassalappTimeoutMs: 3000,
+      kassalappMaxPerMinute: 30,
+      lookupsPerUserPerMinute: 1000,
+    },
     ...overrides,
   };
 }

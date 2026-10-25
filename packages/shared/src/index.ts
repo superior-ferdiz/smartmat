@@ -41,3 +41,5 @@ export * from './api/waste';
 export * from './notifications/rules';
 export * from './schemas/notifications';
 export * from './api/notifications';
+export * from './prices/rules';
+export * from './api/prices';

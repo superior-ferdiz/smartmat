@@ -112,6 +112,17 @@
 
     Detaljer i kapittel 11.
 - Teamets refleksjon over fase 11 er ikke skrevet.
+- Fase 12 (2026-10-25), notater:
+  - **KI leste vilkårene til Kassalapp** og skrev både hva de sier (med sitat) og sin egen tolkning, før noe kode ble
+    skrevet. Konklusjonen om at Kassalapp ikke er databehandler for SmartMat, er KI-ens tolkning og ikke vurdert av
+    teamet.
+  - **KI fant det viktigste forbeholdet i vilkårene:** Rema 1000, Kiwi og Coop er ikke med, og det er nettopp de
+    butikkene teamets egne kvitteringer kommer fra. Derfor ble egne priser grunnmuren, og Kassalapp et lag oppå.
+  - **Teamet har ikke konto eller nøkkel**, så funksjonen er bygd og testet bare mot et falskt Kassalapp. Svarformatet
+    bygger på eksempelet i dokumentasjonen, og OpenAPI-filen var uenig med eksempelet. KI-en kan ha tolket det feil.
+  - **Feil KI-en gjorde og fant selv:** samtidige oppslag ga 500 (Playwright), ett hull i testene (mutasjonskontrollen),
+    og to svakheter i eldre tester som ble synlige under høy last og ny rekkefølge. Detaljer i kapittel 11.
+- Teamets refleksjon over fase 12 er ikke skrevet.
 
 ## Kilder i prosjektet
 

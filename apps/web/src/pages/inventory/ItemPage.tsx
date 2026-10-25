@@ -71,6 +71,7 @@ import {
 import { useCreatorName } from '../../household/format';
 import formStyles from '../../inventory/inventory.module.css';
 import { Page } from '../../layout/Page';
+import { ItemPrices } from '../../prices/PriceViews';
 import styles from './ItemPage.module.css';
 
 type DialogState =
@@ -260,6 +261,8 @@ function ItemView({ item, locations }: { item: ItemResponse; locations: Location
       </section>
 
       <IngredientSection item={item} />
+
+      <ItemPrices itemId={item.id} />
 
       <History item={item} location={location} />
 

@@ -12,7 +12,10 @@ import { ean13Modules, writeBarcodeVideo } from './fakeCamera';
 
 const CODE = '7038010000737';
 const video = join(tmpdir(), `smartmat-fake-camera-${process.pid}.y4m`);
-writeBarcodeVideo(video, CODE);
+// Phase 12: written before each run of the file, not when the module loads. A worker that ran the file for one
+// project (and deleted the video in afterAll) can run it again for the other project without loading the module
+// again, and Chromium then found no camera.
+test.beforeAll(() => writeBarcodeVideo(video, CODE));
 test.afterAll(() => rmSync(video, { force: true }));
 
 test.use({

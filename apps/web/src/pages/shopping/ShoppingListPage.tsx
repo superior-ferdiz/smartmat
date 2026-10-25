@@ -37,6 +37,7 @@ import {
 } from '../../shopping/forms';
 import { neighbourRowId, useDelegatedListEvents } from '../../shopping/listEvents';
 import styles from '../../shopping/shopping.module.css';
+import { ShoppingEstimate } from '../../prices/ShoppingEstimate';
 import { ToInventoryDialog } from './ToInventoryDialog';
 import { useIsShared } from '../../household/api';
 import { useAddedBy } from '../../household/format';
@@ -185,6 +186,9 @@ function ShoppingList({ items }: { items: ShoppingItemResponse[] }) {
                 <Rows items={open} version={checkboxVersion} />
               )}
             </section>
+
+            {/* Spec 12 (FR-PRICE-003): an estimate for the open lines, never a total for the list. */}
+            {open.length > 0 && <ShoppingEstimate items={open} />}
 
             {checked.length > 0 && (
               <section aria-labelledby="shopping-checked" className={styles.section}>

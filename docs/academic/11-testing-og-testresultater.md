@@ -1,6 +1,6 @@
 # Testing og testresultater
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 11 (2026-10-25). Testene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 12 (2026-10-25). Testene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Alle resultater under er fra faktiske kjøringer. Utdataene er lagret ordrett i
 > [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/),
 > [fase-3/](../evidence/test-results/fase-3/) og [fase-4/](../evidence/test-results/fase-4/).
@@ -1082,6 +1082,98 @@ Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-25.
 Feil i testene: for bred regel mot farlig ordlyd («trygg» traff «mattrygghet»), feil forventning om at en ny avvisning
 skal gi 404 (den gir 204), og bjella som finnes to ganger
 (toppfeltet og sidemenyen).
+
+## Testtyper og sporbarhet (fase 12)
+
+Testene refererer til krav-ID-ene i [12-priser.md](../development/requirements/12-priser.md). Alle priser og nøkler i
+testene er oppdiktet. Ingen test kaller Kassalapp.
+
+| Krav | Hva testes | Fil | Antall |
+|---|---|---|---|
+| FR-PRICE-001–004, ADR-0006 | Enhetspris (kg, l, stk, halvt opp, store tall), skalering, kroner → øre (`72.9`, tre desimaler, negative, tekst, over 100 000 kr), grensen på 14 dager (nøyaktig 14 dager er fersk), kjeder som ikke hentes er aldri ferske, 90 dager for egne priser, «billigst» bare blant ferske og lik pris, nedre median, anslag per linje (egen pris først, «som sist», annen enhet, Kassalapp skalert og «én pakke», uten pakningsstørrelse, ingen vare) og summen (ukjent er aldri 0) | `shared/src/prices/rules.test.ts` | 56 |
+| NFR-REL-001, FR-PRICE-001 | Provideren mot falske svar: nøkkel som Bearer bare til https-adressen, én rad per kjede, objekt og liste, kg som gram, funnet uten priser, 404, 500, 401/403/502/503, feil format, HTML, for stort svar, tidsavbrudd, nettverksfeil, **429 med `Retry-After`**, egen grense for serveren, fritekst og stier nektes, http nektes, ingen omdirigering, rader med feil verdier hoppes over, navn renses, bare lenker til `https://kassal.app`, pakningsstørrelser, `Retry-After` i sekunder og som dato | `api/src/providers/prices/kassalapp.test.ts` | 46 |
+| FR-PRICE-001–006, NFR-REL-001, NFR-SEC-004 | API mot database: kjeder med pris, enhetspris og dato i riktig rekkefølge, «billigst», funnet uten priser, ikke funnet, butikkens egen kode, ugyldig kode, hurtiglageret på 6 timer (også «ikke funnet» og for alle husholdninger), nytt svar erstatter det gamle, **10 samtidige oppslag → 1 kall**, samtidig lagring, tidsavbrudd lagres ikke, lagrede priser vises når Kassalapp er nede (men ikke etter 30 dager), uten nøkkel, grensen per bruker (200 med egne priser), egne priser fra kjøp og fra varen (også brukte partier, merke etter 90 dager, høyst 10), varesiden, anslaget (egne priser, Kassalapp uten nye kall, gamle priser brukes ikke, bare åpne linjer, ingen nøkkel), **ingenting endres i kjøp, partier, hendelser eller budsjett**, loggen og svaret uten strekkode og nøkkel, opprydding etter 30 dager | `api/test/prices.api.test.ts` | 34 |
+| NFR-SEC-001 | IDOR: en annen husholdning i URL-en (3 endepunkter → 404, ingen kall), Olas husholdning med Karis vare, samme strekkode gir ikke Karis egne priser, Olas anslag bruker ikke Karis varer, priser eller linjer, **repoet filtrerer selv** (også når det får Karis vare-ID), 401 uten innlogging, ingen endrende prisruter | `api/test/prices.security.api.test.ts` | 13 |
+| FR-PRICE-001–004, NFR-UX-002/003 | Nettappen: tabell med ferske priser, «billigst», eldre priser sammenfoldet med forklaring, tekst om manglende kjeder, kreditering, egne priser i egen blokk (kjøp, lenke, «over 3 måneder»), av, nede med og uten lagrede priser, ikke funnet, bare gamle priser, feil med «Prøv igjen» (skjemaet står), varesiden, anslaget (dekning, aldri «totalt», per linje), ingen priser, ingen kort når alt er avhuket. Axe på tre. | `web/src/prices/prices.test.tsx` | 13 |
+| FR-PRICE-001–005, NFR-REL-001, NFR-UX-001/002 | Ende-til-ende: skann → priser hos kjedene og eldre priser → legg i matlageret → kjøp → egne priser på skannesiden → anslag på handlelisten («1 av 2 linjer») med linjene åpnet. Bare egen server spørres fra nettleseren. Kassalapp nede gir melding, og skjemaet virker. 360 px og axe. | `e2e/prices.spec.ts` | 2 (× 2 skjermstørrelser) |
+
+**Sum etter fase 12:** 1293 enhetstester (562 shared, 252 api, 479 web), 442 API-tester mot database, 187
+ende-til-ende-tester.
+
+Eksisterende tester som ble endret:
+- `defaultApi` i `test/mockApi.ts` svarer på de tre prislesingene, så sidene som viser priser, trenger ingen endring i
+  testene sine.
+- `testConfig` i `api/test/helpers.ts` har prisinnstillingene uten nøkkel.
+- `e2e/checks.ts`: `useTallPhoneViewport` venter til siden har hentet ferdig før den måler (funn 3 under).
+- `e2e/scan-camera.spec.ts`: videoen til det falske kameraet skrives i `beforeAll` (funn 4 under).
+- Skjermbildeskriptet viser fase 12.
+
+### Kontroll av testene (fase 12)
+
+Samme metode som før ([skript](../evidence/test-results/fase-12/10-mutation-check.sh)), med 36 endringer i reglene,
+provideren, tjenesten, repoet, rutene, loggen og nettappen. Alle enhetstestene ble kjørt, men bare API-testene for
+priser (`prices*`).
+
+**Første kjøring** ([utdata](../evidence/test-results/fase-12/10-mutation-check-run1.txt)): 35 av 36 ble fanget.
+- **Runde 26 ble ikke fanget** (repoet leser egne priser uten husholdningsfilter). Det lekket ikke, fordi tjenesten
+  bare sender varer fra husholdningen videre. Men repoet var ikke testet alene, og regelen i CLAUDE.md er at repoene
+  filtrerer selv. En ny test kaller repoet direkte med Olas husholdning og Karis vare-ID. Med endringen satt inn
+  feilet den ([utdata](../evidence/test-results/fase-12/10-mutation-check-runde26.txt)).
+
+**Andre kjøring** ([utdata](../evidence/test-results/fase-12/10-mutation-check.txt)): 36 av 36 ble fanget.
+
+Kontrollen dekker ikke Playwright og CHECK-begrensningene direkte.
+
+## Resultater fase 12 (kjørt 2026-10-25)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Bilder i repoet | Ingen utenfor skjermbildemappen | `00-check-files.txt` |
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 1293 av 1293 | `04-unit-tests.txt` |
+| API mot testdatabase | 442 av 442 | `05-api-tests.txt` |
+| Bygg | Vellykket. Hovedfilen er 881 kB (265 kB gzip). | `06-build.txt` |
+| Ende-til-ende | 187 bestått, 7 hoppet over (4 skjermbilder, 3 som bare gjelder én skjermstørrelse). **Tredje full kjøring.** | `07-e2e.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (13 migreringer) | `09-migrate-status.txt` |
+
+**Playwright ble kjørt flere ganger**, og kjøringene er lagret:
+- **Forsøk 1** ([`07-e2e-forsok1.txt`](../evidence/test-results/fase-12/07-e2e-forsok1.txt)) og **forsøk 2**
+  ([`07-e2e-forsok2.txt`](../evidence/test-results/fase-12/07-e2e-forsok2.txt)): 186 bestått, 1 feilet. Kameratesten
+  (fase 7, desktop) fant ikke noe kamera. Den besto 16 av 16 ganger alene
+  ([`07-e2e-kamera-gjentatt.txt`](../evidence/test-results/fase-12/07-e2e-kamera-gjentatt.txt)). Årsaken er funn 4.
+- **Kjøring 3** (`07-e2e.txt`): 187 bestått, med den endelige koden (etter en liten CSS-endring for 360 px, se under).
+  Serveren var belastet av et annet prosjekt hele tiden (load average 19–28), og det ble ikke rørt.
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-12/](../evidence/screenshots/fase-12/):
+- skannesiden med egne priser, priser hos kjedene og eldre priser åpnet
+- varesiden med priser
+- handlelisten med anslaget og linjene åpnet
+
+I skjermbildene av hele siden står toppfeltet midt på siden. Det er fordi feltet er festet til toppen av vinduet når
+Playwright setter sammen bildet, ikke en feil i siden (testene sjekker at det ikke er horisontal rulling).
+
+**Ikke testet:**
+- et ekte svar fra Kassalapp (teamet har ikke nøkkel per 2026-10-25). Svarformatet bygger på eksempelet i
+  dokumentasjonen.
+- ekte telefon og skjermleser
+
+## Feil funnet i fase 12
+
+Alle funnene ble gjort av KI-verktøyet under implementeringen 2026-10-25.
+
+| # | Funn | Hvordan funnet | Retting |
+|---|---|---|---|
+| 1 | To oppslag av samme strekkode samtidig ga 500. Begge fikk svar fra Kassalapp, og den andre lagringen traff den unike nøkkelen. | Playwright (mobil og desktop slo opp samme kode samtidig) | Ett kall per strekkode om gangen i prosessen, og en lagring som taper kappløpet droppes. Testet med 10 samtidige forespørsler og 5 × 5 samtidige lagringer. |
+| 2 | Repoet var ikke testet alene for husholdningsfilteret på egne priser | Mutasjonskontrollen (runde 26) | Ny test mot repoet |
+| 3 | Axe meldte at en knapp på profilsiden lå bak bunnmenyen på 360 px, men bare under høy last. `useTallPhoneViewport` (fase 3) målte høyden før det siste kortet var lastet. | Playwright under høy last | Venter på `networkidle` før målingen |
+| 4 | Kameratesten (fase 7) fant ikke noe kamera når samme worker kjørte filen for begge skjermstørrelsene: videoen ble skrevet da modulen ble lastet, og slettet i `afterAll`. Den nye testfilen i fase 12 endret hvordan testene ble fordelt. | Playwright (to fulle kjøringer) | Videoen skrives i `beforeAll` |
+| 5 | På 360 px brøt «per l» enhetsprisen over to linjer, og linjene i «Vis anslag per linje» ble ujevne | Skjermbildene | `nowrap` på enhetsprisen, og tekst over anslaget i listen |
+
+Feil i testene: en API-test forventet feilfeltet på feil sted i svaret, sesjonene utløp når den falske klokka ble
+flyttet mer enn 14 (og 30) dager, og datoen for partier kom fra databaseklokka mens testen brukte en falsk klokke som
+var flyttet i en tidligere test (klokka settes nå tilbake før hver test).
 
 ## Begrensninger
 

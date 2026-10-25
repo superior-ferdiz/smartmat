@@ -27,3 +27,4 @@ En beslutning endres ved å skrive en ny ADR som erstatter den gamle (og markere
 | [0017](0017-tesseract-pa-serveren-forelopig.md) | Tesseract på serveren, foreløpig – bare butikk, dato og total som standard (**foreslått, ikke godkjent**) |
 | [0018](0018-delte-husholdninger-og-invitasjoner.md) | Delte husholdninger med engangslenke, én eier og aktiv husholdning på brukeren (akseptert 2026-10-24) |
 | [0019](0019-varsler-beregnes-ved-lesing.md) | Varsler i appen beregnes ved lesing, og bare brukerens tilstand lagres (akseptert 2026-10-25) |
+| [0020](0020-priser-fra-kassalapp-som-anslag.md) | Priser fra Kassalapp som anslag, holdt adskilt fra husholdningens egne priser (akseptert 2026-10-25) |

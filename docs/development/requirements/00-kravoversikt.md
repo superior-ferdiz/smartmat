@@ -88,6 +88,15 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-NOTIF-005 | Brukeren velger hvilke varsler hen vil ha, og hvor mange dager før | K | 11 |
 | FR-NOTIF-006 | Bare nåværende medlemmer ser varsler, og ingenting blir igjen etter utmelding | K | 11 |
 
+| ID | Krav (priser, lagt til i fase 12) | Prio | Fase |
+|---|---|---|---|
+| FR-PRICE-001 | Pris per kjede for en skannet vare, med kilde, dato, enhetspris og merke for gamle priser, og hvilke kjeder som mangler | K | 12 |
+| FR-PRICE-002 | Det husholdningen har betalt (egne priser), adskilt fra eksterne priser og merket | K | 12 |
+| FR-PRICE-003 | Anslått pris på handlelisten, med hvor mange linjer som mangler pris og hvor anslagene kommer fra | K | 12 |
+| FR-PRICE-004 | «Billigst sist observert hos», bare blant ferske priser | K | 12 |
+| FR-PRICE-005 | En ekstern pris er et anslag og blir aldri en utgift (ADR-0007) | K | 12 |
+| FR-PRICE-006 | Hver pris har kilde og dato | K | 12 |
+
 ## Ikke-funksjonelle krav
 
 | ID | Krav | Fase |
@@ -102,7 +111,7 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | NFR-UX-002 | Mål: WCAG 2.2 AA (kontrast, tastatur, synlig fokus, skjemaetiketter, feilmeldinger knyttet til felt) | 1+ |
 | NFR-UX-003 | Alle datavisninger har tilstand for lasting, feil og tomt | 1+ |
 | NFR-UX-004 | Grensesnittet er på norsk bokmål; engelsk kan velges | 1+ |
-| NFR-REL-001 | Lager og budsjett virker selv om eksterne tjenester er nede | 7+ |
+| NFR-REL-001 | Lager og budsjett virker selv om eksterne tjenester er nede (fra fase 12 også uten nøkkel til Kassalapp) | 7+ |
 | NFR-REL-002 | Appen virker uten kvitteringslesing; kjøp kan alltid fylles inn selv (lagt til i fase 8) | 8 |
 
 ## Kursrelaterte krav (antatt, ikke verifisert)

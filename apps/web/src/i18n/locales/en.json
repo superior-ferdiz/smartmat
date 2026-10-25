@@ -1629,5 +1629,87 @@
       "household": "The figures are for the whole household. There are no figures per person."
     },
     "trendEstimated": "{{amount}} of it estimated"
+  },
+  "prices": {
+    "title": "Prices",
+    "loading": "Fetching prices …",
+    "estimateNote": "The prices are for information only. What you pay, you record as a purchase.",
+    "per": {
+      "kg": "kg",
+      "l": "l",
+      "stk": "pc"
+    },
+    "unitPrice": "{{price}} per {{per}}",
+    "own": {
+      "title": "What you have paid",
+      "forItem": "For “{{name}}” in the inventory.",
+      "emptyNoItem": "You have not added this barcode to the inventory before, so there are no own prices for it.",
+      "empty": "You have not recorded a price for this item yet. It comes with a purchase, or when you enter a price on a batch.",
+      "amount": "{{quantity}} for {{price}}",
+      "fromPurchase": "From a purchase",
+      "fromPurchaseAt": "From a purchase at {{store}}",
+      "enteredOnItem": "Entered on the item",
+      "seePurchase": "See the purchase",
+      "old": "More than 3 months old"
+    },
+    "external": {
+      "title": "Prices at the chains",
+      "status": {
+        "off": "Prices from the chains are switched off. Only what you have paid is shown.",
+        "notAsked": "A store’s own code cannot be looked up at the chains.",
+        "noBarcode": "The item has not been scanned, so we cannot fetch prices from the chains. Scan it next time you buy it.",
+        "notFound": "Kassalapp has no prices for this barcode.",
+        "unavailable": "The price lookup is not answering right now. Try again later.",
+        "unavailableStored": "The price lookup is not answering right now. The prices below were fetched {{date}} and may be out of date.",
+        "noPrices": "No chain has a price for this item.",
+        "noFresh": "No chain has checked the price in the last 14 days."
+      },
+      "cheapest": "Cheapest last observed: {{chain}}, {{price}} (checked {{date}})",
+      "cheapestOf_one": "Only {{count}} chain has a price checked in the last 14 days.",
+      "cheapestOf_other": "Lowest of {{count}} chains with a price checked in the last 14 days.",
+      "caption": "Latest price per chain, cheapest first",
+      "columns": {
+        "chain": "Chain",
+        "price": "Price",
+        "checked": "Checked"
+      },
+      "chainLink": "{{chain}}, see the item at Kassalapp",
+      "older_one": "Older price ({{count}})",
+      "older_other": "Older prices ({{count}})",
+      "olderNote": "Prices not checked for 14 days, and chains Kassalapp no longer collects prices from. They may be wrong today.",
+      "stale": "Not checked for 14 days",
+      "uncollected": "Kassalapp no longer collects prices from this chain",
+      "coverage": "The prices are for the chain, not a particular shop. Offers and member prices are not included, and Rema 1000, Kiwi and Coop are not included. This is not a complete comparison.",
+      "fetchedAt": "Fetched {{date}}.",
+      "attribution": "Prices from",
+      "attributionLink": "Kassalapp"
+    },
+    "estimate": {
+      "title": "Estimated price",
+      "loading": "Working out the estimate …",
+      "error": "Could not work out the estimate.",
+      "summary": "Estimate for {{estimated}} of {{open}} lines: about {{amount}}",
+      "missing_one": "{{count}} line has no price and is not included.",
+      "missing_other": "{{count}} lines have no price and are not included.",
+      "sources": "From what you have paid: {{own}}. From Kassalapp: {{kassalapp}}.",
+      "none": "None of the lines has a price yet. An estimate comes from what you have paid for the same item, or from Kassalapp once the item has been scanned.",
+      "note": "An estimate, not what you will pay. It is not part of the budget.",
+      "perLine": "Show the estimate per line",
+      "basis": {
+        "scaled": "worked out from the amount",
+        "lastTime": "as last time",
+        "onePackage": "one package"
+      },
+      "source": {
+        "own": "what you have paid",
+        "kassalapp": "Kassalapp"
+      },
+      "lineEstimate": "about {{amount}} ({{basis}}, {{source}}, {{date}})",
+      "missingReason": {
+        "noMatch": "no item in the inventory with this name",
+        "noPrice": "no price yet",
+        "unitMismatch": "a different unit from the price"
+      }
+    }
   }
 }

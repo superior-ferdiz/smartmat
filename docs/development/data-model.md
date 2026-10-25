@@ -118,11 +118,27 @@ fra planen:
 - `shopping_seen_at` (standard `now()`) på medlemskapet sier når brukeren sist så handlelisten.
 - Svinnstatistikken har ingen egen tabell: den summeres fra `inventory_events` ved hver lesing (ADR-0007).
 
+**Implementert i fase 12 (2026-10-25):** `PriceObservation` og i tillegg `PriceLookup`
+([spesifikasjon 12](requirements/12-priser.md), ADR-0020). Avvik fra planen:
+- Planen hadde `product_id`, `chain`, `price_ore`, `unit_price`, `observed_at` og `source`. Tabellen
+  `price_observations` har `gtin` i stedet for `product_id` (OFF-mellomlageret og Kassalapp er to kilder med samme
+  nøkkel), `chain_code` og `chain_name`, og **pakningsstørrelse** (`package_quantity_base`, `package_unit`) i stedet
+  for en lagret enhetspris. Enhetsprisen regnes ut med heltall ved lesing. `fetched_at` (når vi hentet) er lagt til
+  ved siden av `observed_at` (når kilden sist sjekket prisen).
+- Bare **siste observasjon per kjede** lagres (unik på `source`, `gtin`, `chain_code`). Et nytt svar erstatter alt for
+  strekkoden i én transaksjon. Ingen prishistorikk.
+- `price_lookups` (`source`, `gtin`, `fetched_at`, `found`) er hurtiglageret på 6 timer, også for «fant ingenting».
+- Begge tabellene er **globale** (ingen `household_id`, ingen brukerdata). Workeren sletter rader som ikke er hentet
+  på 30 dager. CHECK: GTIN-format, pris 0–10 000 000 øre, kjedekode, og pakningsstørrelse med enhet eller ingen av
+  dem.
+- **Egne priser har ingen tabell.** De leses fra `inventory_batches` (`price_ore`, `initial_quantity_base`,
+  `purchased_on`, `purchase_line_id`) ved hver lesing (ADR-0007).
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–11)
+## Kjernemodell (fase 2–12)
 
 ```mermaid
 erDiagram
@@ -200,10 +216,12 @@ erDiagram
 | `MealPlanEntry` | household_id, date, meal, recipe_id?, recipe_title?, servings?, note?, dedupe_key? | Oppskrift med porsjoner eller fritekst (CHECK) | 9 |
 | `ShoppingListItemMeal` | item_id, entry_id, household_id, quantity_base? | Hva en planlagt rett la på en handlelistelinje | 9 |
 | `ReceiptExtraction` | receipt_id (PK), household_id, engine, raw_text, parsed (JSON), mean_confidence, duration_ms | Det OCR og parseren fant. Uten betalingslinjer. | 8 |
+| `PriceObservation` | source, gtin, chain_code, chain_name, price_ore, package_quantity_base?, package_unit?, observed_at, fetched_at, source_url? | Global. Siste pris per kjede fra Kassalapp. Et anslag, aldri en utgift (ADR-0020). | 12 |
+| `PriceLookup` | source + gtin (PK), fetched_at, found | Global. Hurtiglageret på 6 timer. | 12 |
 
 ## Senere
 
-`PriceObservation` (12: product_id, chain, price_ore, unit_price, observed_at, source).
+Ingen planlagte tabeller igjen fra fase 0. `PriceObservation` ble laget i fase 12 (se over).
 
 ## Åpne spørsmål
 

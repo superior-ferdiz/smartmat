@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import type { ExternalPrices } from '@smartmat/shared';
 
 export interface RecordedRequest {
   method: string;
@@ -66,6 +67,26 @@ export function emptyWasteStats(month = '2026-10') {
   };
 }
 
+/** Spec 12: what the price endpoints answer without a Kassalapp key and without own prices. */
+export const NO_EXTERNAL_PRICES: ExternalPrices = {
+  status: 'off',
+  fetchedAt: null,
+  observations: [],
+  cheapest: null,
+  freshCount: 0,
+};
+export const EMPTY_ESTIMATE = {
+  lines: [],
+  summary: {
+    openLines: 0,
+    estimatedLines: 0,
+    missingLines: 0,
+    estimatedOre: 0,
+    fromOwn: 0,
+    fromKassalapp: 0,
+  },
+};
+
 export const defaultApi: Handler = (request) => {
   // Spec 11: opening the shopping list and showing notifications are reported in the background.
   if (
@@ -126,6 +147,24 @@ export const defaultApi: Handler = (request) => {
   if (/^\/households\/[^/]+\/shopping-list$/.test(request.path))
     return { status: 200, body: { items: [] } };
   if (request.path === '/ingredients') return { status: 200, body: [] };
+  const barcodePrices = /^\/households\/[^/]+\/prices\/(\d+)$/.exec(request.path);
+  if (barcodePrices)
+    return {
+      status: 200,
+      body: {
+        gtin: barcodePrices[1],
+        storeCode: false,
+        own: { item: null, entries: [] },
+        external: NO_EXTERNAL_PRICES,
+      },
+    };
+  if (/^\/households\/[^/]+\/items\/[^/]+\/prices$/.test(request.path))
+    return {
+      status: 200,
+      body: { own: { item: null, entries: [] }, gtin: null, external: NO_EXTERNAL_PRICES },
+    };
+  if (/^\/households\/[^/]+\/shopping-list\/price-estimate$/.test(request.path))
+    return { status: 200, body: EMPTY_ESTIMATE };
   if (/^\/households\/[^/]+\/inventory\/waste-summary$/.test(request.path)) {
     return {
       status: 200,

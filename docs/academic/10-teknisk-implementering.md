@@ -1,6 +1,6 @@
 # Teknisk implementering
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21). Koden og teksten er skrevet av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 12 (2026-10-25). Koden og teksten er skrevet av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides i senere faser. Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Oversikt (fase 1)
@@ -630,6 +630,33 @@ Serveren godtar bare nøkler som er aktive nå. Det stopper både oppdiktede nø
   med heltall og BigInt.
 - **Tabellen er diagrammet.** Utviklingen over 12 måneder er en `<table>` med overskrifter. Søylen i cellen er pynt
   (`aria-hidden`), og anslått verdi er skravert. Den står også med ord: «herav 79,90 kr anslått».
+
+## Fase 12: priser
+
+## Eksempel 45: et flyttall ved grensen, heltall innenfor (ADR-0006)
+
+Kassalapp sender kroner som JSON-tall (`72.9`). `72.9 * 100` er `7290.000000000001` i JavaScript. `kronerToOre`
+(`packages/shared/src/prices/rules.ts`) ganger med 100 og runder, men bare når avviket fra et helt øretall er under en
+milliondel. Et tall med tre desimaler (`22.905`) avvises i stedet for å rundes stille, og raden hoppes over. Etter
+dette er alt heltall: enhetsprisen er `pris × 1000 / mengde` med `BigInt`, rundet halvt opp, som svinnverdien.
+
+## Eksempel 46: ufullstendig dekning skal se ufullstendig ut (FR-PRICE-001–004, ADR-0010)
+
+- **Fersk eller ikke:** en pris er fersk når Kassalapp har sjekket den de siste 14 dagene, og kjeden fortsatt hentes.
+  Rema 1000, Kiwi og Coop hentes ikke, så en pris derfra er aldri fersk, uansett dato.
+- **«Billigst sist observert»** velges bare blant ferske priser, og teksten sier hvor mange kjeder det gjelder.
+- **Gamle priser** vises sammenfoldet med dato og forklaring, aldri i hovedtabellen.
+- **Anslaget på handlelisten** sier «Anslag for 2 av 3 linjer: ca. 52,35 kr» og hvor mange som mangler pris. Det står
+  aldri «Totalt». En linje uten pris er ukjent og telles aldri som 0 (`summarizeEstimates`).
+
+## Eksempel 47: samtidige oppslag (spesifikasjon 12, avvik 2)
+
+Playwright kjører flere tester samtidig, og to av dem slo opp samme strekkode i samme øyeblikk. Begge fikk svar fra
+Kassalapp og prøvde å lagre det, og den andre lagringen traff den unike nøkkelen (500). To tiltak:
+- **Ett kall per strekkode om gangen:** tjenesten har et kart over oppslag som pågår. Kommer en ny forespørsel for
+  samme strekkode, venter den på det samme løftet (promise) i stedet for å spørre igjen.
+- **Den som taper, gir opp stille:** to API-prosesser kan fortsatt lagre samtidig. Da droppes den andre lagringen
+  (`P2002`), fordi den første er like god.
 
 ## Lagring i nettleseren
 

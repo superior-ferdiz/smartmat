@@ -1,6 +1,6 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 11 (2026-10-25). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 12 (2026-10-25). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -145,6 +145,21 @@ om dette krever noe mer.
 | Hva noen kaster, i loggen | Varenavn eller nøkler med parti-ID | Kropper logges ikke, og URL-ene har ingen navn eller nøkler | `waste.api.test.ts`, `notifications.api.test.ts` |
 | Farlige råd | «Kan fortsatt spises» om noe med siste forbruksdag | Egen ordlyd for siste forbruksdag. En test stopper slike fraser i begge språk. | `locales.test.ts`, `NotificationsPage.test.tsx` |
 
+### Nytt i fase 12: priser
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Se en annen husholdnings priser eller anslag | Bytte husholdnings-ID i URL-en | `householdAccess` på alle tre rutene. Egne priser og anslaget filtrerer på `household_id`. | `prices.security.api.test.ts` (A: 3 endepunkter → 404, ingen kall til Kassalapp) |
+| Lese andres vare via egen husholdning | `/items/<Karis vare>/prices` i Olas husholdning | Varen slås opp med `household_id` (404) | Samme fil (B) |
+| Lekke egne priser gjennom en felles strekkode | Ola skanner samme vare som Kari | De eksterne prisene er felles (globale). Egne priser og varen kommer bare fra Olas husholdning. | Samme fil (C) |
+| Nøkkelen kommer på avveie | I loggen, i et svar, i en omdirigering eller over http | Bare i `.env`. Sendes bare til `https`-adressen, med `redirect: 'error'`. Aldri i svar eller logg. | `kassalapp.test.ts`, `prices.api.test.ts` |
+| Fritekst eller stier sendt til Kassalapp | `/prices/melk` eller `../../` | GTIN valideres med kontrollsiffer. Provideren nekter alt som ikke er 8, 13 eller 14 sifre. Butikkens egne koder sendes ikke. | `kassalapp.test.ts`, `prices.api.test.ts` |
+| Ondsinnet eller ødelagt svar fra Kassalapp | Feil typer, HTML, enorm tekst, `javascript:`-lenke, dato langt fram i tid | Zod per rad, høyst 1 000 000 tegn, kjedekode med fast alfabet, navn renses, lenker bare til `https://kassal.app`, ren tekst i nettleseren | `kassalapp.test.ts` |
+| Sperret av Kassalapp | Mange oppslag, eller en lang handleliste | 30 per minutt for serveren, 30 per bruker, 6 timers hurtiglager, pause etter 429 (`Retry-After`), og anslaget spør aldri | `kassalapp.test.ts`, `prices.api.test.ts` |
+| Villedende sammenligning | En gammel Kiwi-pris fra 2024 vises som billigst | Gammel etter 14 dager, kjeder som ikke hentes er aldri ferske, «billigst» og anslag bare fra ferske priser, teksten sier hvilke kjeder som mangler | `rules.test.ts`, `prices.api.test.ts`, `prices.test.tsx` |
+| Et anslag blir en utgift | En pris fra Kassalapp havner i budsjettet | Prisrutene skriver aldri til kjøp, partier, budsjett eller svinn | `prices.api.test.ts` (FR-PRICE-005) |
+| Hva noen har kjøpt, i loggen | Strekkoden i URL-en | `/prices/[gtin]` i loggen. Grunnen til feil logges uten kode. | `prices.api.test.ts` |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
@@ -155,7 +170,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 [fase 8](../evidence/test-results/fase-8/10-mutation-check.txt),
 [fase 9](../evidence/test-results/fase-9/10-mutation-check.txt),
 [fase 10](../evidence/test-results/fase-10/10-mutation-check.txt),
-[fase 11](../evidence/test-results/fase-11/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 11](../evidence/test-results/fase-11/10-mutation-check.txt),
+[fase 12](../evidence/test-results/fase-12/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -188,6 +204,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Hvilke varsler brukeren vil ha (fase 11) | Innstillinger | `notification_settings`, knyttet til brukeren | Til kontoen slettes |
 | Hvilke varsler brukeren har sett og avvist (fase 11): nøkkel med parti-ID, dato eller måned, og tidspunkt | Samme varsel skal ikke komme igjen | `notification_states`, knyttet til medlemskapet. Ingen varenavn eller tekst. | 45 dager. Slettes straks når brukeren går ut av husholdningen, blir fjernet eller sletter kontoen. |
 | Når brukeren sist så handlelisten (fase 11) | Varselet om nye linjer | `household_members.shopping_seen_at` | Som medlemskapet |
+| Egne priser (fase 12): hva husholdningen har betalt for en vare, og hvor | Vise prisen og regne anslag | Ingen ny lagring. Leses fra partiene og kjøpene. | Som partiene og kjøpene |
+| Bruker-ID per prisoppslag (fase 12) | Grensen på 30 oppslag i minuttet | Bare i minnet i API-prosessen, i ett minutt | Lagres ikke og logges ikke |
 
 Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Alt kjørte lokalt.
 
@@ -213,6 +231,19 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   **Slettefrist:** når ADR-0017 er godkjent, senest 2026-11-23.
 - En kvittering kan vise de siste sifrene i et kortnummer og autorisasjonskoden. Bildet beholdes bare til kjøpet er
   bekreftet. Råteksten lagres uten slike linjer.
+
+**Fra fase 12 (priser):**
+- **Kassalapp** (Liseth Solutions AS, servere i Finland) får strekkoden når den ikke er slått opp de siste 6 timene.
+  Den sendes fra serveren med teamets API-nøkkel. Kassalapp får ikke brukerens IP-adresse, cookie, husholdning, navn,
+  fritekst eller egne priser. Ifølge FAQ-en (lest 2026-10-25) logger Kassalapp kall med endepunkt, parametere (også
+  strekkoder) og tidspunkt. Kallet er knyttet til API-nøkkelen vår. En strekkode alene sier ikke hvem som skannet den.
+- **Forslag (KI-ens tolkning, ikke vurdert av teamet):** Kassalapp er ikke databehandler for SmartMat, fordi ingen
+  personopplysninger om brukerne sendes. Kontoen hos Kassalapp er personlig for den i teamet som lager den, og
+  Kassalapps personvernerklæring gjelder den personen.
+- **Uten nøkkel** (som per 2026-10-25) sendes ingenting.
+- **Det som lagres** (`price_observations`, `price_lookups`) er globale priser uten brukerdata. Det slettes etter 30
+  dager uten nytt oppslag.
+- **Egne priser** er husholdningens data fra før (partier og kjøp). De vises bare for medlemmer og sendes aldri ut.
 
 ## Svinn, kjøp og varsler (fase 11)
 

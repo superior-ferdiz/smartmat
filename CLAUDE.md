@@ -55,7 +55,10 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   licence and what was changed (`source=external`), shown as "KI-utkast" until a team member is in `reviewedBy`.
   No recipe API at runtime (Spoonacular forbids storing ingredients; TheMealDB is dev-only/English). No pure AI
   recipes (`source=ai`) – the team has not decided. Never write recipes as `source=team`.
-- Prices: no scraping. Kassalapp only after its terms are verified and documented.
+- Prices (ADR-0020, accepted 2026-10-25): no scraping. Kassalapp (Hobby, non-commercial; terms read and documented
+  in `docs/development/integrations/kassalapp.md`) is **off without `KASSALAPP_API_KEY`** – the team had no key as of
+  2026-10-25. Only GTINs are sent, from the server. External prices are estimates, kept apart from the household's
+  own prices (read from batches), and never become spending. Rema 1000, Kiwi and Coop are not covered.
 - OCR: Tesseract on our server (ADR-0017, **proposed and provisional**: measured on only 3 real receipts). By default
   only store, date and total are suggested (`RECEIPT_LINE_SUGGESTIONS=false`). Automated extraction is never saved
   without user confirmation. No cloud OCR without the team's approval and documented terms.
@@ -283,6 +286,29 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - `defaultApi` in `test/mockApi.ts` answers the notification, waste and settings reads and the background POSTs
   (`/shopping-list/seen`, `/notifications/seen`); tests that look for "the POST" must filter on the path.
 - API tests that compare DB `created_at` with the app clock (shopping list "seen") must use the real clock.
+
+## Code conventions (added in phase 12)
+
+- Prices: provider `apps/api/src/providers/prices/` (`kassalapp.ts`, `AppDeps.priceProvider`), API module
+  `apps/api/src/modules/prices/`, pure rules in `packages/shared/src/prices/rules.ts`, response shapes in
+  `packages/shared/src/api/prices.ts`. Tests use `apps/api/test/fakeKassalapp.ts` (made-up prices, made-up key) with
+  the real provider; the e2e server does too. Never put a real Kassalapp answer or key in the repo.
+- `price_observations`/`price_lookups` are **global** (no household data): latest price per chain, a 6-hour cache,
+  deleted by the worker after 30 days. Own prices have no table – they come from `inventory_batches` on every read.
+- Kassalapp sends kroner as JSON numbers: `kronerToOre` is the only float → øre conversion (≤ 2 decimals, else the row is
+  skipped). Unit prices are computed by us from price + pack size (Kassalapp's `unit_price` has no unit).
+- Fresh = checked within 14 days **and** not Rema 1000/Kiwi/Coop (`isFreshObservation`). "Cheapest" and estimates only
+  use fresh prices; the UI always says which chains are missing and never shows a "total" for the shopping list.
+- The shopping list estimate never calls Kassalapp. Over the per-user limit, external prices are `unavailable` but the
+  answer is still 200 (own prices must not disappear). Lookups for the same GTIN share one call (`inFlight`), and a
+  save that loses a race (P2002) is dropped.
+- `/prices/<gtin>` is logged as `/prices/[gtin]` (`redactUrl`). `defaultApi` in `test/mockApi.ts` answers the three
+  price reads (`NO_EXTERNAL_PRICES`, `EMPTY_ESTIMATE`).
+- Web: price queries under `['household', id, 'prices', …]`; the estimate under `['household', id, 'shopping-list',
+  'price-estimate']`, so list edits refetch it. The estimate's per-line list is only rendered when opened (the line
+  texts would otherwise appear twice for Playwright's `getByText`).
+- `useTallPhoneViewport` (e2e/checks.ts) waits for `networkidle` before measuring: under load a late card ended up
+  behind the bottom menu.
 
 ## Integrity rules (non-negotiable)
 

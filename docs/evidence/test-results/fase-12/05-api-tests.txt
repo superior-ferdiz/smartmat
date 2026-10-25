@@ -1,0 +1,18 @@
+$ npm run test:api
+Kjørt 2026-10-25T16:19:30Z
+
+
+> smartmat@0.1.0 test:api
+> vitest run --config apps/api/vitest.db.config.ts
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+
+ Test Files  26 passed (26)
+      Tests  442 passed (442)
+   Start at  16:19:31
+   Duration  414.49s (transform 1.60s, setup 149ms, import 17.75s, tests 389.11s, environment 3ms)
+
+
+exit code: 0

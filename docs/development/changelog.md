@@ -2,6 +2,25 @@
 
 ## [Ikke utgitt]
 
+### Fase 12 – 2026-10-25 (grenen `fase-12`)
+- **Vilkårene til Kassalapp** lest og dokumentert før koden ([integrations/kassalapp.md](integrations/kassalapp.md)),
+  og [ADR-0020](architecture-decisions/0020-priser-fra-kassalapp-som-anslag.md): Hobby, av uten nøkkel, bare
+  strekkoder fra serveren.
+- **Priser** ([spesifikasjon 12](requirements/12-priser.md)):
+  - **egne priser** fra partiene (fra kjøp eller ført på varen), med enhetspris og merke for priser over 3 måneder
+  - **priser hos kjedene** fra Kassalapp: tabell med kjede, pris, enhetspris og «sjekket», «billigst sist observert»
+    bare blant ferske priser, eldre priser sammenfoldet, og tekst om at Rema 1000, Kiwi og Coop mangler
+  - på skannesiden (under skjemaet) og på varesiden
+  - **anslått pris på handlelisten:** «Anslag for X av Y linjer», hvor mange som mangler pris og hvor anslagene kommer
+    fra, aldri en totalsum
+- **Kassalapp-provider** med tidsavbrudd, Zod, grense for serveren og per bruker, `Retry-After`, 6 timers
+  hurtiglager og ingen omdirigeringer. Ett kall når flere spør om samme strekkode samtidig.
+- **Migrering** `prices`: `price_observations`, `price_lookups`, CHECK. Workeren sletter priser som ikke er hentet på
+  30 dager.
+- **Nye innstillinger:** `KASSALAPP_API_KEY`, `KASSALAPP_BASE_URL`, `KASSALAPP_TIMEOUT_MS`, `KASSALAPP_MAX_PER_MINUTE`,
+  `PRICE_LOOKUPS_PER_MINUTE`.
+- **Rettet i testene:** `useTallPhoneViewport` venter til siden har hentet ferdig før den måler høyden.
+
 ### Fase 11 – 2026-10-25 (grenen `fase-11`)
 - **Svinnstatistikk** (`/svinn`, [spesifikasjon 11](requirements/11-svinn-og-varsler.md)):
   - per måned: antall, kjent verdi med faktisk og anslått hver for seg, ukjent verdi og mengde per enhet

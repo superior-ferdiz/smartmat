@@ -900,3 +900,48 @@ model NotificationState {
   @@index([householdId, userId])
   @@map("notification_states")
 }
+
+// ---------- Phase 12: prices (spec 12, ADR-0010, ADR-0020) ----------
+
+enum PriceSource {
+  kassalapp
+
+  @@map("price_source")
+}
+
+/// The latest price per chain for a GTIN, from an external source (Kassalapp). Global: no household data.
+/// An estimate, never spending (ADR-0007). Rows not fetched for 30 days are deleted by the worker.
+model PriceObservation {
+  id                  String      @id @default(uuid(7)) @db.Uuid
+  source              PriceSource
+  gtin                String      @db.VarChar(14)
+  chainCode           String      @map("chain_code") @db.VarChar(40)
+  chainName           String      @map("chain_name") @db.VarChar(60)
+  /// The price of the package in øre (ADR-0006).
+  priceOre            Int         @map("price_ore")
+  /// Pack size in whole grams / millilitres / pieces, when the source gave one we could read.
+  packageQuantityBase Int?        @map("package_quantity_base")
+  packageUnit         BaseUnit?   @map("package_unit")
+  /// When the source last checked the price (Kassalapp's current_price.date), not when we fetched it.
+  observedAt          DateTime    @map("observed_at") @db.Timestamptz(3)
+  fetchedAt           DateTime    @map("fetched_at") @db.Timestamptz(3)
+  /// The product page at the source (https://kassal.app/… only).
+  sourceUrl           String?     @map("source_url") @db.VarChar(300)
+
+  @@unique([source, gtin, chainCode])
+  @@index([gtin])
+  @@index([fetchedAt])
+  @@map("price_observations")
+}
+
+/// When a GTIN was last asked for at a source, and whether it was found: the 6-hour cache. Errors are never stored.
+model PriceLookup {
+  source    PriceSource
+  gtin      String      @db.VarChar(14)
+  fetchedAt DateTime    @map("fetched_at") @db.Timestamptz(3)
+  found     Boolean
+
+  @@id([source, gtin])
+  @@index([fetchedAt])
+  @@map("price_lookups")
+}
