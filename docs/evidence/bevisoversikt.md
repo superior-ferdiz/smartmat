@@ -39,7 +39,8 @@ en ekte telefon eller med skjermleser. Hva som *ikke* er testet, står i [eget a
 Typesjekk, lint og formatering er lagret som `01`–`03` i hver mappe, og migreringsstatus som `09` fra fase 2.
 Fase 14 endret ingen appkode. Kjøringen viser at ingenting er brutt av endringene i fase 14 (dokumentasjon og
 `scripts/traceability.mjs`), og filene er nummerert `10`–`18`. `01`–`04` er kontrollene av dokumentasjonen
-(sporbarhet, lenker, mutasjonstelling, kodehenvisninger).
+(sporbarhet, lenker, mutasjonstelling, kodehenvisninger), og `05`–`06` er lenkesjekk og formatering etter del 2 av
+fase 14.
 Fase 6 og 7 har ikke tidspunkt i filhodet. Datoen er hentet fra veikartet.
 
 ## Feilede forsøk som er lagret

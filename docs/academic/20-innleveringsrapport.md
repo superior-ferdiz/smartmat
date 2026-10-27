@@ -55,5 +55,8 @@ betyr ikke at hver setning er lest på nytt mot koden, og ikke at teamet har god
 ## Sammenstilling
 
 Kapitlene er skrevet i Markdown. Når formatet er kjent, kan de settes sammen til ett dokument (for eksempel med
-pandoc til PDF eller Word). Det er ikke installert eller prøvd. Mermaid-diagrammene i kapittel 07 må da gjøres om til
-bilder.
+pandoc til PDF eller Word). Det er ikke installert eller prøvd. Mermaid-diagrammene i kapittel 07 og 08 må da gjøres
+om til bilder.
+
+Hva som gjenstår før merge og innlevering, står i
+[sjekklisten for merge og innlevering](../development/sjekkliste-merge-og-innlevering.md).

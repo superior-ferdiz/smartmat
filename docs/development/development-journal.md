@@ -936,3 +936,46 @@ Bevis ligger i `docs/evidence/test-results/fase-14/`.
 7. Kjør `npm run check` og `npm run test:e2e` selv før merge.
 
 **Neste:** Teamet skriver sine deler og går gjennom fasen. Commit og push når Ferdinand ber om det.
+
+## 2026-10-27 – Fase 14, del 2: registrering og sjekkliste
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet del 2 av fase 14 i en ny chat. Den eneste opplysningen som var fylt ut, var at fase 14 er
+  committet (1cfee6f) og pushet 2026-10-27. KI sjekket det med `git log` og `git rev-parse origin/fase-14`. Resten av
+  plassholderne var ikke fylt ut og er registrert slik:
+
+  | Plassholder | Registrert som |
+  |---|---|
+  | Pull request `fase-14` → `main` | ikke oppgitt. `origin/main` står fortsatt på 0f7296c |
+  | Kodegjennomgang (tofaktor, `householdAccess`) | ingen |
+  | Teamets egen tekst (02, 03, 13, 15, 18, vurderingene i 06/14/16/17) | ingen |
+  | KI-erklæringen | ikke lest, ikke signert |
+  | Kapitler godkjent av teamet | ingen |
+  | Kilder slått opp / lest selv | ingen |
+  | Referansestil | ikke valgt (anbefalt APA 7) |
+  | Offisielle krav, frist, format, sideantall, presentasjonslengde | ukjent |
+  | Kontoer i testmiljøet | ikke laget |
+  | Test på ekte telefon med skjermleser | ikke gjort |
+  | Kontaktadresse, art. 9 | ikke valgt / ikke vurdert |
+  | Passfrase og TOTP-nøkkel utenfor serveren | nei |
+  | Kontroll av oppskrifter, `ingredients.json`, OFF-kategorier | ingen |
+  | ADR-0017, pilotdataene | ikke godkjent, ikke slettet (frist 2026-11-23) |
+- **Planen:** fasemalen med 14 åpne spørsmål. Ferdinand godkjente steg 1 (registrere commit og push) og steg 4
+  (sjekklisten) med «Ja vennligst gjør det!», uten å svare på spørsmålene.
+- Passordet til testmiljøet var igjen markert i editoren og ble dermed sendt med i chatten. KI anbefalte å bytte det.
+  Det er ikke gjort, fordi det krever en endring i Caddyfile, som teamet må be om.
+
+**Endret**
+- Veikartet, rad 14: committet og pushet, lenke til sjekklisten, og at ingen gjennomgang er oppgitt.
+- Ny [sjekkliste for merge og innlevering](sjekkliste-merge-og-innlevering.md) (utkast, ingen punkter krysset av).
+- Kapittel 20: lenke til sjekklisten. Teksten sa at bare kapittel 07 har Mermaid-diagrammer. Kapittel 08 har også
+  (7 og 6 diagrammer), og det er rettet.
+- KI-loggen: #49 (commit og push av fase 14, som manglet) og #50 (denne økten).
+
+**Resultat:** Ingen endring i appen. Lenkesjekk og formatering av dokumentasjonen, se
+`docs/evidence/test-results/fase-14/`.
+
+**Neste:** Teamet svarer på de åpne spørsmålene, går gjennom pull requesten og skriver sine deler. Commit og push når
+Ferdinand ber om det.

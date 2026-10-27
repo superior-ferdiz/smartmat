@@ -1,0 +1,5 @@
+$ npx prettier --check docs/development/sjekkliste-merge-og-innlevering.md docs/development/roadmap.md docs/development/development-journal.md docs/evidence/ai-usage/ai-logg.md docs/academic/20-innleveringsrapport.md
+# 2026-10-27T20:10:45Z, fase 14 del 2
+Checking formatting...
+All matched files use Prettier code style!
+# exit code: 0
