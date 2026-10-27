@@ -1,6 +1,6 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 12 (2026-10-25). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -160,6 +160,24 @@ om dette krever noe mer.
 | Et anslag blir en utgift | En pris fra Kassalapp havner i budsjettet | Prisrutene skriver aldri til kjøp, partier, budsjett eller svinn | `prices.api.test.ts` (FR-PRICE-005) |
 | Hva noen har kjøpt, i loggen | Strekkoden i URL-en | `/prices/[gtin]` i loggen. Grunnen til feil logges uten kode. | `prices.api.test.ts` |
 
+### Nytt i fase 13: sikkerhet, personvern og drift
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Passord fra kjente lekkasjer | Brukeren velger «sommer2024», som står på alle lister | Pwned Passwords ved registrering og passordbytte (bare 5 tegn av SHA-1 sendes). Tjenesten nede: passordet godtas. | `passwords.security.api.test.ts`, `pwnedPasswords.test.ts`, `account.spec.ts` |
+| Stjålet passord brukes i det stille | Noen logger inn fra en annen maskin | Varsel om ny innlogging i alle andre økter, liste over økter, «Logg ut» for hver | `sessions.security.api.test.ts`, `account.test.tsx`, `account.spec.ts` |
+| Stjålet passord alene er nok | Gjettet eller lekket passord | Valgfri tofaktor (TOTP) med gjenopprettingskoder | `twoFactor.security.api.test.ts`, `totp.test.ts`, `twoFactor.test.tsx`, `account.spec.ts` |
+| Kode sett over skulderen brukes igjen | Samme 6 sifre i en ny innlogging | Siste brukte tidssteg lagres; samme eller eldre kode avvises, også to samtidige | Samme |
+| Gjetting av koder | Skript prøver koder etter riktig passord | Feil koder teller mot sperren (5 → 15 min). Riktig passord nullstiller **ikke** telleren før koden er riktig. | Samme |
+| Database eller kopi på avveie gir tofaktor | Kopi av `users` | Hemmeligheten er kryptert (AES-256-GCM) med nøkkel bare i miljøet; gjenopprettingskoder bare som hash | Samme |
+| Server uten nøkkel slipper inn med bare passord | Feilkonfigurasjon | Fail closed: kontoen med tofaktor får 503, ingen økt | Samme |
+| Andre containere forfalsker klientadressen | Falsk `X-Forwarded-For` fra et annet nettsted på serveren | Eget nett for Caddy og SmartMat (ADR-0022), `TRUST_PROXY` bare for det | `staging.api.test.ts` |
+| Klikkjakking, MIME-sniffing, lekkasje via Referer | Siden i en `iframe` på en annen side | CSP med `frame-ancestors 'none'`, HSTS, `nosniff`, `Referrer-Policy: no-referrer`, COOP/CORP | `staging.api.test.ts` |
+| To retter samme kjøp | Ola og Kari lagrer samtidig | Versjon på kjøpet, betinget skriving, 409 og melding | `purchaseVersion.api.test.ts`, `PurchasePages.test.tsx`, `account.spec.ts` |
+| Personopplysninger i loggen | E-post, varenavn, strekkode, token eller IP-adresse | Én test som går gjennom de fleste flytene og leter etter kjente verdier i hele loggen | `logs.security.api.test.ts` |
+| Eksporten lekker | Andres e-post, passordhash, tokens, andre husholdninger | Hver tabell nevnes eksplisitt; en ny kolonne får testen til å feile til noen har bestemt seg | `privacy.api.test.ts`, `account.spec.ts` |
+| Tap av data | Feil, sletting, ødelagt disk | Nattlig, kryptert kopi; ukentlig gjenoppretting der alle rader leses; varsel ved gammel kopi | `docker/backup/test-backup.sh` (21 sjekker) |
+
 Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 ([fase 2](../evidence/test-results/fase-2/10-mutation-check.txt),
 [fase 3](../evidence/test-results/fase-3/10-mutation-check.txt),
@@ -171,7 +189,8 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 [fase 9](../evidence/test-results/fase-9/10-mutation-check.txt),
 [fase 10](../evidence/test-results/fase-10/10-mutation-check.txt),
 [fase 11](../evidence/test-results/fase-11/10-mutation-check.txt),
-[fase 12](../evidence/test-results/fase-12/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 12](../evidence/test-results/fase-12/10-mutation-check.txt),
+[fase 13](../evidence/test-results/fase-13/10-mutation-check.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 
@@ -206,6 +225,12 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 | Når brukeren sist så handlelisten (fase 11) | Varselet om nye linjer | `household_members.shopping_seen_at` | Som medlemskapet |
 | Egne priser (fase 12): hva husholdningen har betalt for en vare, og hvor | Vise prisen og regne anslag | Ingen ny lagring. Leses fra partiene og kjøpene. | Som partiene og kjøpene |
 | Bruker-ID per prisoppslag (fase 12) | Grensen på 30 oppslag i minuttet | Bare i minnet i API-prosessen, i ett minutt | Lagres ikke og logges ikke |
+| Nettleserfamilie og system for hver innlogging (fase 13), for eksempel «Firefox» og «Windows» | Vise hvor brukeren er logget inn, og varsle om ny innlogging (FR-AUTH-009) | `sessions.browser`, `sessions.os` (fast liste, ikke hele User-Agent, ikke IP-adresse) | Som økten: høyst 30 dager, slettes hver natt når den er utløpt |
+| At noen svarte «Det var meg» på en innlogging (fase 13) | Varselet skal ikke komme igjen | `sessions.login_notice_dismissed_at` | Som økten |
+| Tofaktorhemmelighet (fase 13) | Sjekke koden ved innlogging (FR-AUTH-010) | `users.totp_secret`, kryptert med AES-256-GCM; nøkkelen bare i miljøet | Til brukeren slår av tofaktor eller sletter kontoen |
+| Gjenopprettingskoder (fase 13) | Innlogging uten telefonen | `user_recovery_codes`, bare SHA-256 | Til nye koder lages, tofaktor slås av eller kontoen slettes |
+| Utfordring mellom passord og kode (fase 13) | Innlogging i to steg | `login_challenges`, bare SHA-256 | 5 minutter; slettes når den er brukt og hver natt |
+| Sikkerhetskopier av databasen (fase 13) | Kunne gjenopprette etter feil (ADR-0021) | `/var/backups/smartmat/` på serveren, kryptert. Uten kvitteringsbilder og OCR-tekst. | De 7 siste nettene |
 
 Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Alt kjørte lokalt.
 
@@ -244,6 +269,16 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 - **Det som lagres** (`price_observations`, `price_lookups`) er globale priser uten brukerdata. Det slettes etter 30
   dager uten nytt oppslag.
 - **Egne priser** er husholdningens data fra før (partier og kjøp). De vises bare for medlemmer og sendes aldri ut.
+
+**Fra fase 13:**
+- **Have I Been Pwned** (Pwned Passwords) får de 5 første tegnene i SHA-1 av et nytt passord, fra serveren. Ut fra
+  det kan ingen finne passordet (k-anonymitet, 800–1000 svar med polstring). HIBP kan logge serverens adresse og
+  User-Agent i opptil 31 dager (personvernerklæringen deres, lest 2026-10-25). **KI-ens tolkning:** HIBP får ingen
+  personopplysninger om brukeren. Se [integrations/pwned-passwords.md](../development/integrations/pwned-passwords.md).
+- **Eksport** (FR-PRIV-001): brukeren kan laste ned alt om seg selv som én JSON-fil. Den sendes bare til brukeren
+  selv.
+- **Sikkerhetskopier** (ADR-0021) ligger på samme server, kryptert. En slettet konto kan ligge i en kopi i opptil 7
+  dager. Kvitteringsbilder og OCR-tekst er aldri med.
 
 ## Svinn, kjøp og varsler (fase 11)
 
@@ -327,7 +362,41 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   kjørt. Slettes kjøpet, slettes også kvitteringsraden. Dette er testet (unntatt selve tidsplanen i pg-boss).
 - Etter slettingen virker ingen gamle sesjoner, og e-postadressen kan brukes på nytt. Dette er testet.
 - **Fra fase 10:** eierskap i delte husholdninger (se over).
-- **Ikke håndtert ennå:** sikkerhetskopier (finnes ikke lokalt).
+- **Fra fase 13:** utløpte økter og utfordringer slettes hver natt av workeren. Gjenopprettingskoder og utfordringer
+  slettes med kontoen (`ON DELETE CASCADE`, testet).
+- **Sikkerhetskopier** (fase 13, bare testmiljøet): en slettet konto kan ligge i en kryptert kopi i opptil 7 dager,
+  til kopien roteres bort. Kvitteringsbilder er aldri med. Lokalt finnes ingen kopier.
+
+## Lagringstider samlet (fase 13, FR-PRIV-002)
+
+| Hva | Hvor lenge | Hvordan det håndheves |
+|---|---|---|
+| Konto, husholdning og alt brukeren har lagt inn | Til brukeren sletter det (eller kontoen) | Sletting i appen, `ON DELETE CASCADE` (testet) |
+| Økter | 14 dager uten bruk, høyst 30 dager | Sjekkes ved hver forespørsel; utløpte slettes hver natt (workeren, fase 13) |
+| Utfordringer mellom passord og kode | 5 minutter | Sjekkes ved bruk; slettes når brukt og hver natt |
+| Kvitteringsbilder og OCR-tekst | Til kjøpet er bekreftet eller forkastet, høyst 7 dager | Workeren hvert 15. minutt (fase 8) |
+| Tilstand for varsler | 45 dager | Lat sletting: eldre rader slettes neste gang samme bruker skriver en tilstand i husholdningen (fase 11). En bruker som slutter å bruke appen, beholder dem til kontoen slettes. |
+| Invitasjoner | 30 dager | Lat sletting: eldre rader slettes neste gang eieren lager en invitasjon (fase 10). Ellers til husholdningen slettes. |
+| Globale priser (ingen brukerdata) | 30 dager uten nytt oppslag | Workeren (fase 12) |
+| Produktmellomlager fra Open Food Facts (ingen brukerdata) | Slettes ikke; hentes på nytt etter 30 dager. «Fant ikke» gjelder i 24 timer. | Ingen sletting. Det er offentlige produktdata, ikke personopplysninger. |
+| Sikkerhetskopier | De 7 siste nettene | `backup.sh` sletter de eldre |
+| Serverlogg for SmartMat | Uten personopplysninger (testet). Hvor lenge Docker beholder loggen, er ikke satt (standard: til containeren lages på nytt). | Ikke styrt av appen. Teamet bør vurdere en grense. |
+| Pilotdata for OCR (utenfor appen) | Til ADR-0017 er godkjent, senest 2026-11-23 | Manuelt, av teamet |
+
+## Lovtekst og tolkning (fase 13)
+
+**Dette er KI-ens lesing og ikke juridisk rådgivning.** Teamet bør spørre veilederen om punktene merket «Teamet».
+
+| Tema | Hva lovteksten sier (personvernforordningen) | KI-ens tolkning for SmartMat | Teamet må |
+|---|---|---|---|
+| Innsyn (art. 15) | Den registrerte har rett til en kopi av opplysningene. | «Last ned mine data» gir alt om brukeren, og alt i husholdningene hen er med i, slik appen viser det. | Bekrefte at det er nok |
+| Dataportabilitet (art. 20) | Opplysninger brukeren selv har gitt, i et strukturert, vanlig og maskinlesbart format, når behandlingen bygger på samtykke eller avtale. | JSON oppfyller formatkravet. Husholdningsdata som andre medlemmer har lagt inn, er også deres opplysninger. KI-en har tatt dem med fordi brukeren uansett ser dem i appen. | Ta stilling til om andre medlemmers innlegg skal være med |
+| Informasjon (art. 13) | Hvem som er ansvarlig og kontakt, formål og grunnlag, mottakere, lagringstid, rettigheter og klagerett. | `/personvern` dekker punktene, men kontaktadressen er en plassholder, og grunnlaget for allergier er ikke avgjort. | Fylle inn kontakt og avgjøre grunnlaget |
+| Helseopplysninger (art. 9) | Behandling av helseopplysninger er forbudt, med unntak som uttrykkelig samtykke (nr. 2 a). | Allergier kan være helseopplysninger. Uttrykkelig samtykke er det nærliggende unntaket. Ikke avgjort. | Avgjøre, gjerne med veilederen |
+| Lagringsbegrensning (art. 5 nr. 1 e) | Ikke lagre lenger enn nødvendig. | Tabellen over. Kjøp og lager lagres til brukeren sletter dem. | Vurdere automatisk sletting av gamle data |
+| Databehandler (art. 28) | Avtale med den som behandler opplysninger på våre vegne. | Serverleverandøren (Tyskland) er databehandler. Om det finnes en avtale, er ikke undersøkt. Kassalapp og HIBP får ikke personopplysninger om brukerne, og er etter KI-ens forståelse ikke databehandlere. | Sjekke avtalen med serverleverandøren |
+| Informasjonskapsler (ekomloven § 3-15) | Samtykke, unntatt for det som er nødvendig for en tjeneste brukeren har bedt om. | Den ene cookien er nødvendig for innlogging, så det trengs ikke samtykke. | Bekrefte |
+| Sikkerhet (art. 32) | Egnede tekniske tiltak, blant annet evne til å gjenopprette tilgang etter en hendelse. | Kryptert sikkerhetskopi med testet gjenoppretting (ADR-0021). Kopiene ligger på samme server. | Vurdere kopi et annet sted |
 
 ## Kjente svakheter og utsatte tiltak
 
@@ -335,9 +404,8 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   Rate limiting begrenser det. Ordentlig løsning (svar «sjekk e-posten din») krever e-postverifisering
   (FR-AUTH-006, fase 13).
 - **Grensen per IP-adresse** er i praksis felles for alle lokalt, fordi alt går via Vite-proxyen fra 127.0.0.1. I
-  testmiljøet hentes klientens adresse fra Caddy (`TRUST_PROXY`). **Restrisiko:** andre containere på `ghostweb`-nettet
-  (andre nettsteder på serveren, samme eier) kan sende et falskt `X-Forwarded-For`. Et eget nett bare for Caddy og
-  SmartMat ville fjernet det, men krever endring i et annet prosjekt.
+  testmiljøet hentes klientens adresse fra Caddy (`TRUST_PROXY`). Restrisikoen fra `ghostweb` (andre containere kunne
+  sende et falskt `X-Forwarded-For`) er **fjernet i fase 13**: appen er på et eget nett med bare Caddy (ADR-0022).
 - **Basic auth i testmiljøet** er ett felles passord for teamet. Det er et ekstra lag foran innloggingen, ikke en
   erstatning for den.
 - **Open Food Facts-data kan være feil** («must not be used for medical purposes»). Allergener hentes derfor ikke fra
@@ -349,7 +417,12 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 - **Andre forsøk:** Passordbytte og sletting teller ikke mot sperren per konto, bare mot grensen per IP-adresse.
 - **Kjøpsdata kan si mye om en person.** Butikk, dato og hva som kjøpes, kan avsløre vaner, bosted og helse
   (for eksempel kosthold). Dataene vises bare for medlemmer av husholdningen, logges ikke og sendes ikke ut av
-  maskinen. En vurdering av behovet for kryptering eller kortere lagringstid hører til fase 13.
+  maskinen. **Vurdert i fase 13 (KI-ens forslag):**
+  - Ingen egen kryptering av kolonner: nøkkelen måtte ligget på samme server som databasen, og det ville gitt lite
+    vern mot det som er mest sannsynlig (feil i appen).
+  - Disken og kopiene: kopiene er kryptert, men databasens disk er ikke kryptert av appen.
+  - Ingen automatisk sletting av gamle kjøp: brukeren vil se historikken, og kan slette kjøp eller hele kontoen selv.
+  - Teamet bør ta stilling til om eldre data (for eksempel over to år) skal slettes automatisk.
 - **Allergier kan være helseopplysninger** (særlige kategorier, GDPR art. 9). I SmartMat er de frivillige, brukes
   bare til å skjule eller varsle om oppskrifter, vises bare for brukeren selv, logges ikke (testet) og slettes med
   kontoen. Fra fase 10 kan brukeren velge å dele dem med en husholdning (se «Delte husholdninger»). **Behandlingsgrunnlaget er ikke vurdert av teamet.** Uttrykkelig samtykke (art. 9 nr. 2 a) er den
@@ -357,21 +430,35 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   kjører bare lokalt og har ingen ekte brukere.
 - **Allergenmerkingen er et KI-utkast som ikke er kontrollert** (`prisma/seed/ingredients.json`). Forbeholdet sier
   at informasjonen er veiledende, men det erstatter ikke at teamet kontrollerer merkingen.
-- **Retting av samme kjøp fra to steder:** siste lagring vinner, uten varsel. Fra fase 10 kan to medlemmer gjøre
-  det samtidig. Det er ikke håndtert.
+- **Retting av samme kjøp fra to steder:** rettet i fase 13 (FR-BUD-006). Kjøpet har en versjon, og den som lagrer
+  sist, får en melding i stedet for å overskrive. Varer, handleliste og måltidsplan har ikke dette: der gjelder
+  fortsatt «siste lagring vinner», men endringene der er små og gjelder én rad om gangen.
 - **Invitasjonslenken kan videresendes.** Den som har lenken, kan bli med. Den virker bare én gang og i 48 timer,
   kan trekkes tilbake, og eieren ser hvem som brukte den og kan fjerne vedkommende. Uten e-posttjeneste kan lenken
   ikke knyttes til en bestemt adresse.
 - **Ingen sanntid:** et medlem ser endringer fra andre først når siden henter data på nytt (ved fokus, eller etter
   30 sekunder). En som er fjernet, kan se data som allerede er lastet inn, til neste forespørsel. Serveren gir ingen
   nye data.
-- **Kvitteringsbilder i databasen:** bildene ligger i Postgres i opptil 7 dager. Det finnes ikke sikkerhetskopier
-  lokalt. Når sikkerhetskopier innføres (fase 13), må de enten ikke ta med `receipt_images`, eller ha en
-  slettefrist som er like kort.
+- **Kvitteringsbilder i databasen:** bildene ligger i Postgres i opptil 7 dager. Sikkerhetskopiene (fase 13) tar
+  ikke med `receipt_images` eller `receipt_extractions`. Det er testet ved å dekryptere en kopi og lete etter
+  innholdet.
 - **OCR-teksten kan være feil.** Appen fyller bare inn butikk, dato og total som standard (ADR-0017), og ingenting
   lagres før brukeren har bekreftet.
-- **Ikke gjort:** tofaktorinnlogging, varsel om innlogging fra ny enhet, sjekk mot lister over lekkede passord,
-  HTTPS og sikkerhetsheadere for selve nettsiden (fase 13).
+- **Gjort i fase 13:** tofaktorinnlogging, varsel om ny innlogging, sjekk mot lekkede passord, og sikkerhetsheadere
+  for nettsiden (kontrollert i API-testene og mot domenet). Testmiljøet svarer med HTTPS og basic auth fra
+  2026-10-27.
+- **Glemt passord:** uten e-posttjeneste (FR-AUTH-006) kan en bruker som har glemt passordet, ikke tilbakestille det
+  selv. Det samme gjelder den som har tofaktor på og har mistet både telefonen og gjenopprettingskodene. Teamet må
+  da gjøre det manuelt på serveren. Det er greit i et lukket testmiljø, men ikke for åpen bruk.
+- **Varsel om ny innlogging gjelder hver innlogging:** vi lagrer ingen historikk over enheter ut over aktive økter, så
+  vi vet ikke hva som er en «ny» enhet. Det gir flere varsler enn nødvendig, men aldri færre.
+- **Sjekken mot lekkede passord er åpen ved feil:** er tjenesten nede, godtas passordet. Det er valgt så
+  registreringen virker uten HIBP (NFR-REL-001).
+- **Sikkerhetskopiene ligger på samme server** som databasen (ADR-0021). De beskytter mot feil og sletting, ikke mot
+  at serveren går tapt. Passfrasen og `TOTP_ENCRYPTION_KEY` må tas vare på et annet sted, ellers kan kopiene ikke
+  brukes. Det er ikke gjort per 2026-10-27.
+- **Tofaktor uten QR-kode:** for å slippe en ny avhengighet viser appen nøkkelen som tekst og en `otpauth://`-lenke.
+  På en datamaskin må nøkkelen skrives inn i appen på telefonen for hånd.
 
 ## Kilder i prosjektet
 

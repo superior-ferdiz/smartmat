@@ -1,0 +1,12 @@
+$ npm run -s test:api
+# 2026-10-27T14:03:13Z (etter rettingen av tidsbomben i notifications.api.test.ts, se forsøk 1)
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+
+ Test Files  32 passed (32)
+      Tests  491 passed (491)
+   Start at  14:03:13
+   Duration  439.71s (transform 1.02s, setup 89ms, import 20.38s, tests 414.75s, environment 2ms)
+
+exit=0

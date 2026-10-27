@@ -56,6 +56,28 @@ Innholdet er oppsummert i `docs/development/integrations/kassalapp.md`.
 
 Ingen priser fra Kassalapp er brukt i rapporten eller i testene. Testene bruker oppdiktede priser.
 
+## Kilder registrert underveis (fase 13)
+
+Ikke kontrollert av teamet. Referansestil er ikke valgt.
+
+**Lest av KI (Claude) 2026-10-25, før koden ble skrevet** (oppsummert i
+`docs/development/integrations/pwned-passwords.md`):
+- Have I Been Pwned. *API v3* (avsnittene om Pwned Passwords, k-anonymitet, polstring og User-Agent).
+  https://haveibeenpwned.com/API/v3
+- Have I Been Pwned. *Pwned Passwords.* https://haveibeenpwned.com/Passwords
+- Have I Been Pwned. *Privacy.* https://haveibeenpwned.com/Privacy
+
+**Brukt fra KI-ens egen kunnskap, ikke lest i fasen.** Må slås opp og sjekkes av teamet før de siteres i rapporten:
+- IETF. *RFC 6238: TOTP: Time-Based One-Time Password Algorithm* (2011), med testvektorene i vedlegg B. Testene i
+  `apps/api/src/lib/totp.test.ts` bruker vektorene slik KI husket dem. At testene består, viser at koden og vektorene
+  stemmer overens, men ikke at KI husket vektorene riktig.
+- IETF. *RFC 4226: HOTP* (dynamisk trunkering) og *RFC 4648* (base32, eksempelet «foobar»).
+- W3C. *Web Content Accessibility Guidelines (WCAG) 2.2* (2023). Listen over kriterier i
+  `docs/development/testing/tilgjengelighet.md`.
+- Europaparlaments- og rådsforordning (EU) 2016/679 (personvernforordningen), artikkel 5, 9, 13, 15, 20, 28 og 32.
+- Lov om elektronisk kommunikasjon (ekomloven) § 3-15 om informasjonskapsler.
+- PostgreSQL 16-dokumentasjonen om `pg_dump --snapshot`, `pg_export_snapshot()` og `auto_explain`.
+
 ## Kilder i prosjektet
 
 <!-- Lenk til ADR-er, krav, testbevis og logg som kapittelet bygger på. -->

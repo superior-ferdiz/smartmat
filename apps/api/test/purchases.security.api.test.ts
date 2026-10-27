@@ -78,7 +78,7 @@ function endpoints(householdId: string): { scoped: Endpoint[]; byId: Endpoint[] 
     ],
     byId: [
       ['GET', one],
-      ['PUT', one, { purchasedOn: '2026-10-21', totalOre: 1 }],
+      ['PUT', one, { purchasedOn: '2026-10-21', totalOre: 1, version: 1 }],
       ['DELETE', one],
     ],
   };
@@ -150,7 +150,11 @@ describe('NFR-SEC-001 purchases and budget: no access to another household', () 
     const before = await snapshot();
     const response = await call(app, 'PUT', purchasesPath(ola, `/${own.id}`), {
       client: ola,
-      body: { purchasedOn: '2026-10-21', lines: [{ ...milkLine, id: kariPurchase.lines[0]!.id }] },
+      body: {
+        purchasedOn: '2026-10-21',
+        version: 1,
+        lines: [{ ...milkLine, id: kariPurchase.lines[0]!.id }],
+      },
     });
     expect(response.statusCode).toBe(400);
     expect(response.json().error.fields).toEqual({
@@ -178,9 +182,9 @@ describe('NFR-SEC-001 purchases and budget: no access to another household', () 
     const repo = createPurchaseRepo(db);
     const before = await snapshot();
     const write = { storeName: 'Hacket', purchasedOn: '2026-10-21', totalOre: 1, lines: [] };
-    expect(await repo.update(ola.user.householdId, ola.user.id, kariPurchase.id, write, true)).toBe(
-      false,
-    );
+    expect(
+      await repo.update(ola.user.householdId, ola.user.id, kariPurchase.id, write, true, 1),
+    ).toBe('notFound');
     expect(await repo.remove(ola.user.householdId, kariPurchase.id, true)).toBeNull();
     expect(await repo.get(ola.user.householdId, kariPurchase.id)).toBeNull();
     expect(await snapshot()).toBe(before);

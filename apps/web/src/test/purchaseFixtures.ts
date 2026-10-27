@@ -34,6 +34,7 @@ export function purchase(overrides: Partial<PurchaseResponse> = {}): PurchaseRes
     source: 'manual',
     createdAt: '2026-10-20T10:00:00.000Z',
     updatedAt: '2026-10-20T10:00:00.000Z',
+    version: 1,
     lines,
     ...overrides,
   };

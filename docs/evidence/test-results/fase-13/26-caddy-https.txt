@@ -1,0 +1,39 @@
+# Caddy-blokken lagt inn og lastet 2026-10-27 (15:42:02Z). Passordet er tilfeldig og ligger bare i smartmat-private (0600).
+## IPv4 uten passord
+HTTP/2 401 
+www-authenticate: Basic realm="restricted"
+## IPv4 med passord: /
+HTTP/2 200 
+content-security-policy: default-src 'self';base-uri 'self';font-src 'self';form-action 'self';frame-ancestors 'none';img-src 'self' data:;object-src 'none';script-src 'self' 'wasm-unsafe-eval' 'sha256-pd2jJx9sw0nKeAxg1u3FxRR2qxjYmCZN9MdCy5AHFFg=';script-src-attr 'none';style-src 'self';connect-src 'self';media-src 'self' blob:
+cross-origin-opener-policy: same-origin
+cross-origin-resource-policy: same-origin
+permissions-policy: camera=(self), microphone=(), geolocation=(), payment=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-robots-tag: noindex, nofollow
+## IPv4 med passord: /api/v1/health
+{"status":"ok"}
+## IPv6 uten passord
+HTTP/2 401 
+www-authenticate: Basic realm="restricted"
+## IPv6 med passord: /
+HTTP/2 200 
+content-security-policy: default-src 'self';base-uri 'self';font-src 'self';form-action 'self';frame-ancestors 'none';img-src 'self' data:;object-src 'none';script-src 'self' 'wasm-unsafe-eval' 'sha256-pd2jJx9sw0nKeAxg1u3FxRR2qxjYmCZN9MdCy5AHFFg=';script-src-attr 'none';style-src 'self';connect-src 'self';media-src 'self' blob:
+cross-origin-opener-policy: same-origin
+cross-origin-resource-policy: same-origin
+permissions-policy: camera=(self), microphone=(), geolocation=(), payment=()
+referrer-policy: no-referrer
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-robots-tag: noindex, nofollow
+## IPv6 med passord: /api/v1/health
+{"status":"ok"}
+## http → https
+HTTP/1.1 308 Permanent Redirect
+Location: https://smartmat.risansolutions.no/
+## sertifikat
+issuer=C = US, O = Let's Encrypt, CN = YE2
+subject=CN = smartmat.risansolutions.no
+notBefore=Oct 27 14:43:05 2026 GMT
+notAfter=Jan 25 14:43:04 2027 GMT

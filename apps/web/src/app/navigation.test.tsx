@@ -82,10 +82,12 @@ describe('FR-UI-002 placeholder pages', () => {
     expect(screen.queryByText('Senere')).not.toBeInTheDocument();
   });
 
-  it('"Mer" lists the six sections that are not in the bottom menu', () => {
+  it('"Mer" lists the six sections that are not in the bottom menu, and the privacy notice (spec 13)', () => {
     renderApp('/mer');
     const nav = screen.getByRole('navigation', { name: 'Flere seksjoner' });
-    expect(within(nav).getAllByRole('link')).toHaveLength(6);
+    const links = within(nav).getAllByRole('link');
+    expect(links).toHaveLength(7);
+    expect(links.at(-1)).toHaveAttribute('href', '/personvern');
   });
 
   it('unknown URLs show a 404 page with a way back', () => {

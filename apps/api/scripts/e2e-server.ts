@@ -11,6 +11,7 @@ import { createReceiptRepo } from '../src/modules/receipts/repo';
 import type { OcrProvider } from '../src/providers/ocr/types';
 import { fakeKassalappFetch, testPriceProvider } from '../test/fakeKassalapp';
 import { fakeOffFetch, testBarcodeProvider } from '../test/fakeOff';
+import { fakePwnedCheck } from '../test/fakePwned';
 import { applySeed, readSeedDirectory } from '../src/modules/recipes/seed';
 import { seedFixtureRecipes } from '../test/fixtureSeed';
 import { testDatabaseUrl } from '../test/testDatabase';
@@ -42,6 +43,10 @@ const config = loadConfig({
   // Spec 08: receipts are accepted; the "OCR" below is a fake that never reads the image's text.
   OCR_PROVIDER: 'tesseract',
   RECEIPT_UPLOADS_PER_HOUR: '1000',
+  RATE_LIMIT_EXPORT_MAX: '10000',
+  PWNED_PASSWORDS: 'on',
+  // Spec 13: a made-up key for the e2e database only, so two-factor can be set up in the tests.
+  TOTP_ENCRYPTION_KEY: Buffer.alloc(32, 9).toString('base64'),
 });
 const db = createDb(databaseUrl);
 await db.$executeRawUnsafe(
@@ -99,5 +104,7 @@ const app = await buildApp({
   // Spec 12: never the real Kassalapp. The fake one has made-up prices for the codes in test/fakeKassalapp.ts.
   priceProvider: testPriceProvider(fakeKassalappFetch().fetchFn as typeof fetch),
   receiptQueue: pgBossReceiptQueue(jobs),
+  // Spec 13: never the real Have I Been Pwned. The fake one lists only the made-up passwords in test/fakePwned.ts.
+  pwnedPasswords: fakePwnedCheck(),
 });
 await app.listen({ host: config.host, port: config.port });

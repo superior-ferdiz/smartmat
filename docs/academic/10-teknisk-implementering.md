@@ -658,6 +658,73 @@ Kassalapp og prøvde å lagre det, og den andre lagringen traff den unike nøkke
 - **Den som taper, gir opp stille:** to API-prosesser kan fortsatt lagre samtidig. Da droppes den andre lagringen
   (`P2002`), fordi den første er like god.
 
+## Eksempel 48: én spørring som leste alle husholdningene (NFR-PERF-001, fase 13)
+
+Svinnoversikten teller kasseringer som ikke er angret:
+`NOT EXISTS (SELECT 1 FROM inventory_events u WHERE u.reverts_event_id = e.id)`.
+
+- **Funnet:** med 500 husholdninger og 102 000 hendelser i en egen måledatabase anslo Postgres 3325 kasseringer der
+  det var 79. Den valgte å lese **alle** hendelser i hele databasen for å bygge en hashtabell (10–14 ms per kall).
+- **Hvorfor det betyr noe:** kostnaden ville vokst med antall brukere, ikke med husholdningens egne data. Manuelle
+  `EXPLAIN` med faste verdier ga en rask plan, så feilen ble først synlig med `auto_explain` på spørringene appen
+  faktisk sendte.
+- **Rettingen:** en angring skrives alltid i samme husholdning, så `AND u.household_id = e.household_id` er sant. Den
+  gir planleggeren lov til å begrense lesingen til husholdningen: 2,5–3,8 ms, og medianen for hele kallet gikk fra
+  15,5 til 9,8 ms.
+- Samme betingelse ble lagt i matlagerets svinnsum.
+- Bevis: `21-perf-explain-before*.txt` og `21-perf-explain-after.txt` i `docs/evidence/test-results/fase-13/`.
+
+## Eksempel 49: en kode skal virke én gang, også når den sendes to ganger samtidig (FR-AUTH-010)
+
+TOTP-koden for et 30-sekunders steg er den samme for alle som spør i det steget. For at en kode som er sett over
+skulderen ikke skal virke igjen, lagres siste brukte steg:
+
+```ts
+db.user.updateMany({
+  where: { id: userId, OR: [{ totpLastStep: null }, { totpLastStep: { lt: step } }] },
+  data: { totpLastStep: step },
+});
+```
+
+Bare én av to samtidige forespørsler kan flytte steget, så den andre får 0 rader og «feil kode». Det samme mønsteret
+som for mengder i matlageret (fase 3). Gjenopprettingskoder bruker `usedAt: null` i `where` på samme måte.
+
+**Rekkefølgen ved innlogging er også en sikkerhetsregel:**
+- Riktig passord nullstiller vanligvis telleren for feil.
+- Med tofaktor gjør det det ikke før koden er riktig.
+- Ellers kunne noen som kjenner passordet, gjette fire koder, logge inn med passordet på nytt, og gjette fire til, i
+  det uendelige. Mutasjonssjekken har en egen runde for dette (runde 24).
+
+## Eksempel 50: eksporten nevner hver kolonne (FR-PRIV-001)
+
+Eksporten leser tabellene med `to_jsonb(t) - 'kolonne'`, så nye kolonner kommer med av seg selv. Det er praktisk, men
+farlig: en ny hemmelig kolonne (som `totp_secret` i samme fase) ville lekket. Testen `privacy.api.test.ts` sammenligner
+derfor kolonnene i eksporten med kolonnene i databasen, tabell for tabell, og alle tabeller med `household_id` må
+enten være eksportert eller stå i en liste over bevisste unntak. Da tofaktorfeltene ble lagt til i samme fase, ble de
+tatt ut av eksporten og ført inn i testens liste samtidig. At testen faktisk fanger en hemmelighet som slipper med, er
+kontrollert i mutasjonssjekken (runde 12 og 13).
+
+## Eksempel 51: sikkerhetskopi og manifest fra samme øyeblikk (NFR-OPS-002, ADR-0021)
+
+For at gjenopprettingstesten skal kunne si «alle rader er like», må fasiten (antall og md5 per tabell) være lest fra
+akkurat de dataene som ble dumpet. `backup.sh` åpner derfor en egen `psql`-økt som en coprocess:
+1. `BEGIN ISOLATION LEVEL REPEATABLE READ` og `pg_export_snapshot()`
+2. `pg_dump --snapshot=<id>` mens økten holdes åpen
+3. manifestet leses i samme transaksjon
+
+Dumpen går rett inn i `gpg`, så den aldri ligger ukryptert på disk.
+
+## Eksempel 52: kodedeling uten å røre 1300 tester (NFR-PERF-001)
+
+Alle sidene ble lastet med `React.lazy`. Det gjør at en side ikke er der i første render, og mange komponenttester
+leter etter innholdet med en gang.
+- `lazyPage()` (`app/lazyPage.ts`) husker en side som er lastet, og tegner den direkte neste gang.
+- Testoppsettet kaller `preloadAllPages()` før testene, så de oppfører seg som før.
+- Engelsk lastes bare når noen velger det (`ensureLoaded` i `i18n/index.ts`).
+- `"sideEffects": false` på den delte pakken lar Vite droppe moduler webappen ikke bruker.
+- Resultat: hovedfilen gikk fra 881 kB (265 kB gzip) til cirka 604 kB (191 kB gzip). Det som er igjen, er stort sett
+  React, React Router, Zod, i18next og norsk tekst, som alle sider trenger.
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert
@@ -666,11 +733,12 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 
 ## Kjente begrensninger
 
-- **Bundle på 761 kB** (232 kB gzip) i hovedfilen etter fase 8, opp fra 739 kB i fase 7, 720 kB i fase 6, 690 kB i fase 5, 658 kB i
-  fase 4, 619 kB i fase 3, 566 kB i fase 2 og 517 kB i fase 1. Vite advarer om dette. Skanneren er den første delen
-  som er delt ut i egne filer. Kodedeling per side (eventuelt `zod/mini`) bør gjøres snart.
+- **Bundle:** hovedfilen vokste fra 517 kB (fase 1) til 881 kB (fase 12). I fase 13 ble hver side delt ut i egen fil
+  (eksempel 52), og hovedfilen er cirka 604 kB (191 kB gzip). Vite advarer fortsatt (over 500 kB). Neste steg ville
+  vært `zod/mini` eller å dele ut React i en egen fil for bedre hurtiglagring.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
-  ESLint 10. Bør sjekkes på nytt i fase 13.
+  ESLint 10. Sjekket på nytt i fase 13 (`npm outdated`, bevis 22): ESLint 10, TypeScript 7, Vite 8 og Vitest 5 er
+  ute, men ikke tatt i bruk, av samme grunner som i CLAUDE.md. Bare patch- og minor-versjoner ble oppdatert.
 - `exactOptionalPropertyTypes` ble prøvd i TypeScript-oppsettet og fjernet igjen, fordi den gjorde det tungvint å
   sende valgfrie props videre i React.
 - **Rangeringen regnes ut ved hver visning** for alle oppskrifter (ingen hurtiglager). Med 30–50 oppskrifter og et

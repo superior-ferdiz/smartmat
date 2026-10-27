@@ -4,6 +4,8 @@ import type {
   ChangePasswordInput,
   DeleteAccountInput,
   LoginInput,
+  LoginResponse,
+  LoginSecondStepInput,
   RegisterInput,
   SessionResponse,
   SessionUser,
@@ -60,11 +62,24 @@ async function startSession(queryClient: QueryClient, session: SessionResponse) 
   await changeLocale(session.user.locale);
 }
 
+/** Spec 13 (FR-AUTH-010): with two-factor on, the answer is a challenge, and no session starts yet. */
 export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: LoginInput) =>
-      apiFetch<SessionResponse>('/auth/login', { method: 'POST', body: input }),
+      apiFetch<LoginResponse>('/auth/login', { method: 'POST', body: input }),
+    onSuccess: async (result) => {
+      if ('user' in result) await startSession(queryClient, result);
+    },
+  });
+}
+
+/** Spec 13 (FR-AUTH-010): the code after the password. */
+export function useLoginSecondStep() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: LoginSecondStepInput) =>
+      apiFetch<SessionResponse>('/auth/login/two-factor', { method: 'POST', body: input }),
     onSuccess: (session) => startSession(queryClient, session),
   });
 }

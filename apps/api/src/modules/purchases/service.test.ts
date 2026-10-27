@@ -24,6 +24,7 @@ function stored(lines: PurchaseResponse['lines'] = []): PurchaseResponse {
     source: 'manual',
     createdAt: '',
     updatedAt: '',
+    version: 1,
     createdBy: { kind: 'unknown', displayName: null },
     lines,
   };
@@ -45,7 +46,7 @@ function setup(existing: PurchaseResponse | null = stored()) {
     }),
     update: vi.fn(async (_h, _a, _id, write: PurchaseWrite) => {
       writes.push(write);
-      return true;
+      return 'updated' as const;
     }),
     remove: vi.fn(async () => ({ removedBatches: 0, keptBatches: 0 })),
   };
@@ -225,7 +226,7 @@ describe('FR-BUD-005 PurchaseService.update', () => {
         H,
         'u1',
         'p1',
-        updatePurchaseSchema.parse({ purchasedOn: '2026-10-21', totalOre: 1 }),
+        updatePurchaseSchema.parse({ purchasedOn: '2026-10-21', totalOre: 1, version: 1 }),
       ),
     ).rejects.toMatchObject({ statusCode: 404 });
   });
@@ -239,6 +240,7 @@ describe('FR-BUD-005 PurchaseService.update', () => {
         'p1',
         updatePurchaseSchema.parse({
           purchasedOn: '2026-10-21',
+          version: 1,
           lines: [
             { ...milk, id: LINE, toInventory: { unit: 'ml', quantityBase: 1, locationId: FRIDGE } },
             { ...milk, id: '0199f0a0-0000-7000-8000-00000000b999' },
@@ -263,8 +265,10 @@ describe('FR-BUD-005 PurchaseService.update', () => {
         purchasedOn: '2026-10-21',
         totalOre: 1,
         removeUntouchedBatches: false,
+        version: 4,
       }),
     );
-    expect(repo.update).toHaveBeenCalledWith(H, 'u1', 'p1', expect.anything(), false);
+    // Spec 13 (FR-BUD-006): the version from the form goes to the repo's conditional write.
+    expect(repo.update).toHaveBeenCalledWith(H, 'u1', 'p1', expect.anything(), false, 4);
   });
 });

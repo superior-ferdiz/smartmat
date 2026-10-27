@@ -74,14 +74,18 @@ export interface PurchaseRepo {
     dedupeKey: string | null,
     receipt?: ReceiptLink,
   ): Promise<string | null>;
-  /** False if the purchase no longer exists. */
+  /**
+   * Spec 13 (FR-BUD-006): only when the stored version is still `version`, and the version goes up by one.
+   * 'notFound' if the purchase no longer exists, 'changed' if someone else saved an edit in between.
+   */
   update(
     householdId: string,
     actorId: string,
     purchaseId: string,
     purchase: PurchaseWrite,
     removeUntouchedBatches: boolean,
-  ): Promise<boolean>;
+    version: number,
+  ): Promise<'updated' | 'notFound' | 'changed'>;
   remove(
     householdId: string,
     purchaseId: string,
@@ -98,6 +102,7 @@ const purchaseSelect = {
   source: true,
   createdAt: true,
   updatedAt: true,
+  version: true,
   createdBy: creatorSelect,
   lines: {
     orderBy: { position: 'asc' },
@@ -135,6 +140,7 @@ function toPurchase(row: PurchaseRow): PurchaseResponse {
     createdAt: row.createdAt.toISOString(),
     createdBy: toCreator(row.householdId, row.createdBy),
     updatedAt: row.updatedAt.toISOString(),
+    version: row.version,
     lines: row.lines.map((line) => ({
       id: line.id,
       position: line.position,
@@ -344,17 +350,23 @@ export function createPurchaseRepo(db: Db): PurchaseRepo {
       }
     },
 
-    async update(householdId, actorId, purchaseId, purchase, removeUntouchedBatches) {
+    async update(householdId, actorId, purchaseId, purchase, removeUntouchedBatches, version) {
       return db.$transaction(async (tx) => {
+        // The version check and the raise are one conditional write: of two edits sent at the same moment, the
+        // second waits for the first's row lock and then finds the version moved (never read-then-write).
         const { count } = await tx.purchase.updateMany({
-          where: { id: purchaseId, householdId },
+          where: { id: purchaseId, householdId, version },
           data: {
             storeName: purchase.storeName,
             purchasedOn: toDbDate(purchase.purchasedOn),
             totalOre: purchase.totalOre,
+            version: { increment: 1 },
           },
         });
-        if (count === 0) return false;
+        if (count === 0) {
+          const exists = await tx.purchase.count({ where: { id: purchaseId, householdId } });
+          return exists > 0 ? 'changed' : 'notFound';
+        }
 
         const existing = await tx.purchaseLine.findMany({
           where: { purchaseId, householdId },
@@ -393,7 +405,7 @@ export function createPurchaseRepo(db: Db): PurchaseRepo {
             await addLineToInventory(tx, householdId, actorId, line.id, line.toInventory);
           }
         }
-        return true;
+        return 'updated';
       });
     },
 

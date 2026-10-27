@@ -1,0 +1,10 @@
+# SmartMat (spec 13 NFR-OPS-002): restores the newest backup into a throw-away container and reads every row.
+[Unit]
+Description=SmartMat: weekly restore test of the newest backup
+Requires=docker.service
+After=docker.service smartmat-backup.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/Websites/SmartMat/docker/backup/restore-test.sh
+Nice=10

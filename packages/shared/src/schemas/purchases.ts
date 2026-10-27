@@ -174,6 +174,8 @@ export const updatePurchaseSchema = z
     lines: linesSchema(purchaseLineSchema),
     /** Spec 04 decision 2: untouched batches of removed lines are removed too, unless this is false. */
     removeUntouchedBatches: z.boolean().default(true),
+    /** Spec 13 (FR-BUD-006): the version the form was filled in from. */
+    version: z.number().int().positive(),
   })
   .superRefine(checkPurchase);
 export type UpdatePurchaseInput = z.input<typeof updatePurchaseSchema>;

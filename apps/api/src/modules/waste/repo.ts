@@ -77,7 +77,12 @@ export function createWasteRepo(db: Db): WasteRepo {
         JOIN inventory_items i ON i.id = e.item_id AND i.household_id = e.household_id
         WHERE e.household_id = ${householdId}::uuid
           AND e.type = 'discard'
-          AND NOT EXISTS (SELECT 1 FROM inventory_events u WHERE u.reverts_event_id = e.id)
+          AND NOT EXISTS (
+            -- An undo is always written in the same household (spec 13: keeps the scan inside it, not the
+            -- whole table – the planner chose a full scan of every household's events with 100 000 rows).
+            SELECT 1 FROM inventory_events u
+            WHERE u.reverts_event_id = e.id AND u.household_id = e.household_id
+          )
           AND e.created_at >= (${start}::date)::timestamp AT TIME ZONE 'Europe/Oslo'
           AND e.created_at < (${next}::date)::timestamp AT TIME ZONE 'Europe/Oslo'
         GROUP BY 1, 2, 3, 4, 5`;
@@ -118,7 +123,12 @@ export function createWasteRepo(db: Db): WasteRepo {
         JOIN inventory_items i ON i.id = e.item_id AND i.household_id = e.household_id
         WHERE e.household_id = ${householdId}::uuid
           AND e.type = 'discard'
-          AND NOT EXISTS (SELECT 1 FROM inventory_events u WHERE u.reverts_event_id = e.id)
+          AND NOT EXISTS (
+            -- An undo is always written in the same household (spec 13: keeps the scan inside it, not the
+            -- whole table – the planner chose a full scan of every household's events with 100 000 rows).
+            SELECT 1 FROM inventory_events u
+            WHERE u.reverts_event_id = e.id AND u.household_id = e.household_id
+          )
           AND e.created_at >= (${start}::date)::timestamp AT TIME ZONE 'Europe/Oslo'
           AND e.created_at < (${next}::date)::timestamp AT TIME ZONE 'Europe/Oslo'
         GROUP BY i.id, i.name, i.unit

@@ -61,3 +61,10 @@
   transform: none;
   color: var(--color-on-primary);
 }
+
+/* Spec 13: the link to the privacy notice under the form. */
+.footer {
+  margin-top: var(--space-6);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}

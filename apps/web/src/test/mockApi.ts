@@ -87,6 +87,16 @@ export const EMPTY_ESTIMATE = {
   },
 };
 
+/** Spec 13 (FR-AUTH-009): the session the test is "in". */
+export const THIS_SESSION = {
+  id: '0199f0a0-0000-7000-8000-0000000005e1',
+  browser: 'firefox',
+  os: 'linux',
+  createdAt: '2026-10-20T08:00:00.000Z',
+  lastSeenAt: '2026-10-20T09:00:00.000Z',
+  current: true,
+} as const;
+
 export const defaultApi: Handler = (request) => {
   // Spec 11: opening the shopping list and showing notifications are reported in the background.
   if (
@@ -98,6 +108,13 @@ export const defaultApi: Handler = (request) => {
       : { status: 204 };
   }
   if (request.method !== 'GET') return undefined;
+  // Spec 13: no new logins, one session (this one), no backup on this "server".
+  if (request.path === '/me/login-notices') return { status: 200, body: { items: [] } };
+  if (request.path === '/me/sessions') return { status: 200, body: { items: [THIS_SESSION] } };
+  if (request.path === '/me/two-factor')
+    return { status: 200, body: { available: true, enabled: false, recoveryCodesLeft: 0 } };
+  if (request.path === '/ops/backup')
+    return { status: 200, body: { state: 'off', newestBackupAt: null } };
   if (/^\/households\/[^/]+\/notifications$/.test(request.path))
     return { status: 200, body: { items: [], unseenCount: 0 } };
   if (request.path === '/me/notification-settings')

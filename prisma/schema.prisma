@@ -41,6 +41,13 @@ model User {
   /// Spec 10 (FR-HH-004): the household the user last chose. Checked against the memberships on every read;
   /// if the user is no longer a member, the oldest membership is used instead.
   activeHouseholdId String?   @map("active_household_id") @db.Uuid
+  /// Spec 13 (FR-AUTH-010): the TOTP secret, encrypted (AES-256-GCM, key only in the environment). Set when two-factor
+  /// is on. `totpPendingSecret` holds a new secret until the first code proves the app has it.
+  totpSecret        String?   @map("totp_secret") @db.VarChar(200)
+  totpPendingSecret String?   @map("totp_pending_secret") @db.VarChar(200)
+  totpEnabledAt     DateTime? @map("totp_enabled_at") @db.Timestamptz(3)
+  /// The time step of the last code used: the same (or an older) code is refused (no replay).
+  totpLastStep      Int?      @map("totp_last_step")
 
   activeHousehold      Household?            @relation("ActiveHousehold", fields: [activeHouseholdId], references: [id], onDelete: SetNull)
   sessions             Session[]
@@ -54,6 +61,8 @@ model User {
   invitationsMade      HouseholdInvitation[] @relation("InvitationCreatedBy")
   invitationsUsed      HouseholdInvitation[] @relation("InvitationUsedBy")
   notificationSettings NotificationSettings?
+  recoveryCodes        UserRecoveryCode[]
+  loginChallenges      LoginChallenge[]
 
   @@map("users")
 }
@@ -132,23 +141,58 @@ model HouseholdInvitation {
 }
 
 model Session {
-  id         String   @id @default(uuid(7)) @db.Uuid
+  id                     String    @id @default(uuid(7)) @db.Uuid
   /// SHA-256 of the random session token in the cookie (hex). The token itself is never stored,
   /// so a copy of the database cannot be used to log in.
-  tokenHash  String   @unique @map("token_hash") @db.Char(64)
-  userId     String   @map("user_id") @db.Uuid
+  tokenHash              String    @unique @map("token_hash") @db.Char(64)
+  userId                 String    @map("user_id") @db.Uuid
   /// Sent back by the browser in the X-CSRF-Token header on changing requests.
-  csrfToken  String   @map("csrf_token") @db.VarChar(64)
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  lastSeenAt DateTime @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  csrfToken              String    @map("csrf_token") @db.VarChar(64)
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastSeenAt             DateTime  @default(now()) @map("last_seen_at") @db.Timestamptz(3)
   /// The earlier of "14 days after last use" and "30 days after login". Moved forward on use.
-  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+  expiresAt              DateTime  @map("expires_at") @db.Timestamptz(3)
+  /// Spec 13 (FR-AUTH-009): browser family and operating system from a fixed list (CHECK). Never the IP address or
+  /// the whole User-Agent text.
+  browser                String    @default("other") @db.VarChar(20)
+  os                     String    @default("other") @db.VarChar(20)
+  /// When someone answered "Det var meg" to the notice about this login in another session.
+  loginNoticeDismissedAt DateTime? @map("login_notice_dismissed_at") @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+// ─── Phase 13: two-factor login (spec 13, FR-AUTH-010) ────────────────────────────────────────────────────────
+
+/// One-time codes for when the phone is lost. Only SHA-256 of the code is stored; `used_at` makes each one single-use.
+model UserRecoveryCode {
+  userId   String    @map("user_id") @db.Uuid
+  codeHash String    @map("code_hash") @db.Char(64)
+  usedAt   DateTime? @map("used_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, codeHash])
+  @@map("user_recovery_codes")
+}
+
+/// Between the password and the code: a random token (only its SHA-256 here), valid 5 minutes, deleted when used.
+model LoginChallenge {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.Char(64)
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("login_challenges")
 }
 
 // ─── Phase 3: inventory (spec 03) ──────────────────────────────────────────────────────────────
@@ -374,6 +418,8 @@ model Purchase {
   createdById String?        @map("created_by") @db.Uuid
   createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  /// Spec 13 (FR-BUD-006): raised by every edit. An edit sends the version it was read with; another one gives 409.
+  version     Int            @default(1)
 
   household Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
   createdBy User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)

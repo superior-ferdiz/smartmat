@@ -7,11 +7,15 @@ import {
 } from '@smartmat/shared';
 import { AppError, unauthenticated } from '../../lib/errors';
 import type { PasswordHasher } from '../auth/password';
+import { refusePwnedPassword } from '../auth/pwned';
+import type { PwnedPasswordCheck } from '../../providers/passwords/pwnedPasswords';
 import type { ProfileRepo } from './repo';
 
 export interface ProfileServiceDeps {
   repo: ProfileRepo;
   hasher: PasswordHasher;
+  /** Spec 13 (FR-AUTH-008). */
+  pwned: PwnedPasswordCheck;
 }
 
 /** FR-AUTH-004 (name, language, password) and FR-AUTH-005 (delete account). */
@@ -36,6 +40,7 @@ export class ProfileService {
   /** Other devices are logged out, because a password change is often a reaction to a stolen password. */
   async changePassword(userId: string, sessionId: string, input: ChangePasswordBody) {
     await this.verifyPassword(userId, input.currentPassword, 'currentPassword');
+    await refusePwnedPassword(this.deps.pwned, input.newPassword, 'newPassword');
     const hash = await this.deps.hasher.hash(input.newPassword);
     await this.deps.repo.updatePasswordAndEndOtherSessions(userId, hash, sessionId);
   }

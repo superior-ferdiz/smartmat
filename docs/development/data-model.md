@@ -134,6 +134,24 @@ fra planen:
 - **Egne priser har ingen tabell.** De leses fra `inventory_batches` (`price_ore`, `initial_quantity_base`,
   `purchased_on`, `purchase_line_id`) ved hver lesing (ADR-0007).
 
+**Implementert i fase 13 (2026-10-25/27):** ingen nye husholdningstabeller. Nytt for sikkerhet
+([spesifikasjon 13](requirements/13-sikkerhet-drift.md)):
+- `sessions.browser` og `sessions.os`:
+  - nettleserfamilie og system fra en fast liste (CHECK), aldri IP-adresse eller hele User-Agent-teksten
+  - `login_notice_dismissed_at` er når noen svarte «Det var meg» på varselet om innloggingen (FR-AUTH-009)
+- `purchases.version` (heltall ≥ 1): økes ved hver retting. En retting med en gammel versjon gir 409 (FR-BUD-006).
+- `users.totp_secret`, `totp_pending_secret`, `totp_enabled_at` og `totp_last_step` (FR-AUTH-010):
+  - hemmelighetene er kryptert med AES-256-GCM, med nøkkel bare i miljøet
+  - CHECK: tofaktor er på nøyaktig når det finnes en aktiv hemmelighet og et tidspunkt
+  - `totp_last_step` hindrer at en kode brukes to ganger
+- `user_recovery_codes` (`user_id`, `code_hash`, `used_at`): bare SHA-256 av hver kode. Hver kan brukes én gang.
+  Slettes med brukeren.
+- `login_challenges` (`token_hash`, `user_id`, `expires_at`): steget mellom passord og kode. Gyldig i 5 minutter,
+  slettes når den er brukt, og hver natt av workeren.
+- **Ingen nye indekser.** EXPLAIN med realistiske datamengder (kapittel 11) viste at spørringen for svinn leste alle
+  husholdningers hendelser for å finne angrede kasseringer. Det ble rettet i spørringen (`u.household_id =
+  e.household_id`), ikke med en indeks.
+
 Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall.md) (heltall for penger/mengder),
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).

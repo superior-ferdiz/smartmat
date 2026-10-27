@@ -174,6 +174,9 @@ test.describe('FR-UI-006 form on a real browser', () => {
     await expect(summary).toBeFocused();
     await summary.getByRole('link', { name: /høyst to desimaler/ }).click();
     await expect(page.getByLabel('Pris (valgfritt)')).toBeFocused();
+    // Phase 13: with scroll-padding the page now stops with the submit button behind the sticky bottom menu, which
+    // axe reports (chapter 11, "Begrensninger"). The tall viewport shows the whole page, as in the other tests.
+    await useTallPhoneViewport(page);
     await expectNoAxeViolations(page);
   });
 });

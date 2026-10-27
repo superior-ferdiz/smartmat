@@ -54,6 +54,17 @@ import { shoppingRoutes } from './modules/shopping/routes';
 import { ShoppingService } from './modules/shopping/service';
 import { PurchaseService } from './modules/purchases/service';
 import { profileRoutes } from './modules/profile/routes';
+import { createTwoFactorRepo } from './modules/twoFactor/repo';
+import { twoFactorRoutes } from './modules/twoFactor/routes';
+import { TwoFactorService } from './modules/twoFactor/service';
+import { createSecretBox } from './lib/secretBox';
+import { opsRoutes } from './modules/ops/routes';
+import { createPrivacyRepo } from './modules/privacy/repo';
+import { privacyRoutes } from './modules/privacy/routes';
+import { PrivacyService } from './modules/privacy/service';
+import { createSessionsRepo } from './modules/sessions/repo';
+import { sessionsRoutes } from './modules/sessions/routes';
+import { SessionsService } from './modules/sessions/service';
 import { ProfileService } from './modules/profile/service';
 import { createReceiptRepo } from './modules/receipts/repo';
 import { receiptRoutes } from './modules/receipts/routes';
@@ -78,6 +89,10 @@ import { createOpenFoodFactsProvider } from './providers/barcode/openFoodFacts';
 import { disabledBarcodeProvider, type BarcodeProvider } from './providers/barcode/types';
 import { createKassalappProvider } from './providers/prices/kassalapp';
 import { disabledPriceProvider, type PriceProvider } from './providers/prices/types';
+import {
+  defaultPwnedPasswordCheck,
+  type PwnedPasswordCheck,
+} from './providers/passwords/pwnedPasswords';
 
 export interface AppDeps {
   config: AppConfig;
@@ -91,6 +106,8 @@ export interface AppDeps {
   barcodeProvider?: BarcodeProvider;
   /** Tests pass a fake; otherwise Kassalapp if an API key is configured (spec 12). */
   priceProvider?: PriceProvider;
+  /** Tests pass a check with a fake fetch; otherwise Pwned Passwords if switched on (spec 13). */
+  pwnedPasswords?: PwnedPasswordCheck;
   /** Spec 08: where uploaded receipts go for the worker. server.ts passes pg-boss; tests pass a fake. */
   receiptQueue?: ReceiptQueue;
 }
@@ -204,9 +221,33 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     config.cookieSecure,
     config.cookieHostPrefix ? HOST_SESSION_COOKIE : SESSION_COOKIE,
   );
-  const authService = new AuthService({ repo: createAuthRepo(db), hasher, now });
+  const pwnedCheck = deps.pwnedPasswords ?? defaultPwnedPasswordCheck(config);
+  // Only that the check was skipped is logged – never the password, its hash or the prefix (spec 13).
+  const pwned: PwnedPasswordCheck = {
+    async check(password) {
+      const result = await pwnedCheck.check(password);
+      if (result === 'unknown' && config.pwnedPasswords.enabled) {
+        app.log.warn('pwned password check skipped');
+      }
+      return result;
+    },
+  };
+  const twoFactorService = new TwoFactorService({
+    repo: createTwoFactorRepo(db),
+    box: config.totpEncryptionKey ? createSecretBox(config.totpEncryptionKey) : null,
+    hasher,
+    now,
+  });
+  const authService = new AuthService({
+    repo: createAuthRepo(db),
+    hasher,
+    now,
+    pwned,
+    twoFactor: twoFactorService,
+  });
   const profileRepo = createProfileRepo(db);
-  const profileService = new ProfileService({ repo: profileRepo, hasher });
+  const profileService = new ProfileService({ repo: profileRepo, hasher, pwned });
+  const sessionsService = new SessionsService({ repo: createSessionsRepo(db), now });
   const householdRepo = createHouseholdRepo(db);
   const householdService = new HouseholdService({
     repo: householdRepo,
@@ -303,6 +344,22 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         cookies,
         requireAuth,
         rateLimits: config.rateLimits,
+      });
+      await api.register(sessionsRoutes, { service: sessionsService, requireAuth });
+      await api.register(twoFactorRoutes, {
+        service: twoFactorService,
+        requireAuth,
+        rateLimits: config.rateLimits,
+      });
+      await api.register(opsRoutes, {
+        requireAuth,
+        backupStatusFile: config.backupStatusFile,
+        now,
+      });
+      await api.register(privacyRoutes, {
+        service: new PrivacyService({ repo: createPrivacyRepo(db), now }),
+        requireAuth,
+        rateLimit: config.rateLimits.export,
       });
       await api.register(householdRoutes, {
         service: householdService,

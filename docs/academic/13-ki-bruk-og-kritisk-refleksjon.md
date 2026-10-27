@@ -123,6 +123,34 @@
   - **Feil KI-en gjorde og fant selv:** samtidige oppslag ga 500 (Playwright), ett hull i testene (mutasjonskontrollen),
     og to svakheter i eldre tester som ble synlige under høy last og ny rekkefølge. Detaljer i kapittel 11.
 - Teamets refleksjon over fase 12 er ikke skrevet.
+- Fase 13 (2026-10-25/27), notater:
+  - **KI gjorde mer på serveren enn i tidligere faser:**
+    - startet testmiljøet
+    - opprettet et Docker-nett og koblet til en container i et annet prosjekt (GhostWebsite)
+    - endret det prosjektets compose-fil
+    - installerte systemd-timere for sikkerhetskopi
+    - laget hemmeligheter (databasepassord, passfrase, tofaktornøkkel) i filer uten å skrive dem ut
+
+    Alt var med i den godkjente planen. Endringen i det andre prosjektet var et eget spørsmål som ble godkjent sammen
+    med planen («i plenum»), ikke enkeltvis.
+  - **To sikkerhetssperrer i verktøyet stoppet KI-en:**
+    - push av fase 12, fordi prompten sa «bare når jeg ber om det»
+    - en `rm` på en variabel som i verste fall kunne vært tom
+
+    Den første er registrert som et åpent punkt. Den andre ble rettet med `${VAR:?}` i alle skriptene.
+  - **KI skrev feil påstander om sitt eget arbeid tre ganger** og rettet dem før de ble stående:
+    - at stedssiden allerede brukte `aria-label`
+    - at produktmellomlageret slettes etter 30 dager
+    - at eksporttesten hadde feilet da tofaktorfeltene kom
+  - **Kilder fra hukommelsen:** testvektorene for TOTP (RFC 6238) og listen over WCAG-kriterier er skrevet fra KI-ens
+    kunnskap, ikke lest i fasen. Det står i kildelisten. At testene består, viser bare at koden og KI-ens vektorer
+    stemmer overens.
+  - **Måling avslørte noe manuell lesing ikke gjorde:** en `EXPLAIN` med faste verdier så fin ut, men `auto_explain`
+    på de spørringene appen faktisk sendte, viste at Postgres leste alle husholdningers hendelser.
+  - **Tofaktor** ble tatt med fordi planen sa «sist, hvis resten er grønt». Det er sikkerhetskritisk kode skrevet av
+    KI, uten bibliotek, og bør gjennomgås særlig nøye av teamet (`lib/totp.ts`, `modules/twoFactor/`,
+    `loginSecondStep` i `auth/service.ts`).
+- Teamets refleksjon over fase 13 er ikke skrevet.
 
 ## Kilder i prosjektet
 

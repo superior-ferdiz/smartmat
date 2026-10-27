@@ -1,8 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import {
+  addDays,
   API_ERRORS,
   DEFAULT_NOTIFICATION_SETTINGS,
+  osloDate,
   type NotificationResponse,
   type NotificationsResponse,
 } from '@smartmat/shared';
@@ -333,6 +335,10 @@ describe('FR-NOTIF-003/006 shared households', () => {
     per = await join(app, kari, await registerUser(app, { displayName: 'Per' }));
   });
 
+  // This block runs on the real clock (above), so "tomorrow" must come from it too. A fixed date (2026-10-26) made
+  // the date test fail from 2026-10-27 on (found in phase 13).
+  const useByTomorrowReal = () => ({ kind: 'use_by', date: addDays(osloDate(new Date()), 1) });
+
   function shoppingOf(items: NotificationResponse[]) {
     return items.find((n) => n.kind === 'shoppingAdded');
   }
@@ -397,7 +403,7 @@ describe('FR-NOTIF-003/006 shared households', () => {
   });
 
   it('both members see a date notification; dismissing it is per person', async () => {
-    await createItem(app, kari, { expiry: useByTomorrow });
+    await createItem(app, kari, { expiry: useByTomorrowReal() });
     const [n] = (await notificationsOf(kari)).items.filter((x) => x.kind === 'useBySoon');
     expect((await notificationsOf(per)).items.map((x) => x.key)).toContain(n!.key);
     await dismiss(per, n!.key);
@@ -406,7 +412,7 @@ describe('FR-NOTIF-003/006 shared households', () => {
   });
 
   it('after leaving: 404 at once, and the states are gone (CASCADE)', async () => {
-    await createItem(app, kari, { expiry: useByTomorrow });
+    await createItem(app, kari, { expiry: useByTomorrowReal() });
     const [n] = (await notificationsOf(per)).items;
     await markSeen(per, [n!.key]);
     expect(
@@ -423,7 +429,7 @@ describe('FR-NOTIF-003/006 shared households', () => {
   });
 
   it('being removed by the owner also deletes the states', async () => {
-    await createItem(app, kari, { expiry: useByTomorrow });
+    await createItem(app, kari, { expiry: useByTomorrowReal() });
     const [n] = (await notificationsOf(per)).items;
     await dismiss(per, n!.key);
     await call(app, 'DELETE', householdPath(K, `/members/${per.user.id}`), { client: kari });

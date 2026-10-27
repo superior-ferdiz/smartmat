@@ -61,6 +61,18 @@ export function createFakeStore() {
   };
 
   const authRepo: AuthRepo = {
+    async findLoginUserById(userId) {
+      const u = users.get(userId);
+      return u
+        ? {
+            id: u.id,
+            passwordHash: u.passwordHash,
+            failedLoginCount: u.failedLoginCount,
+            loginLockedUntil: u.loginLockedUntil,
+            twoFactor: false,
+          }
+        : null;
+    },
     async findLoginUserByEmail(email) {
       const u = [...users.values()].find((user) => user.email === email);
       return u
@@ -69,6 +81,7 @@ export function createFakeStore() {
             passwordHash: u.passwordHash,
             failedLoginCount: u.failedLoginCount,
             loginLockedUntil: u.loginLockedUntil,
+            twoFactor: false,
           }
         : null;
     },

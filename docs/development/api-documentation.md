@@ -456,7 +456,7 @@ InvitationPreview = { householdName, invitedBy: string | null, memberCount, expi
 
 | Variabel | Lokalt | Testmiljø | Virkning |
 |---|---|---|---|
-| `TRUST_PROXY` | tom (`false`) | `172.26.0.0/16` | `X-Forwarded-For` trodd bare fra dette nettet (rate limiting per klient) |
+| `TRUST_PROXY` | tom (`false`) | `192.168.252.0/28` (fra fase 13, ADR-0022; før `172.26.0.0/16`) | `X-Forwarded-For` trodd bare fra dette nettet (rate limiting per klient) |
 | `REGISTRATION_OPEN` | `true` | `false` | `POST /auth/register` svarer 403 `errors.auth.registrationClosed` |
 | `COOKIE_HOST_PREFIX` | `false` | `true` | Sesjonscookien heter `__Host-smartmat_session` (krever `COOKIE_SECURE=true`) |
 | `WEB_DIST_DIR` | tom | `/app/apps/web/dist` | API-et serverer webappen (én opprinnelse), CSP med `'wasm-unsafe-eval'` og hash av temaskriptet |
@@ -568,3 +568,47 @@ LineEstimate = {
   for åpne linjer. `estimatedOre` er summen av linjene som har et anslag, ikke en totalsum for listen.
 - **Logg:** `/prices/<gtin>` logges som `/prices/[gtin]`. Nøkkelen står aldri i svar eller logg.
 
+## Sikkerhet, personvern og drift (fase 13)
+
+Se [spesifikasjon 13](requirements/13-sikkerhet-drift.md). Alle rutene under `/me` tar bruker-id-en fra sesjonen.
+En id som ikke er brukerens egen, gir 404.
+
+### Endringer i eksisterende svar og forespørsler
+
+| Hva | Endring |
+|---|---|
+| `POST /auth/login` | Med tofaktor på svarer den `{ twoFactorRequired: true, challenge }` uten cookie, i stedet for en sesjon. Uten nøkkel på serveren gir en konto med tofaktor 503 `errors.auth.twoFactorUnavailable`. |
+| `POST /auth/register`, `POST /me/password` | 400 `errors.auth.passwordPwned` ved feltet (`password` / `newPassword`) når passordet finnes i Pwned Passwords. Tjenesten nede: passordet godtas. |
+| `GET /households/:h/purchases/:id` | Har `version`. |
+| `PUT /households/:h/purchases/:id` | Krever `version` (heltall ≥ 1). En annen versjon enn den lagrede gir 409 `errors.purchase.editedMeanwhile`, og ingenting endres. |
+| Alle svar | `Strict-Transport-Security`, `Referrer-Policy: no-referrer`, `Cross-Origin-Opener-Policy` og `Cross-Origin-Resource-Policy: same-origin`, `X-Content-Type-Options: nosniff`. CSP når API-et serverer webappen. |
+
+### Endepunkter
+
+| Metode | Sti | Svar | Merknad |
+|---|---|---|---|
+| POST | `/auth/login/two-factor` | 200 `{ user, csrfToken }` + cookie | `{ challenge, code }`. Feil kode: 401 `twoFactorInvalid` (teller mot sperren). Ukjent, brukt eller utløpt utfordring, eller sperret konto: 401 `twoFactorChallengeInvalid`. Rate limit som innlogging. |
+| GET | `/me/sessions` | `{ items: [{ id, browser, os, createdAt, lastSeenAt, current }] }` | Aktive økter |
+| DELETE | `/me/sessions/:sessionId` | 204 | En annen av brukerens økter. Denne økten eller en annens: 404. |
+| POST | `/me/sessions/end-others` | `{ ended }` | |
+| GET | `/me/login-notices` | `{ items: [{ sessionId, browser, os, createdAt }] }` | Innlogginger etter at denne økten startet, som ingen har svart «Det var meg» på |
+| POST | `/me/login-notices/:sessionId/dismiss` | 204 | Gjelder i alle økter. Denne økten eller en annens: 404. |
+| GET | `/me/export` | JSON-fil (`Content-Disposition: attachment`, `Cache-Control: no-store`) | FR-PRIV-001. 5 per time per IP. |
+| GET | `/me/two-factor` | `{ available, enabled, recoveryCodesLeft }` | |
+| POST | `/me/two-factor/setup` | `{ secret, otpauthUri }` | `{ password }`. Vises én gang. |
+| POST | `/me/two-factor/enable` | `{ recoveryCodes }` | `{ code }` (TOTP). Kodene vises én gang. |
+| POST | `/me/two-factor/disable` | 204 | `{ password, code }` (TOTP eller gjenopprettingskode) |
+| POST | `/me/two-factor/recovery-codes` | `{ recoveryCodes }` | `{ password, code }`. De gamle slutter å virke. |
+| GET | `/ops/backup` | `{ state, newestBackupAt }` | `ok`, `stale`, `failed`, `unknown` eller `off` (ikke satt opp). Krever innlogging. |
+
+### Nye miljøvariabler
+
+| Variabel | Lokalt | Testmiljø | Virkning |
+|---|---|---|---|
+| `PWNED_PASSWORDS` | `off` | `on` | Sjekk mot lekkede passord ved registrering og passordbytte |
+| `PWNED_PASSWORDS_URL` / `PWNED_PASSWORDS_TIMEOUT_MS` | `https://api.pwnedpasswords.com` / 2000 | samme | |
+| `TOTP_ENCRYPTION_KEY` | tom (tofaktor ikke tilgjengelig) | 32 tilfeldige byte i base64 | Krypterer TOTP-hemmelighetene. Hemmelig. |
+| `BACKUP_STATUS_FILE` | tom (`off`) | `/run/smartmat-backup/status.json` | Statusfilen fra `check-backup.sh`, montert skrivebeskyttet |
+| `RATE_LIMIT_EXPORT_MAX` | 5 | 5 | Eksporter per IP-adresse per time |
+
+En tom verdi i en env-fil (`KASSALAPP_API_KEY=`) betyr «ikke satt» fra fase 13. Før det stoppet appen ved oppstart.

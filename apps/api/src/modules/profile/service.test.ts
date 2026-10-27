@@ -3,14 +3,24 @@ import { API_ERRORS } from '@smartmat/shared';
 import { createFakeClock, createFakeHasher, createFakeStore } from '../../test/fakes';
 import { AuthService } from '../auth/service';
 import { ProfileService } from './service';
+import { noPwnedPasswordCheck } from '../../providers/passwords/pwnedPasswords';
 
 const PASSWORD = 'riktig hest batteri';
 
 async function setup() {
   const store = createFakeStore();
   const { hasher } = createFakeHasher();
-  const auth = new AuthService({ repo: store.authRepo, hasher, now: createFakeClock().now });
-  const profile = new ProfileService({ repo: store.profileRepo, hasher });
+  const auth = new AuthService({
+    repo: store.authRepo,
+    hasher,
+    now: createFakeClock().now,
+    pwned: noPwnedPasswordCheck,
+  });
+  const profile = new ProfileService({
+    repo: store.profileRepo,
+    hasher,
+    pwned: noPwnedPasswordCheck,
+  });
   const { user, session } = await auth.register({
     displayName: 'Kari',
     email: 'kari@example.test',
@@ -44,6 +54,7 @@ describe('FR-AUTH-004 profile', () => {
   it('a new password logs out other sessions but keeps this one', async () => {
     const { auth, profile, user, session, ctx } = await setup();
     const other = await auth.login({ email: 'kari@example.test', password: PASSWORD });
+    if (other.kind !== 'session') throw new Error('expected a session');
     await profile.changePassword(user.id, ctx.sessionId, {
       currentPassword: PASSWORD,
       newPassword: 'et nytt langt passord',

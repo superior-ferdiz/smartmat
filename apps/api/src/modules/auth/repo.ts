@@ -1,4 +1,4 @@
-import type { Locale, SessionUser } from '@smartmat/shared';
+import type { Locale, SessionDevice, SessionUser } from '@smartmat/shared';
 import type { Db } from '../../db';
 import { Prisma } from '../../generated/prisma/client';
 import { householdOfOneData } from '../households/repo';
@@ -14,6 +14,8 @@ export interface LoginUser {
   passwordHash: string;
   failedLoginCount: number;
   loginLockedUntil: Date | null;
+  /** Spec 13 (FR-AUTH-010): a code is needed after the password. */
+  twoFactor: boolean;
 }
 
 export interface SessionRecord {
@@ -36,6 +38,8 @@ export class EmailTakenError extends Error {}
 
 export interface AuthRepo {
   findLoginUserByEmail(email: string): Promise<LoginUser | null>;
+  /** Spec 13: the same, for the second login step. */
+  findLoginUserById(userId: string): Promise<LoginUser | null>;
   findSessionUser(userId: string): Promise<SessionUser | null>;
   /** Creates the user, a household of one and the owner membership in one transaction (ADR-0008). */
   createUserWithHousehold(user: NewUser): Promise<{ userId: string }>;
@@ -43,26 +47,45 @@ export interface AuthRepo {
   incrementFailedLogins(userId: string): Promise<number>;
   lockLogin(userId: string, until: Date): Promise<void>;
   resetFailedLogins(userId: string): Promise<void>;
-  createSession(session: {
-    tokenHash: string;
-    userId: string;
-    csrfToken: string;
-    createdAt: Date;
-    expiresAt: Date;
-  }): Promise<void>;
+  createSession(
+    session: {
+      tokenHash: string;
+      userId: string;
+      csrfToken: string;
+      createdAt: Date;
+      expiresAt: Date;
+    } & SessionDevice,
+  ): Promise<void>;
   findSessionByTokenHash(tokenHash: string): Promise<SessionRecord | null>;
   touchSession(sessionId: string, lastSeenAt: Date, expiresAt: Date): Promise<void>;
   deleteSessionByTokenHash(tokenHash: string): Promise<void>;
   deleteExpiredSessions(userId: string, now: Date): Promise<void>;
 }
 
+async function loginUser(
+  db: Db,
+  where: { email: string } | { id: string },
+): Promise<LoginUser | null> {
+  const user = await db.user.findUnique({
+    where,
+    select: {
+      id: true,
+      passwordHash: true,
+      failedLoginCount: true,
+      loginLockedUntil: true,
+      totpEnabledAt: true,
+    },
+  });
+  if (!user) return null;
+  const { totpEnabledAt, ...rest } = user;
+  return { ...rest, twoFactor: totpEnabledAt !== null };
+}
+
 export function createAuthRepo(db: Db): AuthRepo {
   return {
-    findLoginUserByEmail: (email) =>
-      db.user.findUnique({
-        where: { email },
-        select: { id: true, passwordHash: true, failedLoginCount: true, loginLockedUntil: true },
-      }),
+    findLoginUserByEmail: (email) => loginUser(db, { email }),
+
+    findLoginUserById: (userId) => loginUser(db, { id: userId }),
 
     findSessionUser: (userId) => findSessionUser(db, userId),
 

@@ -2,8 +2,12 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup, configure } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 import { initI18n, i18n } from '../i18n';
+import { preloadAllPages } from '../app/pages';
 
 initI18n('nb-NO');
+
+// Spec 13: pages are loaded lazily in the browser. Tests load them all first, so a page renders at once, as before.
+await preloadAllPages();
 
 // findBy*/waitFor give up after 1 s by default. With the whole suite running in parallel, the first render of a
 // page can take longer than that (seen in phase 5: 1,4 s), which made tests fail at random. They still return as

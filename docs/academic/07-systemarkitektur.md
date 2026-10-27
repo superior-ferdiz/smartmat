@@ -90,21 +90,29 @@ flowchart LR
 Rekkefølgen er husholdningens egne svar, så mellomlageret, så OFF. Er OFF nede, får brukeren det tomme skjemaet, og
 resten av appen merker ingenting (NFR-REL-001). I testene erstattes `fetch`, så OFF aldri kalles.
 
-## Testmiljøet (fase 7, ADR-0015)
+## Testmiljøet (fase 7, ADR-0015, endret i fase 13)
 
 Et lukket testmiljø på `smartmat.risansolutions.no` gjør det mulig å teste kameraet på en ekte telefon. Kameraet
-krever HTTPS. Det er bygd, men **ikke satt opp** per 2026-10-22, fordi DNS mangler.
+krever HTTPS.
+- **2026-10-22:** bygd, men ikke satt opp, fordi DNS manglet.
+- **Fase 13:** DNS er på plass, og containerne kjører. Caddy-blokken venter på passordhashen til basic auth. Appen
+  er flyttet til et eget nett med bare Caddy (ADR-0022), og databasen får en kryptert kopi hver natt (ADR-0021).
 
 ```mermaid
 flowchart LR
   T[Telefon] -- "HTTPS + passord<br/>(basic auth)" --> Y[Caddy<br/>ghostwebsite-caddy-1]
-  Y -- "ghostweb-nettet,<br/>X-Forwarded-For overskrevet" --> P[smartmat-staging-app<br/>API + ferdig webapp]
+  Y -- "smartmat-edge (bare Caddy og appen),<br/>X-Forwarded-For overskrevet" --> P[smartmat-staging-app<br/>API + ferdig webapp]
   P -- "internt nett<br/>uten internett" --> Q[(smartmat-staging-db)]
-  P --> O[Open Food Facts]
+  W[smartmat-staging-worker] -- "internt nett" --> Q
+  P --> O[Open Food Facts / Kassalapp /<br/>Have I Been Pwned]
+  B[systemd-timer på verten<br/>backup.sh] -- "pg_dump → gpg" --> K[(/var/backups/smartmat<br/>kryptert, 7 netter)]
+  B -.-> Q
+  B -- "status.json (bare tider)" --> P
 ```
 
-Her serverer API-et også webappen, så det er fortsatt én opprinnelse. `trustProxy` stoler bare på `ghostweb`-nettet,
-ellers ville alle brukere hatt samme IP-adresse (Caddy sin) og delt én rate limit.
+Her serverer API-et også webappen, så det er fortsatt én opprinnelse. `trustProxy` stoler bare på `smartmat-edge`,
+der bare Caddy kan sende forespørsler. Ellers ville alle brukere hatt samme IP-adresse (Caddy sin) og delt én rate
+limit. Før fase 13 var det `ghostweb`, der 17 containere fra andre prosjekter også kunne sende et falskt hode.
 
 ## Kvitteringer i bakgrunnen (fase 8)
 

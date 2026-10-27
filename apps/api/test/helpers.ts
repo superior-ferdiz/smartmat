@@ -28,6 +28,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       register: { max: 1000, windowMs: 60_000 },
       sensitive: { max: 1000, windowMs: 60_000 },
       invitation: { max: 1000, windowMs: 60_000 },
+      export: { max: 1000, windowMs: 60_000 },
     },
     invitationAttemptsPerUser: 1000,
     // No User-Agent: Open Food Facts is never called from tests. Tests pass a fake provider instead.
@@ -48,6 +49,11 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       maxQueued: 1000,
     },
     recipes: { includeUnreviewed: true },
+    backupStatusFile: null,
+    // A made-up key for the tests only (spec 13): two-factor can be set up in every test app.
+    totpEncryptionKey: Buffer.alloc(32, 7),
+    // Off: tests that need the check pass `pwnedPasswords` with a fake fetch (fakePwned.ts).
+    pwnedPasswords: { enabled: false, baseUrl: 'https://api.pwnedpasswords.com', timeoutMs: 2000 },
     // No key: Kassalapp is never called from tests. Tests pass a provider with a fake fetch instead.
     prices: {
       kassalappBaseUrl: 'https://kassal.app/api/v1',

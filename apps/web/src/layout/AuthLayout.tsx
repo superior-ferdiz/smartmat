@@ -1,5 +1,6 @@
 import { useRef, type ChangeEvent } from 'react';
-import { Outlet, ScrollRestoration } from 'react-router';
+import { Link, Outlet, ScrollRestoration } from 'react-router';
+import { PRIVACY_PATH } from '../app/navigation';
 import { useTranslation } from 'react-i18next';
 import { localeSchema, SUPPORTED_LOCALES } from '@smartmat/shared';
 import { Select } from '../components/Select/Select';
@@ -46,6 +47,10 @@ export function AuthLayout() {
       </header>
       <main id="hovedinnhold" ref={mainRef} className={styles.main} tabIndex={-1}>
         <Outlet />
+        {/* Spec 13 (FR-PRIV-003): what happens with the data, before an account is made (GDPR art. 13). */}
+        <p className={styles.footer}>
+          <Link to={PRIVACY_PATH}>{t('app.footer.privacy')}</Link>
+        </p>
       </main>
       <ScrollRestoration />
     </div>

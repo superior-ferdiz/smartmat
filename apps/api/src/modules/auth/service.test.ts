@@ -3,6 +3,7 @@ import { API_ERRORS } from '@smartmat/shared';
 import { createFakeClock, createFakeHasher, createFakeStore } from '../../test/fakes';
 import { AppError } from '../../lib/errors';
 import { AuthService } from './service';
+import { noPwnedPasswordCheck } from '../../providers/passwords/pwnedPasswords';
 import {
   LOGIN_LOCK_MS,
   LOGIN_MAX_FAILURES,
@@ -19,7 +20,12 @@ function setup() {
   const store = createFakeStore();
   const { hasher, calls } = createFakeHasher();
   const clock = createFakeClock();
-  const service = new AuthService({ repo: store.authRepo, hasher, now: clock.now });
+  const service = new AuthService({
+    repo: store.authRepo,
+    hasher,
+    now: clock.now,
+    pwned: noPwnedPasswordCheck,
+  });
   return { store, calls, clock, service };
 }
 
@@ -89,7 +95,9 @@ describe('FR-AUTH-001 register', () => {
 describe('FR-AUTH-002 login, logout and sessions', () => {
   it('logs in with the right password and starts a new session', async () => {
     const { service, store } = await registered();
-    const { session } = await service.login({ email: EMAIL, password: PASSWORD });
+    const result = await service.login({ email: EMAIL, password: PASSWORD });
+    if (result.kind !== 'session') throw new Error('expected a session');
+    const { session } = result;
     expect(store.sessions.size).toBe(2);
     expect(await service.authenticate(session.token)).toMatchObject({
       csrfToken: session.csrfToken,

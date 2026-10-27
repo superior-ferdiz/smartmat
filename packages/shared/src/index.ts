@@ -43,3 +43,8 @@ export * from './schemas/notifications';
 export * from './api/notifications';
 export * from './prices/rules';
 export * from './api/prices';
+export * from './account/device';
+export * from './api/account';
+export * from './api/ops';
+export * from './schemas/twoFactor';
+export * from './api/twoFactor';

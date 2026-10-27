@@ -22,9 +22,11 @@ En beslutning endres ved å skrive en ny ADR som erstatter den gamle (og markere
 | [0012](0012-lokal-utvikling-forst.md) | Lokal utvikling først, ingen Git ennå (Git-delen erstattet av 0013, hosting-delen av 0015) |
 | [0013](0013-git-og-github.md) | Versjonskontroll med Git og privat repo på GitHub |
 | [0014](0014-produkter-og-strekkoder.md) | Produkter fra Open Food Facts som globalt mellomlager, og husholdningens egne strekkoder |
-| [0015](0015-lukket-testmiljo.md) | Lukket testmiljø med HTTPS på smartmat.risansolutions.no |
+| [0015](0015-lukket-testmiljo.md) | Lukket testmiljø med HTTPS på smartmat.risansolutions.no (nettverket endret av 0022, sikkerhetskopi av 0021) |
 | [0016](0016-oppskrifter-fra-apne-kilder.md) | Oppskrifter fra åpne kilder (Wikibooks), oversatt til norsk med kilde og lisens (akseptert 2026-10-24, erstatter 0009) |
 | [0017](0017-tesseract-pa-serveren-forelopig.md) | Tesseract på serveren, foreløpig – bare butikk, dato og total som standard (**foreslått, ikke godkjent**) |
 | [0018](0018-delte-husholdninger-og-invitasjoner.md) | Delte husholdninger med engangslenke, én eier og aktiv husholdning på brukeren (akseptert 2026-10-24) |
 | [0019](0019-varsler-beregnes-ved-lesing.md) | Varsler i appen beregnes ved lesing, og bare brukerens tilstand lagres (akseptert 2026-10-25) |
 | [0020](0020-priser-fra-kassalapp-som-anslag.md) | Priser fra Kassalapp som anslag, holdt adskilt fra husholdningens egne priser (akseptert 2026-10-25) |
+| [0021](0021-sikkerhetskopi-og-gjenoppretting.md) | Nattlig, kryptert sikkerhetskopi uten kvitteringsbilder, med full lesetest ved gjenoppretting (akseptert 2026-10-25, endrer 0015) |
+| [0022](0022-eget-nett-for-caddy-og-smartmat.md) | Eget Docker-nett for Caddy og SmartMat (akseptert 2026-10-25, endrer 0015) |

@@ -2,6 +2,34 @@
 
 ## [Ikke utgitt]
 
+### Fase 13 – 2026-10-25/27 (grenen `fase-13`)
+- **Sikkerhet** ([spesifikasjon 13](requirements/13-sikkerhet-drift.md)):
+  - passord fra kjente lekkasjer avvises ved registrering og passordbytte (Pwned Passwords, bare 5 tegn av SHA-1
+    sendes; vilkårene i [integrations/pwned-passwords.md](integrations/pwned-passwords.md))
+  - «Hvor du er logget inn» på profilen: nettleser og system, «Logg ut» per enhet og for alle andre
+  - melding øverst på siden om ny innlogging, med «Det var meg»
+  - valgfri tofaktorinnlogging (TOTP) med ti gjenopprettingskoder; hemmeligheten kryptert, koder én gang, feil koder
+    teller mot sperren
+  - samtidig retting av samme kjøp gir en melding (versjon på kjøpet) i stedet for at siste lagring vinner
+  - eget Docker-nett for Caddy og SmartMat ([ADR-0022](architecture-decisions/0022-eget-nett-for-caddy-og-smartmat.md))
+- **Personvern:** «Last ned mine data» (JSON), personvernerklæring på `/personvern` (utkast, kontakt mangler), nattlig
+  sletting av utløpte økter, lagringstider samlet i kapittel 12.
+- **Sikkerhetskopi** ([ADR-0021](architecture-decisions/0021-sikkerhetskopi-og-gjenoppretting.md)): nattlig og
+  kryptert, uten kvitteringsbilder, med test av gjenoppretting der alle rader leses, sjekk hver time og banner i
+  testmiljøet. Skript og systemd-enheter i `docker/backup/`.
+- **Testmiljøet** kjører på serveren (DNS er klar). Caddy-blokken venter på passordhashen til basic auth.
+- **Ytelse:** hver side er en egen fil, og engelsk lastes ved behov. Hovedfilen gikk fra 881 kB til cirka 604 kB. En
+  spørring for svinn som leste alle husholdningers hendelser, leser nå bare én husholdning sine (`perf:explain`).
+- **Tilgjengelighet:** fokus skjules ikke lenger bak bunnmenyen på telefon, datofelt har fokusring på kalenderknappen,
+  og stedssiden har knappenavn fra i18n. Ny `e2e/a11y.spec.ts` og sjekkliste i
+  [testing/tilgjengelighet.md](testing/tilgjengelighet.md).
+- **Migreringer:** `sessions_devices_purchase_version`, `two_factor`.
+- **Nye innstillinger:** `PWNED_PASSWORDS`, `PWNED_PASSWORDS_URL`, `PWNED_PASSWORDS_TIMEOUT_MS`, `TOTP_ENCRYPTION_KEY`,
+  `BACKUP_STATUS_FILE`, `RATE_LIMIT_EXPORT_MAX`. En tom verdi i en env-fil betyr nå «ikke satt».
+- **Avhengigheter:** patch- og minor-oppdateringer (Fastify-plugins, TanStack Query, i18next, react-i18next,
+  strekkodeleseren, typescript-eslint). `npm audit`: 0 sårbarheter.
+- **Endret:** `POST /auth/login` kan svare med en utfordring (tofaktor). `PUT` på kjøp krever `version`.
+
 ### Fase 12 – 2026-10-25 (grenen `fase-12`)
 - **Vilkårene til Kassalapp** lest og dokumentert før koden ([integrations/kassalapp.md](integrations/kassalapp.md)),
   og [ADR-0020](architecture-decisions/0020-priser-fra-kassalapp-som-anslag.md): Hobby, av uten nøkkel, bare

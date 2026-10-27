@@ -1,0 +1,9 @@
+[Unit]
+Description=SmartMat: restore test every Sunday at 04:00 Oslo time
+
+[Timer]
+OnCalendar=Sun *-*-* 04:00:00 Europe/Oslo
+Persistent=true
+
+[Install]
+WantedBy=timers.target

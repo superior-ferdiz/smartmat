@@ -511,7 +511,12 @@ export function createInventoryRepo(db: Db): InventoryRepo {
         FROM inventory_events e
         WHERE e.household_id = ${householdId}::uuid
           AND e.type = 'discard'
-          AND NOT EXISTS (SELECT 1 FROM inventory_events u WHERE u.reverts_event_id = e.id)
+          AND NOT EXISTS (
+            -- An undo is always written in the same household (spec 13: keeps the scan inside it, not the
+            -- whole table – the planner chose a full scan of every household's events with 100 000 rows).
+            SELECT 1 FROM inventory_events u
+            WHERE u.reverts_event_id = e.id AND u.household_id = e.household_id
+          )
           AND e.created_at >= (${monthStart}::date)::timestamp AT TIME ZONE 'Europe/Oslo'
           AND e.created_at < (${nextMonthStart}::date)::timestamp AT TIME ZONE 'Europe/Oslo'`;
       return {

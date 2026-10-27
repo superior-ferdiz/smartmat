@@ -1,8 +1,16 @@
 import { randomBytes } from 'node:crypto';
-import { API_ERRORS, type LoginBody, type RegisterBody, type SessionUser } from '@smartmat/shared';
+import {
+  API_ERRORS,
+  type LoginBody,
+  type RegisterBody,
+  type SessionDevice,
+  type SessionUser,
+} from '@smartmat/shared';
 import type { Clock } from '../../lib/clock';
 import { AppError } from '../../lib/errors';
 import type { PasswordHasher } from './password';
+import type { PwnedPasswordCheck } from '../../providers/passwords/pwnedPasswords';
+import { refusePwnedPassword } from './pwned';
 import {
   isLocked,
   LOGIN_LOCK_MS,
@@ -25,6 +33,11 @@ export interface NewSession {
   cookieExpiresAt: Date;
 }
 
+/** Spec 13: a session, or (two-factor on) only the challenge for the second step. */
+export type LoginResult =
+  | { kind: 'session'; user: SessionUser; session: NewSession }
+  | { kind: 'challenge'; challenge: string };
+
 /** The authenticated caller, attached to the request by the auth plugin. */
 export interface AuthContext {
   userId: string;
@@ -32,10 +45,33 @@ export interface AuthContext {
   csrfToken: string;
 }
 
+const UNKNOWN_DEVICE: SessionDevice = { browser: 'other', os: 'other' };
+
+/** Spec 13 (FR-AUTH-010): what login needs from the two-factor module (TwoFactorService). */
+export interface SecondFactor {
+  readonly available: boolean;
+  createChallenge(userId: string): Promise<string>;
+  challengeUser(token: string): Promise<string | null>;
+  dropChallenge(token: string): Promise<void>;
+  verify(userId: string, code: string): Promise<boolean>;
+}
+
+const noSecondFactor: SecondFactor = {
+  available: false,
+  createChallenge: () => Promise.reject(new Error('two-factor is not available')),
+  challengeUser: async () => null,
+  dropChallenge: async () => undefined,
+  verify: async () => false,
+};
+
 export interface AuthServiceDeps {
   repo: AuthRepo;
   hasher: PasswordHasher;
   now: Clock;
+  /** Spec 13 (FR-AUTH-008): passwords known from breaches are refused. */
+  pwned: PwnedPasswordCheck;
+  /** Spec 13 (FR-AUTH-010). Without it, an account with two-factor on cannot log in (fails closed). */
+  twoFactor?: SecondFactor;
 }
 
 /** Business rules for registration, login, logout and sessions (FR-AUTH-001–003, ADR-0005). */
@@ -44,7 +80,9 @@ export class AuthService {
 
   constructor(private readonly deps: AuthServiceDeps) {}
 
-  async register(input: RegisterBody) {
+  /** `device` is the browser and system from the User-Agent (spec 13, FR-AUTH-009), shown in the session list. */
+  async register(input: RegisterBody, device: SessionDevice = UNKNOWN_DEVICE) {
+    await refusePwnedPassword(this.deps.pwned, input.password, 'password');
     const passwordHash = await this.deps.hasher.hash(input.password);
     let userId: string;
     try {
@@ -64,7 +102,7 @@ export class AuthService {
     }
     return {
       user: await this.requireSessionUser(userId),
-      session: await this.startSession(userId),
+      session: await this.startSession(userId, device),
     };
   }
 
@@ -73,7 +111,7 @@ export class AuthService {
    * the password is wrong or the account is locked. The same amount of hashing work is done in all three
    * cases, so the response time does not tell them apart either.
    */
-  async login(input: LoginBody) {
+  async login(input: LoginBody, device: SessionDevice = UNKNOWN_DEVICE): Promise<LoginResult> {
     const { repo, hasher } = this.deps;
     const now = this.deps.now();
     const user = await repo.findLoginUserByEmail(input.email);
@@ -91,12 +129,49 @@ export class AuthService {
       throw new AppError(401, API_ERRORS.invalidCredentials);
     }
 
+    if (user.twoFactor) {
+      // Spec 13 (FR-AUTH-010): the right password alone gives no session, and does NOT reset the failure count –
+      // otherwise someone who knows the password could guess codes for ever by logging in again after each lock.
+      const twoFactor = this.deps.twoFactor ?? noSecondFactor;
+      if (!twoFactor.available) throw new AppError(503, API_ERRORS.twoFactorUnavailable);
+      return { kind: 'challenge', challenge: await twoFactor.createChallenge(user.id) };
+    }
     if (user.failedLoginCount > 0 || user.loginLockedUntil !== null) {
       await repo.resetFailedLogins(user.id);
     }
     return {
+      kind: 'session',
       user: await this.requireSessionUser(user.id),
-      session: await this.startSession(user.id),
+      session: await this.startSession(user.id, device),
+    };
+  }
+
+  /**
+   * Spec 13 (FR-AUTH-010): the second step. A wrong code counts as a failed login (the same lock after 5); an
+   * unknown, used or expired challenge, or a locked account, answers "start again" without saying which.
+   */
+  async loginSecondStep(token: string, code: string, device: SessionDevice = UNKNOWN_DEVICE) {
+    const { repo } = this.deps;
+    const twoFactor = this.deps.twoFactor ?? noSecondFactor;
+    const userId = await twoFactor.challengeUser(token);
+    const user = userId ? await repo.findLoginUserById(userId) : null;
+    if (!user || isLocked(user.loginLockedUntil, this.deps.now())) {
+      await twoFactor.dropChallenge(token);
+      throw new AppError(401, API_ERRORS.twoFactorChallengeInvalid);
+    }
+    if (!(await twoFactor.verify(user.id, code))) {
+      const failures = await repo.incrementFailedLogins(user.id);
+      if (failures >= LOGIN_MAX_FAILURES) {
+        await repo.lockLogin(user.id, new Date(this.deps.now().getTime() + LOGIN_LOCK_MS));
+        await twoFactor.dropChallenge(token);
+      }
+      throw new AppError(401, API_ERRORS.twoFactorInvalid, { code: API_ERRORS.twoFactorInvalid });
+    }
+    await twoFactor.dropChallenge(token);
+    await repo.resetFailedLogins(user.id);
+    return {
+      user: await this.requireSessionUser(user.id),
+      session: await this.startSession(user.id, device),
     };
   }
 
@@ -129,7 +204,7 @@ export class AuthService {
     return this.requireSessionUser(userId);
   }
 
-  private async startSession(userId: string): Promise<NewSession> {
+  private async startSession(userId: string, device: SessionDevice): Promise<NewSession> {
     const now = this.deps.now();
     const token = newSessionToken();
     const csrfToken = newCsrfToken();
@@ -141,6 +216,7 @@ export class AuthService {
       csrfToken,
       createdAt: now,
       expiresAt: sessionExpiry(now, now),
+      ...device,
     });
     return { token, csrfToken, cookieExpiresAt: new Date(now.getTime() + SESSION_ABSOLUTE_MS) };
   }

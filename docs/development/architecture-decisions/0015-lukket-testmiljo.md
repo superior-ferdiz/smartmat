@@ -5,6 +5,11 @@
 [ADR-0012](0012-lokal-utvikling-forst.md) («ingen domene, ingen produksjonsoppsett»), men bare for et lukket
 testmiljø. Produksjon, sikkerhetskopier og åpen registrering hører fortsatt til fase 13.
 **Ikke satt opp per 2026-10-22:** DNS for domenet finnes ikke ennå, og Caddy er ikke endret.
+**Fase 13 (2026-10-25/27):** DNS peker på serveren (A og AAAA, sjekket 2026-10-25), og containerne kjører. Appen er
+flyttet fra `ghostweb` til et eget nett (`smartmat-edge`, [ADR-0022](0022-eget-nett-for-caddy-og-smartmat.md)), og
+testmiljøet har nattlig, kryptert sikkerhetskopi ([ADR-0021](0021-sikkerhetskopi-og-gjenoppretting.md)). «Ingen
+sikkerhetskopier» under gjelder ikke lenger. Caddy-blokken ble lagt inn 2026-10-27, og domenet svarer med HTTPS og
+basic auth.
 
 ## Kontekst
 Kameraet i nettleseren krever en sikker side (HTTPS eller localhost). Utviklingsserveren lytter bare på 127.0.0.1,

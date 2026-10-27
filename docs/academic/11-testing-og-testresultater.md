@@ -1175,6 +1175,93 @@ Feil i testene: en API-test forventet feilfeltet på feil sted i svaret, sesjone
 flyttet mer enn 14 (og 30) dager, og datoen for partier kom fra databaseklokka mens testen brukte en falsk klokke som
 var flyttet i en tidligere test (klokka settes nå tilbake før hver test).
 
+## Testtyper og sporbarhet (fase 13)
+
+| Krav | Hva som testes | Hvor |
+|---|---|---|
+| NFR-SEC-006 | Alle headere på side, filer og API, ingen `Server`/`X-Powered-By`, CSP uten `unsafe-*` | `staging.api.test.ts` |
+| NFR-SEC-007 | `X-Forwarded-For` trodd bare fra `smartmat-edge` | `staging.api.test.ts` |
+| NFR-SEC-008 | Hele loggen etter de fleste flytene: ingen e-post, navn, vare, butikk, strekkode, token, passord eller IP | `logs.security.api.test.ts`, og egne loggtester per modul |
+| FR-AUTH-008 | Lekket passord avvist ved registrering og bytte; tjenesten nede, rar eller treg → godtatt; bare 5 tegn sendes; innlogging sjekkes ikke | `pwnedPasswords.test.ts`, `passwords.security.api.test.ts`, `account.test.tsx`, `account.spec.ts` |
+| FR-AUTH-009 | Nettleser og system lagres (ikke UA/IP); andres økter kan ikke sees, logges ut eller avvises (404); varselet vises bare i eldre økter; nattlig opprydding | `device.test.ts`, `sessions.security.api.test.ts`, `account.test.tsx`, `account.spec.ts` |
+| FR-AUTH-010 | RFC 6238-vektorer, ±1 steg, ingen gjenbruk (også samtidig), kryptert hemmelighet, sperre etter 5 feil koder, passord nullstiller ikke telleren, gjenopprettingskoder én gang, utfordring én gang og 5 min, fail closed uten nøkkel, CASCADE | `totp.test.ts`, `twoFactor.security.api.test.ts`, `twoFactor.test.tsx`, `account.spec.ts` |
+| FR-BUD-006 | Versjon økes; gammel versjon gir 409 uten endring; to samtidige gir nøyaktig én 200; skjemaet holder versjonen ved ny henting | `purchaseVersion.api.test.ts`, `purchases.test.ts` (skjema), `PurchasePages.test.tsx`, `account.spec.ts` |
+| FR-PRIV-001 | Innhold, aldri hemmeligheter/bilder/OCR/andre husholdninger/andres e-post, invitasjoner bare for eier, rate limit, logg, kolonnekontrakt | `privacy.api.test.ts`, `account.test.tsx`, `account.spec.ts` (ekte nedlasting) |
+| FR-PRIV-003 | Personvernsiden uten innlogging, lenker fra innlogging og «Mer», axe | `account.test.tsx`, `navigation.test.tsx`, `account.spec.ts` |
+| NFR-OPS-001–003 | Kryptert fil, ingen kvitteringsdata, alle rader lest og like, endret byte / feil passfrase / endret manifest feiler, gammel eller manglende kopi feiler, rotasjon | `docker/backup/test-backup.sh` (21 sjekker), `backupStatus.test.ts`, `privacy.api.test.ts` (status-rute), `account.test.tsx` (banner) |
+| NFR-PERF-001 | Bunt før og etter; svartid og planer for fire endepunkter med 102 000 hendelser og 500 husholdninger | `20-bundle-*.txt`, `21-perf-explain-*.txt` (måling, ikke en test) |
+| NFR-UX-005 | Hvert tabulatorstopp på 22 sider (fokus synlig, ikke skjult), 200 % zoom og 320 px, tekstavstand, redusert bevegelse | `a11y.spec.ts`; kriteriene i `docs/development/testing/tilgjengelighet.md` |
+
+### Kontroll av testene (fase 13)
+
+Som i fase 2–12 ble hver beskyttelse slått av i koden én om gangen
+([`10-mutation-check.sh`](../evidence/test-results/fase-13/10-mutation-check.sh), 27 endringer):
+- **Kjøring 1** ([`10-mutation-check-run1.txt`](../evidence/test-results/fase-13/10-mutation-check-run1.txt)) fanget 24
+  av 27. Tre ble ikke fanget:
+  - **Runde 19, samme TOTP-kode sendt to ganger samtidig:** testen var ikke samtidig. `await challengeFor()` inne i
+    `Promise.all([...])` kjøres før neste element, så den første forespørselen var ferdig før den andre startet. Nå
+    lages utfordringene først, og fem runder sendes samtidig.
+  - **Runde 26, en sperret konto fullfører steg to:** testen brukte utfordringen som ble slettet ved sperren, og
+    kunne ikke skille om sperren ble sjekket. Ny test med en utfordring laget før sperren.
+  - **Runde 15, en sjekk som har sluttet å kjøre:** ikke et hull i testene. `check-backup.sh` skriver både
+    `checkedAt` og `newestBackupAt`, så når sjekken stopper, blir også `newestBackupAt` gammel, og resultatet er det
+    samme. Betingelsen er et ekstra lag som ikke kan skilles fra utsiden.
+- **Kjøring 2** ([`10-mutation-check-run2.txt`](../evidence/test-results/fase-13/10-mutation-check-run2.txt), bare runde
+  15, 19 og 26): 19 og 26 fanges. 15 er som forventet.
+- **Backup-skriptene** har egne negative tester i `docker/backup/test-backup.sh`: en endret byte, feil passfrase, et
+  endret manifest, en passfrasefil andre kan lese, en gammel kopi og ingen kopi (21 sjekker,
+  [`23-backup-test.txt`](../evidence/test-results/fase-13/23-backup-test.txt)).
+- **`scroll-padding`** (WCAG 2.4.11) ble ikke tatt med i skriptet, fordi bare Playwright kan se den. Uten den feilet
+  `a11y.spec.ts` på telefon i første kjøring, før rettingen (funn 3).
+
+## Resultater fase 13 (kjørt 2026-10-27)
+
+| Sjekk | Resultat | Bevis |
+|---|---|---|
+| Bilder i repoet | Ingen utenfor skjermbildemappen | `00-check-files.txt` |
+| Typesjekk, lint, formatering | Ingen feil | `01`–`03` |
+| Enhet/komponent | 1364 av 1364 | `04-unit-tests.txt` |
+| API mot testdatabase | 491 av 491. **Andre kjøring**: forsøk 1 hadde 1 feil (funn 5). | `05-api-tests.txt`, `05-api-tests-forsok1.txt` |
+| Bygg | Vellykket. Hovedfilen er 608 kB (192 kB gzip), ned fra 881 kB (265 kB gzip). | `06-build.txt`, `20-bundle-before.txt`, `20-bundle-after.txt` |
+| Ende-til-ende | 209 bestått, 7 hoppet over. **Andre kjøring**: forsøk 1 hadde 3 feil (funn 4). | `07-e2e.txt`, `07-e2e-forsok1.txt` |
+| `npm audit` | 0 sårbarheter | `08-npm-audit.txt` |
+| Migreringsstatus | À jour (15 migreringer) | `09-migrate-status.txt` |
+| Utdaterte pakker | Liste og vurdering | `22-npm-outdated.txt`, kapittel 10 |
+| Backup-skriptene | 21 av 21 sjekker | `23-backup-test.txt` |
+| Gjenoppretting av testmiljøets kopi | 34 tabeller, 888 rader, alle like manifestet. Timerne har tatt kopi to netter av seg selv. | `24-backup-staging.txt` |
+| Testmiljøet etter nytt bygg | Headere, nett, utgående trafikk, jobber og migreringer | `25-staging-check.txt` |
+| Domenet bak Caddy | 401 uten passord, 200 med, alle headere, `noindex`, http → https, sertifikat; IPv4 og IPv6 | `26-caddy-https.txt` |
+| Ytelse | Svartid og planer før og etter rettingen (måling, ikke test) | `21-perf-explain-*.txt` |
+
+Skjermbilder (lyst og mørkt tema, 360 px og desktop) ligger i
+[screenshots/fase-13/](../evidence/screenshots/fase-13/): meldingen om ny innlogging, oppsett av tofaktor, profilen
+(tofaktor på, økter, eksport), kodesteget ved innlogging og personvernerklæringen. Kontoene er midlertidige kontoer i
+e2e-databasen. «Ukjent nettleser på ukjent system» i øktlisten er økten testen laget gjennom API-et.
+
+**Ikke testet:**
+- Pwned Passwords mot den ekte tjenesten i en registrering (bare at tjenesten svarer fra testmiljøet, og alt annet
+  mot en falsk tjeneste)
+- tofaktor med en ekte autentiseringsapp (koden er regnet ut i testene)
+- skjermleser og ekte telefon (sjekkliste i `docs/development/testing/tilgjengelighet.md`)
+- gjenoppretting av en kopi med ekte brukerdata (testmiljøet har bare frødata; skriptene er testet med oppdiktede data)
+
+## Feil funnet i fase 13
+
+1. **`.env.staging.example` virket aldri:** tomme verdier stoppet appen ved oppstart. Funnet da testmiljøet ble
+   startet for første gang. Rettet i `loadConfig`, med test.
+2. **Svinnspørringen leste alle husholdningers hendelser** med realistiske datamengder (kapittel 10, eksempel 48).
+3. **Fokus skjult bak bunnmenyen og manglende fokusring i datofelt** (WCAG 2.4.11 og 2.4.7), funnet av den nye
+   `a11y.spec.ts`. Kontrollen hadde selv to falske funn (ring på kortet rundt lenken), som ble rettet i kontrollen.
+4. **Kodedelingen brøt fokus ved sidebytte:** første gang en side åpnes, finnes ikke `<h1>` ennå, og fokus ble stående
+   igjen på lenken. Enhetstestene fant det ikke, fordi de laster alle sider på forhånd. Playwright fant det (to
+   tester i `app-shell.spec.ts`). Hooken venter nå på overskriften, og har en egen test som er sjekket mot den gamle
+   koden. I samme kjøring feilet axe på et skjema fordi `scroll-padding` lot siden stoppe med knappen bak
+   bunnmenyen. Det er den kjente begrensningen under, og testen bruker nå høyt vindu som de andre.
+5. **En tidsbombe i en test fra fase 11:** varseltesten for delte husholdninger brukte ekte klokke, men en fast dato
+   (2026-10-26) for «siste forbruksdag i morgen». Den feilet fra 2026-10-27. Datoen regnes nå fra samme klokke.
+6. **Hull i egne tester** (mutasjonssjekken, runde 19 og 26), se over.
+7. **Egne feilpåstander i dokumentasjonen** (tre), rettet før de ble stående. Se kapittel 13.
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser

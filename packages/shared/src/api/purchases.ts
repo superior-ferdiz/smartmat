@@ -38,6 +38,8 @@ export const purchaseResponseSchema = z.object({
   source: z.enum(PURCHASE_SOURCES),
   createdAt: z.string(),
   updatedAt: z.string(),
+  /** Spec 13 (FR-BUD-006): sent back with an edit; a different one means someone else edited it meanwhile. */
+  version: z.number().int().positive(),
   /** Spec 10 (FR-HH-007): who registered the purchase. */
   createdBy: creatorRefSchema,
   /** Empty for a purchase registered with only a total. */

@@ -1,39 +1,55 @@
 # Lukket testmiljø (smartmat.risansolutions.no)
 
-**Fase 8 (2026-10-24):** Bildet har nå Tesseract, og compose-oppsettet har en tredje container,
-`smartmat-staging-worker`, som leser kvitteringer. Den er bare på det interne nettverket (uten internett) og har
-`mem_limit: 512m`. Bildet ble bygd på nytt 2026-10-24 (1,08 GB), og Tesseract og sharp ble kontrollert inni det.
-Containerne er ikke startet.
+**Status 2026-10-27 (fase 13):**
+- DNS peker på serveren (A 78.46.83.188 og AAAA 2a01:4f8:120:104b::2, sjekket 2026-10-25).
+- Containerne `smartmat-staging-db`, `smartmat-staging-app` og `smartmat-staging-worker` kjører.
+- Appen er på det egne nettet `smartmat-edge` sammen med Caddy, ikke på `ghostweb`
+  ([ADR-0022](architecture-decisions/0022-eget-nett-for-caddy-og-smartmat.md)).
+- Nattlig, kryptert sikkerhetskopi kjører ([ADR-0021](architecture-decisions/0021-sikkerhetskopi-og-gjenoppretting.md)).
+- **Caddy-blokken er lagt inn 2026-10-27.** `https://smartmat.risansolutions.no` krever basic auth (brukernavn
+  `smartmat`) og svarer over IPv4 og IPv6 med sertifikat fra Let's Encrypt (bevis: `26-caddy-https.txt`).
+  - Passordet er tilfeldig, laget av Claude rett i en fil og aldri vist i chatten:
+    `/opt/Websites/smartmat-private/testmiljo-passord.txt` (0600). Teamet leser det der.
+  - Første forsøk med kommandoen fra Claude ga `EOF`, fordi `printf '%s'` ikke sendte linjeskift til
+    `caddy hash-password`.
+- **Ingen kontoer i appen ennå:** registreringen er stengt. Kontoer lages med `create-user` (se under).
 
-**Status 2026-10-22:** Koden og Docker-oppsettet er ferdig og testet lokalt (bildet ble bygd og røyktestet med
-midlertidige containere på serveren, som så ble fjernet). **Ikke satt opp:** DNS finnes ikke ennå, Caddy er ikke
-endret, og ingen containere for testmiljøet kjører. Beslutningen står i
-[ADR-0015](architecture-decisions/0015-lukket-testmiljo.md).
+Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md).
 
 ## Hva som trengs først
 
 | Hva | Hvem | Status |
 |---|---|---|
-| DNS: A/AAAA-post for `smartmat.risansolutions.no` til serveren | Ferdinand | Ikke gjort |
-| Passord for basic auth (brukernavn og passord teamet deler) | Teamet | Ikke valgt |
+| DNS: A/AAAA-post for `smartmat.risansolutions.no` til serveren | Ferdinand | Gjort (sjekket 2026-10-25) |
+| Passord for basic auth | Claude (etter Ferdinands spørsmål 2026-10-27) | Gjort: tilfeldig, i `smartmat-private/testmiljo-passord.txt` |
+| Kontoer til teamet med `create-user` (e-post og navn) | Teamet | Ikke gjort |
+| Ta vare på backup-passfrasen (`/etc/smartmat-backup/passphrase`) og `TOTP_ENCRYPTION_KEY` (i `docker/staging/.env.staging`) et annet sted enn serveren, for eksempel i en passordbehandler | Ferdinand | Ikke gjort |
 | Kontaktadresse i User-Agent til Open Food Facts | Teamet | Ikke valgt |
 | Fylle ut API-skjemaet til Open Food Facts (se [integrasjonen](integrations/open-food-facts.md)) | Teamet | Ikke gjort |
 
 ## Oppsett (når DNS peker til serveren)
 
 1. **Sjekk disken** (`df -h /`). Bildet er rundt 1,1 GB (med Tesseract fra fase 8).
-2. **Miljøvariabler:** `cp docker/staging/.env.staging.example docker/staging/.env.staging` og fyll inn.
-   Filen er ignorert av Git. Sjekk at `TRUST_PROXY` er nettet til `ghostweb`:
-   `docker network inspect ghostweb --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}'` (172.26.0.0/16 per
-   2026-10-22).
-3. **Start:** `docker compose -f docker/staging/compose.yml --env-file docker/staging/.env.staging up -d --build`.
+2. **Eget nett** (én gang, ADR-0022): `docker network create --subnet 192.168.252.0/28 --label smartmat=edge
+   smartmat-edge` og `docker network connect smartmat-edge ghostwebsite-caddy-1`. Nettet står også i
+   `/opt/GhostWebsite/docker-compose.yml`.
+3. **Miljøvariabler:** `cp docker/staging/.env.staging.example docker/staging/.env.staging` og fyll inn (0600, ignorert
+   av Git):
+   - `STAGING_POSTGRES_PASSWORD` og `TOTP_ENCRYPTION_KEY`: tilfeldige verdier, for eksempel med `openssl rand`
+   - `TRUST_PROXY=192.168.252.0/28`
+   - `PWNED_PASSWORDS=on`
+   - `BACKUP_STATUS_FILE=/run/smartmat-backup/status.json`
+4. **Start:** `docker compose -f docker/staging/compose.yml --env-file docker/staging/.env.staging up -d --build`.
    Containeren kjører migreringene og legger inn ingredienslisten selv. Den har ingen åpne porter. Workeren
    (`smartmat-staging-worker`) starter fra samme bilde og leser kvitteringskøen. Slå kvitteringslesing av med
    `OCR_PROVIDER=off`.
-4. **Kontoer** (registreringen er stengt):
+5. **Kontoer** (registreringen er stengt):
    `docker exec -it smartmat-staging-app npm run -s create-user -w @smartmat/api -- --email … --name …`.
    Passordet skrives inn i terminalen og vises ikke.
-5. **Caddy:** legg inn blokken under. Caddyfile er én fil som er montert inn i containeren. Rediger den på
+6. **Sikkerhetskopi** (ADR-0021): passfrase i `/etc/smartmat-backup/passphrase` (0600), og så
+   `systemctl link` for enhetene i `docker/backup/systemd/` og `systemctl enable --now smartmat-backup.timer
+   smartmat-backup-check.timer smartmat-restore-test.timer`. Test skriptene med `docker/backup/test-backup.sh`.
+7. **Caddy:** legg inn blokken under. Caddyfile er én fil som er montert inn i containeren. Rediger den på
    stedet (ikke lagre en ny fil over den, da ser containeren fortsatt den gamle). Sjekk først, last så inn på nytt:
    `docker exec ghostwebsite-caddy-1 caddy validate --config /etc/caddy/Caddyfile`, deretter
    `docker exec ghostwebsite-caddy-1 caddy reload --config /etc/caddy/Caddyfile`.
@@ -50,7 +66,7 @@ smartmat.risansolutions.no {
 		smartmat <bcrypt-hash fra caddy hash-password>
 	}
 	reverse_proxy smartmat-staging-app:3000 {
-		# Overskriv, ikke legg til: API-et stoler bare på dette hodet fra ghostweb (TRUST_PROXY).
+		# Overskriv, ikke legg til: API-et stoler bare på dette hodet fra smartmat-edge (TRUST_PROXY, ADR-0022).
 		header_up X-Forwarded-For {remote_host}
 		# Passordet til basic auth skal ikke videre til appen.
 		header_up -Authorization
@@ -58,14 +74,14 @@ smartmat.risansolutions.no {
 	encode gzip
 	header {
 		X-Robots-Tag "noindex, nofollow"
-		Referrer-Policy "strict-origin-when-cross-origin"
 		-Server
 	}
 }
 ```
 
 - **Ikke kopier** header-blokken fra risansolutions.no. Den har `Permissions-Policy: camera=()`, som slår av
-  kameraet. Appen sender selv `camera=(self)`, CSP og HSTS.
+  kameraet. Appen sender selv `camera=(self)`, CSP, HSTS, `Referrer-Policy: no-referrer`, COOP og CORP
+  (NFR-SEC-006). Fase 13: `Referrer-Policy` er tatt ut av blokken, fordi Caddy og appen da sendte to ulike.
 - Blokken har ingen `log`, så Caddy skriver ingen tilgangslogg for SmartMat.
 
 ## Oppdatere og ta ned

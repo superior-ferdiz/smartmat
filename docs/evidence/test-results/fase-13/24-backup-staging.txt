@@ -1,0 +1,27 @@
+# Gjenoppretting av testmiljøets nyeste kopi, kjørt 2026-10-27T13:20:46Z: docker/backup/restore-test.sh
+2026-10-27T13:20:46Z restore test: smartmat-20261027T013246Z.dump.gpg into smartmat-restore-test-20261027132046-2353670
+2026-10-27T13:20:48Z restore test OK: 34 tables, 888 rows, every row read and identical to the backup's manifest
+exit=0
+
+# systemctl list-timers 'smartmat-*'
+NEXT                        LEFT        LAST                        PASSED    UNIT                        ACTIVATES
+Tue 2026-10-27 14:00:00 UTC 39min left  Tue 2026-10-27 13:00:00 UTC 20min ago smartmat-backup-check.timer smartmat-backup-check.service
+Wed 2026-10-28 01:39:25 UTC 12h left    Tue 2026-10-27 01:32:46 UTC 11h ago   smartmat-backup.timer       smartmat-backup.service
+Sun 2026-11-01 03:00:00 UTC 4 days left n/a                         n/a       smartmat-restore-test.timer smartmat-restore-test.service
+
+3 timers listed.
+Pass --all to see loaded but inactive timers, too.
+
+# status.json
+{"checkedAt":"2026-10-27T13:00:01Z","state":"ok","newestBackupAt":"2026-10-27T01:32:46Z"}
+
+# ls -l /var/backups/smartmat
+total 704
+-rw------- 1 root root 173628 Oct 25 17:28 smartmat-20261025T172819Z.dump.gpg
+-rw------- 1 root root    948 Oct 25 17:28 smartmat-20261025T172819Z.manifest
+-rw------- 1 root root 173628 Oct 25 17:31 smartmat-20261025T173135Z.dump.gpg
+-rw------- 1 root root    948 Oct 25 17:31 smartmat-20261025T173135Z.manifest
+-rw------- 1 root root 173628 Oct 26 01:35 smartmat-20261026T013500Z.dump.gpg
+-rw------- 1 root root    948 Oct 26 01:35 smartmat-20261026T013500Z.manifest
+-rw------- 1 root root 173628 Oct 27 01:32 smartmat-20261027T013246Z.dump.gpg
+-rw------- 1 root root    948 Oct 27 01:32 smartmat-20261027T013246Z.manifest

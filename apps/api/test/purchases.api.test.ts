@@ -502,8 +502,13 @@ describe('FR-BUD-005 correcting and deleting update every figure', () => {
       amountOre,
     }));
 
+  /** Sends the stored version (spec 13, FR-BUD-006) unless the test gives one. */
   async function put(client: Client, purchaseId: string, body: Record<string, unknown>) {
-    return call(app, 'PUT', purchasesPath(client, `/${purchaseId}`), { client, body });
+    const version = (await db.purchase.findUnique({ where: { id: purchaseId } }))?.version ?? 1;
+    return call(app, 'PUT', purchasesPath(client, `/${purchaseId}`), {
+      client,
+      body: { version, ...body },
+    });
   }
 
   it('a new amount and date: total, summary and the linked batch follow', async () => {

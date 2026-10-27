@@ -61,18 +61,22 @@ export function LocationsPage() {
                 <Button
                   size="sm"
                   variant="ghost"
+                  aria-label={t('inventory.locations.renameLabel', {
+                    name: locationName(location),
+                  })}
                   onClick={() => setDialog({ type: 'rename', location })}
                 >
                   {t('inventory.locations.rename')}
-                  <span className="visually-hidden"> {locationName(location)}</span>
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
+                  aria-label={t('inventory.locations.deleteLabel', {
+                    name: locationName(location),
+                  })}
                   onClick={() => setDialog({ type: 'delete', location })}
                 >
                   {t('inventory.locations.delete')}
-                  <span className="visually-hidden"> {locationName(location)}</span>
                 </Button>
               </div>
             </li>

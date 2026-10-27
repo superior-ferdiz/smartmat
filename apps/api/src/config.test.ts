@@ -43,6 +43,22 @@ describe('config for the test environment (ADR-0015) and barcodes (spec 07)', ()
     });
   });
 
+  it('an empty line in an env file (`OFF_USER_AGENT=`) means "not set", as in .env.staging.example', () => {
+    const config = loadConfig({
+      ...base,
+      OFF_USER_AGENT: '',
+      KASSALAPP_API_KEY: ' ',
+      WEB_DIST_DIR: '',
+      OCR_PROVIDER: '',
+    });
+    expect(config.barcode.offUserAgent).toBeNull();
+    expect(config.prices.kassalappApiKey).toBeNull();
+    expect(config.webDistDir).toBeNull();
+    expect(config.receipts.ocrProvider).toBe('off');
+    // A required variable that is empty is still missing.
+    expect(() => loadConfig({ ...base, APP_ORIGINS: '' })).toThrow(/APP_ORIGINS/);
+  });
+
   it('TRUST_PROXY: a list of addresses and CIDR ranges', () => {
     expect(loadConfig({ ...base, TRUST_PROXY: '172.26.0.0/16, 127.0.0.1' }).trustProxy).toEqual([
       '172.26.0.0/16',

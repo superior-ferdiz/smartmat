@@ -332,6 +332,7 @@ describe('FR-HH-001/002 invitation and joining', () => {
           register: { max: 1000, windowMs: 60_000 },
           sensitive: { max: 1000, windowMs: 60_000 },
           invitation: { max: 2, windowMs: 60_000 },
+          export: { max: 1000, windowMs: 60_000 },
         },
       },
     });

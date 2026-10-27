@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Delte Zod-skjemaer og hjelpefunksjoner for SmartMat (klient og server)",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./test-fixtures/receipts": "./src/receipts/fixtures.ts"

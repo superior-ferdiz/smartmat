@@ -1,0 +1,11 @@
+# SmartMat (spec 13 NFR-OPS-001, ADR-0021): encrypted backup of the test environment's database, then the check.
+[Unit]
+Description=SmartMat: nightly encrypted backup of smartmat-staging-db
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/Websites/SmartMat/docker/backup/backup.sh
+Nice=10
+IOSchedulingClass=idle

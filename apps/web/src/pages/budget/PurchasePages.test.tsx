@@ -237,6 +237,42 @@ describe('FR-BUD-005 one purchase: correct and delete', () => {
     ).toBeInTheDocument();
   });
 
+  it('FR-BUD-006: the form sends the version it was opened with, even after a refetch brings a newer one', async () => {
+    let version = 1;
+    const requests = mockApi((r) => {
+      if (r.method === 'PUT') return { status: 200, body: { ...linked, version: 2 } };
+      if (r.method === 'GET' && r.path === `${H}/purchases/${linked.id}`) {
+        return { status: 200, body: { ...linked, version } };
+      }
+      return undefined;
+    });
+    const user = userEvent.setup();
+    const { queryClient } = renderApp(`/budsjett/kjop/${linked.id}/rett`);
+    await screen.findByRole('group', { name: 'Linje 1' });
+    // Someone else saves meanwhile; this page fetches again in the background (window focus, for example).
+    version = 2;
+    await queryClient.refetchQueries();
+    await user.click(screen.getByRole('button', { name: 'Lagre' }));
+    expect(await screen.findByText('Kjøpet er oppdatert.')).toBeInTheDocument();
+    expect(requests.find((r) => r.method === 'PUT')?.body).toMatchObject({ version: 1 });
+  });
+
+  it('FR-BUD-006: someone else saved first → the message says nothing was saved, and the page stays', async () => {
+    mockApi((r) =>
+      r.method === 'PUT'
+        ? { status: 409, body: { error: { code: 'errors.purchase.editedMeanwhile' } } }
+        : answer(r),
+    );
+    const user = userEvent.setup();
+    const { router } = renderApp(`/budsjett/kjop/${linked.id}/rett`);
+    await screen.findByRole('group', { name: 'Linje 1' });
+    await user.click(screen.getByRole('button', { name: 'Lagre' }));
+    expect(
+      await screen.findByText(/Noen andre har endret kjøpet mens du rettet det/),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(`/budsjett/kjop/${linked.id}/rett`);
+  });
+
   it('correct: the form opens with the saved values; removing a linked line offers to keep its item', async () => {
     const requests = mockApi((r) =>
       r.method === 'PUT' ? { status: 200, body: linked } : answer(r),
@@ -260,6 +296,7 @@ describe('FR-BUD-005 one purchase: correct and delete', () => {
       storeName: 'Coop',
       purchasedOn: '2026-10-20',
       removeUntouchedBatches: false,
+      version: 1,
       lines: [
         {
           id: linked.lines[0]!.id,

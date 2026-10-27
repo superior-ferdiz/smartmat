@@ -31,14 +31,14 @@ describe('trustProxy: the client address behind Caddy', () => {
 
   it("trusted proxy: each client behind it has its own limit (otherwise everyone shares Caddy's)", async () => {
     const app = await createTestApp(db, {
-      config: { trustProxy: ['172.26.0.0/16'], rateLimits: { ...testLimits(), ...limited } },
+      config: { trustProxy: ['192.168.252.0/28'], rateLimits: { ...testLimits(), ...limited } },
     });
     try {
       for (let i = 0; i < 2; i++)
-        expect((await loginAttempts(app, '172.26.0.5', '198.51.100.1')).statusCode).toBe(401);
-      expect((await loginAttempts(app, '172.26.0.5', '198.51.100.1')).statusCode).toBe(429);
+        expect((await loginAttempts(app, '192.168.252.2', '198.51.100.1')).statusCode).toBe(401);
+      expect((await loginAttempts(app, '192.168.252.2', '198.51.100.1')).statusCode).toBe(429);
       // Another visitor through the same proxy is not blocked.
-      expect((await loginAttempts(app, '172.26.0.5', '198.51.100.2')).statusCode).toBe(401);
+      expect((await loginAttempts(app, '192.168.252.2', '198.51.100.2')).statusCode).toBe(401);
     } finally {
       await app.close();
     }
@@ -46,7 +46,7 @@ describe('trustProxy: the client address behind Caddy', () => {
 
   it('a client outside the trusted range cannot choose its address with the header', async () => {
     const app = await createTestApp(db, {
-      config: { trustProxy: ['172.26.0.0/16'], rateLimits: { ...testLimits(), ...limited } },
+      config: { trustProxy: ['192.168.252.0/28'], rateLimits: { ...testLimits(), ...limited } },
     });
     try {
       for (let i = 0; i < 2; i++) {
@@ -190,6 +190,33 @@ describe('serving the built web app (one origin)', () => {
     }
   });
 
+  it('NFR-SEC-006: the page and the API carry the security headers, and nothing names the server', async () => {
+    const app = await webApp();
+    try {
+      for (const url of ['/', '/matlager', '/assets/app-abc.js', '/api/v1/health']) {
+        const h = (await app.inject({ method: 'GET', url })).headers;
+        expect(h['strict-transport-security']).toMatch(/max-age=(\d+); includeSubDomains/);
+        expect(
+          Number(/max-age=(\d+)/.exec(String(h['strict-transport-security']))?.[1]),
+        ).toBeGreaterThanOrEqual(31_536_000);
+        expect(h['x-content-type-options']).toBe('nosniff');
+        expect(h['referrer-policy']).toBe('no-referrer');
+        expect(h['cross-origin-opener-policy']).toBe('same-origin');
+        expect(h['cross-origin-resource-policy']).toBe('same-origin');
+        expect(h['x-frame-options']).toBe('SAMEORIGIN');
+        expect(h['x-powered-by']).toBeUndefined();
+        expect(h.server).toBeUndefined();
+        const csp = String(h['content-security-policy']);
+        expect(csp).toContain("default-src 'self'");
+        expect(csp).toContain("object-src 'none'");
+        expect(csp).toContain("frame-ancestors 'none'");
+        expect(csp).not.toMatch(/'unsafe-inline'|'unsafe-eval'/);
+      }
+    } finally {
+      await app.close();
+    }
+  });
+
   it('every answer says the camera is for our own page only', async () => {
     const app = await webApp();
     try {
@@ -211,5 +238,6 @@ function testLimits() {
     register: { max: 1000, windowMs: 60_000 },
     sensitive: { max: 1000, windowMs: 60_000 },
     invitation: { max: 1000, windowMs: 60_000 },
+    export: { max: 1000, windowMs: 60_000 },
   };
 }

@@ -3,7 +3,10 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import {
   API_ERRORS,
   CSRF_HEADER,
+  deviceFromUserAgent,
+  loginResponseSchema,
   loginSchema,
+  loginSecondStepSchema,
   registerSchema,
   sessionResponseSchema,
 } from '@smartmat/shared';
@@ -38,7 +41,10 @@ export const authRoutes: FastifyPluginAsyncZod<AuthRoutesOptions> = async (app, 
       },
     },
     async (request, reply) => {
-      const { user, session } = await service.register(request.body);
+      const { user, session } = await service.register(
+        request.body,
+        deviceFromUserAgent(request.headers['user-agent']),
+      );
       cookies.set(reply, session);
       return reply.status(201).send({ user, csrfToken: session.csrfToken });
     },
@@ -47,12 +53,40 @@ export const authRoutes: FastifyPluginAsyncZod<AuthRoutesOptions> = async (app, 
   app.post(
     '/auth/login',
     {
-      schema: { body: loginSchema, response: { 200: sessionResponseSchema } },
+      schema: { body: loginSchema, response: { 200: loginResponseSchema } },
       config: rateLimit(rateLimits.login),
     },
     async (request, reply) => {
-      const { user, session } = await service.login(request.body);
+      const result = await service.login(
+        request.body,
+        deviceFromUserAgent(request.headers['user-agent']),
+      );
+      // Spec 13 (FR-AUTH-010): two-factor on – no session yet, only the challenge for the code.
+      if (result.kind === 'challenge') {
+        return { twoFactorRequired: true as const, challenge: result.challenge };
+      }
       // Always a new session ID at login. A session this browser had before is ended.
+      const previous = cookies.read(request);
+      if (previous) await service.logout(previous);
+      cookies.set(reply, result.session);
+      return { user: result.user, csrfToken: result.session.csrfToken };
+    },
+  );
+
+  // Spec 13 (FR-AUTH-010): the code after the password. The same per-IP limit as login; wrong codes also count
+  // towards the account's lock.
+  app.post(
+    '/auth/login/two-factor',
+    {
+      schema: { body: loginSecondStepSchema, response: { 200: sessionResponseSchema } },
+      config: rateLimit(rateLimits.login),
+    },
+    async (request, reply) => {
+      const { user, session } = await service.loginSecondStep(
+        request.body.challenge,
+        request.body.code,
+        deviceFromUserAgent(request.headers['user-agent']),
+      );
       const previous = cookies.read(request);
       if (previous) await service.logout(previous);
       cookies.set(reply, session);

@@ -5,6 +5,16 @@
     "staging": {
       "title": "Test environment.",
       "text": "Use test data only. Do not enter real allergies or other real information."
+    },
+    "backup": {
+      "stale": "The backup is too old.",
+      "failed": "The backup failed.",
+      "unknown": "We do not know whether the backup works.",
+      "newest": "Newest copy: {{when}}. Tell the team.",
+      "none": "There is no copy. Tell the team."
+    },
+    "footer": {
+      "privacy": "Privacy"
     }
   },
   "common": {
@@ -215,6 +225,11 @@
       "keys": "Invalid list of notifications.",
       "toggle": "Choose on or off.",
       "daysBefore": "Choose between 0 and 7 days."
+    },
+    "twoFactor": {
+      "codeRequired": "Enter the code.",
+      "codeInvalid": "The code is 6 digits from the app, or a recovery code of 10 characters.",
+      "totpInvalid": "Enter the 6 digits the app shows."
     }
   },
   "pages": {
@@ -296,7 +311,8 @@
         "mealPlan": "The week's dinners",
         "household": "Sharing with others",
         "settings": "Language, theme, notifications and account",
-        "waste": "What is thrown away, and why"
+        "waste": "What is thrown away, and why",
+        "privacy": "What we store, and your rights"
       }
     },
     "settings": {
@@ -453,6 +469,60 @@
           "off": "Your allergies are no longer shared with “{{name}}”."
         }
       }
+    },
+    "privacy": {
+      "title": "Privacy notice",
+      "lead": "What SmartMat stores about you, why, for how long, and what your rights are.",
+      "draft": "Draft. This text was written with the help of AI and has not been checked by anyone with legal training. SmartMat is a student project and is so far used only by the team.",
+      "controller": {
+        "title": "Who is responsible",
+        "text": "The students Ferdinand Risan and Linus Saxe Huseby (course APP2000 at the University of South-Eastern Norway) are the controllers for SmartMat.",
+        "contact": "Contact: [contact address not filled in yet]"
+      },
+      "data": {
+        "title": "What we store",
+        "account": "Your account: e-mail address, name, language, and your password as a hash (never the password itself).",
+        "sessions": "Logins: when you logged in and last used the app, and which browser and system. Not your IP address.",
+        "content": "What you enter: inventory, purchases and shops, budget, shopping list, meal plan, waste and barcodes you have scanned.",
+        "allergies": "Allergies, if you choose to enter them. They may count as health data. They are used only to hide or warn about recipes, and others see them only if you turn on sharing with the household (without your name).",
+        "receipts": "Photos of receipts: only until you have confirmed or discarded the purchase, and never more than 7 days.",
+        "household": "In a shared household the other members see the household's data and your name."
+      },
+      "purpose": {
+        "title": "Why",
+        "text": "We use the data only to give you what the app does: keeping track of food, purchases and budget, suggesting recipes and sharing with your household. No advertising, no profiling and no selling of data.",
+        "basis": "The legal basis for allergies (special categories, GDPR Article 9) has not been finally assessed by the team yet."
+      },
+      "recipients": {
+        "title": "Who gets anything",
+        "off": "Open Food Facts gets the barcode you scan, from our server, not from your phone.",
+        "kassalapp": "Kassalapp gets the barcode, only if price lookups are switched on.",
+        "hibp": "Have I Been Pwned gets the first 5 characters of a hash of a new password, so we can refuse passwords from known data breaches. Nobody can find the password from that.",
+        "host": "The server is in Germany (EEA), with a provider that runs the machine.",
+        "none": "We use no analytics, tracking or ad networks."
+      },
+      "retention": {
+        "title": "For how long",
+        "account": "Your account and what you have entered: until you delete the account.",
+        "sessions": "Logins: expire after 14 days without use and at the latest after 30 days, and are deleted every night.",
+        "receipts": "Receipt photos and the text read from them: until the purchase is confirmed or discarded, at most 7 days.",
+        "backups": "Backups: every night, encrypted, the last 7 days. Something you have deleted may therefore remain in a copy for up to 7 days. Receipt photos are never included.",
+        "logs": "The server's log: what kind of request and when, without e-mail, name, IP address or what you have entered."
+      },
+      "rights": {
+        "title": "Your rights",
+        "access": "Access and a copy: “Download my data” on your profile gives you everything in one file.",
+        "rectify": "Rectification: you can change most things yourself in the app.",
+        "erase": "Erasure: “Delete account” on your profile deletes the account and households where you are alone, at once.",
+        "portability": "Data portability: the file from “Download my data” is in a common, machine-readable format (JSON).",
+        "withdraw": "Withdrawal: you can remove your allergies and turn off sharing at any time.",
+        "complain": "Complaints: you can complain to the Norwegian Data Protection Authority (datatilsynet.no)."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "text": "SmartMat uses only one cookie: the one that keeps you logged in. It holds a random number, not information about you."
+      },
+      "back": "Back to the app"
     }
   },
   "auth": {
@@ -481,6 +551,14 @@
       "haveAccount": "Already have an account?",
       "logIn": "Log in",
       "closedLogin": "Log in"
+    },
+    "twoFactor": {
+      "title": "Enter the code",
+      "lead": "Your account has two-factor login. Open the authenticator app and enter the code for SmartMat.",
+      "code": "Code",
+      "codeHint": "6 digits from the app. If you have lost your phone, use one of your recovery codes.",
+      "submit": "Confirm",
+      "back": "Back"
     }
   },
   "errors": {
@@ -489,8 +567,14 @@
       "invalidCredentials": "Wrong email address or password. After five mistakes in a row you have to wait 15 minutes before trying again.",
       "emailTaken": "There is already an account with this email address. Log in instead.",
       "wrongPassword": "The password is wrong.",
+      "passwordPwned": "This password appears in known data breaches, so others may try it. Choose another one. Tip: a short sentence you have not used elsewhere.",
       "unauthenticated": "You are no longer logged in. Please log in again.",
-      "registrationClosed": "This is a closed test environment. New accounts are made by the team."
+      "registrationClosed": "This is a closed test environment. New accounts are made by the team.",
+      "twoFactorInvalid": "The code is wrong, or it has been used before. Wait for the next code in the app and try again. After five failures in a row you must wait 15 minutes.",
+      "twoFactorUnavailable": "Two-factor login is not available on this server right now. Tell the team.",
+      "twoFactorAlreadyOn": "Two-factor login is already on.",
+      "twoFactorNotSetUp": "Start again with “Turn on two-factor login”.",
+      "twoFactorChallengeInvalid": "The login took too long or was interrupted. Log in again."
     },
     "security": {
       "forbiddenOrigin": "The request was blocked for security reasons. Reload the page and try again.",
@@ -509,7 +593,8 @@
       "cannotUndo": "This change can no longer be undone."
     },
     "purchase": {
-      "changedMeanwhile": "Something in the purchase changed meanwhile, for example an item or place that was deleted. Reload the page and try again."
+      "changedMeanwhile": "Something in the purchase changed meanwhile, for example an item or place that was deleted. Reload the page and try again.",
+      "editedMeanwhile": "Someone else changed this purchase while you were editing it, perhaps on another phone. Nothing you typed has been saved. Reload the page to see the changes, and edit again."
     },
     "shopping": {
       "changedMeanwhile": "The shopping list was changed meanwhile, perhaps on another device. Reload the page and try again.",
@@ -769,8 +854,10 @@
       "name": "Name",
       "nameHint": "For example “Cellar”.",
       "rename": "Rename",
+      "renameLabel": "Rename {{name}}",
       "renameTitle": "Rename",
       "delete": "Delete",
+      "deleteLabel": "Delete {{name}}",
       "deleteTitle": "Delete {{name}}?",
       "deleteText": "A place can only be deleted when it is empty. The history of items that were there is kept.",
       "deleteConfirm": "Delete place",
@@ -1709,6 +1796,85 @@
         "noMatch": "no item in the inventory with this name",
         "noPrice": "no price yet",
         "unitMismatch": "a different unit from the price"
+      }
+    }
+  },
+  "account": {
+    "device": "{{browser}} on {{os}}",
+    "browsers": {
+      "edge": "Edge",
+      "samsung": "Samsung Internet",
+      "opera": "Opera",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "safari": "Safari",
+      "other": "Unknown browser"
+    },
+    "systems": {
+      "android": "Android",
+      "ios": "iPhone or iPad",
+      "windows": "Windows",
+      "macos": "Mac",
+      "chromeos": "ChromeOS",
+      "linux": "Linux",
+      "other": "unknown system"
+    },
+    "sessions": {
+      "title": "Where you are logged in",
+      "text": "These are the browsers logged in to your account. We store only the browser and the system, not where you are or your IP address. If you do not recognise a login, log it out and change your password.",
+      "current": "This device",
+      "times": "Logged in {{started}} · last used {{seen}}",
+      "endOne": "Log out",
+      "endOneLabel": "Log out {{device}}",
+      "ended": "The device has been logged out.",
+      "endOthers": "Log out all other devices",
+      "endedOthers_one": "{{count}} other device has been logged out.",
+      "endedOthers_other": "{{count}} other devices have been logged out."
+    },
+    "loginNotice": {
+      "title": "New login to your account.",
+      "text": "{{device}}, {{when}}.",
+      "itWasMe": "It was me",
+      "review": "Not you? See where you are logged in"
+    },
+    "export": {
+      "title": "Download your data",
+      "text": "You get a file (JSON) with what SmartMat has stored about you: your account, allergies, logins and everything in the households you are in. Passwords and receipt photos are not included.",
+      "download": "Download my data",
+      "privacy": "Read the privacy notice"
+    },
+    "twoFactor": {
+      "title": "Two-factor login",
+      "off": "Off. With two-factor login you need both your password and a code from an app on your phone (for example Google Authenticator, Microsoft Authenticator or 1Password).",
+      "on_one": "On. You have {{count}} unused recovery code.",
+      "on_other": "On. You have {{count}} unused recovery codes.",
+      "unavailable": "Two-factor login is not available on this server.",
+      "start": "Turn on two-factor login",
+      "passwordFirst": "Enter your password first.",
+      "continue": "Continue",
+      "turnOn": "Turn on",
+      "turnedOn": "Two-factor login is on.",
+      "turnedOff": "Two-factor login is off.",
+      "scan": {
+        "app": "Open the authenticator app and add a new account.",
+        "key": "Enter this key (upper or lower case, without spaces):",
+        "keyLabel": "Key for the authenticator app",
+        "open": "Or open it directly in the app on this phone",
+        "code": "Enter the code the app shows for SmartMat.",
+        "codeHint": "6 digits. The code changes every 30 seconds."
+      },
+      "codes": {
+        "title": "Keep the recovery codes",
+        "text": "Each code can be used once if you lose your phone. Write them down or save them in a password manager. They are shown only now.",
+        "done": "I have kept the codes"
+      },
+      "confirm": {
+        "disable": "Enter your password and a code to turn off two-factor login.",
+        "newCodes": "Enter your password and a code. The old recovery codes stop working."
+      },
+      "actions": {
+        "disable": "Turn off",
+        "newCodes": "Make new recovery codes"
       }
     }
   }

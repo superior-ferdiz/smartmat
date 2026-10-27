@@ -8,6 +8,8 @@ import type { ReceiptQueue } from '../modules/receipts/service';
 
 export const RECEIPT_OCR_QUEUE = 'receipt-ocr';
 export const RECEIPT_CLEANUP_QUEUE = 'receipt-cleanup';
+/** Spec 13 (FR-PRIV-002): expired sessions, every night. */
+export const SESSION_CLEANUP_QUEUE = 'session-cleanup';
 const SCHEMA = 'pgboss';
 
 /**
@@ -31,6 +33,7 @@ export async function startJobs(databaseUrl: string, role: 'api' | 'worker') {
     deleteAfterSeconds: 60 * 60,
   });
   await boss.createQueue(RECEIPT_CLEANUP_QUEUE, { retryLimit: 0, expireInSeconds: 300 });
+  await boss.createQueue(SESSION_CLEANUP_QUEUE, { retryLimit: 0, expireInSeconds: 300 });
   return boss;
 }
 

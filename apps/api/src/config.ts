@@ -41,6 +41,8 @@ export interface AppConfig {
     sensitive: RateLimitRule;
     /** Spec 10: previewing and accepting invitations, per IP address. */
     invitation: RateLimitRule;
+    /** Spec 13 (FR-PRIV-001): data exports, per IP address. */
+    export: RateLimitRule;
   };
   /** Spec 10 (FR-HH-002): invitation previews and accepts per logged-in user, in 15 minutes. */
   invitationAttemptsPerUser: number;
@@ -68,6 +70,15 @@ export interface AppConfig {
   };
   /** ADR-0016 (spec 09): false hides external recipes nobody in the team has checked yet. */
   recipes: { includeUnreviewed: boolean };
+  /** Spec 13 (NFR-OPS-003, ADR-0021): the status file the backup check writes, mounted read-only; null locally. */
+  backupStatusFile: string | null;
+  /**
+   * Spec 13 (FR-AUTH-010): 32 bytes for AES-256-GCM that seals the TOTP secrets. Null: two-factor cannot be set up,
+   * and an account that has it cannot log in (fails closed). Secret: only in .env, never logged.
+   */
+  totpEncryptionKey: Buffer | null;
+  /** Spec 13 (FR-AUTH-008): Pwned Passwords at registration and password change. Off unless switched on. */
+  pwnedPasswords: { enabled: boolean; baseUrl: string; timeoutMs: number };
   /** Prices (spec 12, ADR-0020). Without an API key, Kassalapp is never asked and only own prices are shown. */
   prices: {
     kassalappBaseUrl: string;
@@ -117,6 +128,7 @@ const envSchema = z.object({
   RATE_LIMIT_REGISTER_MAX: z.coerce.number().int().positive().default(10),
   RATE_LIMIT_SENSITIVE_MAX: z.coerce.number().int().positive().default(10),
   RATE_LIMIT_INVITATION_MAX: z.coerce.number().int().positive().default(30),
+  RATE_LIMIT_EXPORT_MAX: z.coerce.number().int().positive().default(5),
   INVITATION_ATTEMPTS_PER_USER: z.coerce.number().int().positive().default(10),
   // Spec 07. OFF asks developers to use its staging server; the test environment sets world.openfoodfacts.org.
   OFF_BASE_URL: z.url({ protocol: /^https$/ }).default('https://world.openfoodfacts.net'),
@@ -139,6 +151,19 @@ const envSchema = z.object({
   KASSALAPP_TIMEOUT_MS: z.coerce.number().int().min(100).max(30_000).default(3000),
   KASSALAPP_MAX_PER_MINUTE: z.coerce.number().int().positive().max(60).default(30),
   PRICE_LOOKUPS_PER_MINUTE: z.coerce.number().int().positive().default(30),
+  // Spec 13. Only the first 5 characters of the password's SHA-1 are sent (integrations/pwned-passwords.md).
+  PWNED_PASSWORDS: z.enum(['on', 'off']).default('off'),
+  BACKUP_STATUS_FILE: z.string().trim().min(1).optional(),
+  // Spec 13. Make one with: openssl rand -base64 32
+  TOTP_ENCRYPTION_KEY: z
+    .string()
+    .trim()
+    .refine((value) => Buffer.from(value, 'base64').length === 32, {
+      message: 'must be 32 bytes in base64',
+    })
+    .optional(),
+  PWNED_PASSWORDS_URL: z.url({ protocol: /^https$/ }).default('https://api.pwnedpasswords.com'),
+  PWNED_PASSWORDS_TIMEOUT_MS: z.coerce.number().int().min(100).max(10_000).default(2000),
 });
 
 /** "172.26.0.0/16" or "127.0.0.1". */
@@ -153,7 +178,11 @@ function isAddressOrRange(entry: string): boolean {
 
 /** Reads and checks the environment. Fails at start-up with the names (not values) of bad variables. */
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
-  const parsed = envSchema.safeParse(env);
+  // `KASSALAPP_API_KEY=` in an env file means "not set" (the staging example has such lines), not an empty key.
+  const set = Object.fromEntries(
+    Object.entries(env).filter(([, value]) => value !== undefined && value.trim() !== ''),
+  );
+  const parsed = envSchema.safeParse(set);
   if (!parsed.success) {
     const names = parsed.error.issues.map((issue) => issue.path.join('.')).join(', ');
     throw new Error(`Invalid or missing environment variables: ${names} (see .env.example)`);
@@ -181,6 +210,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       register: { max: e.RATE_LIMIT_REGISTER_MAX, windowMs: 60 * MINUTE },
       sensitive: { max: e.RATE_LIMIT_SENSITIVE_MAX, windowMs: 15 * MINUTE },
       invitation: { max: e.RATE_LIMIT_INVITATION_MAX, windowMs: 15 * MINUTE },
+      export: { max: e.RATE_LIMIT_EXPORT_MAX, windowMs: 60 * MINUTE },
     },
     invitationAttemptsPerUser: e.INVITATION_ATTEMPTS_PER_USER,
     barcode: {
@@ -199,6 +229,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       maxQueued: e.RECEIPT_MAX_QUEUED,
     },
     recipes: { includeUnreviewed: e.RECIPES_INCLUDE_UNREVIEWED === 'true' },
+    backupStatusFile: e.BACKUP_STATUS_FILE ?? null,
+    totpEncryptionKey: e.TOTP_ENCRYPTION_KEY ? Buffer.from(e.TOTP_ENCRYPTION_KEY, 'base64') : null,
+    pwnedPasswords: {
+      enabled: e.PWNED_PASSWORDS === 'on',
+      baseUrl: e.PWNED_PASSWORDS_URL,
+      timeoutMs: e.PWNED_PASSWORDS_TIMEOUT_MS,
+    },
     prices: {
       kassalappBaseUrl: e.KASSALAPP_BASE_URL,
       kassalappApiKey: e.KASSALAPP_API_KEY ?? null,

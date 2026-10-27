@@ -172,15 +172,27 @@ describe('FR-BUD-005 updatePurchaseSchema', () => {
   it('keeps line ids and removes untouched batches by default', () => {
     const parsed = updatePurchaseSchema.parse({
       purchasedOn: '2026-10-21',
+      version: 3,
       lines: [{ ...milk, id: LOCATION }, soap],
     });
+    expect(parsed.version).toBe(3);
     expect(parsed.lines[0]?.id).toBe(LOCATION);
     expect(parsed.lines[1]?.id).toBeUndefined();
     expect(parsed.removeUntouchedBatches).toBe(true);
   });
 
   it('the same lines-or-total rule as a new purchase', () => {
-    expect(updatePurchaseSchema.safeParse({ purchasedOn: '2026-10-21' }).success).toBe(false);
+    expect(updatePurchaseSchema.safeParse({ purchasedOn: '2026-10-21', version: 1 }).success).toBe(
+      false,
+    );
+  });
+
+  it('spec 13 (FR-BUD-006): the version the form was read with is required, a whole number ≥ 1', () => {
+    const body = { purchasedOn: '2026-10-21', totalOre: 1 };
+    expect(updatePurchaseSchema.safeParse(body).success).toBe(false);
+    expect(updatePurchaseSchema.safeParse({ ...body, version: 0 }).success).toBe(false);
+    expect(updatePurchaseSchema.safeParse({ ...body, version: 1.5 }).success).toBe(false);
+    expect(updatePurchaseSchema.safeParse({ ...body, version: 1 }).success).toBe(true);
   });
 
   it('delete: removeUntouchedBatches is true unless "false" is given', () => {

@@ -5,6 +5,16 @@
     "staging": {
       "title": "Testmiljø.",
       "text": "Bruk bare testdata. Ikke legg inn ekte allergier eller andre ekte opplysninger."
+    },
+    "backup": {
+      "stale": "Sikkerhetskopien er for gammel.",
+      "failed": "Sikkerhetskopien feilet.",
+      "unknown": "Vi vet ikke om sikkerhetskopien virker.",
+      "newest": "Nyeste kopi: {{when}}. Si fra til teamet.",
+      "none": "Det finnes ingen kopi. Si fra til teamet."
+    },
+    "footer": {
+      "privacy": "Personvern"
     }
   },
   "common": {
@@ -215,6 +225,11 @@
       "keys": "Ugyldig liste over varsler.",
       "toggle": "Velg på eller av.",
       "daysBefore": "Velg mellom 0 og 7 dager."
+    },
+    "twoFactor": {
+      "codeRequired": "Skriv inn koden.",
+      "codeInvalid": "Koden skal være 6 sifre fra appen, eller en gjenopprettingskode på 10 tegn.",
+      "totpInvalid": "Skriv inn de 6 sifrene appen viser."
     }
   },
   "pages": {
@@ -296,7 +311,8 @@
         "mealPlan": "Ukens middager",
         "household": "Deling med andre",
         "settings": "Språk, tema, varsler og konto",
-        "waste": "Hva som kastes, og hvorfor"
+        "waste": "Hva som kastes, og hvorfor",
+        "privacy": "Hva vi lagrer, og rettighetene dine"
       }
     },
     "settings": {
@@ -453,6 +469,60 @@
           "off": "Allergiene dine deles ikke lenger med «{{name}}»."
         }
       }
+    },
+    "privacy": {
+      "title": "Personvernerklæring",
+      "lead": "Hva SmartMat lagrer om deg, hvorfor, hvor lenge, og hvilke rettigheter du har.",
+      "draft": "Utkast. Teksten er skrevet med hjelp av KI og er ikke kontrollert av noen med juridisk kompetanse. SmartMat er et studentprosjekt og brukes foreløpig bare av teamet.",
+      "controller": {
+        "title": "Hvem som er ansvarlig",
+        "text": "Studentene Ferdinand Risan og Linus Saxe Huseby (emnet APP2000 ved Universitetet i Sørøst-Norge) er behandlingsansvarlige for SmartMat.",
+        "contact": "Kontakt: [kontaktadresse er ikke fylt inn ennå]"
+      },
+      "data": {
+        "title": "Hva vi lagrer",
+        "account": "Kontoen: e-postadresse, navn, språk og passordet som en hash (aldri selve passordet).",
+        "sessions": "Innlogginger: når du logget inn og sist brukte appen, og hvilken nettleser og hvilket system. Ikke IP-adressen.",
+        "content": "Det du legger inn: matlager, kjøp og butikk, budsjett, handleliste, måltidsplan, svinn og strekkoder du har skannet.",
+        "allergies": "Allergier, hvis du velger å legge dem inn. De kan regnes som helseopplysninger. De brukes bare til å skjule eller varsle om oppskrifter, og andre ser dem bare hvis du slår på deling med husholdningen (uten navnet ditt).",
+        "receipts": "Bilder av kvitteringer: bare til du har bekreftet eller forkastet kjøpet, og aldri mer enn 7 dager.",
+        "household": "I en delt husholdning ser de andre medlemmene husholdningens data og navnet ditt."
+      },
+      "purpose": {
+        "title": "Hvorfor",
+        "text": "Vi bruker opplysningene bare til å gi deg det appen gjør: holde oversikt over mat, kjøp og budsjett, foreslå oppskrifter og dele med husholdningen. Ingen reklame, ingen profilering og ingen salg av data.",
+        "basis": "Behandlingsgrunnlaget for allergier (særlige kategorier, personvernforordningen artikkel 9) er ikke endelig vurdert av teamet ennå."
+      },
+      "recipients": {
+        "title": "Hvem som får noe",
+        "off": "Open Food Facts får strekkoden du skanner, fra serveren vår, ikke fra telefonen din.",
+        "kassalapp": "Kassalapp får strekkoden, bare hvis prisoppslag er slått på.",
+        "hibp": "Have I Been Pwned får de 5 første tegnene i en hash av et nytt passord, så vi kan avvise passord fra kjente datalekkasjer. Ut fra det kan ingen finne passordet.",
+        "host": "Serveren står i Tyskland (EØS) hos en leverandør som drifter maskinen.",
+        "none": "Vi bruker ingen analyseverktøy, sporing eller annonsenettverk."
+      },
+      "retention": {
+        "title": "Hvor lenge",
+        "account": "Kontoen og det du har lagt inn: til du sletter kontoen.",
+        "sessions": "Innlogginger: utløper etter 14 dager uten bruk og senest etter 30 dager, og slettes hver natt.",
+        "receipts": "Kvitteringsbilder og teksten som ble lest av dem: til kjøpet er bekreftet eller forkastet, høyst 7 dager.",
+        "backups": "Sikkerhetskopier: hver natt, kryptert, de siste 7 dagene. Noe du har slettet, kan derfor ligge i en kopi i opptil 7 dager. Kvitteringsbilder er aldri med.",
+        "logs": "Serverens logg: hva slags forespørsel og når, uten e-post, navn, IP-adresse eller det du har lagt inn."
+      },
+      "rights": {
+        "title": "Rettighetene dine",
+        "access": "Innsyn og kopi: «Last ned mine data» på profilen gir deg alt i én fil.",
+        "rectify": "Retting: du kan endre det meste selv i appen.",
+        "erase": "Sletting: «Slett konto» på profilen sletter kontoen og husholdninger der du er alene, med en gang.",
+        "portability": "Dataportabilitet: filen fra «Last ned mine data» er i et vanlig, maskinlesbart format (JSON).",
+        "withdraw": "Trekke tilbake: du kan fjerne allergiene og slå av deling når som helst.",
+        "complain": "Klage: du kan klage til Datatilsynet (datatilsynet.no)."
+      },
+      "cookies": {
+        "title": "Informasjonskapsler",
+        "text": "SmartMat bruker bare én informasjonskapsel: den som holder deg innlogget. Den inneholder et tilfeldig tall, ikke opplysninger om deg."
+      },
+      "back": "Tilbake til appen"
     }
   },
   "auth": {
@@ -481,6 +551,14 @@
       "haveAccount": "Har du allerede konto?",
       "logIn": "Logg inn",
       "closedLogin": "Logg inn"
+    },
+    "twoFactor": {
+      "title": "Skriv inn koden",
+      "lead": "Kontoen din har tofaktorinnlogging. Åpne autentiseringsappen og skriv inn koden for SmartMat.",
+      "code": "Kode",
+      "codeHint": "6 sifre fra appen. Har du mistet telefonen, bruk en av gjenopprettingskodene dine.",
+      "submit": "Bekreft",
+      "back": "Tilbake"
     }
   },
   "errors": {
@@ -489,8 +567,14 @@
       "invalidCredentials": "Feil e-postadresse eller passord. Etter fem feil på rad må du vente 15 minutter før du kan prøve igjen.",
       "emailTaken": "Det finnes allerede en konto med denne e-postadressen. Logg inn i stedet.",
       "wrongPassword": "Passordet er feil.",
+      "passwordPwned": "Dette passordet finnes i kjente datalekkasjer, så andre kan prøve det. Velg et annet. Tips: en kort setning du ikke har brukt andre steder.",
       "unauthenticated": "Du er ikke logget inn lenger. Logg inn igjen.",
-      "registrationClosed": "Dette er et lukket testmiljø. Nye kontoer lages av teamet."
+      "registrationClosed": "Dette er et lukket testmiljø. Nye kontoer lages av teamet.",
+      "twoFactorInvalid": "Koden stemmer ikke, eller den er brukt før. Vent på neste kode i appen og prøv igjen. Etter fem feil på rad må du vente 15 minutter.",
+      "twoFactorUnavailable": "Tofaktorinnlogging er ikke tilgjengelig på denne serveren akkurat nå. Si fra til teamet.",
+      "twoFactorAlreadyOn": "Tofaktorinnlogging er allerede slått på.",
+      "twoFactorNotSetUp": "Start på nytt med «Slå på tofaktorinnlogging».",
+      "twoFactorChallengeInvalid": "Innloggingen tok for lang tid eller ble avbrutt. Logg inn på nytt."
     },
     "security": {
       "forbiddenOrigin": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen.",
@@ -509,7 +593,8 @@
       "cannotUndo": "Endringen kan ikke angres lenger."
     },
     "purchase": {
-      "changedMeanwhile": "Noe i kjøpet ble endret i mellomtiden, for eksempel en vare eller et sted som ble slettet. Last inn siden på nytt og prøv igjen."
+      "changedMeanwhile": "Noe i kjøpet ble endret i mellomtiden, for eksempel en vare eller et sted som ble slettet. Last inn siden på nytt og prøv igjen.",
+      "editedMeanwhile": "Noen andre har endret kjøpet mens du rettet det, kanskje på en annen telefon. Ingenting av det du skrev, er lagret. Last inn siden på nytt for å se endringene, og rett igjen."
     },
     "shopping": {
       "changedMeanwhile": "Handlelisten ble endret i mellomtiden, kanskje på en annen enhet. Last inn siden på nytt og prøv igjen.",
@@ -769,8 +854,10 @@
       "name": "Navn",
       "nameHint": "For eksempel «Kjeller».",
       "rename": "Gi nytt navn",
+      "renameLabel": "Gi nytt navn til {{name}}",
       "renameTitle": "Gi nytt navn",
       "delete": "Slett",
+      "deleteLabel": "Slett {{name}}",
       "deleteTitle": "Slette {{name}}?",
       "deleteText": "Et sted kan bare slettes når det er tomt. Historikken for varer som har vært der, beholdes.",
       "deleteConfirm": "Slett stedet",
@@ -1709,6 +1796,85 @@
         "noMatch": "ingen vare i matlageret med dette navnet",
         "noPrice": "ingen pris ennå",
         "unitMismatch": "annen enhet enn prisen"
+      }
+    }
+  },
+  "account": {
+    "device": "{{browser}} på {{os}}",
+    "browsers": {
+      "edge": "Edge",
+      "samsung": "Samsung Internet",
+      "opera": "Opera",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "safari": "Safari",
+      "other": "Ukjent nettleser"
+    },
+    "systems": {
+      "android": "Android",
+      "ios": "iPhone eller iPad",
+      "windows": "Windows",
+      "macos": "Mac",
+      "chromeos": "ChromeOS",
+      "linux": "Linux",
+      "other": "ukjent system"
+    },
+    "sessions": {
+      "title": "Hvor du er logget inn",
+      "text": "Her ser du hvilke nettlesere som er logget inn på kontoen din. Vi lagrer bare nettleser og system, ikke hvor du er eller IP-adressen. Kjenner du ikke igjen en innlogging, logg den ut og bytt passord.",
+      "current": "Denne enheten",
+      "times": "Logget inn {{started}} · sist brukt {{seen}}",
+      "endOne": "Logg ut",
+      "endOneLabel": "Logg ut {{device}}",
+      "ended": "Enheten er logget ut.",
+      "endOthers": "Logg ut alle andre enheter",
+      "endedOthers_one": "{{count}} annen enhet er logget ut.",
+      "endedOthers_other": "{{count}} andre enheter er logget ut."
+    },
+    "loginNotice": {
+      "title": "Ny innlogging på kontoen din.",
+      "text": "{{device}}, {{when}}.",
+      "itWasMe": "Det var meg",
+      "review": "Var det ikke deg? Se hvor du er logget inn"
+    },
+    "export": {
+      "title": "Last ned dataene dine",
+      "text": "Du får en fil (JSON) med det SmartMat har lagret om deg: kontoen, allergiene, innloggingene og alt i husholdningene du er med i. Passord og kvitteringsbilder er ikke med.",
+      "download": "Last ned mine data",
+      "privacy": "Les personvernerklæringen"
+    },
+    "twoFactor": {
+      "title": "Tofaktorinnlogging",
+      "off": "Av. Med tofaktorinnlogging trenger du både passordet og en kode fra en app på telefonen (for eksempel Google Authenticator, Microsoft Authenticator eller 1Password).",
+      "on_one": "På. Du har {{count}} ubrukt gjenopprettingskode.",
+      "on_other": "På. Du har {{count}} ubrukte gjenopprettingskoder.",
+      "unavailable": "Tofaktorinnlogging er ikke tilgjengelig på denne serveren.",
+      "start": "Slå på tofaktorinnlogging",
+      "passwordFirst": "Skriv inn passordet ditt først.",
+      "continue": "Fortsett",
+      "turnOn": "Slå på",
+      "turnedOn": "Tofaktorinnlogging er slått på.",
+      "turnedOff": "Tofaktorinnlogging er slått av.",
+      "scan": {
+        "app": "Åpne autentiseringsappen og legg til en ny konto.",
+        "key": "Skriv inn denne nøkkelen (store eller små bokstaver, uten mellomrom):",
+        "keyLabel": "Nøkkel til autentiseringsappen",
+        "open": "Eller åpne den direkte i appen på denne telefonen",
+        "code": "Skriv inn koden appen viser for SmartMat.",
+        "codeHint": "6 sifre. Koden skifter hvert 30. sekund."
+      },
+      "codes": {
+        "title": "Ta vare på gjenopprettingskodene",
+        "text": "Hver kode kan brukes én gang hvis du mister telefonen. Skriv dem ned eller lagre dem i en passordbehandler. De vises bare nå.",
+        "done": "Jeg har tatt vare på kodene"
+      },
+      "confirm": {
+        "disable": "Skriv inn passordet og en kode for å slå av tofaktorinnlogging.",
+        "newCodes": "Skriv inn passordet og en kode. De gamle gjenopprettingskodene slutter å virke."
+      },
+      "actions": {
+        "disable": "Slå av",
+        "newCodes": "Lag nye gjenopprettingskoder"
       }
     }
   }

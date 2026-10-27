@@ -5,8 +5,11 @@ SmartMat is a Norwegian-first web app that helps households reduce food waste an
 It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN Bø, 2026/2027)**.
 
 - **Team:** Ferdinand Risan and Linus Saxe Huseby. Never name anyone else as a contributor.
-- **Environment:** local development. A closed HTTPS test environment on `smartmat.risansolutions.no` is built
-  (ADR-0015) but not set up yet (no DNS as of 2026-10-22). Git since 2026-10-20 (ADR-0013): private repo
+- **Environment:** local development. A closed HTTPS test environment on `smartmat.risansolutions.no` (ADR-0015):
+  DNS points at the server and the containers run (phase 13), on their own network `smartmat-edge` with Caddy
+  (ADR-0022), with a nightly encrypted backup (ADR-0021). The Caddy block is live since 2026-10-27 (basic auth user
+  `smartmat`, random password in `/opt/Websites/smartmat-private/testmiljo-passord.txt`, never shown in the chat).
+  `caddy hash-password` reads a line from stdin: pipe it with a trailing newline, never use `-t` with a redirect. Git since 2026-10-20 (ADR-0013): private repo
   `git@github.com:superior-ferdiz/smartmat.git`, branch `main`; one branch per phase (`fase-2`), the team opens and
   approves the pull request on GitHub. Commits from this server carry Ferdinand's identity, so
   AI-written changes must include a `Co-Authored-By: Claude` trailer. Commit/push only when asked; never commit secrets.
@@ -64,6 +67,10 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   without user confirmation. No cloud OCR without the team's approval and documented terms.
 - External providers (OCR, barcode, prices, recipes, notifications) sit behind interfaces in `apps/api/src/providers/`
   with timeouts, validated responses and a working app when they are down.
+- Phase 13 (spec 13, accepted 2026-10-25): leaked passwords via Pwned Passwords (k-anonymity, fail open), session list
+  + notice on every new login (no device history), optional TOTP 2FA with recovery codes (fail **closed** without
+  `TOTP_ENCRYPTION_KEY`), `purchases.version` (409 on a stale edit), `/me/export`, `/personvern` (contact address is
+  a placeholder the team must fill in). No e-mail service (FR-AUTH-006 deferred), no production setup (not decided).
 
 ## Code conventions (established in phase 1)
 
@@ -309,6 +316,42 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   texts would otherwise appear twice for Playwright's `getByText`).
 - `useTallPhoneViewport` (e2e/checks.ts) waits for `networkidle` before measuring: under load a late card ended up
   behind the bottom menu.
+
+## Code conventions (added in phase 13)
+
+- **Secrets:** `TOTP_ENCRYPTION_KEY` (32 bytes base64), the backup passphrase (`/etc/smartmat-backup/passphrase`, 0600)
+  and the basic-auth hash never go in the repo, the chat, logs or tests. Generate them into files without printing.
+  An empty `VAR=` in an env file now means "not set" (`loadConfig` drops blank values).
+- Pwned Passwords: provider `apps/api/src/providers/passwords/pwnedPasswords.ts`, `AppDeps.pwnedPasswords`, off unless
+  `PWNED_PASSWORDS=on`. Tests use `apps/api/test/fakePwned.ts` (made-up leaked passwords); the e2e server too.
+- Sessions: `sessions.browser`/`os` from `deviceFromUserAgent` (shared, fixed lists + CHECK). `/me/sessions` and
+  `/me/login-notices` in `modules/sessions/`. The worker deletes expired sessions and login challenges nightly.
+- 2FA: `lib/totp.ts` (RFC 6238 with node:crypto, ±1 step, `matchTotp` refuses steps ≤ `totp_last_step`),
+  `lib/secretBox.ts` (AES-256-GCM, `v1:` prefix), `modules/twoFactor/`. Every "use once" is a conditional
+  `updateMany`. With 2FA on, the right password must **not** reset `failed_login_count` before the code is right.
+  `POST /auth/login` answers `{ twoFactorRequired, challenge }`; `LoginResult.kind` in the service.
+- Purchases: `PUT` needs `version`; the edit form keeps the version it opened with (`useState`), so a background
+  refetch cannot move it. Tests that `PUT` a purchase must send the stored version.
+- Export (`modules/privacy/`): `to_jsonb(t) - 'col'` per table; `privacy.api.test.ts` compares exported columns with
+  the database, so a new column (or table with `household_id`) must be exported or listed as an exception.
+- Web: pages are lazy via `app/pages.ts` (`lazyPage`); add a new page there, not as a static import in `routes.tsx`.
+  The test setup preloads every page. English is loaded on demand (`changeLocale` awaits it). `@smartmat/shared` has
+  `"sideEffects": false`. `THIS_SESSION` and the 2FA/backup defaults are in `test/mockApi.ts`.
+- Focus: `html` has `scroll-padding` for the sticky top bar/bottom menu (WCAG 2.4.11); date inputs get the ring with
+  `:focus-within` (Chromium's calendar button). `e2e/a11y.spec.ts` walks every Tab stop on every page.
+  `useFocusHeadingOnNavigate` waits (MutationObserver) for the new page's `<h1>`: with lazy pages it is not there at
+  once. Unit tests preload pages, so only Playwright sees lazy-loading effects.
+- Tests that use the real clock must compute their dates from it (a fixed `2026-10-26` with `new Date()` broke the
+  phase-11 shared-household test on 2026-10-27).
+- `browser.newContext()` inside a Playwright test inherits the test's `storageState`; pass `LOGGED_OUT` for a fresh
+  browser.
+- Backup: `docker/backup/` (lib, backup, check, restore-test, test-backup with `test-fixture.sql`), systemd units linked
+  from `docker/backup/systemd/`. Never `rm` a variable path without `${VAR:?}`. The restore test reads every row.
+- Performance: `npm run perf:explain -w @smartmat/api` rebuilds `smartmat_perf` (refuses any other name) with
+  generated data and prints timings and `auto_explain` plans (`PERF_FULL_PLANS=1` for whole plans). An undo anti-join
+  must include `u.household_id = e.household_id`.
+- Another project's files touched in phase 13 (with approval): `/opt/GhostWebsite/docker-compose.yml` (network
+  `smartmat-edge`). Backups of it and of the Caddyfile are in `smartmat-private`.
 
 ## Integrity rules (non-negotiable)
 

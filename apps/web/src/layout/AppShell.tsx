@@ -2,7 +2,9 @@ import { useRef } from 'react';
 import { Outlet, ScrollRestoration } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ActiveHousehold } from './ActiveHousehold';
+import { BackupBanner } from './BackupBanner';
 import { BottomNav } from './BottomNav';
+import { LoginNotices } from './LoginNotices';
 import { NotificationAnnouncer } from './NotificationAnnouncer';
 import { SideNav } from './SideNav';
 import { StagingBanner } from './StagingBanner';
@@ -28,6 +30,8 @@ export function AppShell() {
       <SideNav className={styles.side} />
       <main id="hovedinnhold" ref={mainRef} className={styles.main} tabIndex={-1}>
         <StagingBanner />
+        <BackupBanner />
+        <LoginNotices />
         <ActiveHousehold />
         <Outlet />
       </main>

@@ -42,6 +42,10 @@ export const DESIGN_SYSTEM_PATH = '/designsystem';
 export const LOGIN_PATH = '/logg-inn';
 export const REGISTER_PATH = '/registrer';
 export const PROFILE_PATH = '/profil';
+/** Spec 13 (FR-PRIV-003): public, logged in or not. */
+export const PRIVACY_PATH = '/personvern';
+/** The sessions card on the profile page (FR-AUTH-009). */
+export const PROFILE_SESSIONS_PATH = '/profil#profile-sessions';
 /** Spec 10: the household page, and the page an invitation link opens (`/bli-med#<token>`). */
 export const HOUSEHOLD_PATH = '/husholdning';
 export { JOIN_PATH } from '@smartmat/shared';

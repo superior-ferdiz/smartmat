@@ -1,0 +1,29 @@
+$ npm run -s test:api
+# 2026-10-27T13:53:55Z
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+ ❯ |api-db| test/notifications.api.test.ts (23 tests | 1 failed) 18338ms
+     × both members see a date notification; dismissing it is per person 804ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > both members see a date notification; dismissing it is per person
+TypeError: Cannot read properties of undefined (reading 'key')
+ ❯ test/notifications.api.test.ts:402:79
+    400|     await createItem(app, kari, { expiry: useByTomorrow });
+    401|     const [n] = (await notificationsOf(kari)).items.filter((x) => x.ki…
+    402|     expect((await notificationsOf(per)).items.map((x) => x.key)).toCon…
+       |                                                                               ^
+    403|     await dismiss(per, n!.key);
+    404|     expect((await notificationsOf(per)).items.map((x) => x.key)).not.t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 31 passed (32)
+      Tests  1 failed | 490 passed (491)
+   Start at  13:53:56
+   Duration  434.99s (transform 1.01s, setup 92ms, import 20.02s, tests 410.46s, environment 2ms)
+
+exit=1

@@ -121,10 +121,18 @@ export class PurchaseService {
     if (Object.keys(fields).length > 0) throw fieldError(fields);
 
     const write = await this.toWrite(householdId, body, linked);
-    const updated = await this.withRaceHandling(() =>
-      this.deps.repo.update(householdId, actorId, purchaseId, write, body.removeUntouchedBatches),
+    const result = await this.withRaceHandling(() =>
+      this.deps.repo.update(
+        householdId,
+        actorId,
+        purchaseId,
+        write,
+        body.removeUntouchedBatches,
+        body.version,
+      ),
     );
-    if (!updated) throw notFound();
+    if (result === 'notFound') throw notFound();
+    if (result === 'changed') throw new AppError(409, API_ERRORS.purchaseEditedMeanwhile);
     return this.get(householdId, purchaseId);
   }
 

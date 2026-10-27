@@ -780,3 +780,85 @@ Bevis ligger i `docs/evidence/test-results/fase-12/`, skjermbilder i `docs/evide
 
 **Neste:** Teamet går gjennom fasen. Deretter fase 13 (sikkerhet, ytelse, tilgjengelighet, backup, hosting), i en ny
 chat.
+
+---
+
+## 2026-10-25/27 – Fase 13: sikkerhet, personvern, backup, hosting, ytelse og tilgjengelighet
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 13 i en ny chat med en detaljert prompt. Han skrev i tillegg at DNS var klart. Claude sjekket
+  at A- og AAAA-postene pekte på serveren.
+- **Plassholderne i prompten var ikke fylt ut:** gjennomgang siden fase 12, Kassalapp, ordlyden i varsler og priser,
+  art. 9, oppskriftene, ADR-0017, passord til basic auth, produksjon og e-posttjeneste. De er registrert i
+  spesifikasjon 13 (avgjørelse 9).
+- **Planen:** fasemalen med prioritert rekkefølge, KI-ens og teamets del, lov og tolkning, og åtte åpne spørsmål.
+  Ferdinand godkjente med «Godkjennt i plenum, vennligst fortsett!» uten å svare på spørsmålene enkeltvis, så
+  anbefalingene gjelder. «I plenum» er registrert som hans erklæring.
+- **Fase 12 ble committet lokalt** (18f0789) før grenen `fase-13` ble laget. **Pushen ble stoppet** av verktøyets
+  sikkerhetssperre, fordi prompten sier «commit og push bare når jeg ber om det». Den venter på et uttrykkelig «push».
+- **Spesifikasjon 13, ADR-0021 og ADR-0022** ble skrevet før koden. Vilkårene til Have I Been Pwned ble lest først.
+- **På serveren**, med godkjenningen:
+  - nettet `smartmat-edge`, med Caddy koblet til uten omstart
+  - én linje i GhostWebsite-prosjektets compose-fil (kopi før endringen i `smartmat-private`)
+  - testmiljøet startet
+  - systemd-timere for backup, sjekk og gjenoppretting
+  - hemmeligheter laget i filer uten å skrives ut
+- **Passordhashen til basic auth:**
+  - Ferdinand kjørte kommandoen 2026-10-27, men med `-it` havnet bare ledeteksten i filen.
+  - Den nye kommandoen Claude ga, feilet med `EOF`, fordi den ikke sendte linjeskift. Det var Claudes feil.
+  - Ferdinand spurte hvorfor han måtte gjøre det, og ba om commit og push. Claude laget da et tilfeldig passord rett i
+    en privat fil (aldri vist i chatten) og la inn Caddy-blokken: validert, lastet inn og kontrollert over IPv4 og IPv6
+    (`26-caddy-https.txt`). De andre nettstedene på serveren svarte 200 etterpå.
+- **All kode i fasen er skrevet av KI**, også tofaktorinnloggingen og personvernerklæringen (merket som utkast).
+
+**Avvik og funn underveis** (detaljer i spesifikasjon 13 og kapittel 11)
+- **Eksempelfilen for testmiljøet virket aldri:** tomme verdier stoppet appen ved oppstart.
+- **Svinnspørringen leste alle husholdningers hendelser** med realistiske data. Rettet.
+- **Fokus bak bunnmenyen og manglende fokusring i datofelt** ble funnet og rettet.
+- **Kodedelingen brøt fokus ved sidebytte.** Playwright fant det, og det er rettet med egen test.
+- **En tidsbombe i en test fra fase 11** feilet fra 2026-10-27. Rettet.
+- **Mutasjonssjekken** (27 endringer):
+  - første kjøring fanget 24 av 27
+  - to hull i egne tester ble rettet, og andre kjøring fanget dem
+  - den siste mutasjonen gir samme oppførsel (forklart i kapittel 11)
+- **Tre feilpåstander i KI-ens egen dokumentasjon** ble rettet før de ble stående.
+
+**Resultat:** Alle sjekker er grønne:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil |
+| Enhetstester | 1364 |
+| API-tester mot database | 491 (andre kjøring) |
+| Bygg | Vellykket (hovedfil 608 kB, ned fra 881 kB) |
+| Playwright-tester | 209 (andre kjøring) |
+| Backup-skriptene | 21 av 21 |
+| Sårbarheter (`npm audit`) | 0 |
+
+Bevis ligger i `docs/evidence/test-results/fase-13/`, skjermbilder i `docs/evidence/screenshots/fase-13/`.
+
+**Ikke gjort:**
+- kontoer til teamet i testmiljøet (`create-user`)
+- e-post (FR-AUTH-006): ingen tjeneste; behovet er beskrevet i spesifikasjon 13
+- produksjon: ikke bestemt
+- teamets oppgaver:
+  - kontaktadresse og behandlingsgrunnlag for allergier i personvernerklæringen
+  - avtale med serverleverandøren
+  - kopi av backup-passfrasen og `TOTP_ENCRYPTION_KEY` utenfor serveren
+  - VoiceOver- og TalkBack-sjekklisten
+  - teamets gjennomgang av fasen, særlig tofaktorkoden
+- fortsatt utestående fra tidligere faser:
+  - kontaktadresse til Open Food Facts
+  - kontroll av OFF-kategoritabellen, `ingredients.json` og de 27 oppskriftene
+  - ADR-0017 og de 3 kvitteringene som mangler
+  - sletting av pilotdataene senest 2026-11-23
+  - ett manuelt oppslag mot Kassalapp
+
+**Neste:** Teamet går gjennom fasen. Deretter fase 14 (akademisk ferdigstilling), i en ny chat.
+
+**Oppfølging 2026-10-27:** Ferdinand ba om commit og push og om prompten til fase 14. `fase-12` ble pushet, og
+`fase-13` committet og pushet etter at Caddy-blokken var lagt inn og dokumentasjonen oppdatert. Ingen gjennomgang av
+fase 12 eller 13 er oppgitt, og ingen pull request er merget til `main`.
+

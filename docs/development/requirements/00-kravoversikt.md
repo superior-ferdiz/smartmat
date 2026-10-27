@@ -17,7 +17,7 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-AUTH-003 | Gjentatte mislykkede innlogginger begrenses | M | 2 |
 | FR-AUTH-004 | Bruker kan endre visningsnavn, språk og passord | M | 2 |
 | FR-AUTH-005 | Bruker kan slette kontoen sin og alle tilhørende data | M | 2 |
-| FR-AUTH-006 | Tilbakestilling av passord og e-postverifisering | K | 13 (krever e-posttjeneste) |
+| FR-AUTH-006 | Tilbakestilling av passord og e-postverifisering | K | Utsatt: krever e-posttjeneste (ikke valgt per 2026-10-27) |
 | FR-INV-001 | Bruker kan legge til en vare med navn, kategori, mengde, enhet, lagringssted og valgfrie datoer/pris | M | 3 |
 | FR-INV-002 | Samme vare kan ha flere partier med ulike datoer | M | 3 |
 | FR-INV-003 | Bruker kan redigere, flytte og slette varer/partier | M | 3 |
@@ -97,6 +97,19 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-PRICE-005 | En ekstern pris er et anslag og blir aldri en utgift (ADR-0007) | K | 12 |
 | FR-PRICE-006 | Hver pris har kilde og dato | K | 12 |
 
+| ID | Krav (sikkerhet og personvern, lagt til i fase 13) | Prio | Fase |
+|---|---|---|---|
+| FR-AUTH-008 | Passord fra kjente datalekkasjer avvises ved registrering og passordbytte | K | 13 |
+| FR-AUTH-009 | Brukeren ser hvor hen er logget inn, kan logge ut andre enheter, og får varsel om ny innlogging | K | 13 |
+| FR-AUTH-010 | Valgfri tofaktorinnlogging (TOTP) med gjenopprettingskoder | K | 13 |
+| FR-BUD-006 | Samtidig retting av samme kjøp gir en melding i stedet for at siste lagring vinner | K | 13 |
+| FR-PRIV-001 | Brukeren kan laste ned alle egne data (art. 15 og 20) | K | 13 |
+| FR-PRIV-002 | Lagringstider er dokumentert og håndheves, også for utløpte økter | K | 13 |
+| FR-PRIV-003 | Personvernerklæring som kan leses uten å logge inn | K | 13 |
+
+FR-AUTH-006 (tilbakestilling av passord og e-postverifisering) er **ikke** gjort i fase 13, fordi teamet ikke har en
+e-posttjeneste. Hva som trengs, står i spesifikasjon 13.
+
 ## Ikke-funksjonelle krav
 
 | ID | Krav | Fase |
@@ -113,6 +126,15 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | NFR-UX-004 | Grensesnittet er på norsk bokmål; engelsk kan velges | 1+ |
 | NFR-REL-001 | Lager og budsjett virker selv om eksterne tjenester er nede (fra fase 12 også uten nøkkel til Kassalapp) | 7+ |
 | NFR-REL-002 | Appen virker uten kvitteringslesing; kjøp kan alltid fylles inn selv (lagt til i fase 8) | 8 |
+| NFR-SEC-006 | Sikkerhetsheadere og CSP for nettsiden (lagt til i fase 13) | 13 |
+| NFR-SEC-007 | Bare den omvendte proxyen kan sette klientens adresse (lagt til i fase 13) | 13 |
+| NFR-SEC-008 | Ingen personopplysninger i loggene, kontrollert maskinelt (lagt til i fase 13) | 13 |
+| NFR-OPS-001 | Nattlig, kryptert sikkerhetskopi uten kvitteringsbilder (lagt til i fase 13) | 13 |
+| NFR-OPS-002 | Gjenoppretting testet ved at alle rader leses (lagt til i fase 13) | 13 |
+| NFR-OPS-003 | Varsel når kopien er gammel eller feiler (lagt til i fase 13) | 13 |
+| NFR-OPS-004 | Testmiljøet på nett bak HTTPS og basic auth (lagt til i fase 13) | 13 |
+| NFR-PERF-001 | Kodedeling per side, og målte spørringer med realistiske datamengder (lagt til i fase 13) | 13 |
+| NFR-UX-005 | WCAG 2.2 AA-gjennomgang av alle sider, med sjekkliste for ekte telefon (lagt til i fase 13) | 13 |
 
 ## Kursrelaterte krav (antatt, ikke verifisert)
 

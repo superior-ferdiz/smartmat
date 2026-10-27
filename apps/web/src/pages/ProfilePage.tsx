@@ -11,7 +11,7 @@ import {
   type Locale,
 } from '@smartmat/shared';
 import { Alert } from '../components/Alert/Alert';
-import { Button } from '../components/Button/Button';
+import { AnchorButton, Button } from '../components/Button/Button';
 import { Card } from '../components/Card/Card';
 import { Checkbox } from '../components/Checkbox/Checkbox';
 import { ErrorState } from '../components/ErrorState/ErrorState';
@@ -33,6 +33,12 @@ import { Page } from '../layout/Page';
 import { useHousehold, useSetShareAllergens } from '../household/api';
 import { apiErrorState } from '../household/format';
 import { useAllergens, useSetAllergens } from '../recipes/api';
+import { EXPORT_URL, useEndOtherSessions, useEndSession, useSessions } from '../account/api';
+import { useDeviceLabel } from '../account/deviceLabel';
+import { TwoFactorCard } from '../account/TwoFactorCard';
+import { PRIVACY_PATH } from '../app/navigation';
+import { useFormatDateTime } from '../household/format';
+import { Link } from 'react-router';
 import styles from './ProfilePage.module.css';
 
 /** FR-AUTH-004 (name, language, password), FR-REC-004 (allergies) and FR-AUTH-005 (delete account), plus log out. */
@@ -44,7 +50,10 @@ export function ProfilePage() {
         <ProfileForm />
         <AllergiesForm />
         <PasswordForm />
+        <TwoFactorCard />
+        <SessionsCard />
         <LogoutCard />
+        <ExportCard />
         <DeleteAccountForm />
       </div>
     </Page>
@@ -325,6 +334,118 @@ function PasswordForm() {
           </Button>
         </div>
       </form>
+    </Card>
+  );
+}
+
+/**
+ * Spec 13 (FR-AUTH-009): where the account is logged in. Browser and system only – no place, no IP address.
+ * Every session but this one can be ended here; this one is ended with "Logg ut".
+ */
+function SessionsCard() {
+  const { t } = useTranslation();
+  const message = useValidationMessage();
+  const { show } = useToast();
+  const sessions = useSessions();
+  const end = useEndSession();
+  const endOthers = useEndOtherSessions();
+  const device = useDeviceLabel();
+  const when = useFormatDateTime();
+  const [error, setError] = useState<string | null>(null);
+  const items = sessions.data?.items ?? [];
+  const others = items.filter((s) => !s.current);
+
+  return (
+    <Card id="profile-sessions" title={t('account.sessions.title')}>
+      <p className={styles.text}>{t('account.sessions.text')}</p>
+      {error && (
+        <Alert variant="error" live>
+          {message(error)}
+        </Alert>
+      )}
+      {sessions.isPending ? (
+        <LoadingState />
+      ) : sessions.isError ? (
+        <ErrorState headingLevel={3} onRetry={() => void sessions.refetch()} />
+      ) : (
+        <>
+          <ul className={styles.sessions}>
+            {items.map((s) => (
+              <li key={s.id} className={styles.session}>
+                <div>
+                  <p className={styles.sessionName}>
+                    {device(s)}
+                    {s.current && (
+                      <span className={styles.badge}>{t('account.sessions.current')}</span>
+                    )}
+                  </p>
+                  <p className={styles.note}>
+                    {t('account.sessions.times', {
+                      started: when(s.createdAt),
+                      seen: when(s.lastSeenAt),
+                    })}
+                  </p>
+                </div>
+                {!s.current && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    aria-label={t('account.sessions.endOneLabel', { device: device(s) })}
+                    loading={end.isPending && end.variables === s.id}
+                    onClick={() => {
+                      setError(null);
+                      end.mutate(s.id, {
+                        onSuccess: () =>
+                          show({ variant: 'success', message: t('account.sessions.ended') }),
+                        onError: (err) => setError(apiErrorState(err).form ?? 'errors.internal'),
+                      });
+                    }}
+                  >
+                    {t('account.sessions.endOne')}
+                  </Button>
+                )}
+              </li>
+            ))}
+          </ul>
+          {others.length > 0 && (
+            <div>
+              <Button
+                variant="secondary"
+                loading={endOthers.isPending}
+                onClick={() => {
+                  setError(null);
+                  endOthers.mutate(undefined, {
+                    onSuccess: (result) =>
+                      show({
+                        variant: 'success',
+                        message: t('account.sessions.endedOthers', { count: result.ended }),
+                      }),
+                    onError: (err) => setError(apiErrorState(err).form ?? 'errors.internal'),
+                  });
+                }}
+              >
+                {t('account.sessions.endOthers')}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
+/** Spec 13 (FR-PRIV-001): a copy of everything the app has about the user, as a file (GDPR art. 15 and 20). */
+function ExportCard() {
+  const { t } = useTranslation();
+  return (
+    <Card id="profile-export" title={t('account.export.title')}>
+      <p className={styles.text}>{t('account.export.text')}</p>
+      <p className={styles.actionsRow}>
+        <AnchorButton variant="secondary" href={EXPORT_URL} download>
+          {t('account.export.download')}
+        </AnchorButton>
+        <Link to={PRIVACY_PATH}>{t('account.export.privacy')}</Link>
+      </p>
     </Card>
   );
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { PurchaseResponse } from '@smartmat/shared';
@@ -36,6 +37,9 @@ function EditForm({ purchase }: { purchase: PurchaseResponse }) {
   const navigate = useNavigate();
   const { show } = useToast();
   const update = useUpdatePurchase(purchase.id);
+  // Spec 13 (FR-BUD-006): the version the form was filled in from. A background refetch must not move it, or an
+  // edit someone else saved meanwhile would be overwritten without a word.
+  const [version] = useState(purchase.version);
 
   return (
     <Page title={t('purchases.edit.title')} lead={t('purchases.edit.lead')}>
@@ -45,7 +49,7 @@ function EditForm({ purchase }: { purchase: PurchaseResponse }) {
         submitLabel={t('common.save')}
         cancelTo={purchasePath(purchase.id)}
         onSubmit={async (body, { removeUntouchedBatches }) => {
-          await update.mutateAsync({ ...body, removeUntouchedBatches });
+          await update.mutateAsync({ ...body, removeUntouchedBatches, version });
           show({ variant: 'success', message: t('purchases.edit.saved') });
           void navigate(purchasePath(purchase.id));
         }}

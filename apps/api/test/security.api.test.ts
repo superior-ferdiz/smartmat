@@ -84,6 +84,7 @@ describe('FR-AUTH-003 rate limiting per IP address', () => {
           register: { max: 2, windowMs: 60_000 },
           sensitive: { max: 2, windowMs: 60_000 },
           invitation: { max: 1000, windowMs: 60_000 },
+          export: { max: 1000, windowMs: 60_000 },
         },
       },
     });

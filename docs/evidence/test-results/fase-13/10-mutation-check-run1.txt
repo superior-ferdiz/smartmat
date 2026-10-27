@@ -1,0 +1,143 @@
+# Kjørt 2026-10-27T13:13:55Z på serveren: bash docs/evidence/test-results/fase-13/10-mutation-check.sh
+1. Et lekket passord godtas (sjekken ignoreres)
+    endret: apps/api/src/modules/auth/pwned.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  2 failed | 54 passed (56)
+      feilet: |api-db| test/passwords.security.api.test.ts > FR-AUTH-008 leaked passwords > password change to a leaked password: 400 at the new-password field; the old password still works
+      feilet: |api-db| test/passwords.security.api.test.ts > FR-AUTH-008 leaked passwords > registration with a leaked password: 400 at the password field, and no account is made
+2. Polstringslinjer (antall 0) regnes som lekket
+    endret: apps/api/src/providers/passwords/pwnedPasswords.ts
+    enhetstester: Tests  1 failed | 1361 passed (1362)
+    API-tester:   Tests  56 passed (56)
+      feilet: |api| src/providers/passwords/pwnedPasswords.test.ts > Pwned Passwords (spec 13, FR-AUTH-008) > listed with a count ≥ 1 → pwned; a padding line (count 0) or no line → clean
+3. Tjenesten svarer 503 → passordet avvises (fail closed i stedet for åpen)
+    endret: apps/api/src/providers/passwords/pwnedPasswords.ts
+    enhetstester: Tests  1 failed | 1361 passed (1362)
+    API-tester:   Tests  2 failed | 54 passed (56)
+      feilet: |api-db| test/passwords.security.api.test.ts > FR-AUTH-008 leaked passwords > only 5 characters of the hash leave, and the log has no password, hash or prefix
+      feilet: |api-db| test/passwords.security.api.test.ts > FR-AUTH-008 leaked passwords > the service answers 503 → the password is accepted (NFR-REL-001)
+      feilet: |api| src/providers/passwords/pwnedPasswords.test.ts > Pwned Passwords (spec 13, FR-AUTH-008) > 503 → unknown (the password is let through)
+4. En annen brukers økt kan logges ut (bruker-id mangler i where)
+    endret: apps/api/src/modules/sessions/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/sessions.security.api.test.ts > FR-AUTH-009 active sessions > another user's session: not listed, cannot be ended or dismissed (404), and keeps working
+5. Denne økten kan logges ut fra listen
+    endret: apps/api/src/modules/sessions/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/sessions.security.api.test.ts > FR-AUTH-009 active sessions > ending another of my sessions logs that device out; this session cannot be ended here
+6. Varselet om ny innlogging vises også for eldre økter
+    endret: apps/api/src/modules/sessions/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/sessions.security.api.test.ts > FR-AUTH-009 notice about a new login > shown in the sessions that were there before, never in the new one; "Det var meg" clears it everywhere
+7. «Det var meg» fjerner ikke varselet
+    endret: apps/api/src/modules/sessions/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/sessions.security.api.test.ts > FR-AUTH-009 notice about a new login > shown in the sessions that were there before, never in the new one; "Det var meg" clears it everywhere
+8. Edge registreres som Chrome
+    endret: packages/shared/src/account/device.ts
+    enhetstester: Tests  1 failed | 1361 passed (1362)
+    API-tester:   Tests  56 passed (56)
+      feilet: |shared| src/account/device.test.ts > deviceFromUserAgent > Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0 → edge on windows
+9. Versjonen sjekkes ikke (siste lagring vinner igjen)
+    endret: apps/api/src/modules/purchases/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  2 failed | 54 passed (56)
+      feilet: |api-db| test/purchaseVersion.api.test.ts > FR-BUD-006 editing the same purchase from two places > an edit from a stale form: 409, and nothing of it is saved (store, total, lines, version)
+      feilet: |api-db| test/purchaseVersion.api.test.ts > FR-BUD-006 editing the same purchase from two places > two edits sent at the same moment: exactly one is saved, the other answers 409
+10. Versjonen økes ikke ved retting
+    endret: apps/api/src/modules/purchases/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  3 failed | 53 passed (56)
+      feilet: |api-db| test/purchaseVersion.api.test.ts > FR-BUD-006 editing the same purchase from two places > an edit from a stale form: 409, and nothing of it is saved (store, total, lines, version)
+      feilet: |api-db| test/purchaseVersion.api.test.ts > FR-BUD-006 editing the same purchase from two places > a new purchase has version 1; each edit raises it by one
+      feilet: |api-db| test/purchaseVersion.api.test.ts > FR-BUD-006 editing the same purchase from two places > two edits sent at the same moment: exactly one is saved, the other answers 409
+11. Skjemaet sender versjonen etter en henting i bakgrunnen (ikke den det ble åpnet med)
+    endret: apps/web/src/pages/budget/EditPurchasePage.tsx
+    enhetstester: Tests  1 failed | 1361 passed (1362)
+    API-tester:   Tests  56 passed (56)
+      feilet: |web| src/pages/budget/PurchasePages.test.tsx > FR-BUD-005 one purchase: correct and delete > FR-BUD-006: the form sends the version it was opened with, even after a refetch brings a newer one
+12. Passordhashen og tofaktorhemmeligheten kommer med i eksporten
+    endret: apps/api/src/modules/privacy/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  2 failed | 54 passed (56)
+      feilet: |api-db| test/privacy.api.test.ts > FR-PRIV-001 export of my own data > column contract: every exported column is listed here, so a new column must be decided on
+      feilet: |api-db| test/privacy.api.test.ts > FR-PRIV-001 export of my own data > never: password hash, session tokens, CSRF tokens, invitation hashes, receipt images or OCR text
+13. Sesjonstokens og CSRF-tokens kommer med i eksporten
+    endret: apps/api/src/modules/privacy/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  2 failed | 54 passed (56)
+      feilet: |api-db| test/privacy.api.test.ts > FR-PRIV-001 export of my own data > column contract: every exported column is listed here, so a new column must be decided on
+      feilet: |api-db| test/privacy.api.test.ts > FR-PRIV-001 export of my own data > never: password hash, session tokens, CSRF tokens, invitation hashes, receipt images or OCR text
+14. Et vanlig medlem får husholdningens invitasjoner
+    endret: apps/api/src/modules/privacy/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/privacy.api.test.ts > FR-PRIV-001 export of my own data > a member (not owner) gets no invitations; the owner gets them without the token hash
+15. En sjekk som har sluttet å kjøre, vises som ok
+    endret: apps/api/src/modules/ops/backupStatus.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  56 passed (56)
+16. Strekkoden i /prices/<gtin> kommer i loggen
+    endret: apps/api/src/app.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/logs.security.api.test.ts > NFR-SEC-008 no personal data anywhere in the log > after registration, logins, items, purchases, barcodes, prices, receipts, invitations, sessions and export
+17. En kode kan brukes på nytt (ingen beskyttelse mot gjenbruk)
+    endret: apps/api/src/lib/totp.ts
+    enhetstester: Tests  1 failed | 1361 passed (1362)
+    API-tester:   Tests  56 passed (56)
+      feilet: |api| src/lib/totp.test.ts > TOTP (RFC 6238) > a code that was used (or an older one) is refused: no replay
+18. Vinduet er ±3 steg i stedet for ±1
+    endret: apps/api/src/lib/totp.ts
+    enhetstester: Tests  1 failed | 1361 passed (1362)
+    API-tester:   Tests  56 passed (56)
+      feilet: |api| src/lib/totp.test.ts > TOTP (RFC 6238) > accepts the current step and one either side, nothing further
+19. Samme kode to ganger samtidig gir to økter (betinget skriving fjernet)
+    endret: apps/api/src/modules/twoFactor/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  56 passed (56)
+20. En gjenopprettingskode kan brukes flere ganger
+    endret: apps/api/src/modules/twoFactor/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > a recovery code works once, in any case and with or without the dash
+21. En utfordring utløper aldri
+    endret: apps/api/src/modules/twoFactor/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > a challenge is single use, belongs to its login, and expires after 5 minutes
+22. Tofaktor kan settes opp uten passord
+    endret: apps/api/src/modules/twoFactor/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 setting up two-factor > setup needs the password; nothing changes for login until a code turns it on
+23. Tofaktor slås på uten gyldig kode
+    endret: apps/api/src/modules/twoFactor/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 setting up two-factor > a wrong code does not turn it on; the right one does and gives 10 recovery codes once
+24. Riktig passord nullstiller telleren for feil koder (ubegrenset gjetting)
+    endret: apps/api/src/modules/auth/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > the right password does NOT reset the count of wrong codes (no endless guessing)
+25. Feil koder sperrer aldri kontoen
+    endret: apps/api/src/modules/auth/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  2 failed | 54 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > 5 wrong codes lock the account for 15 minutes, like 5 wrong passwords
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > the right password does NOT reset the count of wrong codes (no endless guessing)
+26. En sperret konto kan fullføre steg to
+    endret: apps/api/src/modules/auth/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  56 passed (56)
+27. Uten nøkkel slipper en konto med tofaktor inn med bare passord (fail open)
+    endret: apps/api/src/modules/auth/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 turning off, new codes, missing key, other users > without the server key: setup answers 503, and an account with two-factor cannot log in (fails closed)
+# Ferdig 2026-10-27T13:48:00Z

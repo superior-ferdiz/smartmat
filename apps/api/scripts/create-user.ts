@@ -7,6 +7,7 @@ import { createDb } from '../src/db';
 import { createAuthRepo } from '../src/modules/auth/repo';
 import { argon2Hasher } from '../src/modules/auth/password';
 import { AuthService } from '../src/modules/auth/service';
+import { defaultPwnedPasswordCheck } from '../src/providers/passwords/pwnedPasswords';
 
 /*
  * ADR-0015: in the closed test environment registration is off, so the team's accounts are made here
@@ -57,6 +58,7 @@ try {
     repo: createAuthRepo(db),
     hasher: argon2Hasher,
     now: () => new Date(),
+    pwned: defaultPwnedPasswordCheck(config),
   });
   const { user, session } = await service.register(parsed.data);
   // The session registration creates is not needed: the person logs in in the browser.
