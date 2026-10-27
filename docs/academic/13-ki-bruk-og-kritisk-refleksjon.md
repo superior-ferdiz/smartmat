@@ -1,17 +1,83 @@
 # KI-bruk og kritisk refleksjon
 
-> **Status: UTKAST / MAL.** Dette kapittelet er ikke skrevet ennå. Innholdet skal bygge på det som faktisk er implementert,
-> testet og besluttet, og oppdateres underveis i fasene. Offisielle APP2000-krav til rapporten er ikke verifisert.
+> **Status: UTKAST (KI) – refleksjonen mangler.** Avsnittene om hvordan KI ble brukt, hva som er kontrollert og
+> hvilke feil KI gjorde, er sammenstilt av KI (Claude) i fase 14, 2026-10-27, fra
+> [KI-loggen](../evidence/ai-usage/ai-logg.md), utviklingsloggen og kapittel 11. **Den kritiske refleksjonen er
+> teamets egen og står tom.** Ikke gjennomgått av teamet. Offisielle APP2000-krav er ikke verifisert.
 
-## Hva kapittelet skal dekke
+## Hvordan KI ble brukt
 
-- Hvordan KI ble brukt (fra KI-loggen)
-- hva teamet gjennomgikk og endret
-- feil KI gjorde
-- begrensninger
-- læring
+| Hva | Hvem | Bevis |
+|---|---|---|
+| Planer for hver fase (fasemalen) | KI skrev, Ferdinand godkjente i chat | KI-loggen, én rad per plan |
+| Spesifikasjoner, ADR-er, datamodell | KI skrev før koden, godkjent gjennom planen | `docs/development/` |
+| All kode og alle tester | KI | Git: alle commits har `Co-Authored-By: Claude` |
+| Innhold: 27 oversatte oppskrifter, ingredienslisten, OFF-kategoriene, kjedeformatene | KI | Merket «KI-utkast» i filene og i appen |
+| Vilkår for eksterne tjenester (OFF, Wikibooks, Spoonacular, TheMealDB, Kassalapp, HIBP) | KI leste og oppsummerte | `docs/development/integrations/` |
+| Kjøring av tester, lagring av bevis, mutasjonskontroll | KI | [Bevisoversikt](../evidence/bevisoversikt.md) |
+| Oppsett på serveren (testmiljø, nett, backup, Caddy) | KI, etter godkjent plan | Kapittel 07 og 12, utviklingsloggen fase 13 |
+| Rapportkapitlene 07–12 og utkastene i fase 14 | KI | Statuslinjen øverst i hvert kapittel |
+| Prompter, beslutninger, godkjenninger, repo på GitHub, DNS | Ferdinand Risan | KI-loggen, utviklingsloggen |
+| Fasit til OCR-piloten, kontrollert mot papirkvitteringene | KI skrev av, Ferdinand kontrollerte | KI-loggen rad 25 |
+
+Linus Saxe Huseby har ikke vært med i noen av øktene med KI-assistenten. Ferdinand har oppgitt at begge har
+gjennomgått noen faser «i plenum» (se kapittel 15).
+
+## Hva som er kontrollert, og av hvem
+
+- **Av teamet (oppgitt i chat):** godkjenning av planen for hver fase (om planen ble lest i detalj, er ikke oppgitt),
+  kontroll av fasiten til OCR-piloten, og gjennomganger «i plenum» av fase 5 og 7, og planene for fase 8, 9 og
+  fase 13 (omfang og funn ikke oppgitt). Ingen kodegjennomgang med funn er registrert.
+- **Av KI selv:** automatiske tester, mutasjonskontroll, sammenligning med lagrede utdata, og lesing av egne
+  skjermbilder. En KI som kontrollerer sin egen kode, kan ha de samme blindsonene i testene som i koden.
+- **Ikke kontrollert av noen:** innholdet i oppskriftene og ingredienslisten, OFF-kategoriene, tolkningen av
+  vilkårene, personvernvurderingene i kapittel 12, og testvektorene for TOTP.
+
+## Mønstre i feilene KI gjorde
+
+Fra notatene under og kapittel 11. Alle ble funnet av KI-en selv, de fleste av testene:
+
+1. **Usynlige tegn i kildekoden** (hardt mellomrom) kom tilbake i fase 3, 5 og 6, selv om fallgruven sto i CLAUDE.md fra fase 1.
+2. **Feil i egne beregninger og eget minne:** kontrollsifre, en paritetstabell for EAN-13, en grense hos Open Food Facts
+   (15, ikke rundt 100), og testvektorer for TOTP som ikke er kontrollert mot kilden.
+3. **Tester som var for svake:** mutasjonskontrollen fant hull i testene i nesten hver fase (se
+   [bevisoversikten](../evidence/bevisoversikt.md#mutasjonskontroll)).
+4. **Feil som bare den ekte kjeden eller en ekte nettleser fant:** OCR-røyktesten, kodedelingen som brøt fokus, og
+   kappløp som bare viste seg under høy last.
+5. **Feil påstander om eget arbeid i dokumentasjonen:** tre i fase 13, én i fase 9, og ett tall i kapittel 11
+   (fase 8) som ble funnet i fase 14.
+6. **KI tok i praksis mange beslutninger.** Planene hadde åpne spørsmål, og Ferdinand godkjente ofte uten å svare på
+   dem enkeltvis. Da gjaldt KI-ens anbefalinger (fase 2–13).
+
+## Teamets kritiske refleksjon
+
+<!-- Teamet skriver. Dette er den delen sensor trolig vil lese mest nøye. Spørsmål å ta stilling til:
+- Hva lærte dere om webutvikling når KI skrev koden? Kan dere forklare koden (for eksempel tofaktorinnloggingen)?
+- Hvordan kontrollerte dere det KI laget? Var det nok?
+- Hva betyr punkt 6 over – at KI-ens anbefalinger ble gjeldende når spørsmålene ikke ble besvart?
+- Hvilke feil ville dere ikke ha funnet selv?
+- Hva ville dere gjort annerledes neste gang?
+Skriv med egne ord. Ikke bruk KI til å skrive denne delen. -->
+
+## Læring
+
+<!-- Teamet skriver. -->
 
 ## Notater fra loggene (ikke kapittelets endelige tekst)
+
+- **Fase 0–4 (2026-10-19 til 2026-10-21)**, lagt til i fase 14 fra kapittel 11:
+  - KI skrev planen, ADR-0001–0012, kravoversikten, datamodellen og malene for kapitlene (fase 0), og all kode for
+    app-skall, innlogging, matlager, kjøp og budsjett (fase 1–4).
+  - **Feil KI-en gjorde og fant selv:** Zod 4 som avviste store beløp med feil melding, for små lenker i
+    feiloppsummeringen (axe), usynlige tegn i kildekoden, en cookie som utløp for tidlig (`curl`), `?neste` som ble
+    ignorert etter innlogging, fremmednøkler med feil `ON DELETE` (lest før migreringen ble kjørt), og to hull i
+    testene i fase 4 (mutasjonskontrollen).
+  - **Feil i KI-ens egne tester:** en påstand om tap av én øre ved flyttall som ikke stemte, feil antall kolonner,
+    feil rekkefølge på argon2-parametrene, og et skript for testbevis som alltid skrev exit-kode 0. Det siste ble
+    oppdaget fordi en formateringsfeil ikke ble rapportert, og alle bevisfilene i fase 1 ble laget på nytt.
+  - **Alle 47 API-testene i fase 2 besto første gang.** Det var grunnen til at mutasjonskontrollen ble innført.
+  - Ferdinand skrev i fase 4: «Godkjennt du kan committe jeg har gått igjennom alt.» Hva «alt» omfattet, er ikke
+    oppgitt.
 
 - **Fase 5 (2026-10-21):** KI skrev all kode, og i tillegg et utkast til ingredienslisten (61 ingredienser med
   aliaser, allergener og omregninger). Utkastet er merket som KI-laget i filen (`meta.writtenBy`) og er ikke

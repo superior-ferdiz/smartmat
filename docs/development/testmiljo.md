@@ -54,7 +54,7 @@ Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md)
    `docker exec ghostwebsite-caddy-1 caddy validate --config /etc/caddy/Caddyfile`, deretter
    `docker exec ghostwebsite-caddy-1 caddy reload --config /etc/caddy/Caddyfile`.
 
-### Caddy-blokk (forslag, ikke lagt inn)
+### Caddy-blokk (lagt inn 2026-10-27)
 
 Passordhashen lages med `docker exec -it ghostwebsite-caddy-1 caddy hash-password`. Den står bare i Caddyfile,
 aldri i SmartMat-repoet.

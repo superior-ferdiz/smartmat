@@ -36,7 +36,8 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 
 ## Approved decisions (see ADRs for reasons)
 
-- npm workspaces monorepo: `apps/web`, `apps/api`, `apps/worker`, `packages/shared`, `prisma/`, `e2e/`, `docker/`.
+- npm workspaces monorepo: `apps/web`, `apps/api`, `packages/shared`, `prisma/`, `e2e/`, `docker/`. The worker is a
+  second entry point of the API package (`apps/api/src/worker.ts`), not its own workspace (phase 8).
 - Frontend: React + TypeScript + Vite + React Router + TanStack Query + react-i18next (nb-NO default, en second).
 - Styling: plain CSS — design tokens as CSS custom properties + CSS Modules. **No Tailwind.** Use CSS Grid/Flexbox visibly.
 - Backend: Fastify + TypeScript + Zod (`fastify-type-provider-zod`), REST under `/api/v1`.
@@ -352,6 +353,19 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   must include `u.household_id = e.household_id`.
 - Another project's files touched in phase 13 (with approval): `/opt/GhostWebsite/docker-compose.yml` (network
   `smartmat-edge`). Backups of it and of the Caddyfile are in `smartmat-private`.
+
+## Conventions (added in phase 14)
+
+- Two status levels for `docs/academic/`: "Kontrollert mot systemet av KI <date> – ikke godkjent av teamet" (paths,
+  identifiers and numbers checked against the repo and the saved output) and "Godkjent av teamet (who, date)", which
+  only the team sets. Chapters 02, 03, 15, 18, the reflection in 13 and the "Teamet skriver" parts are the team's own
+  words: leave them empty with questions, never fill them in.
+- Numbers in the report come from the saved files, not from the journal: `docs/evidence/bevisoversikt.md` is the
+  overview, and `node scripts/traceability.mjs` prints the requirement → test file matrix
+  (`docs/academic/vedlegg-sporbarhet.md`). A test that names its requirement ID is what makes it traceable.
+- Sources in `docs/academic/19-kildeliste.md` (APA 7, Norwegian) are marked [T] / [KI-lest] / [KI-delvis] /
+  [KI-kunnskap]. Never invent bibliographic details (law numbers, dates) you are not sure of: leave them out and say so.
+- `docs/academic/vedlegg-ki-erklaering.md` is a draft from the AI log: facts only, the team's assessment stays empty.
 
 ## Integrity rules (non-negotiable)
 

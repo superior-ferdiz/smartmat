@@ -1,12 +1,16 @@
 # Systemarkitektur
 
-> **Status: UTKAST.** Første del skrevet etter fase 2 (2026-10-20), utvidet i fase 7 (2026-10-22) og fase 12 (2026-10-25). Arkitekturen og teksten er laget av KI (Claude) og
+> **Status: Kontrollert mot systemet av KI 2026-10-27 – ikke godkjent av teamet.** (Fase 14: filstier, kodenavn og tall
+> er sjekket mot repoet og de lagrede utdataene, og det som var utdatert, er rettet. Se kapittel 20.)
+> Historikk: Første del skrevet etter fase 2 (2026-10-20), utvidet i fase 7 (2026-10-22), fase 12 (2026-10-25) og fase 14
+> (2026-10-27, fase 10, 11 og 13). Arkitekturen og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides når flere deler kommer til. Offisielle APP2000-krav til rapporten er
 > ikke verifisert.
 
 ## Oversikt
 
-SmartMat består av tre deler som kjører lokalt (ADR-0012):
+Under utvikling består SmartMat av tre deler som kjører lokalt (ADR-0012). Fra fase 8 kommer en bakgrunnsprosess
+(workeren) i tillegg, og fra fase 7 og 13 et testmiljø på serveren (se under).
 
 ```mermaid
 flowchart LR
@@ -22,6 +26,7 @@ flowchart LR
 | Web | `apps/web` | React, Vite, React Router, TanStack Query, i18next | Sider, skjemaer, validering for brukeren, visning |
 | API | `apps/api` | Fastify, Zod, Prisma, argon2 | Forretningsregler, autorisasjon, validering (den som gjelder), sesjoner |
 | Delt | `packages/shared` | Zod | Skjemaer, typer for API-svar, feilkoder, øre-hjelpere |
+| Worker | `apps/api/src/worker.ts` (fase 8) | pg-boss, Tesseract | Kvitteringslesing, opprydding hvert 15. minutt (kvitteringer, priser eldre enn 30 dager) og hver natt (utløpte økter og innloggingsutfordringer) |
 | Database | `prisma/`, `docker/` | PostgreSQL 16 i Docker | Lagring, fremmednøkler, unike og CHECK-begrensninger |
 
 ## Hvorfor én opprinnelse
@@ -95,8 +100,8 @@ resten av appen merker ingenting (NFR-REL-001). I testene erstattes `fetch`, så
 Et lukket testmiljø på `smartmat.risansolutions.no` gjør det mulig å teste kameraet på en ekte telefon. Kameraet
 krever HTTPS.
 - **2026-10-22:** bygd, men ikke satt opp, fordi DNS manglet.
-- **Fase 13:** DNS er på plass, og containerne kjører. Caddy-blokken venter på passordhashen til basic auth. Appen
-  er flyttet til et eget nett med bare Caddy (ADR-0022), og databasen får en kryptert kopi hver natt (ADR-0021).
+- **Fase 13:** DNS er på plass, og containerne kjører. Caddy-blokken med basic auth er live fra 2026-10-27
+  ([`26-caddy-https.txt`](../evidence/test-results/fase-13/26-caddy-https.txt)). Appen er flyttet til et eget nett med bare Caddy (ADR-0022), og databasen får en kryptert kopi hver natt (ADR-0021).
 
 ```mermaid
 flowchart LR
@@ -177,6 +182,18 @@ To regler holder dataene ærlige:
 - **Anslaget på handlelisten spør ikke Kassalapp.** Det bruker bare det som allerede er lagret, så en lang liste ikke
   bruker opp grensen.
 
+## Delte husholdninger og varsler (fase 10 og 11)
+
+Lagt til i fase 14. Ingen av delene trengte en ny tjeneste eller prosess.
+
+- **Delte husholdninger (ADR-0018):** datamodellen hadde `household_id` på alle rader fra fase 2 (ADR-0008), så deling
+  er bare flere rader i `household_members`. Det som er nytt, er invitasjonen (en engangslenke der tokenet står i
+  fragmentet `#…`, så det aldri når serveren i URL-en), roller (`requireOwner` etter `householdAccess`) og en aktiv
+  husholdning på brukeren. Alle endringer i medlemskap låser husholdningsraden.
+- **Varsler (ADR-0019)** lagres ikke som rader. De regnes ut ved hver forespørsel fra matlageret, budsjettet og
+  handlelisten. Bare hva brukeren har sett og avvist, lagres. Nettleseren spør på nytt hvert 60. sekund. Det finnes
+  ingen e-post eller push.
+
 ## Sikkerhetsgrenser
 
 - **All tilgangskontroll skjer i API-et.** `RequireAuth` i React bestemmer bare hva som vises. Den beskytter ingenting.
@@ -195,6 +212,11 @@ To regler holder dataene ærlige:
   [ADR-0008](../development/architecture-decisions/0008-husholdning-fra-start.md),
   [ADR-0012](../development/architecture-decisions/0012-lokal-utvikling-forst.md),
   [ADR-0014](../development/architecture-decisions/0014-produkter-og-strekkoder.md),
-  [ADR-0015](../development/architecture-decisions/0015-lukket-testmiljo.md)
+  [ADR-0015](../development/architecture-decisions/0015-lukket-testmiljo.md),
+  [ADR-0018](../development/architecture-decisions/0018-delte-husholdninger-og-invitasjoner.md),
+  [ADR-0019](../development/architecture-decisions/0019-varsler-beregnes-ved-lesing.md),
+  [ADR-0020](../development/architecture-decisions/0020-priser-fra-kassalapp-som-anslag.md),
+  [ADR-0021](../development/architecture-decisions/0021-sikkerhetskopi-og-gjenoppretting.md),
+  [ADR-0022](../development/architecture-decisions/0022-eget-nett-for-caddy-og-smartmat.md)
 - [Fasespesifikasjon 02](../development/requirements/02-database-og-autentisering.md)
 - [API-dokumentasjon](../development/api-documentation.md)

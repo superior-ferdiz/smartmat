@@ -2,6 +2,21 @@
 
 ## [Ikke utgitt]
 
+### Fase 14 – 2026-10-27 (grenen `fase-14`)
+- **Bevis:** [bevisoversikt.md](../evidence/bevisoversikt.md) med testresultater, feilede forsøk, mutasjonskontroll,
+  målinger og skjermbilder per fase, og hva som ikke er testet. Tallene er lest fra de lagrede filene.
+- **Sporbarhet:** `scripts/traceability.mjs` lager matrisen fra krav til testfiler
+  ([vedlegg-sporbarhet.md](../academic/vedlegg-sporbarhet.md)).
+- **Rapporten:** utkast til kapittel 00, 01, 04, 05, 06, 14, 16, 17, 19 og 20; maler med spørsmål for 02, 03 og 18;
+  kapittel 13 strukturert med tom refleksjon; kapittel 15 slått sammen med det tomme ansvarsregisteret; kapittel
+  07–12 kontrollert mot koden og bevisene og oppdatert (fase 13 i kapittel 08, fase 2–13 i 09, fase 10, 11 og 13 i
+  07). Nye vedlegg: KI-erklæring (utkast) og presentasjon (forslag).
+- **Kildeliste** i APA 7 (norsk), merket etter hvem som har lest kilden.
+- **Rettet:** mutasjonstallet for fase 8 i kapittel 11 (34, ikke 35 av 37), utdaterte statuser i veikartet (fase 5,
+  6, 12, 13), README, endringsloggen for fase 13 (Caddy, 608 kB), «brukerhistorier» i kravoversikten, `apps/worker`
+  i CLAUDE.md, teksten på hopp-lenken i tilgjengelighet.md, en brutt lenke i kapittel 12.
+- Ingen endring i appen.
+
 ### Fase 13 – 2026-10-25/27 (grenen `fase-13`)
 - **Sikkerhet** ([spesifikasjon 13](requirements/13-sikkerhet-drift.md)):
   - passord fra kjente lekkasjer avvises ved registrering og passordbytte (Pwned Passwords, bare 5 tegn av SHA-1
@@ -17,8 +32,9 @@
 - **Sikkerhetskopi** ([ADR-0021](architecture-decisions/0021-sikkerhetskopi-og-gjenoppretting.md)): nattlig og
   kryptert, uten kvitteringsbilder, med test av gjenoppretting der alle rader leses, sjekk hver time og banner i
   testmiljøet. Skript og systemd-enheter i `docker/backup/`.
-- **Testmiljøet** kjører på serveren (DNS er klar). Caddy-blokken venter på passordhashen til basic auth.
-- **Ytelse:** hver side er en egen fil, og engelsk lastes ved behov. Hovedfilen gikk fra 881 kB til cirka 604 kB. En
+- **Testmiljøet** kjører på serveren (DNS er klar), og svarer på `https://smartmat.risansolutions.no` bak basic auth
+  fra 2026-10-27.
+- **Ytelse:** hver side er en egen fil, og engelsk lastes ved behov. Hovedfilen gikk fra 881 kB til 608 kB (`06-build.txt`). En
   spørring for svinn som leste alle husholdningers hendelser, leser nå bare én husholdning sine (`perf:explain`).
 - **Tilgjengelighet:** fokus skjules ikke lenger bak bunnmenyen på telefon, datofelt har fokusring på kalenderknappen,
   og stedssiden har knappenavn fra i18n. Ny `e2e/a11y.spec.ts` og sjekkliste i

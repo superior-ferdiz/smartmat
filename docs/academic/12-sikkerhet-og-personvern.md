@@ -1,6 +1,8 @@
 # Sikkerhet og personvern
 
-> **Status: UTKAST.** Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Tiltakene og teksten er laget av KI (Claude) og
+> **Status: Kontrollert mot systemet av KI 2026-10-27 – ikke godkjent av teamet.** (Fase 14: filstier, kodenavn og tall
+> er sjekket mot repoet og de lagrede utdataene, og det som var utdatert, er rettet. Se kapittel 20.)
+> Historikk: Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
 
@@ -190,7 +192,7 @@ Testene er kontrollert ved å slå av hver beskyttelse i koden én om gangen
 [fase 10](../evidence/test-results/fase-10/10-mutation-check.txt),
 [fase 11](../evidence/test-results/fase-11/10-mutation-check.txt),
 [fase 12](../evidence/test-results/fase-12/10-mutation-check.txt),
-[fase 13](../evidence/test-results/fase-13/10-mutation-check.txt)). Resultatene står i kapittel 11.
+[fase 13](../evidence/test-results/fase-13/10-mutation-check-run1.txt)). Resultatene står i kapittel 11.
 
 ## Personopplysninger som behandles (etter fase 2)
 

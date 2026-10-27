@@ -1,7 +1,9 @@
 # Kravoversikt (MVP og første innlevering)
 
-**Status:** UTKAST fra fase 0. Kravene er på overordnet nivå. Hver fase lager en egen, detaljert spesifikasjon
-(`NN-<modul>.md`) med brukerhistorier og målbare akseptansekriterier før implementering.
+**Status:** Skrevet i fase 0 og utvidet i fase 7–13 av KI (Claude). Kravene er på overordnet nivå. Hver fase har en
+egen, detaljert spesifikasjon (`NN-<modul>.md`) med målbare akseptansekriterier, skrevet før implementeringen.
+(Fase 14: det sto at spesifikasjonene også skulle ha brukerhistorier. Det har ingen av dem, se kapittel 04.)
+Sporbarhet fra krav til tester: [vedlegg-sporbarhet.md](../../academic/vedlegg-sporbarhet.md).
 
 **Kilde for kravene:** produktprompten fra teamet (2026-10-19). Offisielle APP2000-krav er ikke levert, så kursrelaterte
 krav (KURS-*) er **antatt** ut fra beskrivelsen av Arbeidskrav 1 i prompten.

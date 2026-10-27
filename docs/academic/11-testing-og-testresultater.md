@@ -1,6 +1,8 @@
 # Testing og testresultater
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 12 (2026-10-25). Testene og teksten er laget av KI (Claude) og
+> **Status: Kontrollert mot systemet av KI 2026-10-27 – ikke godkjent av teamet.** (Fase 14: filstier, kodenavn og tall
+> er sjekket mot repoet og de lagrede utdataene, og det som var utdatert, er rettet. Se kapittel 20.)
+> Historikk: Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Testene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Alle resultater under er fra faktiske kjøringer. Utdataene er lagret ordrett i
 > [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/),
 > [fase-3/](../evidence/test-results/fase-3/) og [fase-4/](../evidence/test-results/fase-4/).
@@ -705,7 +707,8 @@ Samme metode som før ([skript](../evidence/test-results/fase-8/10-mutation-chec
 **Avvik:** for å holde tiden nede ble bare API-testene for kvitteringer og kjøp kjørt for hver endring, ikke hele
 API-pakken. Enhetstestene ble kjørt i sin helhet.
 
-**Første kjøring** ([utdata](../evidence/test-results/fase-8/10-mutation-check-run1.txt)): 35 av 37 ble fanget.
+**Første kjøring** ([utdata](../evidence/test-results/fase-8/10-mutation-check-run1.txt)): 34 av 37 ble fanget. (Rettet i fase 14: det sto 35, men utdataene viser
+at tre runder ikke ble fanget, de tre under.)
 - **Runde 31 ble ikke fanget** (kjeden letes etter i hele kvitteringen). Testen med frukten «KIWI» hadde «COOP
   EXTRA» i toppen, og Extra sjekkes før Kiwi, så rekkefølgen skjulte feilen. Ny fiktiv kvittering med bare «COOP».
 - **Runde 36 ble ikke fanget** (linjene fylles inn selv om linjeforslag er av). Testen sendte en tom linjeliste. Ny
@@ -1261,6 +1264,22 @@ e2e-databasen. «Ukjent nettleser på ukjent system» i øktlisten er økten tes
    (2026-10-26) for «siste forbruksdag i morgen». Den feilet fra 2026-10-27. Datoen regnes nå fra samme klokke.
 6. **Hull i egne tester** (mutasjonssjekken, runde 19 og 26), se over.
 7. **Egne feilpåstander i dokumentasjonen** (tre), rettet før de ble stående. Se kapittel 13.
+
+## Kontrollkjøring i fase 14 (2026-10-27)
+
+Fase 14 endret ingen appkode. Alle sjekkene ble likevel kjørt på nytt på grenen `fase-14`, med utdata i
+[fase-14/](../evidence/test-results/fase-14/): typesjekk, lint og formatering uten feil (første formateringssjekk
+feilet på det nye skriptet `scripts/traceability.mjs`, lagret som `13-format-check-forsok1.txt`), 1364 enhetstester,
+491 API-tester, 209 Playwright-tester (7 hoppet over), bygg (hovedfil 608 kB) og `npm audit` med 0 sårbarheter.
+
+I tillegg ble dokumentasjonen kontrollert:
+- **Sporbarhet** fra krav til testfiler med et skript ([vedlegg-sporbarhet.md](vedlegg-sporbarhet.md)): 92 av 99 krav
+  nevnes av en testfil, og de sju andre er forklart.
+- **Mutasjonstallene** i dette kapittelet ble talt på nytt fra utdataene. Første kjøring i fase 8 var 34 av 37, ikke
+  35 av 37. Det er rettet over.
+- **Lenker** i alle Markdown-filer (526 i siste kjøring; i første kjøring var én av 517 brutt, og den er rettet) og **kodehenvisninger** i kapittel 07–12.
+
+Oversikten over alle fasene står i [bevisoversikten](../evidence/bevisoversikt.md).
 
 ## Begrensninger
 

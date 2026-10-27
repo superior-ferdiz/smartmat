@@ -1,0 +1,37 @@
+$ python3 -I refs.py docs/academic/07..12   # kodebiter i backticks som ikke finnes i repoet
+# 2026-10-27T16:13:15Z
+== docs/academic/07-systemarkitektur.md: 38 kodebiter, stier som ikke finnes: []
+   navn som ikke finnes i koden: ['ghostweb']
+== docs/academic/08-databasemodell.md: 154 kodebiter, stier som ikke finnes: []
+   navn som ikke finnes i koden: ['bytea', 'inventory_items.product_id', 'product_id', 'source_recipe_id']
+== docs/academic/09-design-og-brukervennlighet.md: 70 kodebiter, stier som ikke finnes: ['@fontsource-variable/figtree']
+   navn som ikke finnes i koden: []
+== docs/academic/10-teknisk-implementering.md: 225 kodebiter, stier som ikke finnes: ['@fastify/static', 'i18next/no-literal-string', 'try/catch', 'zod/mini']
+   navn som ikke finnes i koden: ['exactOptionalPropertyTypes', 'noUncheckedIndexedAccess']
+== docs/academic/11-testing-og-testresultater.md: 395 kodebiter, stier som ikke finnes: ['application/wasm', 'react-hooks/refs']
+   navn som ikke finnes i koden: ['actorName', 'noindex', 'singletonKey']
+== docs/academic/12-sikkerhet-og-personvern.md: 169 kodebiter, stier som ikke finnes: []
+   navn som ikke finnes i koden: ['ghostweb', 'iframe']
+# exit code: 0
+# Treffene er sjekket for hånd: navn som er med vilje fraværende (product_id, source_recipe_id, actorName, singletonKey), pakkenavn og regler (@fastify/static, zod/mini, react-hooks/refs), og ting utenfor repoet (ghostweb, noindex i Caddy). bytea finnes som BYTEA i migreringen.
+
+import re,os,subprocess,sys
+files=sys.argv[1:]
+tracked=subprocess.run(['git','ls-files'],capture_output=True,text=True).stdout.split('\n')
+alltext=None
+def grep(tok):
+    r=subprocess.run(['git','grep','-lF','--',tok,'--','apps','packages','prisma','e2e','docker','scripts','package.json'],capture_output=True,text=True)
+    return r.returncode==0
+for f in files:
+    s=open(f,encoding='utf-8').read()
+    toks=sorted(set(re.findall(r'`([^`\n]+)`',s)))
+    miss_path=[];miss_id=[]
+    for t in toks:
+        if '/' in t and re.match(r'^[\w@.\-/\[\]]+$',t) and not t.startswith('/'):
+            base=t.rstrip('/')
+            if not (os.path.exists(base) or any(x.endswith(base) or ('/'+base+'/') in ('/'+x) for x in tracked if x)):
+                miss_path.append(t)
+        elif re.match(r'^[A-Za-z_][\w.]{3,}(\(\))?$',t):
+            name=t.replace('()','')
+            if not grep(name.split('.')[-1]): miss_id.append(t)
+    print(f'== {f}: {len(toks)} kodebiter, stier som ikke finnes: {miss_path}\n   navn som ikke finnes i koden: {miss_id}')

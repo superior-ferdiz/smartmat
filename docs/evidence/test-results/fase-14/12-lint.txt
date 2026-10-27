@@ -1,0 +1,7 @@
+$ npm run lint
+# 2026-10-27T16:23:56Z, etter formateringen
+
+> smartmat@0.1.0 lint
+> eslint .
+
+# exit code: 0

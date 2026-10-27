@@ -862,3 +862,77 @@ Bevis ligger i `docs/evidence/test-results/fase-13/`, skjermbilder i `docs/evide
 `fase-13` committet og pushet etter at Caddy-blokken var lagt inn og dokumentasjonen oppdatert. Ingen gjennomgang av
 fase 12 eller 13 er oppgitt, og ingen pull request er merget til `main`.
 
+
+---
+
+## 2026-10-27 – Fase 14: akademisk ferdigstilling (KI-ens del)
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet fase 14 i en ny chat med en detaljert prompt. **Nesten alle plassholderne var ikke fylt ut.** De er
+  registrert slik:
+
+  | Plassholder | Registrert som |
+  |---|---|
+  | Gjennomgang siden fase 13 | ingen |
+  | Kontoer i testmiljøet | ingen |
+  | Test på ekte telefon med skjermleser | ikke gjort |
+  | Passfrase og TOTP-nøkkel utenfor serveren | nei |
+  | Kontaktadresse, art. 9, avtale med serverleverandøren | ikke valgt / ikke vurdert / ikke sjekket |
+  | Kontroll av oppskrifter, `ingredients.json`, OFF-kategorier | ingen |
+  | ADR-0017, pilotdataene | ikke godkjent, ikke slettet (frist 2026-11-23) |
+  | Offisielle krav, frist, format, referansestil | ukjent |
+- `origin/main` sto på 0f7296c, så grenen `fase-14` ble laget fra `fase-13`.
+- **Planen:** fasemalen med en tabell over KI-ens og teamets del per kapittel og sju åpne spørsmål. Ferdinand
+  godkjente med «godkjennt og fortsett» uten å svare på spørsmålene. Anbefalingene gjelder: APA 7, Markdown til
+  formatet er kjent, statusnivået «kontrollert av KI», ingen møtenotater skrevet av KI, presentasjon for 15 minutter,
+  én pull request fra `fase-14` til `main`.
+- **All tekst i fasen er skrevet av KI.** De delene som skal være teamets egne ord, står tomme med spørsmål.
+
+**Avvik og funn underveis**
+- **Et tall i kapittel 11 var feil:** første mutasjonskjøring i fase 8 fanget 34 av 37, ikke 35. Funnet da
+  mutasjonsrundene ble talt med et skript fra de lagrede utdataene.
+- **Kravoversikten sa at spesifikasjonene har brukerhistorier.** Ingen av dem har det. Kapittel 04 sier det, og
+  setningen er rettet. KI laget ikke brukerhistorier i etterkant som om de var brukt.
+- **Utdatert tekst** i veikartet, README, endringsloggen, testmiljo.md og kapittel 07 og 09 (blant annet «Caddy venter
+  på passordhashen», «9 seksjoner», «Eksempeldata», «cirka 604 kB»), og `apps/worker` i CLAUDE.md, som ikke finnes.
+- **Kapittel 08 manglet tabellene fra fase 13.** Lagt til etter kontroll mot migreringene.
+- **Feil i KI-ens egne utkast underveis**, rettet før de ble stående: årsakene til to feilede forsøk i bevisoversikten
+  (skrevet fra hukommelsen, rettet etter å ha lest utdataene), at prisoppryddingen var «nattlig» (den kjører hvert 15.
+  minutt), antallet WCAG-kriterier som må vurderes av folk (sju → seks), og et lovnummer for ekomloven som KI ikke
+  var sikker på (fjernet).
+- **Første formateringssjekk feilet** på det nye skriptet. Lagret og rettet.
+
+**Resultat:** Ingen endring i appen. Kontrollkjøringen er grønn:
+
+| Sjekk | Resultat |
+|---|---|
+| Typesjekk, lint, formatering | Ingen feil (formatering på andre forsøk) |
+| Enhetstester | 1364 |
+| API-tester mot database | 491 |
+| Bygg | Vellykket (hovedfil 608 kB) |
+| Playwright-tester | 209 |
+| Sårbarheter (`npm audit`) | 0 |
+| Lenker i dokumentasjonen | 526, 0 feil (første kjøring: 517, én brutt og rettet) |
+
+Bevis ligger i `docs/evidence/test-results/fase-14/`.
+
+**Teamets del som gjenstår** (se kapittel 20):
+- egen tekst i kapittel 02, 03, 15 og 18, refleksjonen i 13, og vurderingene i 06, 14, 16 og 17
+- lese, rette og signere KI-erklæringen
+- gjennomgå og godkjenne kapitlene, velge referansestil, finne kravene til format og frist
+- slå opp kildene merket «KI-kunnskap» før de siteres
+
+**Forslag før `main` merges**
+1. Én pull request fra `fase-14` til `main`. Grenene er stablet, så den inneholder fase 1–14. Gå gjennom commit for
+   commit og skriv funnene i pull requesten, så gjennomgangen blir dokumentert.
+2. Les særlig tofaktorkoden (`lib/totp.ts`, `modules/twoFactor/`, `loginSecondStep`) og autorisasjonen
+   (`householdAccess`, `requireOwner`).
+3. Fyll inn kontaktadressen i `/personvern`, og ta stilling til behandlingsgrunnlaget for allergier.
+4. Ta vare på backup-passfrasen og `TOTP_ENCRYPTION_KEY` utenfor serveren.
+5. Slett pilotdataene i `smartmat-private` når ADR-0017 er avgjort, senest 2026-11-23.
+6. Lag kontoene i testmiljøet og gå gjennom sjekklisten for ekte telefon i `testing/tilgjengelighet.md`.
+7. Kjør `npm run check` og `npm run test:e2e` selv før merge.
+
+**Neste:** Teamet skriver sine deler og går gjennom fasen. Commit og push når Ferdinand ber om det.

@@ -1,6 +1,8 @@
 # Teknisk implementering
 
-> **Status: UTKAST.** Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 12 (2026-10-25). Koden og teksten er skrevet av KI (Claude) og
+> **Status: Kontrollert mot systemet av KI 2026-10-27 – ikke godkjent av teamet.** (Fase 14: filstier, kodenavn og tall
+> er sjekket mot repoet og de lagrede utdataene, og det som var utdatert, er rettet. Se kapittel 20.)
+> Historikk: Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Koden og teksten er skrevet av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides i senere faser. Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Oversikt (fase 1)
@@ -722,7 +724,7 @@ leter etter innholdet med en gang.
 - Testoppsettet kaller `preloadAllPages()` før testene, så de oppfører seg som før.
 - Engelsk lastes bare når noen velger det (`ensureLoaded` i `i18n/index.ts`).
 - `"sideEffects": false` på den delte pakken lar Vite droppe moduler webappen ikke bruker.
-- Resultat: hovedfilen gikk fra 881 kB (265 kB gzip) til cirka 604 kB (191 kB gzip). Det som er igjen, er stort sett
+- Resultat: hovedfilen gikk fra 881 kB (265 kB gzip) til 608 kB (192 kB gzip, [`20-bundle-after.txt`](../evidence/test-results/fase-13/20-bundle-after.txt)). Det som er igjen, er stort sett
   React, React Router, Zod, i18next og norsk tekst, som alle sider trenger.
 
 ## Lagring i nettleseren
@@ -734,7 +736,7 @@ Dette er testet. Sesjoner og innlogging lagres aldri her (ADR-0005).
 ## Kjente begrensninger
 
 - **Bundle:** hovedfilen vokste fra 517 kB (fase 1) til 881 kB (fase 12). I fase 13 ble hver side delt ut i egen fil
-  (eksempel 52), og hovedfilen er cirka 604 kB (191 kB gzip). Vite advarer fortsatt (over 500 kB). Neste steg ville
+  (eksempel 52), og hovedfilen er 608 kB (192 kB gzip). Vite advarer fortsatt (over 500 kB). Neste steg ville
   vært `zod/mini` eller å dele ut React i en egen fil for bedre hurtiglagring.
 - **ESLint 9** er ikke lenger støttet av ESLint-prosjektet, men eslint-plugin-jsx-a11y finnes ennå ikke for
   ESLint 10. Sjekket på nytt i fase 13 (`npm outdated`, bevis 22): ESLint 10, TypeScript 7, Vite 8 og Vitest 5 er

@@ -59,7 +59,7 @@ mener kravet er oppfylt; ikke bekreftet av et menneske. **Teamet** = må vurdere
 | 2.2.1 Justerbar hastighet | Kode (KI) | Meldinger (toast) forsvinner etter 6 s, men stopper ved fokus og musepeker, og har ingen handlinger. Sesjonen varer i 14 dager. Tolkning: det er en statusmelding, ikke en tidsgrense. |
 | 2.2.2 Pause, stopp, skjul | Kode (KI) | Ingenting beveger seg av seg selv utenom lastetilstanden. |
 | 2.3.1 Tre glimt | Kode (KI) | Ingen blinking. |
-| 2.4.1 Hoppe over blokker | Automatisk | «Hopp til innholdet» er første stopp. |
+| 2.4.1 Hoppe over blokker | Automatisk | «Hopp til hovedinnhold» er første stopp. |
 | 2.4.2 Sidetitler | Automatisk | `document.title` per side (`Page.tsx`). |
 | 2.4.3 Fokusrekkefølge | Teamet | Fokus flyttes til overskriften ved sidebytte. Om rekkefølgen gir mening, må et menneske vurdere. |
 | 2.4.4 Formål med lenker | Kode (KI) | Lenker har tekst eller `aria-label` fra i18n. |
