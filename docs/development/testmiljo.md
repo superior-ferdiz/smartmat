@@ -12,7 +12,14 @@
     `/opt/Websites/smartmat-private/testmiljo-passord.txt` (0600). Teamet leser det der.
   - Første forsøk med kommandoen fra Claude ga `EOF`, fordi `printf '%s'` ikke sendte linjeskift til
     `caddy hash-password`.
-- **Ingen kontoer i appen ennå:** registreringen er stengt. Kontoer lages med `create-user` (se under).
+- **Kontoer til teamet laget 2026-10-29** (fase 14, del 3) av Claude, på Ferdinands forespørsel:
+  `ferdinand@smartmat.test` og `linus@smartmat.test`. Registreringen er fortsatt stengt. Appen sender ingen e-post,
+  så adressene er bare innloggingsnavn. Passordene er tilfeldige og ligger i
+  `/opt/Websites/smartmat-private/kontoer-testmiljo.txt` (0600). Ferdinand ba om å få dem vist i chatten, og det ble
+  gjort. Bevis: `fase-14/07-kontoer-testmiljo-del3.txt`.
+- **Passordet til basic auth er ikke byttet.** Det ble sendt med i chatten 2026-10-27 (markert i editoren). Et bytte
+  krever en endring i Caddyfile, og verktøyets sikkerhetssperre stoppet den 2026-10-29 fordi teamet ikke uttrykkelig
+  hadde bedt om det. Ingenting ble endret.
 
 Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md).
 
@@ -22,7 +29,7 @@ Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md)
 |---|---|---|
 | DNS: A/AAAA-post for `smartmat.risansolutions.no` til serveren | Ferdinand | Gjort (sjekket 2026-10-25) |
 | Passord for basic auth | Claude (etter Ferdinands spørsmål 2026-10-27) | Gjort: tilfeldig, i `smartmat-private/testmiljo-passord.txt` |
-| Kontoer til teamet med `create-user` (e-post og navn) | Teamet | Ikke gjort |
+| Kontoer til teamet med `create-user` (e-post og navn) | Claude (Ferdinands forespørsel 2026-10-29) | Gjort 2026-10-29 |
 | Ta vare på backup-passfrasen (`/etc/smartmat-backup/passphrase`) og `TOTP_ENCRYPTION_KEY` (i `docker/staging/.env.staging`) et annet sted enn serveren, for eksempel i en passordbehandler | Ferdinand | Ikke gjort |
 | Kontaktadresse i User-Agent til Open Food Facts | Teamet | Ikke valgt |
 | Fylle ut API-skjemaet til Open Food Facts (se [integrasjonen](integrations/open-food-facts.md)) | Teamet | Ikke gjort |

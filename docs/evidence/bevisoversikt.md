@@ -151,6 +151,8 @@ Dette er ikke gjort av noen per 2026-10-27. Det bør stå åpent i rapporten (ka
 
 Alle kontrollene av dokumentasjonen er lagret i [fase-14/](test-results/fase-14/): sporbarhet (`01`), 526 lenker
 uten feil (`02`), mutasjonstelling (`03`) og kodehenvisninger i kapittel 07–12 (`04`).
+Senere kontroller: lenkesjekk og formatering i del 2 (`05`, `06`) og del 3 (`08`, `09`), og innlogging med
+teamets kontoer i testmiljøet (`07`, 2026-10-29).
 
 
 - Kapittel 11 sa at første mutasjonskjøring i fase 8 fanget 35 av 37. Utdataene viser 34 av 37: tre runder (16, 31 og

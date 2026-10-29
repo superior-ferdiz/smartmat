@@ -1,6 +1,7 @@
 # Vedlegg: erklæring om bruk av KI
 
-> **Status: UTKAST skrevet av KI (Claude) i fase 14, 2026-10-27, fra [KI-loggen](../evidence/ai-usage/ai-logg.md).**
+> **Status: UTKAST skrevet av KI (Claude) i fase 14, 2026-10-27, fra [KI-loggen](../evidence/ai-usage/ai-logg.md).
+> Fakta oppdatert 2026-10-29 (del 3).**
 > Dette er ikke teamets erklæring før Ferdinand Risan og Linus Saxe Huseby har lest den, rettet det som er feil,
 > skrevet sine egne avsnitt og signert. KI-assistenten har bare fylt inn fakta fra loggene. Teamets meninger og
 > vurderinger er ikke fylt inn. Kravene emnet stiller til en slik erklæring, er ikke kjent, så formen er et forslag.
@@ -9,14 +10,14 @@
 
 | Verktøy | Modell | Periode | Hvem brukte det |
 |---|---|---|---|
-| Claude Code (VS Code-utvidelse), Anthropic | Claude Opus 5.5 | 2026-10-19 – 2026-10-27 | Ferdinand Risan |
+| Claude Code (VS Code-utvidelse), Anthropic | Claude Opus 5.5 | 2026-10-19 – 2026-10-29 | Ferdinand Risan |
 
 <!-- Teamet fyller inn andre KI-verktøy dere har brukt (også ChatGPT, Copilot eller lignende utenfor dette repoet),
 eller skriver at dere ikke har brukt andre. -->
 
 ## 2. Hva KI-verktøyet gjorde
 
-Dette står i KI-loggen (46 rader per 2026-10-27) og i utviklingsloggen. Det gjelder fase 0–13:
+Dette står i KI-loggen (53 rader per 2026-10-29) og i utviklingsloggen. Det gjelder fase 0–14:
 
 - **All programkode og alle automatiske tester** i repoet (nettappen, API-et, databasen, skriptene og Docker-oppsettet).
   Alle commits har `Co-Authored-By: Claude`.
@@ -31,7 +32,9 @@ Dette står i KI-loggen (46 rader per 2026-10-27) og i utviklingsloggen. Det gje
   Kassalapp og Have I Been Pwned, og pilotmålingen av Tesseract på teamets kvitteringer.
 - **Kjøring og bevis:** alle testkjøringer, mutasjonskontroller, målinger og skjermbilder i `docs/evidence/`.
 - **Drift:** oppsett av testmiljøet på serveren, eget Docker-nett, sikkerhetskopi og Caddy-blokken, etter godkjente
-  planer.
+  planer, og kontoene til teamet i testmiljøet (2026-10-29).
+- **Fase 14:** bevisoversikten, sporbarhetsmatrisen, utkastene til rapportkapitlene, denne erklæringen, forslaget til
+  presentasjon og sjekklisten for merge og innlevering.
 
 ## 3. Hva teamet gjorde
 
@@ -50,7 +53,7 @@ endret noe selv. Bare det som faktisk er gjort. -->
 
 ## 4. Hva som er kontrollert av mennesker
 
-Per 2026-10-27 er dette registrert:
+Per 2026-10-29 er dette registrert:
 
 | Hva | Kontrollert av | Hvordan |
 |---|---|---|

@@ -1,7 +1,7 @@
 # Sjekkliste: merge til main og innlevering
 
-> **Status: UTKAST laget av KI (Claude) i fase 14, 2026-10-27. Ikke gjennomgått av teamet.** Ingen av punktene er
-> krysset av. Et punkt krysses av når det faktisk er gjort, med hvem og dato, og det samme føres i
+> **Status: UTKAST laget av KI (Claude) i fase 14, 2026-10-27. Ikke gjennomgått av teamet.** Per 2026-10-29 er ett
+> punkt krysset av (kontoene i testmiljøet). Teamet valgte 2026-10-29 å beholde sjekklisten som én fil. Et punkt krysses av når det faktisk er gjort, med hvem og dato, og det samme føres i
 > [utviklingsloggen](development-journal.md). Kravene til innleveringen er **antatt**. De offisielle APP2000-kravene er
 > ikke lagt inn i prosjektet.
 
@@ -76,7 +76,8 @@ Gå gjennom commit for commit og skriv funnene i pull requesten, så gjennomgang
 - [ ] Kontaktadresse i personvernerklæringen (`/personvern`) og vurdering av behandlingsgrunnlaget for allergier
       (art. 9).
 - [ ] Backup-passfrasen og `TOTP_ENCRYPTION_KEY` er tatt vare på utenfor serveren.
-- [ ] Kontoer i testmiljøet til demoen.
+- [x] Kontoer i testmiljøet til demoen. Laget av Claude 2026-10-29 på Ferdinands forespørsel (`ferdinand@smartmat.test`,
+      `linus@smartmat.test`, passord i `smartmat-private/kontoer-testmiljo.txt`).
 - [ ] ADR-0017 er godkjent eller avvist, og pilotdataene i `smartmat-private` er slettet, **senest 2026-11-23**.
 
 ### Sammenstilling

@@ -983,3 +983,55 @@ oppfordring («Vennligst gjør det»), sammen med prompten til neste økt.
 
 **Neste:** Teamet svarer på de åpne spørsmålene, går gjennom pull requesten og skriver sine deler. Neste økt er
 fase 14, del 3, med samme prompt og plassholderne fylt ut.
+
+## 2026-10-29 – Fase 14, del 3: kontoer i testmiljøet og registrering
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code). Linus Saxe Huseby var ikke med i økten.
+
+**Hva skjedde**
+- Ferdinand startet del 3 av fase 14 i en ny chat. Han oppga at del 2 er committet (4799326, 4522b36) og pushet, og at
+  4522b36 ikke var ført i KI-loggen. KI sjekket det med `git log` og `git fetch`: `origin/fase-14` = 4522b36,
+  `origin/main` = 0f7296c. Om pull requesten er opprettet, kan ikke ses fra serveren (`gh` er ikke installert). **Alle
+  de andre plassholderne var ikke fylt ut** og er registrert slik:
+
+  | Plassholder | Registrert som |
+  |---|---|
+  | Pull request `fase-14` → `main` | ikke oppgitt, ikke merget |
+  | Kodegjennomgang (tofaktor, `householdAccess`) | ingen |
+  | Teamets egen tekst (02, 03, 13, 15, 18, vurderingene i 06/14/16/17) | ingen |
+  | KI-erklæringen | ikke lest, ikke signert |
+  | Kapitler godkjent av teamet | ingen |
+  | Kilder slått opp / lest selv | ingen |
+  | Referansestil | ikke valgt (anbefalt APA 7) |
+  | Offisielle krav, frist, format, sideantall, presentasjonslengde | ukjent |
+  | Test på ekte telefon med skjermleser | ikke gjort |
+  | Kontaktadresse, art. 9 | ikke valgt / ikke vurdert |
+  | Passfrase og TOTP-nøkkel utenfor serveren | nei |
+  | Kontroll av oppskrifter, `ingredients.json`, OFF-kategorier | ingen |
+  | ADR-0017, pilotdataene | ikke godkjent, ikke slettet (frist 2026-11-23) |
+- **Planen:** fasemalen med sju åpne spørsmål. Ferdinand svarte: «Ja men du kan vise meg passordet til meg og linus i
+  chat det går fint. alt annet er godkjent vennligst fortsett og commit og psh». Det er tolket slik: kontoer til
+  Ferdinand og Linus i testmiljøet, med passordene vist i chatten, sjekklisten beholdes som én fil, og commit og push
+  til slutt. «Godkjent» gjelder planen, ikke gjennomgang eller godkjenning av kode eller kapitler.
+
+**Endret**
+- **Kontoer i testmiljøet:** `ferdinand@smartmat.test` og `linus@smartmat.test`, laget med `create-user` og tilfeldige
+  passord (lagret i `smartmat-private/kontoer-testmiljo.txt`, 0600). Ingen e-postadresse var oppgitt, og appen sender
+  ingen e-post, så adressene er bare innloggingsnavn. Innlogging gjennom Caddy er sjekket for begge (200). Bevis:
+  `docs/evidence/test-results/fase-14/07-kontoer-testmiljo-del3.txt`, uten passord.
+- **KI-erklæringen:** fakta oppdatert (perioden til 2026-10-29, 53 rader i KI-loggen, fase 14 og kontoene). Teamets
+  avsnitt er ikke rørt.
+- Sjekklisten (ett punkt krysset av, én fil), veikartet (rad 13 og 14), testmiljo.md, endringsloggen, CLAUDE.md og
+  KI-loggen (#52 for 4522b36, #53 for denne økten).
+
+**Ikke gjort**
+- **Passordet til basic auth er ikke byttet.** KI anbefalte det i planen, og «alt annet er godkjent» ble først tolket
+  som et ja. Verktøyets sikkerhetssperre stoppet endringen i Caddyfile før noe ble skrevet, fordi prompten sier at
+  Caddyfile bare endres når teamet ber om det. Caddyfile og passordfilen er uendret (sjekket). Teamet må be om det
+  uttrykkelig.
+
+**Resultat:** Ingen endring i appen. Lenkesjekk og formatering av dokumentasjonen, se
+`docs/evidence/test-results/fase-14/`.
+
+**Neste:** Teamet går gjennom pull requesten, skriver sine deler og finner kravene til innleveringen. Pilotdataene
+slettes senest 2026-11-23.

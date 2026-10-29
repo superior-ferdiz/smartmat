@@ -17,6 +17,8 @@
   i CLAUDE.md, teksten på hopp-lenken i tilgjengelighet.md, en brutt lenke i kapittel 12.
 - **Del 2 (commit 4799326):** [sjekkliste for merge og innlevering](sjekkliste-merge-og-innlevering.md) (utkast),
   commit og push av fase 14 ført i veikartet, utviklingsloggen og KI-loggen, Mermaid også i kapittel 08 (kapittel 20).
+- **Del 3 (2026-10-29):** kontoer til teamet i testmiljøet (`create-user`), fakta i KI-erklæringen oppdatert,
+  4522b36 ført i KI-loggen, ett punkt i sjekklisten krysset av. Passordet til basic auth er ikke byttet.
 - Ingen endring i appen.
 
 ### Fase 13 – 2026-10-25/27 (grenen `fase-13`)

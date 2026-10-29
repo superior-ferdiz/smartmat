@@ -8,7 +8,9 @@ It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN
 - **Environment:** local development. A closed HTTPS test environment on `smartmat.risansolutions.no` (ADR-0015):
   DNS points at the server and the containers run (phase 13), on their own network `smartmat-edge` with Caddy
   (ADR-0022), with a nightly encrypted backup (ADR-0021). The Caddy block is live since 2026-10-27 (basic auth user
-  `smartmat`, random password in `/opt/Websites/smartmat-private/testmiljo-passord.txt`, never shown in the chat).
+  `smartmat`, random password in `/opt/Websites/smartmat-private/testmiljo-passord.txt`, never shown in the chat). Team accounts
+  `ferdinand@smartmat.test` / `linus@smartmat.test` since 2026-10-29 (passwords in `smartmat-private/kontoer-testmiljo.txt`;
+  Ferdinand asked to see them in the chat). Changing the basic-auth password needs an explicit request (Caddyfile).
   `caddy hash-password` reads a line from stdin: pipe it with a trailing newline, never use `-t` with a redirect. Git since 2026-10-20 (ADR-0013): private repo
   `git@github.com:superior-ferdiz/smartmat.git`, branch `main`; one branch per phase (`fase-2`), the team opens and
   approves the pull request on GitHub. Commits from this server carry Ferdinand's identity, so
