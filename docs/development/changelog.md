@@ -15,6 +15,8 @@
 - **Rettet:** mutasjonstallet for fase 8 i kapittel 11 (34, ikke 35 av 37), utdaterte statuser i veikartet (fase 5,
   6, 12, 13), README, endringsloggen for fase 13 (Caddy, 608 kB), «brukerhistorier» i kravoversikten, `apps/worker`
   i CLAUDE.md, teksten på hopp-lenken i tilgjengelighet.md, en brutt lenke i kapittel 12.
+- **Del 2 (commit 4799326):** [sjekkliste for merge og innlevering](sjekkliste-merge-og-innlevering.md) (utkast),
+  commit og push av fase 14 ført i veikartet, utviklingsloggen og KI-loggen, Mermaid også i kapittel 08 (kapittel 20).
 - Ingen endring i appen.
 
 ### Fase 13 – 2026-10-25/27 (grenen `fase-13`)

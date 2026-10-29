@@ -977,5 +977,9 @@ Bevis ligger i `docs/evidence/test-results/fase-14/`.
 **Resultat:** Ingen endring i appen. Lenkesjekk og formatering av dokumentasjonen, se
 `docs/evidence/test-results/fase-14/`.
 
-**Neste:** Teamet svarer på de åpne spørsmålene, går gjennom pull requesten og skriver sine deler. Commit og push når
-Ferdinand ber om det.
+**Commit og push:** Ferdinand ba om det («committ og push»). Commit 4799326 på `fase-14`, pushet 2026-10-27, etter
+søk etter hemmeligheter i endringene (ingen funnet). Ført i KI-loggen og endringsloggen 2026-10-29, på Ferdinands
+oppfordring («Vennligst gjør det»), sammen med prompten til neste økt.
+
+**Neste:** Teamet svarer på de åpne spørsmålene, går gjennom pull requesten og skriver sine deler. Neste økt er
+fase 14, del 3, med samme prompt og plassholderne fylt ut.
