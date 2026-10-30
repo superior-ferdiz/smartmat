@@ -31,7 +31,7 @@ export function AuthLayout() {
       </a>
       <StagingBanner />
       <header className={styles.header}>
-        <Logo />
+        <Logo size="auth" />
         <div className={styles.language}>
           <Select
             id="auth-language"

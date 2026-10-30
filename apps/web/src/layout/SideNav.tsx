@@ -13,7 +13,7 @@ export function SideNav({ className }: { className?: string }) {
     <aside className={[styles.side, className].filter(Boolean).join(' ')}>
       <div className={styles.sticky}>
         <div className={styles.logo}>
-          <Logo />
+          <Logo size="nav" />
           <NotificationBell />
         </div>
         <nav aria-label={t('nav.mainLabel')}>

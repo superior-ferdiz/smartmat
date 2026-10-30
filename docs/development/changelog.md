@@ -10,6 +10,9 @@
 - **Strekkodeskanneren:** kvitterings- og kupongkoder (GS1 98/99) slås ikke opp og peker til kvitteringssiden.
   Ny status `off` når Open Food Facts ikke er satt opp.
 - **Testmiljøet:** registreringen er åpen, Open Food Facts er på (`OFF_USER_AGENT`), linjeforslag er på.
+- **Logo og favicon:** ny logo (laget med GPT-6) i toppfeltet, sidemenyen og på innloggingssidene, større enn det
+  gamle merket og med egen høyde per sted (`--topbar-logo-height` styrer også `scroll-padding-top`). Ny favicon og
+  `apple-touch-icon` med baguettene fra logoen; `favicon.svg` er fjernet. `check:files` tillater akkurat disse filene.
 
 ### Fase 14 – 2026-10-27 (grenen `fase-14`)
 - **Bevis:** [bevisoversikt.md](../evidence/bevisoversikt.md) med testresultater, feilede forsøk, mutasjonskontroll,

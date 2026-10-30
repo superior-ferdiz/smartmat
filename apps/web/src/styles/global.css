@@ -62,7 +62,7 @@ input[type='date']:focus-within {
  * focus to something off screen, the browser scrolls it into view – without this, right behind the bottom menu.
  */
 html {
-  scroll-padding-top: calc(var(--tap-target) + var(--space-5));
+  scroll-padding-top: calc(var(--topbar-logo-height) + var(--space-5));
   scroll-padding-bottom: calc(var(--bottomnav-height) + var(--space-4));
 }
 

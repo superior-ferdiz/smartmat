@@ -10,7 +10,7 @@ export function TopBar({ className }: { className?: string }) {
   const { t } = useTranslation();
   return (
     <header className={[styles.bar, className].filter(Boolean).join(' ')}>
-      <Logo />
+      <Logo size="bar" />
       <div className={styles.actions}>
         <NotificationBell />
         <Link

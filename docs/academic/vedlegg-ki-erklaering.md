@@ -11,6 +11,7 @@
 | Verktøy | Modell | Periode | Hvem brukte det |
 |---|---|---|---|
 | Claude Code (VS Code-utvidelse), Anthropic | Claude Opus 5.5 | 2026-10-19 – 2026-10-29 | Ferdinand Risan |
+| GPT-6, OpenAI (bildegenerering, utenfor dette repoet) | GPT-6 | Logoen ble lagt i prosjektmappen 2026-10-30 | *Teamet fyller inn* |
 
 <!-- Teamet fyller inn andre KI-verktøy dere har brukt (også ChatGPT, Copilot eller lignende utenfor dette repoet),
 eller skriver at dere ikke har brukt andre. -->

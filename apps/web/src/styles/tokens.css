@@ -113,6 +113,7 @@
 
   /* ---------- Sizing ---------- */
   --tap-target: 44px; /* minimum touch target (WCAG 2.5.5 / Apple HIG) */
+  --topbar-logo-height: 3.5rem; /* the logo sets the phone top bar's height (scroll-padding in global.css) */
   --content-max-width: 72rem;
   --sidenav-width: 15rem;
   --bottomnav-height: 4rem;

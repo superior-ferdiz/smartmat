@@ -1,0 +1,81 @@
+
+> smartmat@0.1.0 check:files
+> node scripts/check-files.mjs
+
+check:files: 1186 files, no stray images
+
+> smartmat@0.1.0 typecheck
+> tsc -p tsconfig.json && npm run typecheck --workspaces --if-present
+
+
+> @smartmat/shared@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @smartmat/api@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @smartmat/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit
+
+
+> smartmat@0.1.0 lint
+> eslint .
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  95 passed (95)
+      Tests  1378 passed (1378)
+   Start at  13:04:54
+   Duration  25.51s (transform 434.77s, setup 89.95s, import 62.71s, tests 238.05s, environment 46.85s)
+
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.33s
+✓ built in 4.32s
+  ✓   8 [mobil-360] › e2e/a11y.spec.ts:242:3 › NFR-UX-005 logged-out pages › login, registration and the privacy notice: keyboard, zoom and spacing (4.6s)
+  ✓   7 [desktop] › e2e/a11y.spec.ts:242:3 › NFR-UX-005 logged-out pages › login, registration and the privacy notice: keyboard, zoom and spacing (4.8s)
+  ✓   3 [desktop] › e2e/a11y.spec.ts:208:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 2.3.3: with "reduce motion", nothing animates for longer than 0.01 ms (23.4s)
+  ✓   9 [mobil-360] › e2e/a11y.spec.ts:208:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 2.3.3: with "reduce motion", nothing animates for longer than 0.01 ms (23.3s)
+  ✓   2 [desktop] › e2e/a11y.spec.ts:193:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 1.4.12: larger line, letter, word and paragraph spacing does not make pages scroll sideways (23.9s)
+  ✓   4 [mobil-360] › e2e/a11y.spec.ts:193:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 1.4.12: larger line, letter, word and paragraph spacing does not make pages scroll sideways (24.4s)
+  ✓   6 [mobil-360] › e2e/a11y.spec.ts:164:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 2.1.1 / 2.4.7 / 2.4.11: every Tab stop has a visible focus indicator and is not hidden (35.5s)
+  ✓   1 [desktop] › e2e/a11y.spec.ts:164:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 2.1.1 / 2.4.7 / 2.4.11: every Tab stop has a visible focus indicator and is not hidden (37.8s)
+  ✓  10 [mobil-360] › e2e/a11y.spec.ts:179:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 1.4.4 / 1.4.10: 200 % zoom (640 CSS px) and 320 CSS px wide without horizontal scrolling (42.9s)
+  ✓   5 [desktop] › e2e/a11y.spec.ts:179:3 › NFR-UX-005 WCAG 2.2 AA checks on every page › 1.4.4 / 1.4.10: 200 % zoom (640 CSS px) and 320 CSS px wide without horizontal scrolling (43.1s)
+
+  10 passed (1.2m)
+--- favicon 2026-10-30
+check:files: 1189 files, no stray images
+> eslint .
+
+✓ built in 3.97s
+apple-touch-icon.png
+favicon-192.png
+favicon-32.png
+/favicon-32.png 200 image/png
+/favicon-192.png 200 image/png
+/apple-touch-icon.png 200 image/png
+/favicon.svg 200 text/html; charset=utf-8
+[
+  '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />',
+  '<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />',
+  '<link rel="apple-touch-icon" href="/apple-touch-icon.png" />'
+]
+--- larger logo 2026-10-30
+check:files: 1189 files, no stray images
+> smartmat@0.1.0 lint
+> eslint .
+
+ Test Files  95 passed (95)
+      Tests  1378 passed (1378)
+✓ built in 4.58s
+✓ built in 4.70s
+  73 passed (1.4m)
+      Tests  1378 passed (1378)
+smartmat-logo-CV9QWfJL.webp 200 47640
