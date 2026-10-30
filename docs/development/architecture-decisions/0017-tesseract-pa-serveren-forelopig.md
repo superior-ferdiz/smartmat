@@ -109,6 +109,6 @@ før noen ser på dem, som et rent kontrollsett.
 - Uttrekket (råtekst og tolkede linjer) lagres uansett, så en ny måling kan gjøres uten at brukerne laster opp på
   nytt. Det gjelder bare så lenge kvitteringen ikke er bekreftet, og høyst i 7 dager.
 - Kvitteringene og måleresultatene i den private mappen slettes når teamet har godkjent denne ADR-en, senest
-  2026-11-23.
+  2026-11-23. Bildene (3 kvitteringer og 3 utsnitt) ble slettet 2026-10-29 på Ferdinands forespørsel («slett bildene til nå»). Fasiten og måleresultatene (tekst) ligger fortsatt der. En ny måling trenger derfor nye kvitteringer.
 - **Personvern i målingen:** bildene ble lest av Tesseract på serveren. De ble også vist til KI-assistenten
   (Claude, Anthropic) i chat, slik teamet selv ba om, for å lage fasiten. Ingen annen tjeneste har fått dem.

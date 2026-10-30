@@ -255,7 +255,7 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 - **Pilotmålingen** brukte teamets egne 3 kvitteringer. De ligger utenfor repoet, i en mappe bare eieren kan lese.
   Bildene ble også vist til KI-assistenten (Claude, Anthropic) i chatten, fordi teamet ba om det for å lage
   fasiten. De er ikke lagt i Git, tester, logger eller dokumentasjon, og bare samlede tall er lagret.
-  **Slettefrist:** når ADR-0017 er godkjent, senest 2026-11-23.
+  **Slettefrist:** når ADR-0017 er godkjent, senest 2026-11-23. Bildene (3 kvitteringer og 3 utsnitt) ble slettet 2026-10-29 på Ferdinands forespørsel («slett bildene til nå»). Fasiten og måleresultatene (tekst) ligger fortsatt der.
 - En kvittering kan vise de siste sifrene i et kortnummer og autorisasjonskoden. Bildet beholdes bare til kjøpet er
   bekreftet. Råteksten lagres uten slike linjer.
 
@@ -383,7 +383,7 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 | Produktmellomlager fra Open Food Facts (ingen brukerdata) | Slettes ikke; hentes på nytt etter 30 dager. «Fant ikke» gjelder i 24 timer. | Ingen sletting. Det er offentlige produktdata, ikke personopplysninger. |
 | Sikkerhetskopier | De 7 siste nettene | `backup.sh` sletter de eldre |
 | Serverlogg for SmartMat | Uten personopplysninger (testet). Hvor lenge Docker beholder loggen, er ikke satt (standard: til containeren lages på nytt). | Ikke styrt av appen. Teamet bør vurdere en grense. |
-| Pilotdata for OCR (utenfor appen) | Til ADR-0017 er godkjent, senest 2026-11-23 | Manuelt, av teamet |
+| Pilotdata for OCR (utenfor appen) | Bildene slettet 2026-10-29. Fasit og måleresultater til ADR-0017 er godkjent, senest 2026-11-23 | Manuelt, av teamet |
 
 ## Lovtekst og tolkning (fase 13)
 

@@ -1035,3 +1035,15 @@ fase 14, del 3, med samme prompt og plassholderne fylt ut.
 
 **Neste:** Teamet går gjennom pull requesten, skriver sine deler og finner kravene til innleveringen. Pilotdataene
 slettes senest 2026-11-23.
+
+**Tillegg samme dag (etter commit 90a7dad):** Ferdinand svarte på punktene i rapporten:
+- «hvilken pilodata?»: KI forklarte at det er de tre kvitteringsbildene, fasiten og måleresultatene fra fase 8 i
+  `smartmat-private` (ADR-0017, kapittel 12).
+- Kopi av passfrase og nøkkel: «Det haster ikke enda da dette bare er et skole prosjekt.» Ikke gjort.
+- Gjennomgang: «gjennomgått i plenum og godkjent». **Registrert som Ferdinands utsagn**: hvem som var med, omfang og funn er ikke oppgitt.
+  Det finnes ingen pull request på GitHub (`git ls-remote` viser ingen `refs/pull/`), og `main` er ikke merget.
+- Kravene til innleveringen: «la stå til nå».
+- Pilotdataene: Ferdinand ba KI om å «slett bildene til nå». De tre kvitteringsbildene og de tre utsnittene i
+  `smartmat-private` er slettet. Først ble disken søkt gjennom etter flere kopier, og det fantes ingen. Fasiten og
+  måleresultatene (tekst) står igjen til ADR-0017 er avgjort, senest 2026-11-23. Bildene ble også vist til
+  KI-assistenten i chatten i fase 8, og den kopien kan ikke slettes herfra.

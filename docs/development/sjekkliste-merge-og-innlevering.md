@@ -1,7 +1,7 @@
 # Sjekkliste: merge til main og innlevering
 
-> **Status: UTKAST laget av KI (Claude) i fase 14, 2026-10-27. Ikke gjennomgått av teamet.** Per 2026-10-29 er ett
-> punkt krysset av (kontoene i testmiljøet). Teamet valgte 2026-10-29 å beholde sjekklisten som én fil. Et punkt krysses av når det faktisk er gjort, med hvem og dato, og det samme føres i
+> **Status: UTKAST laget av KI (Claude) i fase 14, 2026-10-27. Ikke gjennomgått av teamet.** Per 2026-10-29 er to
+> punkter krysset av (kontoene i testmiljøet og teamets gjennomgang). Teamet valgte 2026-10-29 å beholde sjekklisten som én fil. Et punkt krysses av når det faktisk er gjort, med hvem og dato, og det samme føres i
 > [utviklingsloggen](development-journal.md). Kravene til innleveringen er **antatt**. De offisielle APP2000-kravene er
 > ikke lagt inn i prosjektet.
 
@@ -37,7 +37,10 @@ Gå gjennom commit for commit og skriv funnene i pull requesten, så gjennomgang
 ### Godkjenning og merge
 
 - [ ] Funnene er rettet (eller begrunnet) og sjekket på nytt.
-- [ ] Pull requesten er godkjent av en i teamet. Skriv hvem og dato i utviklingsloggen.
+- [x] Gjennomgått og godkjent av teamet: Ferdinand oppga 2026-10-29 at endringene er «gjennomgått i plenum og godkjent». Hvem som
+      var med, omfang og funn er ikke oppgitt, så punktene under «Gjennomgangen» er ikke krysset av enkeltvis.
+- [ ] Pull requesten på GitHub er opprettet og godkjent. Per 2026-10-29 finnes ingen (`git ls-remote` viser ingen
+      `refs/pull/`).
 - [ ] Merge til `main`. Etterpå lages nye grener fra `main`, ikke fra `fase-14`.
 - [ ] Veikartet: «venter på teamets gjennomgang (pull request)» oppdateres for fasene som er gjennomgått.
 
@@ -79,6 +82,8 @@ Gå gjennom commit for commit og skriv funnene i pull requesten, så gjennomgang
 - [x] Kontoer i testmiljøet til demoen. Laget av Claude 2026-10-29 på Ferdinands forespørsel (`ferdinand@smartmat.test`,
       `linus@smartmat.test`, passord i `smartmat-private/kontoer-testmiljo.txt`).
 - [ ] ADR-0017 er godkjent eller avvist, og pilotdataene i `smartmat-private` er slettet, **senest 2026-11-23**.
+      Bildene (3 kvitteringer, 3 utsnitt) er slettet 2026-10-29 av Claude på Ferdinands forespørsel. `fasit/` og
+      `pilot-ut/` (tekst) gjenstår.
 
 ### Sammenstilling
 

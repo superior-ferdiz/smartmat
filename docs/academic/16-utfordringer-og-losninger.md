@@ -21,7 +21,7 @@
 
 | # | Utfordring | Hva som ble gjort |
 |---|---|---|
-| 1 | **Ekte kvitteringer er personopplysninger.** De lå i roten av repoet. | Flyttet til en privat mappe utenfor repoet, med en sjekk (`check:files`) som stopper bilder i Git. Slettes senest 2026-11-23. |
+| 1 | **Ekte kvitteringer er personopplysninger.** De lå i roten av repoet. | Flyttet til en privat mappe utenfor repoet, med en sjekk (`check:files`) som stopper bilder i Git. Bildene slettet 2026-10-29, fasit og måleresultater senest 2026-11-23. |
 | 2 | **Vilkårene til eksterne tjenester.** Spoonacular forbyr lagring, TheMealDB er bare for utvikling, Kassalapp dekker ikke tre av de største kjedene. | Vilkårene lest før koden, og valgene skrevet i ADR-er. |
 | 3 | **Serveren deles med andre nettsteder.** | Egne regler i CLAUDE.md (ingen `pkill`, ikke røre andres containere, sjekke disken), eget Docker-nett (ADR-0022). |
 | 4 | **Ingen nøkkel og ingen kontaktadresse.** | Funksjonene er av som standard, og appen virker uten dem (NFR-REL-001). |

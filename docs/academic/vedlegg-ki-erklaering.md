@@ -17,7 +17,7 @@ eller skriver at dere ikke har brukt andre. -->
 
 ## 2. Hva KI-verktøyet gjorde
 
-Dette står i KI-loggen (53 rader per 2026-10-29) og i utviklingsloggen. Det gjelder fase 0–14:
+Dette står i KI-loggen (55 rader per 2026-10-29) og i utviklingsloggen. Det gjelder fase 0–14:
 
 - **All programkode og alle automatiske tester** i repoet (nettappen, API-et, databasen, skriptene og Docker-oppsettet).
   Alle commits har `Co-Authored-By: Claude`.
@@ -46,6 +46,8 @@ Fra loggene. **Teamet må rette og utfylle denne listen.**
 - Ferdinand kontrollerte fasiten til OCR-piloten mot papirkvitteringene.
 - Ferdinand har oppgitt at fase 5 og 7 og planene for fase 8, 9 og 13 er gjennomgått «i plenum», og for fase 7 og 9 av
   både ham og Linus Saxe Huseby. Omfang og funn er ikke oppgitt.
+- 2026-10-29 oppga Ferdinand at endringene i fase 2–14 er «gjennomgått i plenum og godkjent». Hvem som var med, omfang og funn er
+  ikke oppgitt.
 - Linus Saxe Huseby har ikke vært med i noen økt med KI-verktøyet.
 
 <!-- Teamet skriver: hva dere har gjort utenom øktene med KI – lest kode, testet appen, diskutert, skrevet tekst,
@@ -59,7 +61,8 @@ Per 2026-10-29 er dette registrert:
 |---|---|---|
 | Fasit til OCR-piloten | Ferdinand Risan | Mot papirkvitteringene («Kontrollert og all good») |
 | Planene for fase 1–14 | Ferdinand Risan | Godkjent i chat. Om de ble lest i detalj, er ikke oppgitt. |
-| Kode, tester, oppskrifter, ingredienser, kategorier, vilkårsnotater, personvernvurderinger, rapportkapitler | **Ingen registrert** | – |
+| Fase 2–14 (det pull requesten skal inneholde) | Teamet, i plenum (oppgitt av Ferdinand 2026-10-29) | «gjennomgått i plenum og godkjent». Omfang og funn er ikke oppgitt. |
+| Oppskrifter, ingredienser, kategorier, vilkårsnotater, personvernvurderinger, rapportkapitler, hver for seg | **Ingen registrert** | – |
 
 <!-- Teamet fyller inn det dere har kontrollert, med dato og hvordan. -->
 

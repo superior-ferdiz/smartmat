@@ -201,6 +201,7 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 
 - **Real receipts never enter the repo, tests, logs or docs.** They live in `/opt/Websites/smartmat-private/`
   (0700), with the answer keys and the pilot output; delete them when ADR-0017 is approved, at the latest 2026-11-23.
+  The images were deleted 2026-10-29 at Ferdinand's request; `fasit/` and `pilot-ut/` (text) remain.
   `npm run check:files` (first step of `npm run check`) fails on any image outside `docs/evidence/screenshots/`.
   Parser tests use made-up texts in `packages/shared/src/receipts/fixtures.ts` (exported to tests as
   `@smartmat/shared/test-fixtures/receipts`).
