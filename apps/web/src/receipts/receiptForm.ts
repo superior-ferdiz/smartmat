@@ -46,8 +46,11 @@ export function fromSuggestion(
       description: parsed.description,
       kind: parsed.suggestedKind,
       amount: parsed.amountOre === null ? '' : oreToInput(parsed.amountOre),
+      // Food from the receipt goes into the inventory unless the user unticks it; deposit and bags never do.
+      toInventory: parsed.suggestedKind === 'food' && locationId !== '',
+      quantity: '1',
     };
-    // A weight or a count on the receipt fills in the quantity if the line goes into the inventory.
+    // A weight or a count on the receipt is the quantity; otherwise one of it.
     if (parsed.weightG)
       Object.assign(line, { unit: 'g', displayUnit: 'g', quantity: String(parsed.weightG) });
     else if (parsed.count)
@@ -68,12 +71,18 @@ export const LOW_MEAN_CONFIDENCE = 60;
 
 export const SHRINK_MAX_SIDE = 3000;
 
+/** The camera inside the page: the back camera, as sharp as it goes – the text on a receipt is small. No sound. */
+export const RECEIPT_CAMERA_CONSTRAINTS: MediaStreamConstraints = {
+  audio: false,
+  video: { facingMode: { ideal: 'environment' }, width: { ideal: 2560 }, height: { ideal: 1440 } },
+};
+
 /**
  * Makes the photo smaller in the browser before it is sent, when the browser can: less to upload on a phone, and
  * drawing it on a canvas leaves the camera's EXIF (with the position) behind. The server removes it anyway
  * (FR-RCPT-002); this is only an extra. Returns the original file when anything is missing or fails.
  */
-export async function shrinkImage(file: File, maxSide = SHRINK_MAX_SIDE): Promise<Blob> {
+export async function shrinkImage(file: Blob, maxSide = SHRINK_MAX_SIDE): Promise<Blob> {
   if (typeof createImageBitmap !== 'function' || typeof document === 'undefined') return file;
   try {
     const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });

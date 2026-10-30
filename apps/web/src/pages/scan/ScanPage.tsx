@@ -3,13 +3,14 @@ import { Link, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
   API_ERRORS,
+  isReceiptCode,
   normalizeGtin,
   type BarcodeLookupResponse,
   type ItemResponse,
   type ScanFormat,
 } from '@smartmat/shared';
 import { ApiError } from '../../api/client';
-import { itemPath } from '../../app/navigation';
+import { itemPath, RECEIPTS_PATH } from '../../app/navigation';
 import { Alert } from '../../components/Alert/Alert';
 import { Button } from '../../components/Button/Button';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
@@ -170,6 +171,12 @@ export function ScanPage() {
                   {lookup.data.suggestion.brand && (
                     <> {t('scan.lookup.brand', { brand: lookup.data.suggestion.brand })}</>
                   )}
+                  {isReceiptCode(lookup.data.gtin) && (
+                    <>
+                      {' '}
+                      <Link to={RECEIPTS_PATH}>{t('scan.lookup.toReceipts')}</Link>
+                    </>
+                  )}
                 </Alert>
                 <ScanConfirmForm
                   // Keyed on the code only: confirming refetches the lookup (the household now knows the code),
@@ -203,6 +210,7 @@ export function ScanPage() {
 }
 
 function statusKey(lookup: BarcodeLookupResponse) {
+  if (isReceiptCode(lookup.gtin)) return 'receiptCode' as const;
   if (lookup.storeCode) return 'storeCode' as const;
   if (lookup.source === 'household') return 'household' as const;
   return lookup.providerStatus;

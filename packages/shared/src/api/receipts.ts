@@ -38,6 +38,11 @@ export type ParsedReceiptLineResponse = z.infer<typeof parsedReceiptLineSchema>;
  */
 export const receiptSuggestionSchema = z.object({
   storeName: z.string().nullable(),
+  /**
+   * The chain could not be read (the logo is often a picture): storeName is the chain of the same receipt format
+   * the household bought from last, and the page says it is a guess.
+   */
+  storeGuessed: z.boolean(),
   chain: z.enum(RECEIPT_CHAINS).nullable(),
   purchasedOn: z.iso.date().nullable(),
   totalOre: ore.nonnegative().nullable(),

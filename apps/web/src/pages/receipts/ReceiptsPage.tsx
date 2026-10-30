@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useCallback, useRef, useState, type ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { API_ERRORS } from '@smartmat/shared';
@@ -14,8 +14,10 @@ import { Tag } from '../../components/Tag/Tag';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
 import { Page } from '../../layout/Page';
 import { useReceipts, useUploadReceipt } from '../../receipts/api';
+import { ReceiptCamera } from '../../receipts/ReceiptCamera';
 import { shrinkImage } from '../../receipts/receiptForm';
 import { statusTone } from '../../receipts/status';
+import { cameraSupport } from '../../scan/camera';
 import styles from './receipts.module.css';
 
 const ACCEPT = 'image/jpeg,image/png,image/webp';
@@ -30,12 +32,17 @@ export function ReceiptsPage() {
   const camera = useRef<HTMLInputElement>(null);
   const picker = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<{ code: string; refId: string | null } | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const closeCamera = useCallback(() => setCameraOpen(false), []);
 
-  async function send(event: ChangeEvent<HTMLInputElement>) {
+  function choose(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     // Cleared, so picking the same file again after an error still triggers a change.
     event.target.value = '';
-    if (!file) return;
+    if (file) void send(file);
+  }
+
+  async function send(file: Blob) {
     setError(null);
     try {
       const saved = await upload.mutateAsync(await shrinkImage(file));
@@ -73,18 +80,37 @@ export function ReceiptsPage() {
                 <Button
                   icon={<Icon name="camera" size={20} />}
                   loading={upload.isPending}
-                  onClick={() => camera.current?.click()}
+                  disabled={cameraOpen}
+                  onClick={() => {
+                    // Many browsers ignore `capture` and only open a file picker (laptops, some Android
+                    // browsers), so the camera is opened in the page when it can be; the phone's camera app if not.
+                    if (cameraSupport() === null) setCameraOpen(true);
+                    else camera.current?.click();
+                  }}
                 >
                   {t('receipts.upload.camera')}
                 </Button>
                 <Button
                   variant="secondary"
-                  disabled={upload.isPending}
+                  disabled={upload.isPending || cameraOpen}
                   onClick={() => picker.current?.click()}
                 >
                   {t('receipts.upload.file')}
                 </Button>
               </div>
+              {cameraOpen && (
+                <ReceiptCamera
+                  onCapture={(photo) => {
+                    setCameraOpen(false);
+                    void send(photo);
+                  }}
+                  onFallback={() => {
+                    setCameraOpen(false);
+                    camera.current?.click();
+                  }}
+                  onClose={closeCamera}
+                />
+              )}
               {/* Hidden inputs, opened by the buttons: one asks the phone for the back camera, one for a file. */}
               <input
                 ref={camera}
@@ -93,7 +119,7 @@ export function ReceiptsPage() {
                 accept={ACCEPT}
                 capture="environment"
                 hidden
-                onChange={(e) => void send(e)}
+                onChange={choose}
               />
               <input
                 ref={picker}
@@ -101,7 +127,7 @@ export function ReceiptsPage() {
                 type="file"
                 accept={ACCEPT}
                 hidden
-                onChange={(e) => void send(e)}
+                onChange={choose}
               />
               {upload.isPending && (
                 <p role="status" className={styles.waiting}>

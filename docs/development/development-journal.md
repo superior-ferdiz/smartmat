@@ -1047,3 +1047,30 @@ slettes senest 2026-11-23.
   `smartmat-private` er slettet. Først ble disken søkt gjennom etter flere kopier, og det fantes ingen. Fasiten og
   måleresultatene (tekst) står igjen til ADR-0017 er avgjort, senest 2026-11-23. Bildene ble også vist til
   KI-assistenten i chatten i fase 8, og den kopien kan ikke slettes herfra.
+
+## 2026-10-30 – Ferdinands forespørsler i testmiljøet (fase 14, tillegg)
+
+**Bakgrunn:** Ferdinand brukte testmiljøet og ba om fire endringer i én økt med KI (Claude):
+
+1. «Tillat å registrere ny bruker»: `REGISTRATION_OPEN=true` i `.env.staging`. Byggeflagget `VITE_REGISTRATION_OPEN`
+   følger nå samme variabel i `docker/staging/compose.yml`. Sjekket: registreringen svarer 400 på en tom forespørsel
+   (ikke 403). Caddys passord gjelder fortsatt.
+2. Kameraet åpnet seg ikke fra «Fra kvittering»: mange nettlesere overser `capture` og viser bare en filvelger. Ny
+   `ReceiptCamera` med `getUserMedia` (bakkamera, høy oppløsning); kamera-appen er reserve når kameraet ikke kan
+   brukes. Ikke testet på en ekte telefon av KI.
+3. «Produktoppslaget svarer ikke»: meldingen kom fra strekkodeskanneren, ikke kvitteringene. Open Food Facts var av
+   (tom `OFF_USER_AGENT`). Ny status `off`, og kvitterings- og kupongkoder (GS1 98/99) peker til kvitteringssiden.
+   Ferdinand valgte sin e-postadresse som kontakt i `OFF_USER_AGENT`.
+4. Varene fra kvitteringen og butikken Extra: linjeforslag slått på i testmiljøet (endrer ADR-0017 punkt 3 uten ny
+   måling, se notatet der), matvarelinjer krysset av for matlageret, ny lesing for logoen og gjettet butikk ut fra
+   husholdningens siste kjøp i samme kjedefamilie.
+
+**Personvern:** Ferdinand la tre ekte kvitteringer i chatten. De ble kjørt gjennom koden i containere uten nettverk,
+bare samlede felt ble vist, og kopiene i scratch-mappen og i containerne ble slettet. De er ikke i Git, tester,
+logger eller dokumentasjon. Et kjøretest-skript ble først kjørt inne i workeren og hang ved minnegrensen (512 MB);
+det ble stoppet og fjernet, og workeren var tilbake på normalt minne.
+
+**Resultat:** `npm test` 1378/1378 og API-testene 493/493 grønne, typecheck og lint rene (kjørt 2026-10-30, ikke
+lagret som bevisfil). Kjent begrensning: en skrått fotografert kvittering gir beløp på feil linje.
+
+**Neste:** Teamet bør prøve kameraet og kvitteringene på egne telefoner og avgjøre ADR-0017.

@@ -2,7 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import sharp from 'sharp';
 import { API_ERRORS, type PurchaseResponse, type ReceiptListResponse } from '@smartmat/shared';
-import { COOP_RECEIPT, GENERIC_RECEIPT } from '@smartmat/shared/test-fixtures/receipts';
+import {
+  COOP_RECEIPT,
+  GENERIC_RECEIPT,
+  NG_RECEIPT,
+  NOISY_COOP_RECEIPT,
+} from '@smartmat/shared/test-fixtures/receipts';
 import { createPurchaseRepo, ReceiptNotInReviewError } from '../src/modules/purchases/repo';
 import { createFakeClock } from '../src/test/fakes';
 import {
@@ -13,7 +18,7 @@ import {
   useTestDatabase,
   type Client,
 } from './helpers';
-import { inventoryOf, purchasesPath } from './purchaseHelpers';
+import { createPurchase, inventoryOf, purchasesPath } from './purchaseHelpers';
 import { locationsOf } from './inventoryHelpers';
 import {
   fakeOcr,
@@ -223,6 +228,68 @@ describe('FR-RCPT-003/004 reading in the background', () => {
     } finally {
       await withLines.close();
     }
+  });
+
+  it('no chain read: a second, harder reading finds the logo; a chain of another format is ignored', async () => {
+    user = await registerUser(app);
+    const found = await upload(app, user);
+    // The second reading sees the logo (made-up text: the Coop fixture has "EXTRA" at the top).
+    await runWorker(db, found.id, fakeOcr(ocrText(NOISY_COOP_RECEIPT)), fakeOcr(ocrText()));
+    expect((await reviewed(app, user, found.id)).suggestion).toMatchObject({
+      storeName: 'Extra',
+      chain: 'extra',
+      storeGuessed: false,
+    });
+
+    const wrong = await upload(app, user);
+    // A NorgesGruppen chain on a Coop-format receipt is a misreading.
+    await runWorker(
+      db,
+      wrong.id,
+      fakeOcr(ocrText(NOISY_COOP_RECEIPT)),
+      fakeOcr(ocrText(NG_RECEIPT)),
+    );
+    expect((await reviewed(app, user, wrong.id)).suggestion).toMatchObject({
+      storeName: null,
+      chain: null,
+      storeGuessed: false,
+    });
+  });
+
+  it("no chain anywhere: the household's latest store of the same format is suggested, as a guess", async () => {
+    user = await registerUser(app);
+    await createPurchase(app, user, {
+      storeName: 'Kiwi',
+      purchasedOn: '2026-10-20',
+      totalOre: 5000,
+      lines: [],
+    });
+    await createPurchase(app, user, {
+      storeName: 'extra',
+      purchasedOn: '2026-10-01',
+      totalOre: 5000,
+      lines: [],
+    });
+    await createPurchase(app, user, {
+      storeName: 'Bakeriet',
+      purchasedOn: '2026-10-22',
+      totalOre: 5000,
+      lines: [],
+    });
+    const receipt = await readyReceipt(user, ocrText(NOISY_COOP_RECEIPT));
+    expect((await reviewed(app, user, receipt.id)).suggestion).toMatchObject({
+      storeName: 'extra',
+      chain: null,
+      storeGuessed: true,
+    });
+
+    // Another household's purchases are never used.
+    const other = await registerUser(app);
+    const theirs = await readyReceipt(other, ocrText(NOISY_COOP_RECEIPT));
+    expect((await reviewed(app, other, theirs.id)).suggestion).toMatchObject({
+      storeName: null,
+      storeGuessed: false,
+    });
   });
 
   it.each([

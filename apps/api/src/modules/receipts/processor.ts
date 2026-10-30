@@ -1,4 +1,10 @@
-import { parseReceiptText, withoutPaymentLines } from '@smartmat/shared';
+import {
+  CHAIN_FORMAT,
+  CHAIN_NAMES,
+  parseReceiptText,
+  withoutPaymentLines,
+  type ParsedReceipt,
+} from '@smartmat/shared';
 import type { FastifyBaseLogger } from 'fastify';
 import type { OcrProvider } from '../../providers/ocr/types';
 import type { ReceiptRepo } from './repo';
@@ -14,6 +20,11 @@ export const RAW_TEXT_MAX_LENGTH = 100_000;
 export interface ReceiptProcessorDeps {
   repo: ReceiptRepo;
   ocr: OcrProvider;
+  /**
+   * Read again only when the first reading found no chain: a harder black-and-white image reads the logo more
+   * often (the Extra logo in the pilot). Only the chain is taken from it, and only one of the format already found.
+   */
+  chainOcr?: OcrProvider;
   log: Pick<FastifyBaseLogger, 'info' | 'warn'>;
   /** Milliseconds, for the duration. Tests pass a fake. */
   clock?: () => number;
@@ -53,6 +64,7 @@ export class ReceiptProcessor {
       return;
     }
     const parsed = parseReceiptText(lines);
+    if (!parsed.chain && this.deps.chainOcr) await this.findChain(claimed.jpeg, parsed);
     await repo.saveExtraction(receiptId, {
       engine: result.text.engine.slice(0, 60),
       rawText: lines
@@ -64,5 +76,22 @@ export class ReceiptProcessor {
       durationMs,
     });
     log.info({ receiptId, outcome: 'review', durationMs }, 'receipt job');
+  }
+
+  private async findChain(jpeg: Buffer, parsed: ParsedReceipt) {
+    let second;
+    try {
+      second = await this.deps.chainOcr!.recognize(jpeg);
+    } catch {
+      return;
+    }
+    if (!second.ok) return;
+    const chain = parseReceiptText(withoutPaymentLines(second.text.lines)).chain;
+    if (!chain) return;
+    // A chain of another format is a misreading (an item name in a garbled header), not the store.
+    if (parsed.format !== 'generic' && CHAIN_FORMAT[chain] !== parsed.format) return;
+    parsed.chain = chain;
+    parsed.format = CHAIN_FORMAT[chain];
+    parsed.storeName = CHAIN_NAMES[chain];
   }
 }

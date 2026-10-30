@@ -50,7 +50,9 @@ Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md)
    Containeren kjører migreringene og legger inn ingredienslisten selv. Den har ingen åpne porter. Workeren
    (`smartmat-staging-worker`) starter fra samme bilde og leser kvitteringskøen. Slå kvitteringslesing av med
    `OCR_PROVIDER=off`.
-5. **Kontoer** (registreringen er stengt):
+5. **Kontoer.** Registreringen er åpen fra 2026-10-30 (`REGISTRATION_OPEN=true`, Ferdinands forespørsel). Lenken i
+   nettappen følger samme innstilling via compose (`VITE_REGISTRATION_OPEN`). Med `REGISTRATION_OPEN=false` lages
+   kontoene slik:
    `docker exec -it smartmat-staging-app npm run -s create-user -w @smartmat/api -- --email … --name …`.
    Passordet skrives inn i terminalen og vises ikke.
 6. **Sikkerhetskopi** (ADR-0021): passfrase i `/etc/smartmat-backup/passphrase` (0600), og så

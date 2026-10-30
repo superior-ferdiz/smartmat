@@ -21,6 +21,7 @@ const line = (patch: Partial<ParsedReceiptLineResponse>): ParsedReceiptLineRespo
 
 const suggestion: ReceiptSuggestion = {
   storeName: 'Extra',
+  storeGuessed: false,
   chain: 'extra',
   purchasedOn: '2026-02-03',
   totalOre: 13232,
@@ -61,7 +62,7 @@ describe('FR-RCPT-005 fromSuggestion', () => {
     expect(start.dateGuessed).toBe(true);
   });
 
-  it('with line suggestions: lines with amount and kind, and weight or count as the quantity', () => {
+  it('with line suggestions: lines with amount and kind, weight or count as the quantity, food ticked for the inventory', () => {
     const start = fromSuggestion(
       {
         ...suggestion,
@@ -85,17 +86,28 @@ describe('FR-RCPT-005 fromSuggestion', () => {
         l.unit,
         l.quantity,
         l.locationId,
+        l.toInventory,
       ]),
     ).toEqual([
-      ['BANAN KG', '23,92', 'food', 'g', '1196', 'fridge-id'],
-      ['YOGHURT', '59,60', 'food', 'stk', '4', 'fridge-id'],
-      ['PANT', '2,00', 'nonFood', 'stk', '', 'fridge-id'],
-      ['UKJENT', '', 'food', 'stk', '', 'fridge-id'],
+      ['BANAN KG', '23,92', 'food', 'g', '1196', 'fridge-id', true],
+      ['YOGHURT', '59,60', 'food', 'stk', '4', 'fridge-id', true],
+      ['PANT', '2,00', 'nonFood', 'stk', '1', 'fridge-id', false],
+      ['UKJENT', '', 'food', 'stk', '1', 'fridge-id', true],
     ]);
-    // Nothing goes into the inventory and no category is guessed: the user decides.
-    expect(start.values.lines.every((l) => !l.toInventory && l.categoryKey === '')).toBe(true);
+    // No category is guessed: the user decides (and can untick a line).
+    expect(start.values.lines.every((l) => l.categoryKey === '')).toBe(true);
     const unknown = start.values.lines[3]!;
     expect(lineFlags(start.parsedByKey.get(unknown.key))).toEqual(['noAmount']);
+  });
+});
+
+describe('FR-RCPT-005 without a storage place', () => {
+  it('nothing is ticked for the inventory (the form would have nowhere to put it)', () => {
+    const start = fromSuggestion(
+      { ...suggestion, linesShown: true, lines: [line({ description: 'MELK', amountOre: 2490 })] },
+      '2026-10-24',
+    );
+    expect(start.values.lines[0]?.toInventory).toBe(false);
   });
 });
 

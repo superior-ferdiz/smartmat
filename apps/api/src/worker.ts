@@ -27,13 +27,16 @@ import { disabledOcrProvider, type OcrProvider } from './providers/ocr/types';
  */
 
 /** ADR-0017: variant "clean" (turned, cropped, normalised) and psm 4 gave the best result in the pilot. */
-export function ocrProviderFor(config: AppConfig['receipts']): OcrProvider {
+export function ocrProviderFor(
+  config: AppConfig['receipts'],
+  variant: 'clean' | 'threshold' = 'clean',
+): OcrProvider {
   if (config.ocrProvider === 'off') return disabledOcrProvider;
   return new TesseractOcr({
     command: config.tesseractCommand,
     language: 'nor',
     psm: 4,
-    variant: 'clean',
+    variant,
     timeoutMs: config.ocrTimeoutMs,
   });
 }
@@ -44,7 +47,12 @@ const log = pino({ level: config.logLevel });
 const db = createDb(config.databaseUrl);
 const repo = createReceiptRepo(db);
 const priceRepo = createPriceRepo(db);
-const processor = new ReceiptProcessor({ repo, ocr: ocrProviderFor(config.receipts), log });
+const processor = new ReceiptProcessor({
+  repo,
+  ocr: ocrProviderFor(config.receipts),
+  chainOcr: ocrProviderFor(config.receipts, 'threshold'),
+  log,
+});
 const STUCK_MS = 10 * 60 * 1000;
 
 const boss = await startJobs(config.databaseUrl, 'worker');

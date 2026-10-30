@@ -47,15 +47,23 @@ export const ocrText = (lines: readonly OcrLine[] = COOP_RECEIPT): OcrResult => 
 });
 
 /** The worker's job, run in the test with a fake OCR provider. */
-export async function runWorker(db: Db, receiptId: string, ocr: OcrProvider = fakeOcr(ocrText())) {
+export async function runWorker(
+  db: Db,
+  receiptId: string,
+  ocr: OcrProvider = fakeOcr(ocrText()),
+  chainOcr?: OcrProvider,
+) {
   const messages: string[] = [];
   const log = {
     info: (o: object, m: string) => void messages.push(JSON.stringify(o) + m),
     warn: (o: object, m: string) => void messages.push(JSON.stringify(o) + m),
   };
-  await new ReceiptProcessor({ repo: createReceiptRepo(db), ocr, log: log as never }).process(
-    receiptId,
-  );
+  await new ReceiptProcessor({
+    repo: createReceiptRepo(db),
+    ocr,
+    chainOcr,
+    log: log as never,
+  }).process(receiptId);
   return messages.join('\n');
 }
 

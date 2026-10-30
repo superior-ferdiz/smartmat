@@ -65,6 +65,8 @@ export interface ReceiptRepo {
     purchasedOn: string,
     totalOre: number,
   ): Promise<string | null>;
+  /** The store name of the household's latest purchase from one of these stores (case does not matter). */
+  lastStoreAmong(householdId: string, storeNames: readonly string[]): Promise<string | null>;
 
   // ----- worker -----
   /** queued → processing, and the image to read. Null if the receipt is gone or not queued. */
@@ -184,6 +186,21 @@ export function createReceiptRepo(db: Db): ReceiptRepo {
         select: { id: true },
       });
       return row?.id ?? null;
+    },
+
+    async lastStoreAmong(householdId, storeNames) {
+      if (storeNames.length === 0) return null;
+      const row = await db.purchase.findFirst({
+        where: {
+          householdId,
+          OR: storeNames.map((name) => ({
+            storeName: { equals: name, mode: 'insensitive' as const },
+          })),
+        },
+        orderBy: [{ purchasedOn: 'desc' }, { createdAt: 'desc' }],
+        select: { storeName: true },
+      });
+      return row?.storeName ?? null;
     },
 
     async claim(receiptId) {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReceiptResponse, ReceiptSuggestion } from '@smartmat/shared';
@@ -15,6 +15,7 @@ const NOW = new Date().toISOString();
 
 const suggestion: ReceiptSuggestion = {
   storeName: 'Extra',
+  storeGuessed: false,
   chain: 'extra',
   purchasedOn: '2026-02-03',
   totalOre: 13232,
@@ -148,6 +149,104 @@ describe('FR-RCPT-001 the upload page', () => {
   });
 });
 
+describe('FR-RCPT-001 the camera inside the page', () => {
+  let secure: PropertyDescriptor | undefined;
+  afterEach(() => {
+    if (secure) Object.defineProperty(window, 'isSecureContext', secure);
+    else delete (window as { isSecureContext?: boolean }).isSecureContext;
+    secure = undefined;
+    Reflect.deleteProperty(navigator, 'mediaDevices');
+    vi.restoreAllMocks();
+  });
+
+  function fakeCamera(getUserMedia: () => Promise<MediaStream>) {
+    secure = Object.getOwnPropertyDescriptor(window, 'isSecureContext');
+    Object.defineProperty(window, 'isSecureContext', { value: true, configurable: true });
+    Object.defineProperty(navigator, 'mediaDevices', {
+      value: { getUserMedia: vi.fn(getUserMedia) },
+      configurable: true,
+    });
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+  }
+
+  const uploaded = () =>
+    mockApi((r) => {
+      if (r.path === `${H}/receipts` && r.method === 'GET') return { status: 200, body: list() };
+      if (r.path === `${H}/receipts` && r.method === 'POST') {
+        return {
+          status: 202,
+          body: {
+            id: RECEIPT_ID,
+            status: 'queued',
+            failureCode: null,
+            createdAt: NOW,
+            deleteAfter: NOW,
+          },
+        };
+      }
+      if (r.path === `${H}/receipts/${RECEIPT_ID}`)
+        return { status: 200, body: receipt({ status: 'queued', suggestion: null }) };
+      return undefined;
+    });
+
+  it('"Ta bilde" opens the back camera in the page; the photo is sent and the camera stopped', async () => {
+    const track = { stop: vi.fn() };
+    fakeCamera(() => Promise.resolve({ getTracks: () => [track] } as unknown as MediaStream));
+    vi.spyOn(HTMLVideoElement.prototype, 'videoWidth', 'get').mockReturnValue(1280);
+    vi.spyOn(HTMLVideoElement.prototype, 'videoHeight', 'get').mockReturnValue(720);
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+      drawImage: vi.fn(),
+    } as unknown as CanvasRenderingContext2D);
+    vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation((callback) =>
+      callback(new Blob(['x'], { type: 'image/jpeg' })),
+    );
+    const requests = uploaded();
+    const user = userEvent.setup();
+    const { router } = renderApp('/budsjett/kvittering');
+    await user.click(await screen.findByRole('button', { name: 'Ta bilde' }));
+
+    expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalledWith(
+      expect.objectContaining({
+        audio: false,
+        video: expect.objectContaining({ facingMode: { ideal: 'environment' } }),
+      }),
+    );
+    await user.click(await screen.findByRole('button', { name: 'Ta bildet' }));
+
+    await waitFor(() =>
+      expect(router.state.location.pathname).toBe(`/budsjett/kvittering/${RECEIPT_ID}`),
+    );
+    expect(track.stop).toHaveBeenCalled();
+    const post = requests.find((r) => r.method === 'POST')!;
+    expect((post.body as FormData).get('image')).toBeInstanceOf(Blob);
+  });
+
+  it('camera refused: says so and offers the camera app instead', async () => {
+    fakeCamera(() => Promise.reject(new DOMException('no', 'NotAllowedError')));
+    uploaded();
+    const user = userEvent.setup();
+    const { container } = renderApp('/budsjett/kvittering');
+    await user.click(await screen.findByRole('button', { name: 'Ta bilde' }));
+
+    expect(await screen.findByText('Ingen tilgang til kameraet')).toBeInTheDocument();
+    const input = container.querySelector<HTMLInputElement>('#receipt-camera')!;
+    const click = vi.spyOn(input, 'click');
+    await user.click(screen.getByRole('button', { name: 'Bruk kamera-appen' }));
+    expect(click).toHaveBeenCalled();
+    expect(screen.queryByText('Ingen tilgang til kameraet')).not.toBeInTheDocument();
+  });
+
+  it("without camera access in the browser: the phone's camera app is asked at once", async () => {
+    uploaded();
+    const user = userEvent.setup();
+    const { container } = renderApp('/budsjett/kvittering');
+    await screen.findByRole('button', { name: 'Ta bilde' });
+    const click = vi.spyOn(container.querySelector<HTMLInputElement>('#receipt-camera')!, 'click');
+    await user.click(screen.getByRole('button', { name: 'Ta bilde' }));
+    expect(click).toHaveBeenCalled();
+  });
+});
+
 describe('FR-RCPT-003 waiting and failing', () => {
   it('queued: a status message, and the manual form as a way out', async () => {
     mockApi(() => ({
@@ -259,33 +358,37 @@ describe('FR-RCPT-005/006 review and confirm', () => {
   });
 
   it('with line suggestions: lines in the form, uncertain ones marked in words, and a sum that does not match', async () => {
-    mockApi(() => ({
-      status: 200,
-      body: receipt({
-        suggestion: {
-          ...suggestion,
-          linesShown: true,
-          linesSumOre: 2390,
-          sumMatches: false,
-          lines: [
-            {
-              description: 'SJOKOLADE',
-              amountOre: 2390,
-              kind: 'item',
-              discountOre: 0,
-              count: 2,
-              weightG: null,
-              unitPriceOre: 1195,
-              vatRate: null,
-              suggestedKind: 'food',
-              confidence: 80,
-              flags: ['quantityMismatch'],
-              uncertain: true,
-            },
-          ],
-        },
-      }),
-    }));
+    mockApi((r) =>
+      r.path !== `${H}/receipts/${RECEIPT_ID}`
+        ? undefined
+        : {
+            status: 200,
+            body: receipt({
+              suggestion: {
+                ...suggestion,
+                linesShown: true,
+                linesSumOre: 2390,
+                sumMatches: false,
+                lines: [
+                  {
+                    description: 'SJOKOLADE',
+                    amountOre: 2390,
+                    kind: 'item',
+                    discountOre: 0,
+                    count: 2,
+                    weightG: null,
+                    unitPriceOre: 1195,
+                    vatRate: null,
+                    suggestedKind: 'food',
+                    confidence: 80,
+                    flags: ['quantityMismatch'],
+                    uncertain: true,
+                  },
+                ],
+              },
+            }),
+          },
+    );
     renderApp(`/budsjett/kvittering/${RECEIPT_ID}`);
     expect(await screen.findByRole('radio', { name: 'Med linjer' })).toBeChecked();
     const lineGroup = screen.getByRole('group', { name: 'Linje 1' });
@@ -294,6 +397,59 @@ describe('FR-RCPT-005/006 review and confirm', () => {
     expect(
       screen.getByText(/Linjene blir 23,90 kr, men kvitteringen sier 132,32 kr/),
     ).toBeInTheDocument();
+  });
+
+  it('food lines start ticked for the inventory; a guessed store is pointed out', async () => {
+    const parsed = {
+      amountOre: 2490,
+      kind: 'item' as const,
+      discountOre: 0,
+      count: null,
+      weightG: null,
+      unitPriceOre: null,
+      vatRate: null,
+      confidence: 90,
+      flags: [],
+      uncertain: false,
+    };
+    mockApi((r) =>
+      r.path === `${H}/receipts/${RECEIPT_ID}`
+        ? {
+            status: 200,
+            body: receipt({
+              suggestion: {
+                ...suggestion,
+                storeName: 'Extra',
+                storeGuessed: true,
+                chain: null,
+                linesShown: true,
+                linesSumOre: 2690,
+                sumMatches: false,
+                lines: [
+                  { ...parsed, description: 'MELK', suggestedKind: 'food' },
+                  {
+                    ...parsed,
+                    description: 'PANT',
+                    amountOre: 200,
+                    kind: 'deposit',
+                    suggestedKind: 'nonFood',
+                  },
+                ],
+              },
+            }),
+          }
+        : undefined,
+    );
+    renderApp(`/budsjett/kvittering/${RECEIPT_ID}`);
+    expect(
+      await screen.findByText(/Vi fant ikke butikknavnet på kvitteringen/),
+    ).toBeInTheDocument();
+    const milk = screen.getByRole('group', { name: 'Linje 1' });
+    expect(within(milk).getByRole('checkbox', { name: 'Legg i matlageret' })).toBeChecked();
+    const deposit = screen.getByRole('group', { name: 'Linje 2' });
+    expect(
+      within(deposit).queryByRole('checkbox', { name: 'Legg i matlageret' }),
+    ).not.toBeInTheDocument();
   });
 
   it('a possible duplicate: warns with a link, and "save anyway" sends allowPossibleDuplicate', async () => {

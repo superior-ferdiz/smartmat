@@ -64,6 +64,15 @@ export function isStoreCode(gtin: string): boolean {
 }
 
 /**
+ * GS1 prefixes 98 and 99: coupons and refund receipts – also the barcode printed at the bottom of a till receipt.
+ * Never a product, so never looked up or remembered; the scan page points to receipt upload instead.
+ */
+export function isReceiptCode(gtin: string): boolean {
+  const gtin13 = gtin.length === 14 ? gtin.slice(1) : gtin;
+  return gtin13.length === 13 && (gtin13.startsWith('98') || gtin13.startsWith('99'));
+}
+
+/**
  * Turns what was typed or scanned into a GTIN, or says what is wrong with it.
  * Spaces and hyphens are removed. UPC-A gets a leading 0 (13 digits); a GTIN-14 that starts with 0 is the
  * GTIN-13 after it. Eight digits are EAN-8, unless the camera said the code is UPC-E.
@@ -85,5 +94,5 @@ export function normalizeGtin(input: string, format?: ScanFormat): GtinResult {
   let gtin = full;
   if (gtin.length === 12) gtin = `0${gtin}`;
   if (gtin.length === 14 && gtin.startsWith('0')) gtin = gtin.slice(1);
-  return { ok: true, gtin, storeCode: isStoreCode(gtin) };
+  return { ok: true, gtin, storeCode: isStoreCode(gtin) || isReceiptCode(gtin) };
 }

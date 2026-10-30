@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import {
   API_ERRORS,
+  CHAIN_NAMES,
+  chainsWithFormat,
   parsedReceiptLineSchema,
   RECEIPT_CHAINS,
   RECEIPT_FORMATS,
@@ -131,11 +133,21 @@ export class ReceiptService {
     if (!row) throw notFound();
     const parse = row.status === 'review' ? readParse(row) : null;
     const linesShown = this.deps.config.lineSuggestions;
+    // The logo is often a picture OCR cannot read. The layout still tells Coop from NorgesGruppen and Rema, so
+    // the chain of that family the household bought from last is suggested – as a guess the page points out.
+    let storeName = parse?.storeName ?? null;
+    let storeGuessed = false;
+    if (parse && !storeName && parse.format !== 'generic') {
+      const names = chainsWithFormat(parse.format).map((chain) => CHAIN_NAMES[chain]);
+      storeName = await this.deps.repo.lastStoreAmong(householdId, names);
+      storeGuessed = storeName !== null;
+    }
     return {
       ...summary(row),
       purchaseId: row.purchaseId,
       suggestion: parse && {
-        storeName: parse.storeName,
+        storeName,
+        storeGuessed,
         chain: parse.chain,
         purchasedOn: parse.date,
         totalOre: parse.totalOre,

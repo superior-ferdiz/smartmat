@@ -13,6 +13,7 @@ import { ErrorState } from '../../components/ErrorState/ErrorState';
 import { Icon } from '../../components/Icon/Icon';
 import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { useToast } from '../../components/Toast/toastContext';
+import { useLocations } from '../../inventory/api';
 import { useToday } from '../../inventory/formatHooks';
 import { Page } from '../../layout/Page';
 import { PurchaseForm } from '../../purchases/PurchaseForm';
@@ -54,7 +55,7 @@ export function ReceiptPage() {
       content = <Waiting receipt={data} />;
     else if (data.status === 'failed') content = <Failed receipt={data} />;
     else if (data.status === 'confirmed') content = <Confirmed receipt={data} />;
-    else content = <Review receipt={data} />;
+    else content = <ReviewWithLocations receipt={data} />;
   }
 
   // "Check the receipt" only when there is something to check; otherwise the plain title.
@@ -141,7 +142,15 @@ function Confirmed({ receipt }: { receipt: ReceiptResponse }) {
   );
 }
 
-function Review({ receipt }: { receipt: ReceiptResponse }) {
+/** The food lines start ticked for the inventory, so the storage places must be known before the form starts. */
+function ReviewWithLocations({ receipt }: { receipt: ReceiptResponse }) {
+  const { t } = useTranslation();
+  const locations = useLocations();
+  if (locations.isPending) return <LoadingState label={t('receipts.loading')} />;
+  return <Review receipt={receipt} locationId={locations.data?.[0]?.id ?? ''} />;
+}
+
+function Review({ receipt, locationId }: { receipt: ReceiptResponse; locationId: string }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { show } = useToast();
@@ -150,7 +159,7 @@ function Review({ receipt }: { receipt: ReceiptResponse }) {
   const confirm = useConfirmReceipt(receipt.id);
   // The form starts from the suggestion once; later refetches must not throw away what the user typed.
   const [start] = useState(() =>
-    receipt.suggestion ? fromSuggestion(receipt.suggestion, today) : null,
+    receipt.suggestion ? fromSuggestion(receipt.suggestion, today, locationId) : null,
   );
   const [conflict, setConflict] = useState<{ code: string; refId: string | null } | null>(null);
   const [allowDuplicate, setAllowDuplicate] = useState(false);
@@ -179,6 +188,11 @@ function Review({ receipt }: { receipt: ReceiptResponse }) {
           </Alert>
         )}
         {start.dateGuessed && <Alert variant="warning">{t('receipts.review.dateGuessed')}</Alert>}
+        {suggestion.storeGuessed && suggestion.storeName && (
+          <Alert variant="warning">
+            {t('receipts.review.storeGuessed', { store: suggestion.storeName })}
+          </Alert>
+        )}
         {!suggestion.linesShown ? (
           <Alert variant="info">{t('receipts.review.totalOnly')}</Alert>
         ) : (

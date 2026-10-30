@@ -35,6 +35,9 @@ services:
     build:
       context: ../..
       dockerfile: docker/staging/Dockerfile
+      # The registration link in the web app follows the API's switch, so the two cannot disagree.
+      args:
+        VITE_REGISTRATION_OPEN: ${REGISTRATION_OPEN:-false}
     image: smartmat-staging-app
     container_name: smartmat-staging-app
     depends_on:

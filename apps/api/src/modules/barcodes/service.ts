@@ -142,6 +142,7 @@ export class BarcodeService {
         result.reason,
       );
     }
+    if (result.reason === 'disabled') return answer('none', 'off', EMPTY, null, result.reason);
     return answer('none', 'unavailable', EMPTY, null, result.reason);
   }
 

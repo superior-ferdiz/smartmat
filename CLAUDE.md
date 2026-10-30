@@ -11,6 +11,8 @@ It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN
   `smartmat`, random password in `/opt/Websites/smartmat-private/testmiljo-passord.txt`, never shown in the chat). Team accounts
   `ferdinand@smartmat.test` / `linus@smartmat.test` since 2026-10-29 (passwords in `smartmat-private/kontoer-testmiljo.txt`;
   Ferdinand asked to see them in the chat). Changing the basic-auth password needs an explicit request (Caddyfile).
+  Since 2026-10-30 (Ferdinand's requests) staging has `REGISTRATION_OPEN=true` (the web flag follows it via
+  compose), `OFF_USER_AGENT` with Ferdinand's e-mail, and `RECEIPT_LINE_SUGGESTIONS=true` (ADR-0017 note).
   `caddy hash-password` reads a line from stdin: pipe it with a trailing newline, never use `-t` with a redirect. Git since 2026-10-20 (ADR-0013): private repo
   `git@github.com:superior-ferdiz/smartmat.git`, branch `main`; one branch per phase (`fase-2`), the team opens and
   approves the pull request on GitHub. Commits from this server carry Ferdinand's identity, so
@@ -224,6 +226,12 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - Error bodies may carry `refId` (id of the conflicting row – never content). URLs are logged without query string.
 - In shared code, `as const` arrays for unions (the øre-code regex in `locales.test.ts`); typed i18n keys mean
   ``t(`receipts.flags.${flag}`)`` from a typed union, not `t(someString)`.
+- The worker reads a receipt again with `threshold` (`chainOcr`) only when no chain was found; only a chain of the
+  same format is taken. Without one, `ReceiptService.get` suggests the household's latest store of that chain
+  family (`storeGuessed`). Receipt food lines start ticked for the inventory (first location).
+- The receipt page opens the camera in the page (`ReceiptCamera`, getUserMedia); the `capture` input is the fallback.
+  GS1 98/99 codes (`isReceiptCode`) are receipts/coupons: never looked up. Barcode `providerStatus: 'off'` = no
+  `OFF_USER_AGENT` (not "unavailable").
 - pg-boss `singletonKey` does not deduplicate in a standard queue; the worker's conditional claim
   (`queued → processing`) makes a second job harmless.
 

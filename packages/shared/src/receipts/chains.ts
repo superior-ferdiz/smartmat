@@ -78,6 +78,11 @@ const FORMAT_CLUES: [ReceiptFormat, RegExp][] = [
   ['rema', /\bREMA\b/],
 ];
 
+/** The chains that print a format, in the order of RECEIPT_CHAINS. */
+export function chainsWithFormat(format: ReceiptFormat): ReceiptChain[] {
+  return RECEIPT_CHAINS.filter((chain) => CHAIN_FORMAT[chain] === format);
+}
+
 export function detectChain(headerLines: readonly string[]): ReceiptChain | null {
   const header = headerLines.map((line) => line.toUpperCase());
   for (const [chain, pattern] of CHAIN_PATTERNS) {

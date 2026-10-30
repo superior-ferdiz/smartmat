@@ -209,12 +209,43 @@ describe('FR-SCAN-002/-005 from lookup to the pantry', () => {
       found({ storeCode: true, source: 'none', providerStatus: 'notAsked', suggestion: empty }),
       /Butikkens egen kode/,
     ],
+    [
+      found({ source: 'none', providerStatus: 'off', suggestion: empty }),
+      /Produktoppslag er ikke slått på/,
+    ],
+    [
+      found({
+        gtin: '9812345678902',
+        storeCode: true,
+        source: 'none',
+        providerStatus: 'notAsked',
+        suggestion: empty,
+      }),
+      /strekkoden på en kvittering eller kupong/,
+    ],
     [found({ source: 'household', providerStatus: 'notAsked' }), /Dere har skannet denne før/],
   ])('says where the answers come from (%#)', async (lookup, text) => {
     api(lookup);
     renderApp(`/skann?kode=${GTIN}`);
     expect(await screen.findByText(text)).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: 'Legg i matlageret' })).toBeInTheDocument();
+  });
+
+  it("a receipt's own barcode: says so and links to receipt upload", async () => {
+    api(
+      found({
+        gtin: '9812345678902',
+        storeCode: true,
+        source: 'none',
+        providerStatus: 'notAsked',
+        suggestion: empty,
+      }),
+    );
+    renderApp('/skann?kode=9812345678902');
+    expect(await screen.findByRole('link', { name: 'Les kvitteringen i stedet' })).toHaveAttribute(
+      'href',
+      '/budsjett/kvittering',
+    );
   });
 
   it('the item from last time: "new batch" is chosen; the item fields are hidden', async () => {

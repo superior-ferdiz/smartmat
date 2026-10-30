@@ -2,6 +2,15 @@
 
 ## [Ikke utgitt]
 
+### Fase 14, tillegg – 2026-10-30 (grenen `fase-14`, Ferdinands forespørsler)
+- **Kvitteringer:** kameraet åpnes i siden (`getUserMedia`), med telefonens kamera-app som reserve. Linjeforslag er på
+  i testmiljøet, og matvarelinjer krysses av for matlageret fra start (antall eller vekt fra kvitteringen). Ny lesing
+  med `threshold` når kjeden ikke ble funnet (Extra-logoen), ellers husholdningens siste butikk i samme kjedefamilie,
+  merket som gjettet (`storeGuessed`).
+- **Strekkodeskanneren:** kvitterings- og kupongkoder (GS1 98/99) slås ikke opp og peker til kvitteringssiden.
+  Ny status `off` når Open Food Facts ikke er satt opp.
+- **Testmiljøet:** registreringen er åpen, Open Food Facts er på (`OFF_USER_AGENT`), linjeforslag er på.
+
 ### Fase 14 – 2026-10-27 (grenen `fase-14`)
 - **Bevis:** [bevisoversikt.md](../evidence/bevisoversikt.md) med testresultater, feilede forsøk, mutasjonskontroll,
   målinger og skjermbilder per fase, og hva som ikke er testet. Tallene er lest fra de lagrede filene.

@@ -92,6 +92,14 @@ før noen ser på dem, som et rent kontrollsett.
    linjer selv. Dette følger regelen i spesifikasjon 08.
 3. **Linjeforslag** finnes, men er av (`RECEIPT_LINE_SUGGESTIONS=false`). Teamet kan slå det på når en ny måling
    viser at beløpene holder. Når det er på, er alle usikre linjer merket, og avvik mellom linjesum og total vises.
+   **Endret i testmiljøet 2026-10-30:** linjeforslag er slått på (`RECEIPT_LINE_SUGGESTIONS=true`) på Ferdinands
+   forespørsel («vises bare totalsum og ikke hver og hver matvare»), **uten ny måling**. Standarden i koden er
+   fortsatt av. Matvarelinjer er krysset av for matlageret fra start, og brukeren retter før bekreftelsen.
+   Samtidig: når ingen kjede er lest, leser workeren bildet én gang til med `threshold` for å finne logoen (bare en
+   kjede med samme format godtas), og ellers foreslås husholdningens siste butikk i samme kjedefamilie, merket som
+   gjettet. Tre nye kvitteringer fra Ferdinand ble kjørt gjennom koden i en container uten nettverk og slettet
+   etterpå: dato og total riktige på 3 av 3, kjeden funnet på 2 av 3 (Kiwi, Extra), linjene riktige på 1 av 3. Dette
+   er ingen ny måling etter metoden over.
 4. **Skytjeneste:** vurderes ikke nå. Det krever teamets godkjenning og dokumenterte vilkår (ADR-0011), og tallene
    over sier ikke om en skytjeneste ville vært bedre.
 

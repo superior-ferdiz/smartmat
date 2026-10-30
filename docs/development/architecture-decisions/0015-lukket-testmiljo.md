@@ -24,6 +24,8 @@ så skanning kan ikke testes på en ekte telefon. Serveren kjører også andre n
     `Authorization` før forespørselen går videre (`header_up -Authorization`).
   - `REGISTRATION_OPEN=false` gjør at registreringen svarer 403, og lenken til den skjules. Kontoene lages med et
     skript (`npm run create-user`) via `docker exec`, bare for teamet.
+  - **Endret 2026-10-30:** registreringen er åpnet (`REGISTRATION_OPEN=true`) på Ferdinands forespørsel («Tillat å
+    registrere ny bruker»). Caddys passord gjelder fortsatt, så bare de som har det, kommer til registreringen.
   - `X-Robots-Tag: noindex, nofollow`.
 - **Bare testdata:** et banner sier «Testmiljø – bruk bare testdata. Ikke legg inn ekte allergier.» Ingen
   sikkerhetskopier. Ingredienslisten (KI-utkast) legges inn, men ingen oppskrifter.

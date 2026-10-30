@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { checkDigit, expandUpcE, hasValidCheckDigit, isStoreCode, normalizeGtin } from './gtin';
+import {
+  checkDigit,
+  expandUpcE,
+  hasValidCheckDigit,
+  isReceiptCode,
+  isStoreCode,
+  normalizeGtin,
+} from './gtin';
 import { categoryFromOffTags } from './offCategories';
 import { gtinSchema } from '../schemas/barcodes';
 
@@ -140,6 +147,21 @@ describe('store codes (spec 07)', () => {
   it('normalizeGtin marks store codes', () => {
     expect(normalizeGtin('2312345000125')).toMatchObject({ ok: true, storeCode: true });
     expect(normalizeGtin('20123451')).toMatchObject({ ok: true, storeCode: true });
+  });
+});
+
+describe('receipt and coupon codes (GS1 98/99)', () => {
+  it.each([
+    ['9812345678902', true], // made up: the kind of code printed at the bottom of a till receipt
+    ['9900001234569', true],
+    ['7038010000737', false],
+    ['98123456', false], // EAN-8: the prefix rule is for 13 digits only
+  ])('%s → %s', (gtin, expected) => {
+    expect(isReceiptCode(gtin)).toBe(expected);
+  });
+
+  it('normalizeGtin never sends them to the lookup', () => {
+    expect(normalizeGtin('9812345678902')).toMatchObject({ ok: true, storeCode: true });
   });
 });
 

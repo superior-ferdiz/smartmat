@@ -14,8 +14,9 @@ export type ScanSource = (typeof SCAN_SOURCES)[number];
 /**
  * What happened with Open Food Facts. notAsked: the household knew the code, or it is a store's own code.
  * unavailable: timeout, error, invalid answer or our own limit (NFR-REL-001) – the user fills in the form.
+ * off: the lookup is not switched on on this server (no OFF_USER_AGENT), so it is not "down".
  */
-export const PROVIDER_STATUSES = ['notAsked', 'found', 'notFound', 'unavailable'] as const;
+export const PROVIDER_STATUSES = ['notAsked', 'found', 'notFound', 'unavailable', 'off'] as const;
 export type ProviderStatus = (typeof PROVIDER_STATUSES)[number];
 
 export const scanSuggestionSchema = z.object({

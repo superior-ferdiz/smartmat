@@ -1299,13 +1299,16 @@
       "loading": "Slår opp strekkoden …",
       "brand": "Merke: {{brand}}.",
       "another": "Skann en annen vare",
+      "toReceipts": "Les kvitteringen i stedet",
       "status": {
         "found": "Funnet i Open Food Facts. Sjekk og rett før du legger til.",
         "household": "Dere har skannet denne før. Svarene fra sist er fylt ut.",
         "notFound": "Vi fant ikke denne strekkoden. Fyll inn selv, så husker vi den til neste gang.",
         "unavailable": "Produktoppslaget svarer ikke akkurat nå. Fyll inn selv.",
         "storeCode": "Butikkens egen kode (for eksempel for vekt eller pris). Fyll inn selv. Koden blir ikke husket.",
-        "notAsked": "Fyll inn selv."
+        "notAsked": "Fyll inn selv.",
+        "off": "Produktoppslag er ikke slått på i denne versjonen av SmartMat. Fyll inn selv.",
+        "receiptCode": "Dette er strekkoden på en kvittering eller kupong, ikke på en vare."
       }
     },
     "form": {
@@ -1342,6 +1345,13 @@
       "uploading": "Laster opp …",
       "openExisting": "Åpne den",
       "privacy": "Bildet behandles bare på vår server. Posisjon og annen informasjon fra kameraet fjernes. Bildet slettes når du har bekreftet kjøpet, eller etter 7 dager."
+    },
+    "camera": {
+      "shoot": "Ta bildet",
+      "cancel": "Avbryt",
+      "hint": "Få med hele kvitteringen, og hold telefonen stille når du trykker.",
+      "fallback": "Bruk kamera-appen",
+      "fallbackText": "Du kan bruke kamera-appen på telefonen eller velge en fil i stedet."
     },
     "unavailable": {
       "title": "Kvitteringslesing er ikke tilgjengelig",
@@ -1384,6 +1394,7 @@
       "lowConfidenceTitle": "Lav sikkerhet",
       "lowConfidence": "Bildet var vanskelig å lese. Sjekk alle feltene nøye.",
       "dateGuessed": "Vi fant ikke datoen. Dagens dato er fylt inn – sjekk den.",
+      "storeGuessed": "Vi fant ikke butikknavnet på kvitteringen. Den ligner på kvitteringer fra {{store}}, der dere handlet sist, så det er fylt inn. Rett det om det er feil.",
       "totalOnly": "Vi fyller inn butikk, dato og total. Linjene leses ikke godt nok ennå. Vil du ha varene i matlageret, velg «Med linjer» og legg dem til selv.",
       "sumMismatch": "Linjene blir {{lines}}, men kvitteringen sier {{total}}. Sjekk beløpene.",
       "rawText": "Teksten vi leste",

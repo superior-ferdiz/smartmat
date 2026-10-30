@@ -1299,13 +1299,16 @@
       "loading": "Looking up the barcode …",
       "brand": "Brand: {{brand}}.",
       "another": "Scan another item",
+      "toReceipts": "Read the receipt instead",
       "status": {
         "found": "Found in Open Food Facts. Check and correct before adding.",
         "household": "You have scanned this before. Last time's answers are filled in.",
         "notFound": "We did not find this barcode. Fill it in yourself, and we will remember it next time.",
         "unavailable": "The product lookup is not answering right now. Fill it in yourself.",
         "storeCode": "The store's own code (for example for weight or price). Fill it in yourself. The code is not remembered.",
-        "notAsked": "Fill it in yourself."
+        "notAsked": "Fill it in yourself.",
+        "off": "Product lookup is not switched on in this version of SmartMat. Fill in the form yourself.",
+        "receiptCode": "This is the barcode on a receipt or coupon, not on a product."
       }
     },
     "form": {
@@ -1342,6 +1345,13 @@
       "uploading": "Uploading …",
       "openExisting": "Open it",
       "privacy": "The image is only processed on our server. Location and other camera information are removed. The image is deleted when you confirm the purchase, or after 7 days."
+    },
+    "camera": {
+      "shoot": "Take the photo",
+      "cancel": "Cancel",
+      "hint": "Get the whole receipt in the picture, and hold the phone still when you press.",
+      "fallback": "Use the camera app",
+      "fallbackText": "You can use the phone's camera app or choose a file instead."
     },
     "unavailable": {
       "title": "Receipt reading is not available",
@@ -1384,6 +1394,7 @@
       "lowConfidenceTitle": "Low confidence",
       "lowConfidence": "The image was hard to read. Check every field carefully.",
       "dateGuessed": "We could not find the date. Today’s date is filled in – check it.",
+      "storeGuessed": "We could not find the store name on the receipt. It looks like receipts from {{store}}, where you shopped last, so that is filled in. Correct it if it is wrong.",
       "totalOnly": "We fill in the store, date and total. The lines are not read well enough yet. To put the items in your food stock, choose \"With lines\" and add them yourself.",
       "sumMismatch": "The lines add up to {{lines}}, but the receipt says {{total}}. Check the amounts.",
       "rawText": "The text we read",

@@ -150,6 +150,13 @@ describe('FR-SCAN-002 lookup order', () => {
     expect(s.provider.lookup).toHaveBeenCalledTimes(2);
   });
 
+  it('lookup switched off (no OFF_USER_AGENT) → "off", not "unavailable"', async () => {
+    const s = setup({ result: { status: 'unavailable', reason: 'disabled' } });
+    const { response, unavailable } = await lookup(s);
+    expect(response).toMatchObject({ source: 'none', providerStatus: 'off' });
+    expect(unavailable).toBe('disabled');
+  });
+
   it('NFR-REL-001: OFF unavailable but an old cached answer exists → the old answer', async () => {
     const s = setup({ result: { status: 'unavailable', reason: 'httpError' } });
     s.products.set(CODE.gtin, { product: PRODUCT, fetchedAt: new Date('2025-01-01T00:00:00Z') });
