@@ -1,0 +1,69 @@
+{
+  "slug": "risengrynsgrot",
+  "title": "Risengrynsgrøt",
+  "description": "Ris kokt i melk med litt sukker. Serveres varm med smør og kanelsukker.",
+  "servings": 2,
+  "prepMinutes": 5,
+  "cookMinutes": 40,
+  "tags": ["middag", "grøt", "vegetar", "jul"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Risengrød",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4597644",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "translated",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "vann",
+      "amount": "3",
+      "unit": "dl",
+      "text": "3 dl vann"
+    },
+    {
+      "ingredient": "grotris",
+      "amount": "180",
+      "unit": "g",
+      "text": "180 g grøtris"
+    },
+    {
+      "ingredient": "melk",
+      "amount": "1",
+      "unit": "l",
+      "text": "1 liter helmelk"
+    },
+    {
+      "ingredient": "salt",
+      "text": "2 klyper salt"
+    },
+    {
+      "ingredient": "sukker",
+      "amount": "4",
+      "unit": "ss",
+      "text": "4 ss sukker"
+    },
+    {
+      "ingredient": "kanel",
+      "amount": "2",
+      "unit": "ts",
+      "text": "2 ts kanel"
+    },
+    {
+      "ingredient": "smor",
+      "amount": "50",
+      "unit": "g",
+      "text": "50 g smør"
+    }
+  ],
+  "steps": [
+    "Kok opp vann og ris i en dyp gryte. Kok risen på jevn varme i omtrent 2 minutter, og rør hele tiden.",
+    "Tilsett melken og kok opp igjen. La grøten småkoke på lav varme i omtrent 10 minutter, og rør godt.",
+    "Legg på lokk og la grøten småkoke i omtrent 30 minutter. Rør ofte, så den ikke svir seg.",
+    "Kjenn om grøten er tykk nok. Er den for tynn, kok den 5–10 minutter til.",
+    "Tilsett salt.",
+    "Bland sukker og kanel i en bolle.",
+    "Server grøten varm med kanelsukker på toppen og en klatt smør i midten."
+  ]
+}

@@ -1,0 +1,7 @@
+$ npx prettier --check .
+# Kjørt 2026-10-21 18:26:02 UTC, Node v22.14.0, npm 11.1.0
+
+Checking formatting...
+All matched files use Prettier code style!
+
+# exit code: 0

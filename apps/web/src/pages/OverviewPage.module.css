@@ -98,49 +98,9 @@
   font-size: var(--font-size-sm);
 }
 
-/* Figures: definition list laid out as a small grid. */
-.figures {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-
-.figures > div:first-child {
-  grid-column: 1 / -1;
-}
-
-.figures dt {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.figures dd {
-  font-weight: var(--font-weight-semibold);
-}
-
 .bigNumber {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-}
-
-.bar {
-  height: 0.75rem;
-  margin-top: var(--space-4);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-sunken);
-  overflow: hidden;
-}
-
-.barFill {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--color-primary);
-}
-
-.barText {
-  margin-top: var(--space-1);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
 }
 
 .actionList {

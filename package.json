@@ -12,7 +12,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "npm run dev -w @smartmat/web",
+    "dev": "concurrently --names api,web --prefix-colors blue,green \"npm run dev -w @smartmat/api\" \"npm run dev -w @smartmat/web\"",
     "build": "npm run build -w @smartmat/web",
     "typecheck": "tsc -p tsconfig.json && npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
@@ -21,13 +21,25 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "check": "npm run check:files && npm run typecheck && npm run lint && npm run test && npm run test:api && npm run build",
+    "check:files": "node scripts/check-files.mjs",
+    "postinstall": "prisma generate",
+    "dev:web": "npm run dev -w @smartmat/web",
+    "dev:api": "npm run dev -w @smartmat/api",
+    "db:up": "docker compose -f docker/compose.yml --env-file .env up -d --wait",
+    "db:stop": "docker compose -f docker/compose.yml --env-file .env stop",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "db:seed": "npm run seed -w @smartmat/api --",
+    "test:api": "vitest run --config apps/api/vitest.db.config.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
     "@eslint/js": "9.39.5",
     "@playwright/test": "1.63.0",
     "@types/node": "22.20.5",
+    "concurrently": "10.0.6",
     "eslint": "9.39.5",
     "eslint-plugin-i18next": "6.1.5",
     "eslint-plugin-jsx-a11y": "6.10.2",
@@ -37,7 +49,7 @@
     "playwright-core": "1.63.0",
     "prettier": "3.9.10",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.72.0",
+    "typescript-eslint": "8.72.1",
     "vitest": "4.1.12"
   },
   "overrides": {

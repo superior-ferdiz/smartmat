@@ -1,0 +1,27 @@
+# docker/backup/test-backup.sh, kjørt 2026-10-27T13:20:28Z på serveren (egen midlertidig database, oppdiktede data)
+fixture: 3000 inventory events, 300 items and batches, 500 purchases, 1 receipt with image and OCR text
+PASS  backup runs and the check says ok
+PASS  backup directory 0700, file 0600
+PASS  status file: ok
+PASS  the file on disk is encrypted (no plain text, no dump header)
+PASS  decrypted, the dump has the user data
+PASS  no receipt image, no OCR text, no job queue data in the backup
+PASS  the receipt tables themselves are there (empty)
+PASS  restore test: every row read and identical
+      2026-10-27T13:20:37Z restore test OK: 35 tables, 4118 rows, every row read and identical to the backup's manifest
+PASS  restore test fails on a backup with one changed byte
+PASS  restore test fails when one table's rows differ from the manifest
+PASS        … and says that the content differs
+PASS  restore test fails with the wrong passphrase
+PASS  backup refuses a passphrase file that others can read
+PASS        … and the status file says failed
+PASS  check fails when the newest backup is 30 hours old
+PASS        … and the status file says stale
+PASS  a second backup
+PASS  a third backup, keeping 2
+PASS  only the newest 2 kept (BACKUP_KEEP=2), with their manifests
+PASS  check fails when there is no backup at all
+PASS        … and the status file says stale
+----
+21 passed, 0 failed
+exit=0

@@ -1,0 +1,48 @@
+# Testmiljøet etter nytt bygg, 2026-10-27T14:27:44Z. Caddy-blokken er IKKE lagt inn (passordhashen mangler), så dette er sjekket inne fra containeren.
+$ docker ps --filter name=smartmat-staging
+smartmat-staging-worker Up 56 seconds
+smartmat-staging-app Up 56 seconds
+smartmat-staging-db Up 45 hours (healthy)
+
+$ nett (docker inspect)
+smartmat-staging-app: smartmat-edge smartmat-staging-internal 
+smartmat-staging-worker: smartmat-staging-internal 
+smartmat-staging-db: smartmat-staging-internal 
+ghostwebsite-caddy-1: bungee caddy-edge ghostnetwork_ghostnetwork-internal ghostnetwork_mc_internal ghostweb ghostwebsite_ghostwebsite_default smartmat-edge 
+
+$ headere på / og /api/v1/health (fra containeren)
+/ 200
+  content-security-policy: default-src 'self';base-uri 'self';font-src 'self';form-action 'self';frame-ancestors 'none';img-src 'self' data:;object-src 'none';script-src 'self' 'wasm-unsafe-eval' 'sha256-pd2jJx9sw0nKeAxg1u3FxRR2qxjYmCZN9MdCy5AHFFg=';script-src-attr 'none';style-src 'self';connect-src 'self';media-src 'self' blob:
+  strict-transport-security: max-age=31536000; includeSubDomains
+  referrer-policy: no-referrer
+  cross-origin-opener-policy: same-origin
+  cross-origin-resource-policy: same-origin
+  x-content-type-options: nosniff
+  permissions-policy: camera=(self), microphone=(), geolocation=(), payment=()
+  x-powered-by: null
+  server: null
+/api/v1/health 200
+  content-security-policy: default-src 'self';base-uri 'self';font-src 'self';form-action 'self';frame-ancestors 'none';img-src 'self' data:;object-src 'none';script-src 'self' 'wasm-unsafe-eval' 'sha256-pd2jJx9sw0nKeAxg1u3FxRR2qxjYmCZN9MdCy5AHFFg=';script-src-attr 'none';style-src 'self';connect-src 'self';media-src 'self' blob:
+  strict-transport-security: max-age=31536000; includeSubDomains
+  referrer-policy: no-referrer
+  cross-origin-opener-policy: same-origin
+  cross-origin-resource-policy: same-origin
+  x-content-type-options: nosniff
+  permissions-policy: camera=(self), microphone=(), geolocation=(), payment=()
+  x-powered-by: null
+  server: null
+
+$ Caddy når appen på smartmat-edge
+{"status":"ok"}
+$ utgående trafikk fra appen
+api.pwnedpasswords.com 200
+world.openfoodfacts.org 200
+
+$ pgboss.schedule
+receipt-cleanup|*/15 * * * *|UTC
+session-cleanup|17 3 * * *|Europe/Oslo
+
+$ migreringer
+20261027130000_two_factor
+20261025170000_sessions_devices_purchase_version
+20261025150000_prices

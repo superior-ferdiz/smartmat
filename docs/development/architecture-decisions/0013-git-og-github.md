@@ -30,3 +30,6 @@ reversere endringer.
 ## Konsekvenser
 - Endringer kan spores og rulles tilbake. Fase 2 og senere kan bruke grener for større endringer.
 - Teamet må bli enige om arbeidsflyt (direkte på `main` eller via pull requests). Ikke avklart per 2026-10-20.
+- **Oppdatert 2026-10-20 (fase 2):** Ferdinand Risan bestemte arbeidsflyten i fase 2-prompten: en egen gren per fase
+  (`fase-2` fra `main`). Claude committer og pusher bare når teamet ber om det. Teamet oppretter og godkjenner selv
+  pull requesten på GitHub.

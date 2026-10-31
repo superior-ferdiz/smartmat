@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../components/Icon/Icon';
-import { MORE_SECTIONS } from '../app/navigation';
+import { MORE_SECTIONS, PRIVACY_PATH } from '../app/navigation';
 import { Page } from '../layout/Page';
 import styles from './MorePage.module.css';
 
@@ -31,6 +31,20 @@ export function MorePage() {
               </Link>
             </li>
           ))}
+          {/* Spec 13 (FR-PRIV-003): not a section of the app, but it should be easy to find. */}
+          <li>
+            <Link to={PRIVACY_PATH} className={styles.row}>
+              <span className={styles.icon}>
+                <Icon name="info" />
+              </span>
+              <span className={styles.text}>
+                <span className={styles.label}>{t('pages.privacy.title')}</span>
+                <span className={styles.description}>{t('pages.more.descriptions.privacy')}</span>
+              </span>
+              <span />
+              <Icon name="chevronRight" className={styles.chevron} />
+            </Link>
+          </li>
         </ul>
       </nav>
     </Page>

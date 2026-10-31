@@ -1,0 +1,1446 @@
+{
+  "meta": {
+    "writtenBy": "Claude (KI-utkast, fase 5, 2026-10-21; utvidet i fase 9, 2026-10-24, med ingrediensene de oversatte Wikibooks-oppskriftene bruker). Ikke skrevet av teamet.",
+    "reviewedBy": [],
+    "note": "Utkast. Allergenmerkingen og alle omregninger (for eksempel «1 egg ≈ 60 g») er anslag og må kontrolleres av teamet, gjerne mot Matvaretabellen og varenes egne ingredienslister, før noen stoler på dem. Allergener varierer mellom produkter (for eksempel pesto, karri og tacokrydder). Legg navnet ditt i reviewedBy når du har kontrollert listen."
+  },
+  "ingredients": [
+    {
+      "key": "melk",
+      "name": "Melk",
+      "baseUnit": "ml",
+      "category": "dairy",
+      "aliases": [
+        "lettmelk",
+        "helmelk",
+        "skummet melk",
+        "ekstra lett melk",
+        "lett melk",
+        "h-melk",
+        "laktosefri melk",
+        "laktosefri lettmelk"
+      ],
+      "allergens": ["milk"]
+    },
+    {
+      "key": "flote",
+      "name": "Fløte",
+      "baseUnit": "ml",
+      "category": "dairy",
+      "aliases": ["matfløte", "kremfløte", "kokefløte", "lettfløte", "matlagingsfløte"],
+      "allergens": ["milk"]
+    },
+    {
+      "key": "romme",
+      "name": "Rømme",
+      "baseUnit": "ml",
+      "category": "dairy",
+      "aliases": ["lettrømme", "seterrømme", "lett rømme"],
+      "allergens": ["milk"],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "smor",
+      "name": "Smør",
+      "baseUnit": "g",
+      "category": "dairy",
+      "aliases": ["meierismør", "usaltet smør"],
+      "allergens": ["milk"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "gulost",
+      "name": "Gulost",
+      "baseUnit": "g",
+      "category": "dairy",
+      "aliases": ["ost", "hvitost", "norvegia", "jarlsberg", "revet ost", "gouda", "cheddar"],
+      "allergens": ["milk"]
+    },
+    {
+      "key": "parmesan",
+      "name": "Parmesan",
+      "baseUnit": "g",
+      "category": "dairy",
+      "aliases": ["parmesanost", "parmigiano", "parmigiano reggiano"],
+      "allergens": ["milk"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 40,
+          "note": "Revet ost. Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "yoghurt-naturell",
+      "name": "Yoghurt naturell",
+      "baseUnit": "g",
+      "category": "dairy",
+      "aliases": ["yoghurt", "matyoghurt", "gresk yoghurt", "naturell yoghurt"],
+      "allergens": ["milk"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "egg",
+      "name": "Egg",
+      "baseUnit": "stk",
+      "category": "dairy",
+      "aliases": [],
+      "allergens": ["egg"],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 60,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "kyllingfilet",
+      "name": "Kyllingfilet",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["kyllingbryst", "kylling filet", "kyllingfileter", "kylling"],
+      "allergens": []
+    },
+    {
+      "key": "kjottdeig",
+      "name": "Kjøttdeig",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["karbonadedeig", "storfekjøttdeig", "kjøttdeig av storfe", "kjøttdeig storfe"],
+      "allergens": []
+    },
+    {
+      "key": "bacon",
+      "name": "Bacon",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["baconterninger", "bacon i skiver", "baconskiver"],
+      "allergens": []
+    },
+    {
+      "key": "polser",
+      "name": "Pølser",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["pølse", "wienerpølser", "grillpølser"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 60,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "skinke",
+      "name": "Skinke",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["kokt skinke", "skinkestrimler", "skinketerninger"],
+      "allergens": []
+    },
+    {
+      "key": "laks",
+      "name": "Laks",
+      "baseUnit": "g",
+      "category": "fish",
+      "aliases": ["laksefilet", "laksefileter", "laksestykker"],
+      "allergens": ["fish"]
+    },
+    {
+      "key": "torsk",
+      "name": "Torsk",
+      "baseUnit": "g",
+      "category": "fish",
+      "aliases": ["torskefilet", "torskeloin", "torskeloins", "torskefileter"],
+      "allergens": ["fish"]
+    },
+    {
+      "key": "reker",
+      "name": "Reker",
+      "baseUnit": "g",
+      "category": "fish",
+      "aliases": ["reke", "kokte reker", "reker i lake", "pillede reker"],
+      "allergens": ["crustaceans"]
+    },
+    {
+      "key": "tunfisk",
+      "name": "Tunfisk",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["tunfisk i vann", "tunfisk i olje"],
+      "allergens": ["fish"]
+    },
+    {
+      "key": "lok",
+      "name": "Løk",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["gul løk", "kepaløk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 100,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "rodlok",
+      "name": "Rødløk",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["rød løk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 80,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "hvitlok",
+      "name": "Hvitløk",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["hvitløksfedd", "fedd hvitløk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 5,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "gulrot",
+      "name": "Gulrot",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["gulrøtter", "gulrøtt"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 70,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "potet",
+      "name": "Potet",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["poteter", "mandelpoteter", "kokepoteter", "nypoteter", "bakepoteter"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 100,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "paprika",
+      "name": "Paprika",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["rød paprika", "gul paprika", "grønn paprika", "paprika rød", "paprika gul"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 150,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "tomat",
+      "name": "Tomat",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["tomater", "cherrytomater", "cocktailtomater", "plommetomater"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 100,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "agurk",
+      "name": "Agurk",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["slangeagurk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 350,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "brokkoli",
+      "name": "Brokkoli",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["broccoli"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 400,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "spinat",
+      "name": "Spinat",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["babyspinat", "frisk spinat", "fryst spinat"],
+      "allergens": []
+    },
+    {
+      "key": "sitron",
+      "name": "Sitron",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["sitroner"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 100,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "eple",
+      "name": "Eple",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["epler"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 150,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "banan",
+      "name": "Banan",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["bananer"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 120,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "purre",
+      "name": "Purre",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["purreløk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 200,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "sjampinjong",
+      "name": "Sjampinjong",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["sjampinjonger", "champignon", "champignoner", "sopp"],
+      "allergens": []
+    },
+    {
+      "key": "mais",
+      "name": "Mais",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["maiskorn", "hermetisk mais"],
+      "allergens": []
+    },
+    {
+      "key": "erter",
+      "name": "Erter",
+      "baseUnit": "g",
+      "category": "frozen",
+      "aliases": ["grønne erter", "frosne erter"],
+      "allergens": []
+    },
+    {
+      "key": "avokado",
+      "name": "Avokado",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": ["avokadoer", "avocado"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 150,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "ingefaer",
+      "name": "Ingefær",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["fersk ingefær"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "persille",
+      "name": "Persille",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["bladpersille", "kruspersille", "frisk persille"],
+      "allergens": []
+    },
+    {
+      "key": "hvetemel",
+      "name": "Hvetemel",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["mel", "siktet hvetemel", "hvetemel siktet"],
+      "allergens": ["gluten"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 60,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "havregryn",
+      "name": "Havregryn",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["lettkokte havregryn", "store havregryn"],
+      "allergens": ["gluten"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 35,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "ris",
+      "name": "Ris",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["jasminris", "basmatiris", "langkornet ris", "fullkornsris"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 85,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "pasta",
+      "name": "Pasta",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": [
+        "spagetti",
+        "spaghetti",
+        "penne",
+        "fusilli",
+        "makaroni",
+        "tagliatelle",
+        "pastaskruer"
+      ],
+      "allergens": ["gluten"]
+    },
+    {
+      "key": "sukker",
+      "name": "Sukker",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["strøsukker"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 85,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "tortilla",
+      "name": "Tortillalefser",
+      "baseUnit": "stk",
+      "category": "bread",
+      "aliases": ["tortilla", "tortillas", "tortillalefse", "wraps"],
+      "allergens": ["gluten"]
+    },
+    {
+      "key": "linser",
+      "name": "Linser",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["røde linser", "grønne linser"],
+      "allergens": []
+    },
+    {
+      "key": "kikerter",
+      "name": "Kikerter",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["kikerter på boks"],
+      "allergens": []
+    },
+    {
+      "key": "hakkede-tomater",
+      "name": "Hakkede tomater",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["knuste tomater", "tomater på boks", "hermetiske tomater"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "tomatpure",
+      "name": "Tomatpuré",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["tomatpure"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "kokosmelk",
+      "name": "Kokosmelk",
+      "baseUnit": "ml",
+      "category": "canned",
+      "aliases": ["kokosnøttmelk", "lett kokosmelk"],
+      "allergens": []
+    },
+    {
+      "key": "kidneybonner",
+      "name": "Kidneybønner",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["røde bønner", "kidney bønner"],
+      "allergens": []
+    },
+    {
+      "key": "salt",
+      "name": "Salt",
+      "baseUnit": "g",
+      "isStaple": true,
+      "category": "spicesSauces",
+      "aliases": ["havsalt", "flaksalt", "bordsalt"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 6,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "pepper",
+      "name": "Pepper",
+      "baseUnit": "g",
+      "isStaple": true,
+      "category": "spicesSauces",
+      "aliases": ["sort pepper", "kvernet pepper", "svart pepper"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 10,
+          "baseQty": 5,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "olje",
+      "name": "Olje",
+      "baseUnit": "ml",
+      "isStaple": true,
+      "category": "spicesSauces",
+      "aliases": ["matolje", "rapsolje", "olivenolje", "nøytral olje"],
+      "allergens": []
+    },
+    {
+      "key": "vann",
+      "name": "Vann",
+      "baseUnit": "ml",
+      "isStaple": true,
+      "category": "drinks",
+      "aliases": [],
+      "allergens": []
+    },
+    {
+      "key": "soyasaus",
+      "name": "Soyasaus",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": ["soya", "lys soyasaus", "mørk soyasaus"],
+      "allergens": ["soy", "gluten"]
+    },
+    {
+      "key": "sennep",
+      "name": "Sennep",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["grov sennep", "dijonsennep"],
+      "allergens": ["mustard"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "majones",
+      "name": "Majones",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["majonnes", "mayonnaise"],
+      "allergens": ["egg", "mustard"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "tacokrydder",
+      "name": "Tacokrydder",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["taco krydder", "tacokrydderblanding"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 10,
+          "baseQty": 5,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "karri",
+      "name": "Karri",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["karripulver", "curry"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 10,
+          "baseQty": 5,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "paprikapulver",
+      "name": "Paprikapulver",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["røkt paprikapulver"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 10,
+          "baseQty": 5,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "pesto",
+      "name": "Pesto",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["grønn pesto", "basilikumpesto"],
+      "allergens": ["milk", "nuts"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "salsa",
+      "name": "Tacosaus",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["salsa", "tacosalsa"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast), ikke kontrollert"
+        }
+      ]
+    },
+    {
+      "key": "lammekjott",
+      "name": "Lammekjøtt",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["fårikålkjøtt", "lammeskulder", "lammebog", "fårekjøtt"],
+      "allergens": []
+    },
+    {
+      "key": "hvitkal",
+      "name": "Hvitkål",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["kål", "kålhode", "hodekål"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 1000,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "pepperkorn",
+      "name": "Hel pepper",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["pepperkorn", "sorte pepperkorn", "hel sort pepper"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 3,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "sideflesk",
+      "name": "Sideflesk",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": [
+        "flesk",
+        "saltet sideflesk",
+        "lettsaltet sideflesk",
+        "saltflesk",
+        "røkt sideflesk"
+      ],
+      "allergens": []
+    },
+    {
+      "key": "buljong",
+      "name": "Buljong",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": [
+        "kraft",
+        "kjøttkraft",
+        "oksekraft",
+        "hønsekraft",
+        "kyllingkraft",
+        "grønnsakskraft",
+        "svinekraft",
+        "buljongterning",
+        "buljongterninger",
+        "buljongpulver"
+      ],
+      "allergens": ["celery"],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 500,
+          "note": "1 buljongterning gir ca. 5 dl. Selleri er registrert fordi mange buljonger har det. Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "gule-erter",
+      "name": "Gule erter",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["tørkede gule erter", "gule splitterter", "splitterter", "tørkede erter"],
+      "allergens": []
+    },
+    {
+      "key": "rokt-svinekjott",
+      "name": "Røkt svinekjøtt",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": [
+        "røkt svinebog",
+        "røkt bog",
+        "røkt nakke",
+        "røkt svinenakke",
+        "røkt skinke",
+        "røkt kjøtt"
+      ],
+      "allergens": []
+    },
+    {
+      "key": "timian",
+      "name": "Timian",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["tørket timian", "frisk timian"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "svinekjottdeig",
+      "name": "Svinekjøttdeig",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["svinedeig", "kjøttdeig av svin", "kjøttdeig svin"],
+      "allergens": []
+    },
+    {
+      "key": "brodsmuler",
+      "name": "Griljermel",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["brødsmuler", "kavringmel", "panko", "strøkavring"],
+      "allergens": ["gluten"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 45,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "grotris",
+      "name": "Grøtris",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["risengryn", "rundkornet ris"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 85,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "kanel",
+      "name": "Kanel",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["malt kanel"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 3,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "allehande",
+      "name": "Allehånde",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["hel allehånde", "malt allehånde", "allehåndekorn"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 2,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "storfekjott",
+      "name": "Storfekjøtt",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": [
+        "biff",
+        "biffkjøtt",
+        "entrecôte",
+        "entrecote",
+        "ytrefilet",
+        "indrefilet",
+        "oksekjøtt",
+        "grytekjøtt",
+        "oksebog",
+        "ribeye"
+      ],
+      "allergens": []
+    },
+    {
+      "key": "honning",
+      "name": "Honning",
+      "baseUnit": "g",
+      "category": "spreads",
+      "aliases": ["flytende honning"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 10,
+          "baseQty": 14,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "eddik",
+      "name": "Eddik",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": [
+        "riseddik",
+        "hvitvinseddik",
+        "rødvinseddik",
+        "balsamico",
+        "balsamicoeddik",
+        "eplecidereddik",
+        "husholdningseddik"
+      ],
+      "allergens": ["sulphites"]
+    },
+    {
+      "key": "sesamfro",
+      "name": "Sesamfrø",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["ristede sesamfrø"],
+      "allergens": ["sesame"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 3,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "chili",
+      "name": "Chili",
+      "baseUnit": "stk",
+      "category": "fruitVeg",
+      "aliases": [
+        "rød chili",
+        "grønn chili",
+        "chilipepper",
+        "chilier",
+        "jalapeño",
+        "jalapeno",
+        "chipotle"
+      ],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 10,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "varlok",
+      "name": "Vårløk",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["grønn løk", "salatløk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 15,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "svarte-bonner",
+      "name": "Svarte bønner",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["tørkede svarte bønner", "svarte bønner på boks"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 85,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "spisskummen",
+      "name": "Spisskummen",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["malt spisskummen", "cumin", "hel spisskummen"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 2,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "oregano",
+      "name": "Oregano",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["tørket oregano"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "kajennepepper",
+      "name": "Kajennepepper",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["cayennepepper", "cayenne"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 2,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "passata",
+      "name": "Passata",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["siktede tomater", "tomatsaus", "passerte tomater"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "laurbaerblad",
+      "name": "Laurbærblad",
+      "baseUnit": "stk",
+      "category": "spicesSauces",
+      "aliases": ["laurbærblader"],
+      "allergens": []
+    },
+    {
+      "key": "torkede-urter",
+      "name": "Tørkede urter",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": [
+        "urteblanding",
+        "italiensk urteblanding",
+        "provencekrydder",
+        "herbes de provence"
+      ],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "pecorino",
+      "name": "Pecorino",
+      "baseUnit": "g",
+      "category": "dairy",
+      "aliases": ["pecorino romano", "pecorinoost"],
+      "allergens": ["milk"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 40,
+          "note": "Revet ost. Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "chiliflak",
+      "name": "Chiliflak",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["knust chili", "tørket chili", "chili flakes"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 2,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "gurkemeie",
+      "name": "Gurkemeie",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["malt gurkemeie"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 3,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "merian",
+      "name": "Merian",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["tørket merian"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "tomatjuice",
+      "name": "Tomatjuice",
+      "baseUnit": "ml",
+      "category": "drinks",
+      "aliases": ["tomatjus"],
+      "allergens": []
+    },
+    {
+      "key": "stangselleri",
+      "name": "Stangselleri",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["selleristilk", "selleristilker", "bladselleri"],
+      "allergens": ["celery"],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 40,
+          "note": "1 stilk. Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "fennikel",
+      "name": "Fennikel",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["fennikelløk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 250,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "rodvin",
+      "name": "Rødvin",
+      "baseUnit": "ml",
+      "category": "drinks",
+      "aliases": [],
+      "allergens": ["sulphites"]
+    },
+    {
+      "key": "chilipulver",
+      "name": "Chilipulver",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["chili powder", "chilikrydder"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 3,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "creme-fraiche",
+      "name": "Crème fraîche",
+      "baseUnit": "ml",
+      "category": "dairy",
+      "aliases": ["creme fraiche", "lett crème fraîche", "lett creme fraiche"],
+      "allergens": ["milk"],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 1,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "chilisaus",
+      "name": "Chilisaus",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": ["hot sauce", "sriracha", "tabasco", "sterk saus"],
+      "allergens": []
+    },
+    {
+      "key": "basilikum",
+      "name": "Basilikum",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": ["frisk basilikum", "tørket basilikum"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 1,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "bakepulver",
+      "name": "Bakepulver",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": [],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 4,
+          "note": "Anslag (KI-utkast, fase 9)"
+        }
+      ]
+    },
+    {
+      "key": "sesamolje",
+      "name": "Sesamolje",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": [],
+      "allergens": ["sesame"]
+    },
+    {
+      "key": "teriyakisaus",
+      "name": "Teriyakisaus",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": ["teriyaki", "teriyakimarinade"],
+      "allergens": ["soy", "gluten"]
+    },
+    {
+      "key": "koriander",
+      "name": "Koriander",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["frisk koriander", "korianderblader"],
+      "allergens": []
+    },
+    {
+      "key": "tortillachips",
+      "name": "Tortillachips",
+      "baseUnit": "g",
+      "category": "other",
+      "aliases": ["nachochips", "tacochips", "maischips"],
+      "allergens": []
+    },
+    {
+      "key": "oliven",
+      "name": "Oliven",
+      "baseUnit": "g",
+      "category": "canned",
+      "aliases": ["svarte oliven", "grønne oliven"],
+      "allergens": []
+    },
+    {
+      "key": "peanottolje",
+      "name": "Peanøttolje",
+      "baseUnit": "ml",
+      "category": "spicesSauces",
+      "aliases": [],
+      "allergens": ["peanuts"]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "slug": "farikal",
+  "title": "Fårikål",
+  "description": "Fårikål er en gryte med lammekjøtt eller fårekjøtt og hvitkål, og regnes som Norges nasjonalrett.",
+  "servings": 4,
+  "prepMinutes": 20,
+  "cookMinutes": 180,
+  "tags": ["middag", "lam", "norsk", "gryte"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Fårikål (Norwegian Lamb and Cabbage Stew)",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4630337",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen sier 4–5 porsjoner og 3½–4 timer. Mengdene er for 4 porsjoner, og tiden er delt i forberedelse og koking av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "lammekjott",
+      "amount": "2",
+      "unit": "kg",
+      "text": "2 kg fårikålkjøtt (lammeskulder eller fårebog)"
+    },
+    {
+      "ingredient": "hvitkal",
+      "amount": "2",
+      "unit": "kg",
+      "text": "2 kg hvitkål"
+    },
+    {
+      "ingredient": "pepperkorn",
+      "amount": "5",
+      "unit": "ts",
+      "text": "5 ts hel sort pepper"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "3",
+      "unit": "ts",
+      "text": "3 ts salt"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "6",
+      "unit": "dl",
+      "text": "6 dl vann"
+    }
+  ],
+  "steps": [
+    "Del kålen i to, og skjær halvdelene i båter som er omtrent like store.",
+    "Dekk bunnen av gryta med et lag kjøtt, med den fete siden ned.",
+    "Legg et lag kål over kjøttet og så et nytt lag kjøtt over kålen. Strø salt og pepper mellom hvert lag. Fortsett til alt kjøttet og all kålen er i gryta.",
+    "Hell i vannet og kok opp langsomt. Skru ned varmen så gryta så vidt småkoker.",
+    "La kjøttet småkoke til det er mørt og løsner lett fra beinet, omtrent 3 timer. Med lammekjøtt holder det med litt kortere tid.",
+    "Server rett fra gryta, med kokte poteter."
+  ]
+}

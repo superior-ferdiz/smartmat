@@ -1,0 +1,53 @@
+{
+  "slug": "polse-og-potetmos",
+  "title": "Pølser og potetmos",
+  "description": "Pølser stekt langsomt i panne, servert med hjemmelaget potetmos.",
+  "servings": 2,
+  "prepMinutes": 10,
+  "cookMinutes": 30,
+  "tags": ["middag", "pølser", "potet", "britisk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Bangers and Mash",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4503314",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Mengdene er for 2 personer. Pølser og poteter er regnet som 2 pølser og 2 poteter per person (originalen sier 2–3 pølser).",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "polser",
+      "amount": "4",
+      "unit": "stk",
+      "text": "2–3 gode pølser per person"
+    },
+    {
+      "ingredient": "potet",
+      "amount": "4",
+      "unit": "stk",
+      "text": "2 middels store til store poteter per person"
+    },
+    {
+      "ingredient": "olje",
+      "text": "Litt olje"
+    },
+    {
+      "ingredient": "smor",
+      "text": "Litt smør eller margarin"
+    },
+    {
+      "ingredient": "melk",
+      "text": "En skvett melk"
+    }
+  ],
+  "steps": [
+    "30 minutter før servering: Sett en tykk stekepanne på middels varme med litt olje, og la den bli varm.",
+    "Legg pølsene i ett lag i pannen. Stek et minutt, snu dem, stek et minutt til, og snu igjen, så de får litt farge overalt.",
+    "Når de har ligget i den varme pannen i omtrent 5 minutter, skrur du varmen helt ned. La dem steke forsiktig i 25 minutter til, og snu dem hvert 5. til 10. minutt. Pass på at pølsene er gjennomstekt (ikke rosa inni).",
+    "25 minutter før servering: Skrell potetene, og del dem grovt i biter på 1–2 cm. Kok dem i en stor kjele med kokende vann i 15 minutter.",
+    "Når en gaffel lett går gjennom bitene, heller du av vannet og har potetene tilbake i kjelen (ikke på platen).",
+    "Ha i en god klatt smør og en skvett melk, og mos potetene med en potetstapper."
+  ]
+}

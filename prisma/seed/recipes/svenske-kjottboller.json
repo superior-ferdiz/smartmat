@@ -1,0 +1,76 @@
+{
+  "slug": "svenske-kjottboller",
+  "title": "Svenske kjøttboller",
+  "description": "Små kjøttboller av storfe- og svinekjøttdeig, stekt i smør.",
+  "servings": 4,
+  "prepMinutes": 15,
+  "cookMinutes": 15,
+  "tags": ["middag", "kjøttdeig", "svensk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Swedish Meatballs I",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4523303",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 30 minutter totalt. Delingen i forberedelse og steking er gjort av KI. Væsken er regnet som melk i mengdeberegningen.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "melk",
+      "amount": "2",
+      "unit": "dl",
+      "text": "2–3 dl væske, for eksempel vann, melk eller fløte"
+    },
+    {
+      "ingredient": "brodsmuler",
+      "amount": "50",
+      "unit": "ml",
+      "text": "0,5 dl griljermel"
+    },
+    {
+      "ingredient": "kjottdeig",
+      "amount": "250",
+      "unit": "g",
+      "text": "250 g storfekjøttdeig"
+    },
+    {
+      "ingredient": "svinekjottdeig",
+      "amount": "250",
+      "unit": "g",
+      "text": "250 g svinekjøttdeig"
+    },
+    {
+      "ingredient": "egg",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 egg"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 liten løk, finhakket eller revet"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Pepper"
+    },
+    {
+      "ingredient": "smor",
+      "text": "Smør til steking"
+    }
+  ],
+  "steps": [
+    "Bland væsken og griljermelet i en bolle, og la det svelle i 7–8 minutter.",
+    "Bland inn storfekjøttdeigen, svinekjøttdeigen, egget, løken, salt og pepper.",
+    "Form farsen til runde kjøttboller, omtrent 2–3 cm store.",
+    "Stek kjøttbollene på middels varme i en stekepanne med smør i 3–5 minutter. Stek dem på alle sider til de er brune og ikke rosa inni. Rist pannen innimellom, så de blir jevnt stekt.",
+    "Server med potetmos, brun saus med fløte og tyttebærsyltetøy."
+  ]
+}

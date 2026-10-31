@@ -1,35 +1,34 @@
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
   min-height: var(--tap-target);
-  color: var(--color-text);
+  border-radius: var(--radius-md);
   text-decoration: none;
 }
 
-.logo:hover {
-  color: var(--color-text);
-}
-
+/* The picture already carries the name, so there is no separate wordmark. 4:3 from a 383×288 file (3x the
+   phone sizes). The detail is fine, so it needs more height than a plain wordmark to read. */
 .mark {
-  width: 2rem;
-  height: 2rem;
+  display: block;
+  width: auto;
 }
 
-.markBg {
-  fill: var(--color-primary);
+/* Phone top bar: the token also sets the page's scroll-padding (global.css), so the sticky bar never hides focus. */
+.bar {
+  height: var(--topbar-logo-height);
 }
 
-.markJar {
-  fill: var(--color-bg);
+/* Side nav: as wide as fits next to the bell in --sidenav-width. */
+.nav {
+  height: 6.5rem;
 }
 
-.markLeaf {
-  fill: var(--color-accent);
+.auth {
+  height: 4.5rem;
 }
 
-.wordmark {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.02em;
+@media (min-width: 600px) {
+  .auth {
+    height: 6rem;
+  }
 }

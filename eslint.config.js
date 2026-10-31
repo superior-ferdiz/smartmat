@@ -15,6 +15,7 @@ export default tseslint.config(
       'playwright-report',
       'test-results',
       'docs',
+      'apps/api/src/generated',
     ],
   },
 
@@ -22,7 +23,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
 
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{ts,tsx,mjs}'],
     languageOptions: {
       ecmaVersion: 2023,
       globals: { ...globals.browser, ...globals.node },

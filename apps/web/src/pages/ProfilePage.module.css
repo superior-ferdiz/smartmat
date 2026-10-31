@@ -1,0 +1,116 @@
+/* One column of cards, like the settings page. Forms keep a readable width on wide screens. */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  max-width: 40rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+}
+
+.facts dt {
+  color: var(--color-text-muted);
+}
+
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--font-weight-medium);
+}
+
+.text {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.note {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* The danger zone is marked by its heading, text and red button – the border is extra, not the only signal. */
+.danger {
+  border-color: var(--color-danger);
+}
+
+/* Allergies: two columns of checkboxes from 600px. */
+.allergens {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@media (min-width: 600px) {
+  .allergens {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Spec 10: sharing the allergies with the household, under the allergy form. */
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* Spec 13 (FR-AUTH-009): one row per session; the button wraps under the text on a phone. */
+.sessions {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.session {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.sessionName {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.badge {
+  margin-left: var(--space-2);
+  padding: 0 var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}

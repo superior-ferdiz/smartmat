@@ -1,0 +1,51 @@
+{
+  "slug": "enkel-chili",
+  "title": "Enkel chili med kidneybønner",
+  "description": "En enkel chili av kidneybønner, knuste tomater og stekt kjøttdeig. Ferdig på et kvarter.",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 15,
+  "tags": ["middag", "kjøttdeig", "bønner", "gryte"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Easy Chili",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4518550",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir ikke antall porsjoner. KI har satt 4 porsjoner. Forberedelsestiden er anslått av KI. Unser er regnet om til gram.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "kidneybonner",
+      "amount": "850",
+      "unit": "g",
+      "text": "850 g kidneybønner (hermetiske)"
+    },
+    {
+      "ingredient": "hakkede-tomater",
+      "amount": "850",
+      "unit": "g",
+      "text": "850 g knuste tomater"
+    },
+    {
+      "ingredient": "kjottdeig",
+      "amount": "225",
+      "unit": "g",
+      "text": "225–450 g stekt kjøttdeig (storfe, kalkun eller vegetarisk erstatning)"
+    },
+    {
+      "ingredient": "chilipulver",
+      "amount": "2",
+      "unit": "ts",
+      "text": "2 ts chilipulver"
+    }
+  ],
+  "steps": [
+    "Ha alt i en gryte. Kok på middels varme i 15 minutter.",
+    "Smak på bønnene for å kjenne når chilien er ferdig.",
+    "Server med kjeks, revet ost og krydder du liker.",
+    "Advarsel fra originalen: Bruker du tørkede kidneybønner, må de bløtlegges i mer enn 12 timer og kokes kraftig i minst 20 minutter før de brukes. Ellers kan de gi kvalme, oppkast og diaré. Hermetiske bønner er ferdig kokt."
+  ]
+}

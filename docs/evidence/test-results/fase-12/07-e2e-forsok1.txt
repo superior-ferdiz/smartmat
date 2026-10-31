@@ -1,0 +1,267 @@
+$ npx playwright test --reporter=line
+Kjørt 2026-10-25T16:26:51Z
+
+[WebServer] Loaded Prisma config from prisma.config.ts.
+[WebServer] 
+
+[WebServer] Prisma schema loaded from prisma/schema.prisma.
+
+[WebServer] ../../node_modules/zod/v4/core/util.js (400:0): A comment
+[WebServer] 
+[WebServer] "// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `Number`, so the bare object literal survived into every bundle."
+[WebServer] 
+[WebServer] in "../../node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+
+[WebServer] ../../node_modules/zod/v4/core/regexes.js (74:0): A comment
+[WebServer] 
+[WebServer] "/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+[WebServer]  * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+[WebServer]  * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+[WebServer] 
+[WebServer] in "../../node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+
+[WebServer] 
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+
+Running 194 tests using 10 workers
+
+[1/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[2/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[3/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[4/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[5/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[6/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[7/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[8/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[9/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[10/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[11/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[12/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › light theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[13/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[14/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[15/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[16/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[17/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[18/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[19/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[20/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[21/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[22/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[23/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[24/194] [mobil-360] › e2e/app-shell.spec.ts:31:7 › dark theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[25/194] [mobil-360] › e2e/app-shell.spec.ts:50:3 › FR-UI-001 navigation per viewport › phone shows the bottom menu, desktop the side menu
+[26/194] [mobil-360] › e2e/app-shell.spec.ts:63:3 › FR-UI-001 navigation per viewport › phone: bottom menu labels are not cut off at 360 px
+[27/194] [mobil-360] › e2e/app-shell.spec.ts:76:3 › FR-UI-001 navigation per viewport › phone: all sections are reachable through "Mer"
+[28/194] [mobil-360] › e2e/app-shell.spec.ts:88:3 › FR-UI-001 navigation per viewport › desktop: side menu works with the keyboard alone
+[29/194] [mobil-360] › e2e/app-shell.spec.ts:112:3 › FR-UI-001 navigation per viewport › focus is clearly visible on keyboard focus (outline present)
+[30/194] [mobil-360] › e2e/app-shell.spec.ts:127:3 › FR-UI-003 overview grid › one column at 360 px, three at 1280 px (≥ 1200 px breakpoint)
+[31/194] [mobil-360] › e2e/app-shell.spec.ts:146:3 › FR-UI-004 / FR-UI-005 settings survive a reload › dark theme is applied before the app starts (no white flash)
+[32/194] [mobil-360] › e2e/app-shell.spec.ts:156:3 › FR-UI-004 / FR-UI-005 settings survive a reload › English is remembered and sets <html lang>
+[33/194] [mobil-360] › e2e/app-shell.spec.ts:167:3 › FR-UI-006 form on a real browser › invalid submit focuses the error summary; the link moves focus to the field
+[34/194] [mobil-360] › e2e/auth.spec.ts:21:3 › logged out › FR-AUTH-001/002: register → log out → log in → log out
+[35/194] [mobil-360] › e2e/auth.spec.ts:61:3 › logged out › a protected page leads to login and back there afterwards
+[36/194] [mobil-360] › e2e/auth.spec.ts:75:3 › logged out › wrong password: a general message, no hint whether the account exists
+[37/194] [mobil-360] › e2e/auth.spec.ts:88:3 › logged out › FR-AUTH-003: after five wrong passwords even the right one is refused
+[38/194] [mobil-360] › e2e/auth.spec.ts:106:3 › logged out › registering an e-mail that is taken shows it at the field
+[39/194] [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (light): no horizontal scroll, no axe violations
+[40/194] [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /registrer (light): no horizontal scroll, no axe violations
+[41/194] [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (dark): no horizontal scroll, no axe violations
+[42/194] [mobil-360] › e2e/auth.spec.ts:123:7 › logged out › /registrer (dark): no horizontal scroll, no axe violations
+[43/194] [mobil-360] › e2e/auth.spec.ts:139:5 › logged in › /profil (light): no horizontal scroll, no axe violations
+[44/194] [mobil-360] › e2e/auth.spec.ts:139:5 › logged in › /profil (dark): no horizontal scroll, no axe violations
+[45/194] [mobil-360] › e2e/auth.spec.ts:150:3 › logged in › NFR-SEC-005: a request with the cookie but without the CSRF token is refused
+[46/194] [mobil-360] › e2e/auth.spec.ts:169:3 › logged in › NFR-SEC-005: a request from another origin is refused
+[47/194] [mobil-360] › e2e/auth.spec.ts:183:3 › changing the account › FR-AUTH-004: name and language are saved on the account
+[48/194] [mobil-360] › e2e/auth.spec.ts:206:3 › changing the account › FR-AUTH-004: changing the password logs out other devices
+[49/194] [mobil-360] › e2e/auth.spec.ts:235:3 › changing the account › FR-AUTH-005: deleting the account removes it – logging in afterwards fails
+[50/194] [mobil-360] › e2e/budget.spec.ts:22:3 › purchases and budget › FR-BUD-001–004: set a budget → register a purchase → items in the inventory → the budget is updated
+[51/194] [mobil-360] › e2e/budget.spec.ts:101:3 › purchases and budget › FR-BUD-005: correcting and deleting update every figure; used food stays
+[52/194] [mobil-360] › e2e/budget.spec.ts:167:3 › purchases and budget › NFR-DATA-002: a double click on "Lagre kjøpet" gives one purchase
+[53/194] [mobil-360] › e2e/budget.spec.ts:177:3 › purchases and budget › NFR-UX-001/002: budget pages at 360 px and on desktop – no horizontal scroll, no axe violations
+[54/194] [mobil-360] › e2e/household.spec.ts:53:3 › owner invites → new member joins → both see the same → member leaves › the whole flow
+[55/194] [mobil-360] › e2e/household.spec.ts:148:3 › a logged-out person opens the link › logs in and comes back to the invitation
+[56/194] [mobil-360] › e2e/household.spec.ts:177:3 › NFR-UX-001/002 household pages › /husholdning and /bli-med: no horizontal scroll and no axe violations
+[57/194] [mobil-360] › e2e/household.spec.ts:201:3 › NFR-UX-001/002 household pages › keyboard: make a link and close the dialog without a mouse
+[58/194] [mobil-360] › e2e/inventory.spec.ts:66:3 › inventory › FR-INV-001/002/006/007/008: add → second batch → use part → throw away → history → undo
+[59/194] [mobil-360] › e2e/inventory.spec.ts:140:3 › inventory › FR-INV-004/005: summary, search and filters, kept in the URL
+[60/194] [mobil-360] › e2e/inventory.spec.ts:175:3 › inventory › dialog: Esc closes it and focus goes back to the button; Tab stays inside
+[61/194] [mobil-360] › e2e/inventory.spec.ts:203:3 › inventory › FR-INV-003: a new storage place, used, then refused deletion while it has food
+[62/194] [mobil-360] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (light) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations
+[63/194] [mobil-360] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (dark) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations
+[64/194] [mobil-360] › e2e/mealplan.spec.ts:13:3 › meal plan → needs → shopping list › FR-PLAN-001–004: the whole flow
+[65/194] [mobil-360] › e2e/mealplan.spec.ts:65:3 › meal plan → needs → shopping list › FR-PLAN-001: move and remove an entry with the keyboard
+[66/194] [mobil-360] › e2e/notifications.spec.ts:24:3 › notifications › FR-NOTIF-001/004: use-by date tomorrow → notification → open the item → dismiss → gone
+[67/194] [mobil-360] › e2e/notifications.spec.ts:71:3 › notifications › FR-NOTIF-005: settings – more days before gives an earlier notification
+[68/194] [mobil-360] › e2e/notifications.spec.ts:102:3 › notifications › FR-NOTIF-003/006: a line another member adds is named; opening the list clears it
+[69/194] [mobil-360] › e2e/notifications.spec.ts:135:3 › food waste page › FR-WASTE-001–005: figures as text, the 12-month table, no horizontal scroll, no axe violations
+[70/194] [mobil-360] › e2e/prices.spec.ts:19:3 › prices › FR-PRICE-001–004: scan → chain prices and own prices → estimate on the shopping list
+[71/194] [mobil-360] › e2e/prices.spec.ts:98:3 › prices › NFR-REL-001: Kassalapp does not answer → a clear message, and the scan form still works
+[72/194] [mobil-360] › e2e/receipts.spec.ts:30:3 › receipts › FR-RCPT-001/005/006: upload → check → confirm → the purchase and the item exist
+[73/194] [mobil-360] › e2e/receipts.spec.ts:84:3 › receipts › FR-RCPT-003: an unreadable photo fails with a reason; "fill in yourself" goes to the form
+[74/194] [mobil-360] › e2e/recipes.spec.ts:25:3 › recipes ranked by the inventory › FR-REC-002/003: an item in the inventory → the recipe ranks higher and shows what is missing
+[75/194] [mobil-360] › e2e/receipts.spec.ts:101:3 › receipts › FR-RCPT-008: discarding a receipt deletes it
+[76/194] [mobil-360] › e2e/recipes.spec.ts:87:3 › recipes ranked by the inventory › FR-REC-003: food past its use-by date is not counted, and the recipe says so
+[77/194] [mobil-360] › e2e/recipes.spec.ts:116:3 › FR-REC-004 allergens › registered on the profile → recipes with them are hidden, can be shown with a warning
+[78/194] [mobil-360] › e2e/recipes.spec.ts:162:5 › recipe pages: layout and accessibility › (light) /oppskrifter, a recipe, /profil and the overview: no horizontal scroll, no axe violations
+[79/194] [mobil-360] › e2e/recipes.spec.ts:162:5 › recipe pages: layout and accessibility › (dark) /oppskrifter, a recipe, /profil and the overview: no horizontal scroll, no axe violations
+[80/194] [mobil-360] › e2e/scan.spec.ts:31:3 › scanning › FR-SCAN-002/-005: type a known code → filled-in form → confirm → the item is in the pantry
+[81/194] [mobil-360] › e2e/scan.spec.ts:67:3 › scanning › FR-SCAN-004: an unknown code gives an empty form and is remembered next time
+[82/194] [mobil-360] › e2e/scan.spec.ts:96:3 › scanning › NFR-REL-001: when the product lookup does not answer, the form still works
+[83/194] [mobil-360] › e2e/scan.spec.ts:112:3 › scanning › NFR-DATA-002: a double click on "Legg i matlageret" gives one batch
+[84/194] [mobil-360] › e2e/scan.spec.ts:129:3 › scanning › FR-SCAN-003: a code with a wrong check digit is refused before anything is sent
+[85/194] [mobil-360] › e2e/scan.spec.ts:143:3 › FR-SCAN-001 camera states › no camera access: says so, and the code can still be typed
+[86/194] [mobil-360] › e2e/scan.spec.ts:156:3 › FR-SCAN-001 camera states › a browser without camera support
+[87/194] [mobil-360] › e2e/scan.spec.ts:170:5 › scan page (light) › (light) NFR-UX-001/002: no horizontal scroll and no axe violations, empty and with the form
+[88/194] [mobil-360] › e2e/scan.spec.ts:170:5 › scan page (dark) › (dark) NFR-UX-001/002: no horizontal scroll and no axe violations, empty and with the form
+[89/194] [mobil-360] › e2e/screenshots.spec.ts:24:5 › light – prices › priser
+[90/194] [mobil-360] › e2e/screenshots.spec.ts:24:5 › dark – prices › priser
+[91/194] [mobil-360] › e2e/shopping.spec.ts:27:3 › recipe → shopping list → inventory → the recipe ranks higher › FR-SHOP-002/003: the whole flow
+[92/194] [mobil-360] › e2e/shopping.spec.ts:91:3 › recipe → shopping list → inventory → the recipe ranks higher › NFR-DATA-002: a double click on "Legg i matlageret" gives one batch
+[93/194] [mobil-360] › e2e/shopping.spec.ts:121:3 › FR-SHOP-001 the list by hand › add with Enter, tick, edit and remove
+[94/194] [mobil-360] › e2e/shopping.spec.ts:158:5 › FR-SHOP-001 the list by hand › (light) NFR-UX-001/002: no horizontal scroll, big tap targets, no axe violations
+[95/194] [mobil-360] › e2e/shopping.spec.ts:158:5 › FR-SHOP-001 the list by hand › (dark) NFR-UX-001/002: no horizontal scroll, big tap targets, no axe violations
+[96/194] [mobil-360] › e2e/scan-camera.spec.ts:29:1 › the EAN-13 drawing is right: the same 95 modules as the zxing-wasm writer draws
+[97/194] [mobil-360] › e2e/scan-camera.spec.ts:37:1 › FR-SCAN-001: the camera reads the code; the reader and its .wasm come from our own server
+[98/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[99/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[100/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[101/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[102/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[103/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[104/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[105/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[106/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[107/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[108/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[109/194] [desktop] › e2e/app-shell.spec.ts:31:7 › light theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[110/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[111/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /matlager: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[112/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /skann: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[113/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /oppskrifter: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[114/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /handleliste: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[115/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /budsjett: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[116/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /maltidsplan: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[117/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /husholdning: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[118/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /innstillinger: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[119/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /mer: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[120/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /designsystem: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[121/194] [desktop] › e2e/app-shell.spec.ts:31:7 › dark theme › /finnes-ikke: renders, no horizontal scroll, no axe violations (NFR-UX-001, NFR-UX-002)
+[122/194] [desktop] › e2e/app-shell.spec.ts:50:3 › FR-UI-001 navigation per viewport › phone shows the bottom menu, desktop the side menu
+[123/194] [desktop] › e2e/app-shell.spec.ts:63:3 › FR-UI-001 navigation per viewport › phone: bottom menu labels are not cut off at 360 px
+[124/194] [desktop] › e2e/app-shell.spec.ts:76:3 › FR-UI-001 navigation per viewport › phone: all sections are reachable through "Mer"
+[125/194] [desktop] › e2e/app-shell.spec.ts:88:3 › FR-UI-001 navigation per viewport › desktop: side menu works with the keyboard alone
+[126/194] [desktop] › e2e/app-shell.spec.ts:112:3 › FR-UI-001 navigation per viewport › focus is clearly visible on keyboard focus (outline present)
+[127/194] [desktop] › e2e/app-shell.spec.ts:127:3 › FR-UI-003 overview grid › one column at 360 px, three at 1280 px (≥ 1200 px breakpoint)
+[128/194] [desktop] › e2e/app-shell.spec.ts:146:3 › FR-UI-004 / FR-UI-005 settings survive a reload › dark theme is applied before the app starts (no white flash)
+[129/194] [desktop] › e2e/app-shell.spec.ts:156:3 › FR-UI-004 / FR-UI-005 settings survive a reload › English is remembered and sets <html lang>
+[130/194] [desktop] › e2e/app-shell.spec.ts:167:3 › FR-UI-006 form on a real browser › invalid submit focuses the error summary; the link moves focus to the field
+[131/194] [desktop] › e2e/auth.spec.ts:21:3 › logged out › FR-AUTH-001/002: register → log out → log in → log out
+[132/194] [desktop] › e2e/auth.spec.ts:61:3 › logged out › a protected page leads to login and back there afterwards
+[133/194] [desktop] › e2e/auth.spec.ts:75:3 › logged out › wrong password: a general message, no hint whether the account exists
+[134/194] [desktop] › e2e/auth.spec.ts:88:3 › logged out › FR-AUTH-003: after five wrong passwords even the right one is refused
+[135/194] [desktop] › e2e/auth.spec.ts:106:3 › logged out › registering an e-mail that is taken shows it at the field
+[136/194] [desktop] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (light): no horizontal scroll, no axe violations
+[137/194] [desktop] › e2e/auth.spec.ts:123:7 › logged out › /registrer (light): no horizontal scroll, no axe violations
+[138/194] [desktop] › e2e/auth.spec.ts:123:7 › logged out › /logg-inn (dark): no horizontal scroll, no axe violations
+[139/194] [desktop] › e2e/auth.spec.ts:123:7 › logged out › /registrer (dark): no horizontal scroll, no axe violations
+[140/194] [desktop] › e2e/auth.spec.ts:139:5 › logged in › /profil (light): no horizontal scroll, no axe violations
+[141/194] [desktop] › e2e/auth.spec.ts:139:5 › logged in › /profil (dark): no horizontal scroll, no axe violations
+[142/194] [desktop] › e2e/auth.spec.ts:150:3 › logged in › NFR-SEC-005: a request with the cookie but without the CSRF token is refused
+[143/194] [desktop] › e2e/auth.spec.ts:169:3 › logged in › NFR-SEC-005: a request from another origin is refused
+[144/194] [desktop] › e2e/auth.spec.ts:183:3 › changing the account › FR-AUTH-004: name and language are saved on the account
+[145/194] [desktop] › e2e/auth.spec.ts:206:3 › changing the account › FR-AUTH-004: changing the password logs out other devices
+[146/194] [desktop] › e2e/auth.spec.ts:235:3 › changing the account › FR-AUTH-005: deleting the account removes it – logging in afterwards fails
+[147/194] [desktop] › e2e/budget.spec.ts:22:3 › purchases and budget › FR-BUD-001–004: set a budget → register a purchase → items in the inventory → the budget is updated
+[148/194] [desktop] › e2e/budget.spec.ts:101:3 › purchases and budget › FR-BUD-005: correcting and deleting update every figure; used food stays
+[149/194] [desktop] › e2e/budget.spec.ts:167:3 › purchases and budget › NFR-DATA-002: a double click on "Lagre kjøpet" gives one purchase
+[150/194] [desktop] › e2e/budget.spec.ts:177:3 › purchases and budget › NFR-UX-001/002: budget pages at 360 px and on desktop – no horizontal scroll, no axe violations
+[151/194] [desktop] › e2e/household.spec.ts:53:3 › owner invites → new member joins → both see the same → member leaves › the whole flow
+[152/194] [desktop] › e2e/household.spec.ts:148:3 › a logged-out person opens the link › logs in and comes back to the invitation
+[153/194] [desktop] › e2e/household.spec.ts:177:3 › NFR-UX-001/002 household pages › /husholdning and /bli-med: no horizontal scroll and no axe violations
+[154/194] [desktop] › e2e/household.spec.ts:201:3 › NFR-UX-001/002 household pages › keyboard: make a link and close the dialog without a mouse
+[155/194] [desktop] › e2e/inventory.spec.ts:66:3 › inventory › FR-INV-001/002/006/007/008: add → second batch → use part → throw away → history → undo
+[156/194] [desktop] › e2e/inventory.spec.ts:140:3 › inventory › FR-INV-004/005: summary, search and filters, kept in the URL
+[157/194] [desktop] › e2e/inventory.spec.ts:175:3 › inventory › dialog: Esc closes it and focus goes back to the button; Tab stays inside
+[158/194] [desktop] › e2e/inventory.spec.ts:203:3 › inventory › FR-INV-003: a new storage place, used, then refused deletion while it has food
+[159/194] [desktop] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (light) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations
+[160/194] [desktop] › e2e/inventory.spec.ts:233:5 › inventory pages: layout and accessibility › (dark) /matlager, /matlager/ny, an item and /matlager/steder: no horizontal scroll, no axe violations
+[161/194] [desktop] › e2e/mealplan.spec.ts:13:3 › meal plan → needs → shopping list › FR-PLAN-001–004: the whole flow
+[162/194] [desktop] › e2e/mealplan.spec.ts:65:3 › meal plan → needs → shopping list › FR-PLAN-001: move and remove an entry with the keyboard
+[163/194] [desktop] › e2e/notifications.spec.ts:24:3 › notifications › FR-NOTIF-001/004: use-by date tomorrow → notification → open the item → dismiss → gone
+[164/194] [desktop] › e2e/notifications.spec.ts:71:3 › notifications › FR-NOTIF-005: settings – more days before gives an earlier notification
+[165/194] [desktop] › e2e/notifications.spec.ts:102:3 › notifications › FR-NOTIF-003/006: a line another member adds is named; opening the list clears it
+[166/194] [desktop] › e2e/notifications.spec.ts:135:3 › food waste page › FR-WASTE-001–005: figures as text, the 12-month table, no horizontal scroll, no axe violations
+[167/194] [desktop] › e2e/prices.spec.ts:19:3 › prices › FR-PRICE-001–004: scan → chain prices and own prices → estimate on the shopping list
+[168/194] [desktop] › e2e/prices.spec.ts:98:3 › prices › NFR-REL-001: Kassalapp does not answer → a clear message, and the scan form still works
+[169/194] [desktop] › e2e/receipts.spec.ts:30:3 › receipts › FR-RCPT-001/005/006: upload → check → confirm → the purchase and the item exist
+[170/194] [desktop] › e2e/receipts.spec.ts:84:3 › receipts › FR-RCPT-003: an unreadable photo fails with a reason; "fill in yourself" goes to the form
+[171/194] [desktop] › e2e/recipes.spec.ts:25:3 › recipes ranked by the inventory › FR-REC-002/003: an item in the inventory → the recipe ranks higher and shows what is missing
+[172/194] [desktop] › e2e/recipes.spec.ts:87:3 › recipes ranked by the inventory › FR-REC-003: food past its use-by date is not counted, and the recipe says so
+[173/194] [desktop] › e2e/receipts.spec.ts:101:3 › receipts › FR-RCPT-008: discarding a receipt deletes it
+[174/194] [desktop] › e2e/recipes.spec.ts:116:3 › FR-REC-004 allergens › registered on the profile → recipes with them are hidden, can be shown with a warning
+[175/194] [desktop] › e2e/recipes.spec.ts:162:5 › recipe pages: layout and accessibility › (light) /oppskrifter, a recipe, /profil and the overview: no horizontal scroll, no axe violations
+[176/194] [desktop] › e2e/recipes.spec.ts:162:5 › recipe pages: layout and accessibility › (dark) /oppskrifter, a recipe, /profil and the overview: no horizontal scroll, no axe violations
+[177/194] [desktop] › e2e/scan.spec.ts:31:3 › scanning › FR-SCAN-002/-005: type a known code → filled-in form → confirm → the item is in the pantry
+[178/194] [desktop] › e2e/scan.spec.ts:67:3 › scanning › FR-SCAN-004: an unknown code gives an empty form and is remembered next time
+[179/194] [desktop] › e2e/scan.spec.ts:96:3 › scanning › NFR-REL-001: when the product lookup does not answer, the form still works
+[180/194] [desktop] › e2e/scan.spec.ts:112:3 › scanning › NFR-DATA-002: a double click on "Legg i matlageret" gives one batch
+[181/194] [desktop] › e2e/scan.spec.ts:129:3 › scanning › FR-SCAN-003: a code with a wrong check digit is refused before anything is sent
+[182/194] [desktop] › e2e/scan.spec.ts:143:3 › FR-SCAN-001 camera states › no camera access: says so, and the code can still be typed
+[183/194] [desktop] › e2e/scan.spec.ts:156:3 › FR-SCAN-001 camera states › a browser without camera support
+[184/194] [desktop] › e2e/scan.spec.ts:170:5 › scan page (light) › (light) NFR-UX-001/002: no horizontal scroll and no axe violations, empty and with the form
+[185/194] [desktop] › e2e/screenshots.spec.ts:24:5 › light – prices › priser
+[186/194] [desktop] › e2e/screenshots.spec.ts:24:5 › dark – prices › priser
+[187/194] [desktop] › e2e/scan.spec.ts:170:5 › scan page (dark) › (dark) NFR-UX-001/002: no horizontal scroll and no axe violations, empty and with the form
+[188/194] [desktop] › e2e/shopping.spec.ts:27:3 › recipe → shopping list → inventory → the recipe ranks higher › FR-SHOP-002/003: the whole flow
+[189/194] [desktop] › e2e/shopping.spec.ts:91:3 › recipe → shopping list → inventory → the recipe ranks higher › NFR-DATA-002: a double click on "Legg i matlageret" gives one batch
+[190/194] [desktop] › e2e/shopping.spec.ts:121:3 › FR-SHOP-001 the list by hand › add with Enter, tick, edit and remove
+[191/194] [desktop] › e2e/shopping.spec.ts:158:5 › FR-SHOP-001 the list by hand › (light) NFR-UX-001/002: no horizontal scroll, big tap targets, no axe violations
+[192/194] [desktop] › e2e/shopping.spec.ts:158:5 › FR-SHOP-001 the list by hand › (dark) NFR-UX-001/002: no horizontal scroll, big tap targets, no axe violations
+[193/194] [desktop] › e2e/scan-camera.spec.ts:29:1 › the EAN-13 drawing is right: the same 95 modules as the zxing-wasm writer draws
+[194/194] [desktop] › e2e/scan-camera.spec.ts:37:1 › FR-SCAN-001: the camera reads the code; the reader and its .wasm come from our own server
+  1) [desktop] › e2e/scan-camera.spec.ts:37:1 › FR-SCAN-001: the camera reads the code; the reader and its .wasm come from our own server 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\?kode=7038010000737$/
+    Received string:  "http://127.0.0.1:4173/skann"
+    Timeout: 20000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 20000ms
+        43 × locator resolved to <html lang="nb-NO">…</html>
+           - unexpected value "http://127.0.0.1:4173/skann"
+
+
+      43 |   await page.getByRole('button', { name: 'Start kamera' }).click();
+      44 |
+    > 45 |   await expect(page).toHaveURL(new RegExp(`\\?kode=${CODE}$`), { timeout: 20_000 });
+         |                      ^
+      46 |   await expect(page.getByLabel(/Navn på varen/)).toHaveValue('Testmeieriet Lettmelk 1 %');
+      47 |   // The camera is stopped once the code is read.
+      48 |   await expect(page.locator('video')).toHaveCount(0);
+        at /opt/Websites/SmartMat/e2e/scan-camera.spec.ts:45:22
+
+    Error Context: test-results/scan-camera-FR-SCAN-001-th-2df88-sm-come-from-our-own-server-desktop/error-context.md
+
+    Error Context: test-results/scan-camera-FR-SCAN-001-th-2df88-sm-come-from-our-own-server-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scan-camera-FR-SCAN-001-th-2df88-sm-come-from-our-own-server-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scan-camera-FR-SCAN-001-th-2df88-sm-come-from-our-own-server-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [desktop] › e2e/scan-camera.spec.ts:37:1 › FR-SCAN-001: the camera reads the code; the reader and its .wasm come from our own server 
+  7 skipped
+  186 passed (2.0m)
+
+exit code: 1

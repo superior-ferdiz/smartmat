@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "writtenBy": "Claude (KI), fase 5: fiktive testdata, bare for test-databasene",
+    "reviewedBy": [],
+    "note": "Brukes av API-testene og Playwright. Ikke ekte oppskrifter, og legges aldri inn i utviklingsdatabasen."
+  },
+  "ingredients": [
+    {
+      "key": "kyllingfilet",
+      "name": "Kyllingfilet",
+      "baseUnit": "g",
+      "category": "meat",
+      "aliases": ["kyllingbryst"],
+      "allergens": []
+    },
+    {
+      "key": "ris",
+      "name": "Ris",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["jasminris"],
+      "allergens": []
+    },
+    {
+      "key": "lok",
+      "name": "Løk",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["gul løk"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 100
+        }
+      ]
+    },
+    {
+      "key": "flote",
+      "name": "Fløte",
+      "baseUnit": "ml",
+      "category": "dairy",
+      "aliases": ["matfløte"],
+      "allergens": ["milk"]
+    },
+    {
+      "key": "melk",
+      "name": "Melk",
+      "baseUnit": "ml",
+      "category": "dairy",
+      "aliases": ["lettmelk"],
+      "allergens": ["milk"]
+    },
+    {
+      "key": "egg",
+      "name": "Egg",
+      "baseUnit": "stk",
+      "category": "dairy",
+      "aliases": [],
+      "allergens": ["egg"],
+      "conversions": [
+        {
+          "unit": "g",
+          "unitQty": 60,
+          "baseQty": 1
+        }
+      ]
+    },
+    {
+      "key": "hvetemel",
+      "name": "Hvetemel",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["mel"],
+      "allergens": ["gluten"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 100,
+          "baseQty": 60
+        }
+      ]
+    },
+    {
+      "key": "pasta",
+      "name": "Pasta",
+      "baseUnit": "g",
+      "category": "dryGoods",
+      "aliases": ["spagetti"],
+      "allergens": ["gluten"]
+    },
+    {
+      "key": "tomat",
+      "name": "Tomat",
+      "baseUnit": "g",
+      "category": "fruitVeg",
+      "aliases": ["tomater"],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "stk",
+          "unitQty": 1,
+          "baseQty": 100
+        }
+      ]
+    },
+    {
+      "key": "salt",
+      "name": "Salt",
+      "baseUnit": "g",
+      "isStaple": true,
+      "category": "spicesSauces",
+      "aliases": [],
+      "allergens": [],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 5,
+          "baseQty": 6
+        }
+      ]
+    },
+    {
+      "key": "sesamfro",
+      "name": "Sesamfrø",
+      "baseUnit": "g",
+      "category": "spicesSauces",
+      "aliases": [],
+      "allergens": ["sesame"],
+      "conversions": [
+        {
+          "unit": "ml",
+          "unitQty": 2,
+          "baseQty": 1
+        }
+      ]
+    }
+  ]
+}

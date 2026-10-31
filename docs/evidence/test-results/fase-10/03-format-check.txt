@@ -1,0 +1,9 @@
+$ npm run format:check
+Kjørt 2026-10-25T01:50:14Z
+
+> smartmat@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+Avslutningskode: 0

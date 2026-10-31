@@ -1,0 +1,172 @@
+Kjørt 2026-10-25T02:58:10Z (kjøring 1)
+1. «Siste forbruksdag passert» varsles for alltid (ingen grense på to dager)
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > use_by 2026-10-22 with 1 days before → null
+2. Best før gir varsel etter datoen
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  2 failed | 1176 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > best_before 2026-10-24 with 1 days before → null
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > never gives a best-before notification after the date (it is about quality)
+3. «Dager før» fra innstillingene brukes ikke for siste forbruksdag
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  3 failed | 1175 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-001 dates > disappears when the batch is used up, and comes when the clock reaches the day
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-005 settings per user > defaults without a row; saved settings change what is shown
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > use_by 2026-10-26 with 0 days before → null
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > use_by 2026-10-27 with 1 days before → null
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > use_by 2026-10-29 with 3 days before → null
+4. Bryteren for siste forbruksdag virker ikke
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-005 settings per user > defaults without a row; saved settings change what is shown
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-001 expiryStage – day boundaries (today = 2026-10-25) > respects the switches per date kind
+5. Nøkkelen mangler datoen (rettet dato gir ikke nytt varsel)
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  2 failed | 1176 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-001 dates > a use-by date tomorrow gives one notification with a fixed key
+      feilet: |api-db| test/notifications.security.api.test.ts > C) members of K > both see the household's waste and date notifications, each with their own state
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-004 keys – the same notification never comes twice > gives a new key for a new stage and for a corrected date
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-004 keys – the same notification never comes twice > gives the same key on every read of the same stage
+6. Budsjettvarselet kommer først over 80 %
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-002 budget > 80 % budgetNearlyUsed → undefined
+7. Handlelisten sorteres eldst først (feil «siste linje» i nøkkelen)
+    endret: packages/shared/src/notifications/rules.ts
+    enhetstester: Tests  2 failed | 1176 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > lines Per adds give Kari a notification with his name; Per gets none for his own
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-003 shopping list > gets a new key when another line is added, and none when off or empty
+      feilet: |shared| src/notifications/rules.test.ts > FR-NOTIF-003 shopping list > is one notification with the newest lines first, each adder once
+8. Største rest fordeler ikke de siste prosentpoengene
+    endret: packages/shared/src/waste/stats.ts
+    enhetstester: Tests  3 failed | 1175 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/waste.api.test.ts > FR-WASTE-001/004 the month: actual, estimated and unknown kept apart > sums known values, counts unknown ones without a value, and gives the estimated share
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-001/004 wasteMonthFigures > shares by count (value can be missing), most first, adding up to 100
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-002 largestRemainderPercents > always adds up to exactly 100
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-002 largestRemainderPercents > gives the left-over points to the largest remainders, ties to the earlier entry
+9. Andelen rundes vanlig i stedet for ned
+    endret: packages/shared/src/waste/stats.ts
+    enhetstester: Tests  2 failed | 1176 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-001/004 wasteMonthFigures > keeps actual, estimated and unknown apart, and never gives unknown a value
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-004 floorPercent and "under 1 %" > rounds down in whole percent
+10. Faktisk og anslått verdi byttes om
+    endret: packages/shared/src/waste/stats.ts
+    enhetstester: Tests  2 failed | 1176 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.security.api.test.ts > C) members of K > both see the household's waste and date notifications, each with their own state
+      feilet: |api-db| test/waste.api.test.ts > FR-WASTE-001/004 the month: actual, estimated and unknown kept apart > sums known values, counts unknown ones without a value, and gives the estimated share
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-001/004 wasteMonthFigures > keeps actual, estimated and unknown apart, and never gives unknown a value
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-003 wasteTrend > covers 12 months up to the selected one, oldest first, with empty months as 0
+11. Måneder uten kasseringer mangler i utviklingen
+    endret: packages/shared/src/waste/stats.ts
+    enhetstester: Tests  2 failed | 1176 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/waste.api.test.ts > FR-WASTE-001/003 months in Norwegian time > leaves out discards older than the 12 months of the trend
+      feilet: |api-db| test/waste.api.test.ts > FR-WASTE-001/004 the month: actual, estimated and unknown kept apart > sums known values, counts unknown ones without a value, and gives the estimated share
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-003 wasteTrend > covers 12 months up to the selected one, oldest first, with empty months as 0
+      feilet: |shared| src/waste/stats.test.ts > FR-WASTE-003 wasteTrend > crosses the turn of the year
+12. Angrede kasseringer telles i statistikken
+    endret: apps/api/src/modules/waste/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/waste.api.test.ts > FR-WASTE-001/004 the month: actual, estimated and unknown kept apart > does not count undone discards or food that was used
+13. Måneden regnes i UTC, ikke norsk tid
+    endret: apps/api/src/modules/waste/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/waste.api.test.ts > FR-WASTE-001/003 months in Norwegian time > puts a discard at 00:01 on 1 October in October, and 23:59 on 30 September in September
+14. Statistikken filtrerer ikke på husholdning
+    endret: apps/api/src/modules/waste/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.security.api.test.ts > B) Ola's own household with K's ids > sees nothing of K's inventory, waste or shopping list in his own figures
+15. «Mest kastet» filtrerer ikke på husholdning
+    endret: apps/api/src/modules/waste/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.security.api.test.ts > B) Ola's own household with K's ids > sees nothing of K's inventory, waste or shopping list in his own figures
+16. Svinnruten sjekker ikke medlemskap
+    endret: apps/api/src/modules/waste/routes.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.security.api.test.ts > A) another household in the URL > gives 404 on every new endpoint and changes nothing
+17. Avvisning godtar nøkler som ikke er aktive
+    endret: apps/api/src/modules/notifications/service.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-004 seen and dismissed > skips keys that are not active when marking as seen, and refuses them when dismissing
+      feilet: |api-db| test/notifications.security.api.test.ts > B) Ola's own household with K's ids > cannot mark or dismiss a notification about K's batch
+18. «Sett» godtar nøkler som ikke er aktive
+    endret: apps/api/src/modules/notifications/service.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-004 seen and dismissed > skips keys that are not active when marking as seen, and refuses them when dismissing
+      feilet: |api-db| test/notifications.security.api.test.ts > B) Ola's own household with K's ids > cannot mark or dismiss a notification about K's batch
+19. Avviste varsler vises fortsatt
+    endret: apps/api/src/modules/notifications/service.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  3 failed | 35 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > both members see a date notification; dismissing it is per person
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-004 seen and dismissed > 10 simultaneous dismissals give one row and no errors
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-004 seen and dismissed > marks as seen (badge goes to 0), and a dismissed notification never comes back
+20. Avvisning av handlelisten flytter merket til «nå»
+    endret: apps/api/src/modules/notifications/service.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > a stale key from an old page never moves the "seen" mark back
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > opening the list clears it; dismissing keeps a line added afterwards
+21. Egne handlelistelinjer gir varsel
+    endret: apps/api/src/modules/notifications/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > lines Per adds give Kari a notification with his name; Per gets none for his own
+22. «Sett handlelisten» kan flytte merket bakover
+    endret: apps/api/src/modules/notifications/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  38 passed (38)
+23. Gamle tilstander ryddes ikke
+    endret: apps/api/src/modules/notifications/repo.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  1 failed | 37 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-004 seen and dismissed > deletes states older than 45 days when a new one is written
+24. Varselrutene sjekker ikke medlemskap
+    endret: apps/api/src/modules/notifications/routes.ts
+    enhetstester: Tests  1178 passed (1178)
+    API-tester:   Tests  2 failed | 36 passed (38)
+      feilet: |api-db| test/notifications.api.test.ts > FR-NOTIF-003/006 shared households > after leaving: 404 at once, and the states are gone (CASCADE)
+      feilet: |api-db| test/notifications.security.api.test.ts > A) another household in the URL > gives 404 on every new endpoint and changes nothing
+25. Bjella sier ikke antallet til skjermlesere
+    endret: apps/web/src/layout/NotificationBell.tsx
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |web| src/pages/notifications/NotificationsPage.test.tsx > FR-NOTIF-004 the bell > has the number in its name, and the live region speaks only when it goes up
+26. Live-regionen leser opp ved første innlasting
+    endret: apps/web/src/layout/NotificationAnnouncer.tsx
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |web| src/pages/notifications/NotificationsPage.test.tsx > FR-NOTIF-004 the bell > has the number in its name, and the live region speaks only when it goes up
+27. «Under 1 %» vises som «0 %»
+    endret: apps/web/src/pages/waste/WastePage.tsx
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |web| src/pages/waste/WastePage.test.tsx > FR-WASTE-001/004 the month, honestly > says "under 1 %" instead of 0 % when a little is estimated
+28. Handlelisten sier ikke fra om at den er sett
+    endret: apps/web/src/pages/shopping/ShoppingListPage.tsx
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |web| src/pages/shopping/ShoppingListPage.test.tsx > FR-SHOP-001 the list > tells the server the list was seen (spec 11, FR-NOTIF-003)
+29. Siste forbruksdag i dag får rådet for best før
+    endret: apps/web/src/notifications/notificationText.ts
+    enhetstester: Tests  1 failed | 1177 passed (1178)
+    API-tester:   Tests  38 passed (38)
+      feilet: |web| src/pages/notifications/NotificationsPage.test.tsx > FR-NOTIF-001 wording: use by and best before are different > says use by tomorrow / today / passed, best before with "se, lukt og smak", and never more

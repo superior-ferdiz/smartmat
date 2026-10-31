@@ -1,0 +1,4 @@
+$ python3 -I links.py   # samme lenkesjekk som i 02-lenkesjekk.txt (skriptet står der)
+# 2026-10-27T20:10:45Z, fase 14 del 2, etter sjekklisten og endringene i veikart, kapittel 20, utviklingslogg og KI-logg
+537 lenker i 82 filer, 0 feil
+# exit code: 0

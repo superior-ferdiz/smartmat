@@ -1,0 +1,31 @@
+/* The bell: a 44 px tap target with the count in a small badge on its corner. */
+.bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+}
+
+.bell:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+
+.badge {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding-inline: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-danger);
+  color: var(--color-on-danger);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  line-height: 1.25rem;
+  text-align: center;
+}

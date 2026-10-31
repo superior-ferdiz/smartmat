@@ -1,0 +1,61 @@
+$ npx vitest run --config apps/api/vitest.db.config.ts --reporter=verbose
+# Kjørt 2026-10-20 13:29:31 UTC, Node v22.14.0, npm 11.1.0
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 brute force: lockout per account > after 5 wrong passwords even the right one is refused, with the same answer 740ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 brute force: lockout per account > the lock lifts after 15 minutes 412ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 brute force: lockout per account > locking one account does not affect another 572ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > login: the 4th attempt from the same address within the window gets 429 245ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > a 429 has our error format and says when to try again 204ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > a forged X-Forwarded-For header does not give a fresh limit 201ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > register: limited too 197ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > password check on account deletion is limited too 223ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a changing request without the CSRF token is refused (403), and nothing changes 145ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a wrong token, or another user's valid token, is refused 200ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a request from another site (foreign Origin) is refused even with a valid token 157ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a changing request without Origin is refused 92ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > login from another site is refused (login CSRF) 143ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > logout needs the token too, so another site cannot log the user out 159ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > reading (GET) needs no token 144ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > a user can read their own household 154ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > another user's household gives 404 – exactly like one that does not exist 200ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > not logged in → 401; a malformed id → 404 148ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > /me always means the caller: Ola's request cannot read or change Kari 203ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > a session cookie only works for the user it belongs to 183ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-004 no personal data in logs or error responses > the log has no e-mail, name, password, session token or CSRF token 347ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-004 no personal data in logs or error responses > an unexpected error gives a bare 500 and logs no message text 101ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-004 no personal data in logs or error responses > malformed JSON and unknown routes get our format without details 103ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > GET /me returns the logged-in user 384ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > PATCH /me changes name and language 176ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > PATCH /me validates: unknown language, blank name, nothing to change 162ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > PATCH /me cannot change e-mail or password hash 156ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > password change: wrong current password → 400 on that field, nothing changes 234ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > password change: new password too short → 400 146ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > password change: old password stops working, other devices are logged out, this one is not 373ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > wrong password → 400, and the account is still there 181ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > deletes the user, the household, the membership and every session – and nothing of other users 379ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > a household shared with someone else is kept; only the membership goes 241ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > the e-mail address can be registered again afterwards 233ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > 201: creates the user, a household of one with the user as owner, and logs in 393ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > sets the session cookie HttpOnly, Secure, SameSite=Lax, Path=/ (NFR-SEC-003) 151ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > stores an argon2id hash, not the password, and only the hash of the session token (ADR-0005) 164ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > 409 when the e-mail is taken, also with different case 202ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > 400 with i18n keys per field for invalid input (NFR-SEC-002) 93ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > ignores fields that are not in the schema (cannot set its own id, role or lock) 142ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > login → session → logout → the old cookie no longer works 207ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > logging in again ends the session the browser had before (new session ID at login) 195ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > wrong password and unknown e-mail get exactly the same answer 254ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > GET /auth/session is 401 without a cookie and with a made-up cookie 92ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > a session unused for 14 days stops working 171ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > logout without a valid session still answers 204 and clears the cookie 91ms
+ ✓ |api-db| test/auth.api.test.ts > GET /health > answers when the database is reachable 91ms
+
+ Test Files  3 passed (3)
+      Tests  47 passed (47)
+   Start at  13:29:32
+   Duration  14.59s (transform 346ms, setup 0ms, import 1.37s, tests 10.65s, environment 0ms)
+
+
+# exit code: 0

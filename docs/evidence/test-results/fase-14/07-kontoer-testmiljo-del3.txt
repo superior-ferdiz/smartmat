@@ -1,0 +1,16 @@
+Fase 14, del 3 – kontoer i testmiljøet (2026-10-29, ca. 00:34 UTC). Kjørt av Claude på Ferdinands forespørsel.
+Passordene er tilfeldige (20 tegn), ligger i /opt/Websites/smartmat-private/kontoer-testmiljo.txt (0600) og står
+ikke i denne filen.
+
+$ printf '%s\n' "<passord>" | docker exec -i smartmat-staging-app npm run -s create-user -w @smartmat/api -- --email ferdinand@smartmat.test --name "Ferdinand Risan"
+Passord (minst 12 tegn): 
+Kontoen er laget (bruker-id 01a18514-3699-7744-89f9-0517b88e1953).
+
+$ printf '%s\n' "<passord>" | docker exec -i smartmat-staging-app npm run -s create-user -w @smartmat/api -- --email linus@smartmat.test --name "Linus Saxe Huseby"
+Passord (minst 12 tegn): 
+Kontoen er laget (bruker-id 01a18514-39b7-75ef-8471-35b223518c33).
+
+Kontroll: POST https://smartmat.risansolutions.no/api/v1/auth/login (gjennom Caddy, med basic auth og Origin)
+ferdinand@smartmat.test -> 200 (user.email = ferdinand@smartmat.test, displayName = Ferdinand Risan)
+linus@smartmat.test -> 200 (user.email = linus@smartmat.test, displayName = Linus Saxe Huseby)
+Hver kontrollinnlogging laget en økt og et varsel om ny innlogging på kontoen.

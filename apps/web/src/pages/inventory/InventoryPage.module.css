@@ -1,0 +1,152 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Summary: three numbers in a row that wraps on narrow phones. Each is a link that sets the filter. */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.summaryLink {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  height: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.summaryLink:hover {
+  border-color: var(--color-control-border);
+  color: var(--color-text);
+}
+
+/* The active filter is marked with a thicker border and aria-current, not only colour. */
+.summaryLink[aria-current] {
+  border: 2px solid var(--color-primary);
+}
+
+.summaryNumber {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+/*
+ * Filters: the search field is always visible; the other filters sit in a <details> that can be folded
+ * away. Inside it: one column on phones, two from 600px, four from 1200px.
+ */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+
+.moreSummary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.moreFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: end;
+  padding-top: var(--space-2);
+}
+
+@media (min-width: 600px) {
+  .moreFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .moreFields {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Item cards: as many columns as fit, each at least 17rem wide (one column on phones). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--space-3);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+}
+
+.card:hover {
+  border-color: var(--color-control-border);
+}
+
+.card:focus-within {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.cardTitle {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+}
+
+.cardLink {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.cardLink:focus-visible {
+  outline: none; /* the whole card shows the focus ring (focus-within) */
+}
+
+/* Stretch the link over the whole card, so the card is one big click target. */
+.cardLink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.cardMeta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.cardStatus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+}

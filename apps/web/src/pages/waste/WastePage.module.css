@@ -1,0 +1,241 @@
+/*
+ * Food waste page (spec 11, KURS-02).
+ * Phone: one column. ≥ 900px: summary and reasons side by side, categories and most thrown away under them,
+ * the 12-month table and the notes across both columns.
+ */
+.monthNav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.monthNav > :first-child {
+  justify-self: start;
+}
+
+.monthNav > :last-child {
+  justify-self: end;
+}
+
+.monthTitle {
+  font-size: var(--font-size-lg);
+  text-align: center;
+}
+
+.monthTitle::first-letter {
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'summary    reasons'
+      'categories top'
+      'trend      trend'
+      'about      about';
+  }
+
+  .summary {
+    grid-area: summary;
+  }
+
+  .reasons {
+    grid-area: reasons;
+  }
+
+  .categories {
+    grid-area: categories;
+  }
+
+  .top {
+    grid-area: top;
+  }
+
+  .trend {
+    grid-area: trend;
+  }
+
+  .about {
+    grid-area: about;
+  }
+}
+
+.summaryBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bigNumber {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.bigLabel {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+}
+
+.muted,
+.note {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.note {
+  margin-top: var(--space-3);
+}
+
+.unknown {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.unknown > svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* Reason and category rows: name and amount on one line, the count under, a thin bar last. */
+.shareList,
+.topList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.topList {
+  padding-inline-start: var(--space-5);
+}
+
+.shareRow,
+.topRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 var(--space-3);
+}
+
+.shareLabel,
+.topName {
+  overflow-wrap: anywhere;
+}
+
+.shareValue {
+  text-align: end;
+}
+
+.shareMeta {
+  grid-column: 1 / -1;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.bar {
+  grid-column: 1 / -1;
+  height: 0.5rem;
+  margin-top: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-sunken);
+  overflow: hidden;
+}
+
+.bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+}
+
+/* The 12-month table: four narrow columns that fit 360 px. */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.caption {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  text-align: start;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-1);
+  border-bottom: var(--border-width) solid var(--color-border);
+  vertical-align: top;
+}
+
+.table thead th {
+  font-weight: 600;
+  text-align: start;
+}
+
+.table .number {
+  text-align: end;
+}
+
+.monthCell {
+  font-weight: 400;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.selected {
+  background: var(--color-surface-sunken);
+}
+
+.selected .monthCell {
+  font-weight: 700;
+}
+
+.cellValue,
+.cellNote {
+  display: block;
+}
+
+.cellNote {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.trendBar {
+  display: flex;
+  height: 0.5rem;
+  margin-top: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-sunken);
+  overflow: hidden;
+}
+
+.actual {
+  background: var(--color-primary);
+}
+
+/* Estimated: the same colour in stripes, so it is told apart without seeing colour. */
+.estimated {
+  background: repeating-linear-gradient(135deg, var(--color-primary) 0 2px, transparent 2px 5px);
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-inline-start: var(--space-5);
+  list-style: disc;
+  font-size: var(--font-size-sm);
+}

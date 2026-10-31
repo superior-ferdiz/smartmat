@@ -7,6 +7,7 @@ export type SectionId =
   | 'recipes'
   | 'shoppingList'
   | 'budget'
+  | 'waste'
   | 'mealPlan'
   | 'household'
   | 'settings';
@@ -22,7 +23,7 @@ export interface NavSection {
   comingLater?: boolean;
 }
 
-/** The nine sections of SmartMat, in menu order. Single source for routes, side menu, bottom menu and "Mer". */
+/** The ten sections of SmartMat, in menu order. Single source for routes, side menu, bottom menu and "Mer". */
 export const SECTIONS: readonly NavSection[] = [
   { id: 'overview', path: '/', icon: 'overview', inBottomNav: true },
   { id: 'inventory', path: '/matlager', icon: 'inventory', inBottomNav: true },
@@ -30,19 +31,54 @@ export const SECTIONS: readonly NavSection[] = [
   { id: 'recipes', path: '/oppskrifter', icon: 'recipes', inBottomNav: true },
   { id: 'shoppingList', path: '/handleliste', icon: 'shoppingList', inBottomNav: false },
   { id: 'budget', path: '/budsjett', icon: 'budget', inBottomNav: false },
-  { id: 'mealPlan', path: '/maltidsplan', icon: 'mealPlan', inBottomNav: false, comingLater: true },
-  {
-    id: 'household',
-    path: '/husholdning',
-    icon: 'household',
-    inBottomNav: false,
-    comingLater: true,
-  },
+  { id: 'waste', path: '/svinn', icon: 'waste', inBottomNav: false },
+  { id: 'mealPlan', path: '/maltidsplan', icon: 'mealPlan', inBottomNav: false },
+  { id: 'household', path: '/husholdning', icon: 'household', inBottomNav: false },
   { id: 'settings', path: '/innstillinger', icon: 'settings', inBottomNav: false },
 ];
 
 export const MORE_PATH = '/mer';
 export const DESIGN_SYSTEM_PATH = '/designsystem';
+export const LOGIN_PATH = '/logg-inn';
+export const REGISTER_PATH = '/registrer';
+export const PROFILE_PATH = '/profil';
+/** Spec 13 (FR-PRIV-003): public, logged in or not. */
+export const PRIVACY_PATH = '/personvern';
+/** The sessions card on the profile page (FR-AUTH-009). */
+export const PROFILE_SESSIONS_PATH = '/profil#profile-sessions';
+/** Spec 10: the household page, and the page an invitation link opens (`/bli-med#<token>`). */
+export const HOUSEHOLD_PATH = '/husholdning';
+export { JOIN_PATH } from '@smartmat/shared';
+export const INVENTORY_PATH = '/matlager';
+export const NEW_ITEM_PATH = '/matlager/ny';
+export const LOCATIONS_PATH = '/matlager/steder';
+export const itemPath = (itemId: string) => `/matlager/${itemId}`;
+export const SCAN_PATH = '/skann';
+/** The scan page with a code already in the URL (spec 07). */
+export const scanCodePath = (gtin: string) => `${SCAN_PATH}?kode=${gtin}`;
+export const RECIPES_PATH = '/oppskrifter';
+export const recipePath = (recipeId: string) => `/oppskrifter/${recipeId}`;
+/** FR-REC-006 (spec 09): the open sources the recipes come from, with licences. */
+export const RECIPE_SOURCES_PATH = '/oppskrifter/kilder';
+export const SHOPPING_LIST_PATH = '/handleliste';
+/** Spec 09: the meal plan; `?uke=2026-W44` shows another week. */
+export const MEAL_PLAN_PATH = '/maltidsplan';
+export const mealPlanWeekPath = (week: string) => `${MEAL_PLAN_PATH}?uke=${week}`;
+export const BUDGET_PATH = '/budsjett';
+export const NEW_PURCHASE_PATH = '/budsjett/kjop/ny';
+export const purchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}`;
+export const editPurchasePath = (purchaseId: string) => `/budsjett/kjop/${purchaseId}/rett`;
+/** Spec 08: upload a receipt, and one receipt's status and review. */
+export const RECEIPTS_PATH = '/budsjett/kvittering';
+export const receiptPath = (receiptId: string) => `${RECEIPTS_PATH}/${receiptId}`;
+/** The budget page for a month ("2026-09"); the month is in the URL so it can be shared and reloaded. */
+export const budgetMonthPath = (month: string) => `${BUDGET_PATH}?maned=${month}`;
+
+/** Spec 11: food waste figures for a month ("2026-09"), and the notifications page (the bell). */
+export const WASTE_PATH = '/svinn';
+export const wasteMonthPath = (month: string) => `${WASTE_PATH}?maned=${month}`;
+export const NOTIFICATIONS_PATH = '/varsler';
+export const SETTINGS_PATH = '/innstillinger';
 
 export const BOTTOM_NAV_SECTIONS = SECTIONS.filter((section) => section.inBottomNav);
 export const MORE_SECTIONS = SECTIONS.filter((section) => !section.inBottomNav);

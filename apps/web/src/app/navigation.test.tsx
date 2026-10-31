@@ -2,19 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderApp } from '../test/renderApp';
+import { EMPTY_SUMMARY, mockApi } from '../test/mockApi';
 import { SECTIONS } from './navigation';
 import { expectNoAxeViolations } from '../test/axe';
 
 describe('FR-UI-001 navigation', () => {
-  it('has nine sections with unique paths', () => {
-    expect(SECTIONS).toHaveLength(9);
-    expect(new Set(SECTIONS.map((s) => s.path)).size).toBe(9);
+  it('has ten sections with unique paths', () => {
+    expect(SECTIONS).toHaveLength(10);
+    expect(new Set(SECTIONS.map((s) => s.path)).size).toBe(10);
   });
 
-  it('side menu lists all nine sections', () => {
+  it('side menu lists all ten sections', () => {
     renderApp('/');
     const nav = screen.getByRole('navigation', { name: 'Hovedmeny' });
-    expect(within(nav).getAllByRole('link')).toHaveLength(9);
+    expect(within(nav).getAllByRole('link')).toHaveLength(10);
   });
 
   it('bottom menu has Oversikt, Matlager, Skann, Oppskrifter and Mer, in that order', () => {
@@ -76,16 +77,17 @@ describe('FR-UI-002 placeholder pages', () => {
     },
   );
 
-  it('marks later sections as "Kommer senere"', () => {
-    renderApp('/maltidsplan');
-    const main = screen.getByRole('main');
-    expect(within(main).getByText('Kommer senere')).toBeInTheDocument();
+  it('no section is marked "Kommer senere" any more (household came in phase 10)', () => {
+    renderApp('/mer');
+    expect(screen.queryByText('Senere')).not.toBeInTheDocument();
   });
 
-  it('"Mer" lists the five sections that are not in the bottom menu', () => {
+  it('"Mer" lists the six sections that are not in the bottom menu, and the privacy notice (spec 13)', () => {
     renderApp('/mer');
     const nav = screen.getByRole('navigation', { name: 'Flere seksjoner' });
-    expect(within(nav).getAllByRole('link')).toHaveLength(5);
+    const links = within(nav).getAllByRole('link');
+    expect(links).toHaveLength(7);
+    expect(links.at(-1)).toHaveAttribute('href', '/personvern');
   });
 
   it('unknown URLs show a 404 page with a way back', () => {
@@ -105,28 +107,33 @@ describe('FR-UI-002 placeholder pages', () => {
 });
 
 describe('FR-UI-003 overview', () => {
-  it('labels the sample content as sample data', () => {
+  it('has no sample data any more: the dinner card shows real recipes (phase 5)', async () => {
     renderApp('/');
-    expect(screen.getByText('Dette er eksempeldata')).toBeInTheDocument();
-    // Every card with numbers or items carries the tag.
-    expect(screen.getAllByText('Eksempeldata').length).toBeGreaterThanOrEqual(4);
+    expect(await screen.findByText('Ingen oppskrifter ennå.')).toBeInTheDocument();
+    expect(screen.queryByText('Noe er fortsatt eksempeldata')).not.toBeInTheDocument();
+    expect(screen.queryAllByText('Eksempeldata')).toHaveLength(0);
   });
 
-  it('formats money from øre in Norwegian format', () => {
+  it('formats money from øre in Norwegian format', async () => {
+    mockApi((r) =>
+      r.path.endsWith('/budget/summary')
+        ? {
+            status: 200,
+            body: {
+              ...EMPTY_SUMMARY,
+              budgetOre: 500_000,
+              spentOre: 324_550,
+              remainingOre: 175_450,
+              usedPercent: 64,
+            },
+          }
+        : undefined,
+    );
     renderApp('/');
     const budget = screen.getByRole('region', { name: 'Matbudsjett denne måneden' });
     // Testing Library collapses whitespace in the DOM text (formatOre uses no-break spaces) but not in the
     // string we pass, so the query uses ordinary spaces.
-    expect(within(budget).getByText('3 245,50 kr')).toBeInTheDocument();
+    expect(await within(budget).findByText('3 245,50 kr')).toBeInTheDocument();
     expect(within(budget).getByText('1 754,50 kr')).toBeInTheDocument();
-  });
-
-  it('uses different wording for "best før" and "siste forbruksdag"', () => {
-    renderApp('/');
-    expect(screen.getByText('Siste forbruksdag passert')).toBeInTheDocument();
-    expect(
-      screen.getByText('Bør ikke spises. Siste forbruksdag handler om mattrygghet.'),
-    ).toBeInTheDocument();
-    expect(screen.getByText('Best før for 2 dager siden')).toBeInTheDocument();
   });
 });

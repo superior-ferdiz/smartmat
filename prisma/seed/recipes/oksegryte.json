@@ -1,0 +1,98 @@
+{
+  "slug": "oksegryte",
+  "title": "Oksegryte med grønnsaker",
+  "description": "Biter av storfekjøtt og grønnsaker i en tykk tomatsaus.",
+  "servings": 6,
+  "prepMinutes": 30,
+  "cookMinutes": 90,
+  "tags": ["middag", "storfe", "gryte"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Beef Stew I",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4518573",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir verken porsjoner eller tid. Antall porsjoner (6) og tidene er anslått av KI. Cups er regnet om til dl.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "storfekjott",
+      "amount": "900",
+      "unit": "g",
+      "text": "900 g storfekjøtt"
+    },
+    {
+      "ingredient": "hvetemel",
+      "amount": "1,2",
+      "unit": "dl",
+      "text": "1,2 dl hvetemel"
+    },
+    {
+      "ingredient": "olje",
+      "amount": "0,6",
+      "unit": "dl",
+      "text": "0,6 dl olje"
+    },
+    {
+      "ingredient": "laurbaerblad",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 laurbærblad"
+    },
+    {
+      "ingredient": "merian",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ts merian"
+    },
+    {
+      "ingredient": "oregano",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ts oregano"
+    },
+    {
+      "ingredient": "tomatjuice",
+      "amount": "1,36",
+      "unit": "l",
+      "text": "1,36 liter tomatjuice"
+    },
+    {
+      "ingredient": "buljong",
+      "amount": "3",
+      "unit": "dl",
+      "text": "3 dl dobbelt sterk oksekraft"
+    },
+    {
+      "ingredient": "potet",
+      "amount": "2",
+      "unit": "stk",
+      "text": "2–4 store poteter"
+    },
+    {
+      "ingredient": "gulrot",
+      "amount": "4",
+      "unit": "stk",
+      "text": "4 store gulrøtter"
+    },
+    {
+      "ingredient": "stangselleri",
+      "amount": "4",
+      "unit": "stk",
+      "text": "4 stilker stangselleri"
+    }
+  ],
+  "steps": [
+    "Skjær kjøttet i terninger på omtrent 2,5 cm.",
+    "Ha kjøtt og mel i en beholder, for eksempel en plastpose, og rist til kjøttet er dekket av mel. Bruk mer mel for en tykkere gryte og mindre for en tynnere.",
+    "Varm oljen i en vid gryte.",
+    "Brun kjøttet i oljen i flere omganger.",
+    "Ha alt kjøttet tilbake i gryta sammen med krydderne, tomatjuicen og kraften.",
+    "Legg på lokk og la gryta småkoke i minst en time, til kjøttet er mørt. Rør med noen minutters mellomrom, så kjøttet ikke svir seg i bunnen.",
+    "Skrell gulrøttene og skjær dem i biter på størrelse med kjøttet. Ha dem i gryta og la den småkoke litt til, mens du rører innimellom.",
+    "Skjær resten av grønnsakene på samme måte, ha dem i gryta og la den småkoke litt til.",
+    "Når grønnsakene er møre, men ikke faller fra hverandre, tar du ut laurbærbladet og serverer."
+  ]
+}

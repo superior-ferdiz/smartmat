@@ -1,0 +1,4 @@
+$ npm audit
+Kjørt 2026-10-25T00:14:05Z
+found 0 vulnerabilities
+Avslutningskode: 0

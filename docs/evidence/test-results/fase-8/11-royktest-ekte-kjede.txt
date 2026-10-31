@@ -1,0 +1,43 @@
+Røyktest av hele kvitteringskjeden med ekte pg-boss og ekte Tesseract (fase 8), 2026-10-24
+=======================================================================================
+
+Kjørt av KI (Claude) i utviklingsmiljøet. Kvitteringen var GENERERT og FIKTIV (SVG tegnet med sharp: «EXTRA /
+Fiktivby / Org.nr 999 999 999 / Salgskvittering 555555 05.10.2026 15:20 / HAVREGRYN 1KG 24.90 / MELK 1L 21.90 /
+PANT 3.00 / Totalt (2 Artikler) 49.80 / Bank: 49.80»), lagt på siden på et mørkt bord. Ingen ekte kvittering.
+
+Oppsett:
+- API:    npx tsx src/server.ts   (API_PORT=3199, OCR_PROVIDER=tesseract, utviklingsdatabasen)
+- Worker: npx tsx src/worker.ts   (OCR_TESSERACT_COMMAND="docker run --rm -i --network none smartmat-ocr timeout 55 tesseract")
+- Midlertidig konto royktest-fase8@example.test, slettet til slutt (DELETE /me → 204).
+
+Utdata (kopiert fra terminalen):
+
+Første forsøk:
+  {"id":"01a16df8-c19b-710e-b15b-9ed5357185dd","status":"queued",...}
+  status=failed after 5s
+  failed noText None
+  worker: {"receiptId":"01a16df8-…","outcome":"noText","durationMs":2618,"msg":"receipt job"}
+
+  Årsak: papiret var bredere enn høyt når det står riktig vei (kort kvittering). Lagt på siden så det stående ut, og
+  bare 0° og 180° ble prøvd. Feilsøking: 270° ga hele teksten riktig. Rettet i providers/ocr/tesseract.ts: når den
+  beste lesingen er usikker (snitt < 70), leses de to andre retningene også. Test lagt til i tesseract.test.ts.
+
+Etter rettingen (workeren startet på nytt, POST …/retry):
+  status=review after 6s
+  review None 95
+  {'storeName': 'Extra', 'chain': 'extra', 'purchasedOn': '2026-10-05', 'totalOre': 4980, 'linesShown': False,
+   'lines': [], 'linesSumOre': 4980, 'sumMatches': True}
+  ['EXTRA', 'Fiktivby', 'Org.nr 999 999 999 MVA', 'Salgskvittering 555555 05.10.2026 15:20',
+   'HAVREGRYN 1KG 24.90', 'MELK 1L 21.90', 'PANT 3.00', 'Totalt (2 Artikler) 49.80', 'Bank: 49.80']
+  worker: {"receiptId":"01a16df8-…","outcome":"review","durationMs":4511,"msg":"receipt job"}
+
+  confirm 201
+  image after confirm 404
+
+Loggene (API og worker) søkt etter innhold fra kvitteringen
+(HAVREGRYN|MELK|49\.80|4980|555555|Fiktivby|fiktiv.jpg): 0 treff i alle tre loggfilene.
+URL-ene i API-loggen inneholdt bare id-er (/households/<id>/receipts/<id>/confirm osv.).
+
+Opprydding: prosessene stoppet med eksakt PID (ikke pkill på navn), ingen smartmat-ocr-containere igjen,
+utviklingsdatabasen: 0 kvitteringer, 0 bilder, 0 røyktestbrukere. pg-boss-skjemaet «pgboss» står igjen i
+utviklingsdatabasen (innholdet der ble ikke kontrollert).

@@ -1,0 +1,93 @@
+{
+  "slug": "gjeterpai",
+  "title": "Gjeterpai (shepherd's pie)",
+  "description": "Kjøttdeig i saus, dekket med potetmos og stekt i ovnen til toppen er gyllen.",
+  "servings": 4,
+  "prepMinutes": 30,
+  "cookMinutes": 70,
+  "tags": ["middag", "kjøttdeig", "potet", "britisk", "ovn"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Shepherd's Pie I",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4605182",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Tidene er anslått av KI (originalen oppgir ingen). Ovnstemperaturen står ikke i originalen («varm ovn»).",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "olje",
+      "text": "30 g smult eller litt olje",
+      "optional": true
+    },
+    {
+      "ingredient": "kjottdeig",
+      "amount": "450",
+      "unit": "g",
+      "text": "450 g kjøttdeig av lam eller storfe"
+    },
+    {
+      "ingredient": "potet",
+      "amount": "1,3",
+      "unit": "kg",
+      "text": "1,3 kg melne poteter"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 stor eller 2 små løk"
+    },
+    {
+      "ingredient": "hvetemel",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss hvetemel"
+    },
+    {
+      "ingredient": "buljong",
+      "amount": "3",
+      "unit": "dl",
+      "text": "3 dl kjøttkraft (eller vann og buljongterning)"
+    },
+    {
+      "ingredient": "gulost",
+      "text": "Revet ost",
+      "optional": true
+    },
+    {
+      "ingredient": "mais",
+      "text": "En håndfull blandede grønnsaker, for eksempel mais eller gulrot",
+      "optional": true
+    },
+    {
+      "ingredient": "torkede-urter",
+      "text": "Tørkede urter"
+    },
+    {
+      "ingredient": "melk",
+      "text": "Melk"
+    },
+    {
+      "ingredient": "smor",
+      "text": "Smør"
+    }
+  ],
+  "steps": [
+    "Varm fett i en panne og brun kjøttdeigen. Med mager kjøttdeig trengs kanskje ikke ekstra fett.",
+    "Hakk løken fint, og fres den i litt smør med litt salt til den er blank.",
+    "Ha løken i kjøttdeigen sammen med urtene og litt pepper.",
+    "Dryss melet over, rør og la det steke i 3–4 minutter.",
+    "Hell på kraften og la det småkoke i 30 minutter.",
+    "Smak til kjøttsausen. Det kan trenges mer salt.",
+    "Imens: Skrell potetene, del dem og kok dem i 20 minutter til de er møre.",
+    "Når kjøttet er ferdig, skummer du av overflødig fett og koker inn sausen til væsken står i høyde med kjøttet.",
+    "Hell av potetene og la dem dampe helt tørre. Mos dem til en jevn mos uten klumper. Ha i smør og smak til. Spe forsiktig med melk mens du moser, til mosen er myk og kremet.",
+    "Ha kjøttsausen i en grunn ildfast form, og legg mosen over. Pensle toppen med smeltet smør.",
+    "Dryss eventuelt revet ost over. Uten ost kan du dra en gaffel over mosen, så overflaten blir ru og sprø.",
+    "Stek i varm ovn i 30–50 minutter til toppen er gyllenbrun.",
+    "Server med erter, bønner eller andre grønne grønnsaker."
+  ]
+}

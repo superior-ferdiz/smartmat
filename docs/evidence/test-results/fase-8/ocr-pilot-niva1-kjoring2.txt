@@ -1,0 +1,50 @@
+Kjørt 2026-10-24T12:04:31Z
+OCR pilot, level 1 (fields found in the OCR text). Tesseract, language nor, psm 4 and 6.
+Receipts: 3. Ids: extra-1, extra-2, kiwi-1
+
+| Variant | Chain | Date | Total | Item lines found | Item amounts exact | Deposit found | Deposit amounts exact | Mean line CER | Mean conf. | Time (s) | Peak memory (MB) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| V1 raw, psm 4 | 0/3 (0 %) | 1/3 (33 %) | 0/3 (0 %) | 7/12 (58 %) | 1/7 (14 %) | 3/4 (75 %) | 0/3 (0 %) | 0.48 | 52 | 1.3 (max 1.9) | 114 |
+  extra-1: failed (noText)
+| V2 clean, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 1/3 (33 %) | 16/16 (100 %) | 8/16 (50 %) | 4/4 (100 %) | 1/4 (25 %) | 0.07 | 66 | 5.7 (max 6.3) | 52 |
+| V3 threshold, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 2/3 (67 %) | 12/16 (75 %) | 4/12 (33 %) | 4/4 (100 %) | 1/4 (25 %) | 0.09 | 64 | 5.1 (max 6.1) | 48 |
+| V4 deskew, psm 4 | 2/3 (67 %) | 3/3 (100 %) | 1/3 (33 %) | 16/16 (100 %) | 8/16 (50 %) | 4/4 (100 %) | 1/4 (25 %) | 0.07 | 66 | 7.1 (max 8.4) | 52 |
+| V4 deskew, full size, psm 4 | 3/3 (100 %) | 2/3 (67 %) | 2/3 (67 %) | 16/16 (100 %) | 9/16 (56 %) | 4/4 (100 %) | 1/4 (25 %) | 0.05 | 61 | 6.9 (max 7.7) | 51 |
+| V1 raw, psm 6 | 1/3 (33 %) | 1/3 (33 %) | 0/3 (0 %) | 7/16 (44 %) | 2/7 (29 %) | 3/4 (75 %) | 0/3 (0 %) | 0.43 | 41 | 5.0 (max 6.7) | 110 |
+| V2 clean, psm 6 | 2/3 (67 %) | 3/3 (100 %) | 1/3 (33 %) | 15/16 (94 %) | 9/15 (60 %) | 3/4 (75 %) | 0/3 (0 %) | 0.07 | 61 | 5.5 (max 5.9) | 49 |
+| V3 threshold, psm 6 | 1/3 (33 %) | 3/3 (100 %) | 1/3 (33 %) | 12/16 (75 %) | 6/12 (50 %) | 3/4 (75 %) | 0/3 (0 %) | 0.14 | 56 | 5.1 (max 6.2) | 46 |
+| V4 deskew, psm 6 | 2/3 (67 %) | 3/3 (100 %) | 1/3 (33 %) | 15/16 (94 %) | 9/15 (60 %) | 3/4 (75 %) | 0/3 (0 %) | 0.07 | 61 | 6.7 (max 8.0) | 49 |
+| V4 deskew, full size, psm 6 | 2/3 (67 %) | 3/3 (100 %) | 2/3 (67 %) | 14/16 (88 %) | 9/14 (64 %) | 4/4 (100 %) | 1/4 (25 %) | 0.06 | 60 | 6.8 (max 7.7) | 49 |
+
+Per receipt (items found / of, amounts exact):
+  extra-1    V1 raw, psm 4                  failed (noText)
+  extra-1    V2 clean, psm 4                items 4/4, amounts 3, total yes, date yes
+  extra-1    V3 threshold, psm 4            items 4/4, amounts 3, total yes, date yes
+  extra-1    V4 deskew, psm 4               items 4/4, amounts 3, total yes, date yes
+  extra-1    V4 deskew, full size, psm 4    items 4/4, amounts 4, total yes, date yes
+  extra-1    V1 raw, psm 6                  items 0/4, amounts 0, total no, date no
+  extra-1    V2 clean, psm 6                items 4/4, amounts 4, total yes, date yes
+  extra-1    V3 threshold, psm 6            items 4/4, amounts 4, total yes, date yes
+  extra-1    V4 deskew, psm 6               items 4/4, amounts 4, total yes, date yes
+  extra-1    V4 deskew, full size, psm 6    items 4/4, amounts 4, total yes, date yes
+  extra-2    V1 raw, psm 4                  items 7/10, amounts 1, total no, date yes
+  extra-2    V2 clean, psm 4                items 10/10, amounts 4, total no, date yes
+  extra-2    V3 threshold, psm 4            items 6/10, amounts 0, total no, date yes
+  extra-2    V4 deskew, psm 4               items 10/10, amounts 4, total no, date yes
+  extra-2    V4 deskew, full size, psm 4    items 10/10, amounts 3, total no, date yes
+  extra-2    V1 raw, psm 6                  items 7/10, amounts 2, total no, date yes
+  extra-2    V2 clean, psm 6                items 9/10, amounts 3, total no, date yes
+  extra-2    V3 threshold, psm 6            items 6/10, amounts 0, total no, date yes
+  extra-2    V4 deskew, psm 6               items 9/10, amounts 3, total no, date yes
+  extra-2    V4 deskew, full size, psm 6    items 8/10, amounts 3, total no, date yes
+  kiwi-1     V1 raw, psm 4                  items 0/2, amounts 0, total no, date no
+  kiwi-1     V2 clean, psm 4                items 2/2, amounts 1, total no, date yes
+  kiwi-1     V3 threshold, psm 4            items 2/2, amounts 1, total yes, date yes
+  kiwi-1     V4 deskew, psm 4               items 2/2, amounts 1, total no, date yes
+  kiwi-1     V4 deskew, full size, psm 4    items 2/2, amounts 2, total yes, date no
+  kiwi-1     V1 raw, psm 6                  items 0/2, amounts 0, total no, date no
+  kiwi-1     V2 clean, psm 6                items 2/2, amounts 2, total no, date yes
+  kiwi-1     V3 threshold, psm 6            items 2/2, amounts 2, total no, date yes
+  kiwi-1     V4 deskew, psm 6               items 2/2, amounts 2, total no, date yes
+  kiwi-1     V4 deskew, full size, psm 6    items 2/2, amounts 2, total yes, date yes
+exit=0

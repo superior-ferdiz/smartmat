@@ -1,0 +1,39 @@
+{
+  "slug": "testrett-pannekaker",
+  "title": "Testrett: pannekaker",
+  "description": "Fiktiv oppskrift for automatiske tester.",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 20,
+  "tags": ["test"],
+  "source": "test",
+  "license": "test",
+  "authors": ["Testdata (laget av KI for testene)"],
+  "ingredients": [
+    {
+      "ingredient": "hvetemel",
+      "amount": "2,5",
+      "unit": "dl",
+      "text": "2,5 dl hvetemel"
+    },
+    {
+      "ingredient": "melk",
+      "amount": "5",
+      "unit": "dl",
+      "text": "5 dl melk"
+    },
+    {
+      "ingredient": "egg",
+      "amount": "3",
+      "unit": "stk",
+      "text": "3 egg"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "1/2",
+      "unit": "ts",
+      "text": "1/2 ts salt"
+    }
+  ],
+  "steps": ["Testtrinn 1."]
+}

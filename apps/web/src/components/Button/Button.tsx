@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 import { Link, type LinkProps } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import styles from './Button.module.css';
@@ -77,5 +77,27 @@ export function LinkButton({
       {icon}
       <span>{children}</span>
     </Link>
+  );
+}
+
+export interface AnchorButtonProps extends StyleProps, AnchorHTMLAttributes<HTMLAnchorElement> {
+  href: string;
+}
+
+/** A plain link that looks like a button: for a file download (spec 13, FR-PRIV-001), not for routes in the app. */
+export function AnchorButton({
+  variant,
+  size,
+  fullWidth,
+  icon,
+  className,
+  children,
+  ...rest
+}: AnchorButtonProps) {
+  return (
+    <a {...rest} className={classNames({ variant, size, fullWidth }, className)}>
+      {icon}
+      <span>{children}</span>
+    </a>
   );
 }

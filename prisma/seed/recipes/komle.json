@@ -1,0 +1,56 @@
+{
+  "slug": "komle",
+  "title": "Komle (raspeballer)",
+  "description": "Komle, også kalt raspeball, er potetballer som ofte spises med pølser, kokte gulrøtter og flesk.",
+  "servings": 6,
+  "prepMinutes": 30,
+  "cookMinutes": 20,
+  "tags": ["middag", "potet", "norsk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Komle (Norwegian Potato Dumplings)",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4512089",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir verken porsjoner eller tid. Antall porsjoner (6) og tidene er anslått av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "potet",
+      "amount": "2",
+      "unit": "kg",
+      "text": "2 kg skrelte poteter"
+    },
+    {
+      "ingredient": "hvetemel",
+      "amount": "100",
+      "unit": "g",
+      "text": "100 g hvetemel"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "20",
+      "unit": "g",
+      "text": "20 g salt (3–4 ts)"
+    },
+    {
+      "ingredient": "sideflesk",
+      "amount": "150",
+      "unit": "g",
+      "text": "150 g saltet sideflesk"
+    },
+    {
+      "ingredient": "buljong",
+      "text": "Lettsaltet kjøttkraft til koking"
+    }
+  ],
+  "steps": [
+    "Kvern potetene i en foodprosessor.",
+    "Klem potetmassen godt, så vannet renner av.",
+    "Bland potetene med melet, og la deigen hvile i 10 minutter.",
+    "Form deigen til store, runde boller, og fyll dem med biter av flesket.",
+    "Kok bollene i kraften i 15–20 minutter."
+  ]
+}

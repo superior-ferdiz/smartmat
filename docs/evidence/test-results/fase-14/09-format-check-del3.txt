@@ -1,0 +1,5 @@
+$ npx prettier --check CLAUDE.md docs/academic/vedlegg-ki-erklaering.md docs/development/changelog.md docs/development/development-journal.md docs/development/roadmap.md docs/development/sjekkliste-merge-og-innlevering.md docs/development/testmiljo.md docs/evidence/ai-usage/ai-logg.md
+# 2026-10-29T00:36:51Z, fase 14 del 3
+Checking formatting...
+All matched files use Prettier code style!
+# exit code: 0

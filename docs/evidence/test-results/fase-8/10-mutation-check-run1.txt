@@ -1,0 +1,245 @@
+1. Kvitteringsrutene uten householdAccess (bare innlogging)
+    endret: apps/api/src/modules/receipts/routes.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  39 failed | 49 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > accepts a photo, queues it and stores it rewritten without any metadata
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > refuses files over 10 MB and images over 40 megapixels
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > refuses other file types by their content, broken files, and a missing or wrongly named file
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > refuses the same photo twice while the first is open, pointing to it
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > an OCR failure (invalidResponse) leaves the receipt failed with that code
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > an OCR failure (noText) leaves the receipt failed with that code
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > an OCR failure (timeout) leaves the receipt failed with that code
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > an OCR failure (unavailable) leaves the receipt failed with that code
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a provider that throws, or text with only payment lines, fails instead of hanging
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a read receipt is ready for review: store, date and total, and no lines by default (ADR-0017)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a receipt the worker already handled is not read again
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > retry puts a failed receipt back in the queue; a receipt in review cannot be retried
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > the image is served to the household with no-store
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > the list shows open receipts and says whether OCR and line suggestions are on
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > with line suggestions switched on, the parsed lines are included
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > an inventory line pointing to a place that does not exist saves nothing, and the receipt stays open
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > a receipt that is not read yet, or failed, cannot be confirmed; the purchase rules still apply
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > confirming the same receipt twice, also at the same moment, gives one purchase (NFR-DATA-002)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > makes the purchase, its lines and the inventory batches, and closes the receipt in the same step
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > the same receipt photographed again is refused as a duplicate of the first purchase
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > without receipt number and time, a purchase with the same date and total is a possible duplicate
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > after 7 days an unconfirmed receipt is gone at once, and the cleanup deletes the rows; confirmed ones stay
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > a worker that died mid-job leaves no receipt "processing" forever
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > deleting the purchase deletes the receipt row, so the receipt can be imported again
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > discard deletes the receipt with image and extraction; a confirmed receipt cannot be discarded
+      feilet: |api-db| test/receipts.api.test.ts > limits and availability > a full queue on the server gives 503 busy
+      feilet: |api-db| test/receipts.api.test.ts > limits and availability > per user: at most N uploads an hour (429)
+      feilet: |api-db| test/receipts.api.test.ts > limits and availability > without OCR set up (no queue), uploads are refused and the list says so
+      feilet: |api-db| test/receipts.api.test.ts > NFR-SEC-004 no receipt content in logs > neither the API nor the worker logs text, amounts or store from a receipt
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > a changing request without the CSRF token is refused
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > a duplicate answer never points to another household's purchase
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > A) Kari's household id in the URL: every endpoint answers 404 and nothing changes
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > B) Ola's own household id with Kari's receipt ids: 404 and nothing changes
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > not logged in: 401 on every receipt endpoint
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > Ola cannot confirm his own receipt into Kari's place
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > Ola's list never contains Kari's receipts, and the same photo is not "already uploaded" across households
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the database refuses an image or extraction filed under another household than its receipt's
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the repo itself filters on the household
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the same receipt in two households: each gets its own purchase (keys are per household)
+2. En kvittering hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  2 failed | 86 passed (88)
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > B) Ola's own household id with Kari's receipt ids: 404 and nothing changes
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the repo itself filters on the household
+3. Bildet hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  2 failed | 86 passed (88)
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > B) Ola's own household id with Kari's receipt ids: 404 and nothing changes
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the repo itself filters on the household
+4. Forkasting uten å filtrere på husholdning
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the repo itself filters on the household
+5. Nytt forsøk uten å filtrere på husholdning
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > the repo itself filters on the household
+6. «Samme bilde finnes» ser i alle husholdninger
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > Ola's list never contains Kari's receipts, and the same photo is not "already uploaded" across households
+7. Utløpte kvitteringer kan fortsatt leses
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > after 7 days an unconfirmed receipt is gone at once, and the cleanup deletes the rows; confirmed ones stay
+8. Oppryddingen sletter også bekreftede kvitteringer
+    endret: apps/api/src/modules/receipts/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > after 7 days an unconfirmed receipt is gone at once, and the cleanup deletes the rows; confirmed ones stay
+9. Ingen grense per bruker på opplasting
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > limits and availability > per user: at most N uploads an hour (429)
+10. Ingen grense for køen
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > limits and availability > a full queue on the server gives 503 busy
+11. Samme bilde kan lastes opp flere ganger
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > refuses the same photo twice while the first is open, pointing to it
+12. Linjeforslag vises selv om de er slått av (ADR-0017)
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a read receipt is ready for review: store, date and total, and no lines by default (ADR-0017)
+13. Slettefristen er 30 dager i stedet for 7
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  2 failed | 86 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > accepts a photo, queues it and stores it rewritten without any metadata
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > after 7 days an unconfirmed receipt is gone at once, and the cleanup deletes the rows; confirmed ones stay
+14. Den sterke duplikatnøkkelen brukes ikke
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > the same receipt photographed again is refused as a duplicate of the first purchase
+15. Advarselen om mulig duplikat gis aldri
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > without receipt number and time, a purchase with the same date and total is a possible duplicate
+16. Kvitteringen trenger ikke være ferdig lest for å bekreftes
+    endret: apps/api/src/modules/receipts/service.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  88 passed (88)
+17. Bildet slettes ikke ved bekreftelse
+    endret: apps/api/src/modules/purchases/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > makes the purchase, its lines and the inventory batches, and closes the receipt in the same step
+18. Kjøp fra kvittering lagres som manuelle
+    endret: apps/api/src/modules/purchases/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  3 failed | 85 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > makes the purchase, its lines and the inventory batches, and closes the receipt in the same step
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > without receipt number and time, a purchase with the same date and total is a possible duplicate
+      feilet: |api-db| test/receipts.security.api.test.ts > NFR-SEC-001 receipts: no access to another household > a duplicate answer never points to another household's purchase
+19. Kvitteringen lukkes ikke i samme transaksjon
+    endret: apps/api/src/modules/purchases/repo.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  5 failed | 83 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > confirming the same receipt twice, also at the same moment, gives one purchase (NFR-DATA-002)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > makes the purchase, its lines and the inventory batches, and closes the receipt in the same step
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > after 7 days an unconfirmed receipt is gone at once, and the cleanup deletes the rows; confirmed ones stay
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > deleting the purchase deletes the receipt row, so the receipt can be imported again
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-008 deleting > discard deletes the receipt with image and extraction; a confirmed receipt cannot be discarded
+20. Betalingslinjene fjernes ikke før lagring
+    endret: apps/api/src/modules/receipts/processor.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  2 failed | 86 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a provider that throws, or text with only payment lines, fails instead of hanging
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a read receipt is ready for review: store, date and total, and no lines by default (ADR-0017)
+21. En provider som kaster, fanges ikke
+    endret: apps/api/src/modules/receipts/processor.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a provider that throws, or text with only payment lines, fails instead of hanging
+22. Metadata (EXIF/GPS) beholdes i det lagrede bildet
+    endret: apps/api/src/providers/ocr/image.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > accepts a photo, queues it and stores it rewritten without any metadata
+      feilet: |api| src/providers/ocr/image.test.ts > receipt image upload (spec 08 FR-RCPT-001/002) > removes all metadata (GPS, camera) and turns the image upright
+23. Filtypen avgjøres ikke av innholdet (alt sharp kan lese, godtas)
+    endret: apps/api/src/providers/ocr/image.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > refuses other file types by their content, broken files, and a missing or wrongly named file
+      feilet: |api| src/providers/ocr/image.test.ts > receipt image upload (spec 08 FR-RCPT-001/002) > refuses other types, a body that does not match its header, broken files and too many pixels
+24. Ingen grense for antall piksler
+    endret: apps/api/src/providers/ocr/image.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > refuses files over 10 MB and images over 40 megapixels
+      feilet: |api| src/providers/ocr/image.test.ts > receipt image upload (spec 08 FR-RCPT-001/002) > refuses other types, a body that does not match its header, broken files and too many pixels
+25. Bildet rettes ikke opp etter EXIF-retningen
+    endret: apps/api/src/providers/ocr/image.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-001/002 upload > accepts a photo, queues it and stores it rewritten without any metadata
+      feilet: |api| src/providers/ocr/image.test.ts > receipt image upload (spec 08 FR-RCPT-001/002) > removes all metadata (GPS, camera) and turns the image upright
+26. Tesseract stoppes ikke ved tidsavbrudd
+    endret: apps/api/src/providers/ocr/tesseract.ts
+    enhetstester: Tests  2 failed | 952 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |api| src/providers/ocr/tesseract.test.ts > runWithInput > kills a process that runs too long
+      feilet: |api| src/providers/ocr/tesseract.test.ts > TesseractOcr (spec 08 FR-RCPT-003) > maps failures to timeout, unavailable, invalidResponse and noText
+27. Ingen grense for hvor mye Tesseract kan skrive
+    endret: apps/api/src/providers/ocr/tesseract.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |api| src/providers/ocr/tesseract.test.ts > runWithInput > fails on a non-zero exit, a missing program and too much output
+28. De andre retningene prøves aldri når lesingen er usikker
+    endret: apps/api/src/providers/ocr/tesseract.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |api| src/providers/ocr/tesseract.test.ts > TesseractOcr (spec 08 FR-RCPT-003) > a short receipt on its side looks standing: when 0° and 180° are unsure, 90° and 270° are read too
+29. Retning velges etter alle ord, ikke sikre ord
+    endret: apps/api/src/providers/ocr/tesseract.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |api| src/providers/ocr/tesseract.test.ts > TesseractOcr (spec 08 FR-RCPT-003) > many junk words with low confidence do not beat fewer confident ones (the pilot, psm 6)
+30. Svaret fra Tesseract kontrolleres ikke
+    endret: apps/api/src/providers/ocr/tesseractTsv.ts
+    enhetstester: Tests  2 failed | 952 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |api| src/providers/ocr/tesseract.test.ts > TesseractOcr (spec 08 FR-RCPT-003) > maps failures to timeout, unavailable, invalidResponse and noText
+      feilet: |api| src/providers/ocr/tesseractTsv.test.ts > Tesseract TSV (spec 08) > says "empty" when there are no words and "invalid" for anything that is not Tesseract TSV
+31. Kjeden letes etter i hele kvitteringen, ikke bare toppen
+    endret: packages/shared/src/receipts/parse.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  88 passed (88)
+32. En rabatt større enn linjen trekkes likevel fra
+    endret: packages/shared/src/receipts/parse.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |shared| src/receipts/parse.test.ts > FR-RCPT-004 discounts and "2 x 14,90" (fictional generic layout) > ignores a discount larger than the line it would apply to
+33. Antall × pris vinner ikke over et feillest beløp
+    endret: packages/shared/src/receipts/parse.ts
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |shared| src/receipts/parse.test.ts > FR-RCPT-004 a noisy reading (as in the pilot) > takes an amount from the next line or from the quantity line, and corrects a misread amount by count × price
+34. Kantstøy foran linjene fjernes ikke
+    endret: packages/shared/src/receipts/parse.ts
+    enhetstester: Tests  3 failed | 951 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |shared| src/receipts/parse.test.ts > FR-RCPT-004 OCR habits from the pilot (made-up text) > a noisy NorgesGruppen reading: deposit, end of items and total are still found
+      feilet: |shared| src/receipts/parse.test.ts > FR-RCPT-004 OCR habits from the pilot (made-up text) > a time-like misread on an item line does not end the header, and junk after the total is allowed
+      feilet: |shared| src/receipts/parse.test.ts > FR-RCPT-004 OCR habits from the pilot (made-up text) > cleanOcrLine joins split amounts, reads O% as 0% and drops short junk at the left edge
+35. Maskerte kortnumre gjenkjennes ikke
+    endret: packages/shared/src/receipts/redact.ts
+    enhetstester: Tests  2 failed | 952 passed (954)
+    API-tester:   Tests  2 failed | 86 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a provider that throws, or text with only payment lines, fails instead of hanging
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-003/004 reading in the background > a read receipt is ready for review: store, date and total, and no lines by default (ADR-0017)
+      feilet: |shared| src/receipts/parse.test.ts > payment lines are never stored (spec 08, privacy) > recognises masked cards, terminal, AID, authorisation and card brands
+      feilet: |shared| src/receipts/parse.test.ts > payment lines are never stored (spec 08, privacy) > removes them from the fictional receipt without touching the parse
+36. Linjene fylles inn selv om linjeforslag er av (ADR-0017)
+    endret: apps/web/src/receipts/receiptForm.ts
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  88 passed (88)
+37. «Lagre likevel» sendes aldri
+    endret: apps/web/src/pages/receipts/ReceiptPage.tsx
+    enhetstester: Tests  1 failed | 953 passed (954)
+    API-tester:   Tests  88 passed (88)
+      feilet: |web| src/pages/receipts/ReceiptPages.test.tsx > FR-RCPT-005/006 review and confirm > a possible duplicate: warns with a link, and "save anyway" sends allowPossibleDuplicate
+38. Uendret kode (kontroll: ingen tester skal feile)
+    enhetstester: Tests  954 passed (954)
+    API-tester:   Tests  88 passed (88)
+exit 0

@@ -1,0 +1,101 @@
+# Spec 13 (NFR-PERF-001): AFTER adding u.household_id = e.household_id to the undo anti-join (waste + inventory).
+# Run 2026-10-27, same command and generated data. Full plans of the slow waste queries before the change: 21-perf-explain-before-fullplans.txt
+# smartmat_perf: create, migrate, seed
+recipes: 27, shopping_list_items: 260, households: 501, purchase_lines: 6000, inventory_items: 20800, purchases: 21500, inventory_batches: 31994, inventory_events: 101982
+
+# Response time through the app (30 rounds after 3 warm-up rounds), ms
+endpoint | status | median | p95 | max
+waste (svinn, månedsoversikt) | 200 | 9.8 | 11.9 | 13.8
+notifications (varsler) | 200 | 8.2 | 13.4 | 14.3
+recipes ranking (oppskriftsrangering) | 200 | 31.0 | 38.1 | 38.1
+price estimate (prisanslag, handleliste) | 200 | 20.9 | 28.7 | 28.8
+
+# Query plans (auto_explain, one request per endpoint)
+
+## waste (svinn, månedsoversikt): 3 queries
+- 0.009 ms, 1 rows · Seq Scan on household_members
+  SELECT "public"."household_members"."household_id", "public"."household_members"."user_id", "public"."household_members"."role"::text FROM "
+- 3.759 ms, 733 rows · Bitmap Index Scan on inventory_events_household_id_created_at_idx, Bitmap Index Scan on inventory_items_household_id_idx
+  
+- 2.477 ms, 5 rows · Bitmap Index Scan on inventory_events_household_id_created_at_idx, Bitmap Index Scan on inventory_items_household_id_idx
+  
+
+## notifications (varsler): 12 queries
+- 0.012 ms, 1 rows · Seq Scan on household_members
+  SELECT "public"."household_members"."household_id", "public"."household_members"."user_id", "public"."household_members"."role"::text FROM "
+- 0.003 ms, 0 rows · Seq Scan on notification_settings
+  SELECT "public"."notification_settings"."user_id", "public"."notification_settings"."use_by", "public"."notification_settings"."best_before"
+- 0.016 ms, 1 rows · (no table)
+  SELECT "public"."food_budgets"."household_id", "public"."food_budgets"."valid_from", "public"."food_budgets"."amount_ore" FROM "public"."foo
+- 0.009 ms, 1 rows · Seq Scan on household_members
+  SELECT "public"."household_members"."household_id", "public"."household_members"."user_id", "public"."household_members"."shopping_seen_at" 
+- 0.405 ms, 133 rows · Index Scan using inventory_batches_household_id_idx on inventory_batches
+  SELECT "public"."inventory_batches"."id", "public"."inventory_batches"."item_id", "public"."inventory_batches"."expiry_kind"::text, "public"
+- 0.052 ms, 0 rows · Seq Scan on shopping_list_items
+  SELECT "public"."shopping_list_items"."id", "public"."shopping_list_items"."text", "public"."shopping_list_items"."created_at", "public"."sh
+- 0.001 ms, 0 rows · (no table)
+  SELECT "public"."users"."id", "public"."users"."display_name" FROM "public"."users" WHERE "public"."users"."id" IN (NULL) OFFSET $1
+- 0.001 ms, 0 rows · (no table)
+  SELECT "public"."household_members"."household_id", "public"."household_members"."user_id" FROM "public"."household_members" WHERE "public".
+- 0.921 ms, 1 rows · Seq Scan on purchase_lines, Bitmap Index Scan on purchases_household_id_purchased_on_idx
+  
+- 0.150 ms, 1 rows · Bitmap Index Scan on purchases_household_id_purchased_on_idx, Index Only Scan using purchase_lines_purchase_id_idx on purchase_lines
+  
+- 0.260 ms, 133 rows · Bitmap Index Scan on inventory_items_pkey
+  SELECT "public"."inventory_items"."id", "public"."inventory_items"."name", "public"."inventory_items"."household_id" FROM "public"."inventor
+- 0.003 ms, 0 rows · Seq Scan on notification_states
+  SELECT "public"."notification_states"."user_id", "public"."notification_states"."household_id", "public"."notification_states"."key", "publi
+
+## recipes ranking (oppskriftsrangering): 12 queries
+- 0.009 ms, 1 rows · Seq Scan on household_members
+  SELECT "public"."household_members"."household_id", "public"."household_members"."user_id", "public"."household_members"."role"::text FROM "
+- 0.004 ms, 0 rows · Seq Scan on user_allergens
+  SELECT "public"."user_allergens"."user_id", "public"."user_allergens"."allergen"::text FROM "public"."user_allergens" WHERE "public"."user_a
+- 0.233 ms, 27 rows · Seq Scan on recipes
+  SELECT "public"."recipes"."id", "public"."recipes"."slug", "public"."recipes"."title", "public"."recipes"."description", "public"."recipes".
+- 0.211 ms, 106 rows · Seq Scan on ingredients
+  SELECT "public"."ingredients"."id", "public"."ingredients"."key", "public"."ingredients"."name", "public"."ingredients"."base_unit"::text, "
+- 1.272 ms, 800 rows · Bitmap Index Scan on inventory_items_household_id_idx
+  SELECT "public"."inventory_items"."id", "public"."inventory_items"."name", "public"."inventory_items"."category_key", "public"."inventory_it
+- 0.243 ms, 235 rows · Seq Scan on recipe_ingredients
+  SELECT "public"."recipe_ingredients"."recipe_id", "public"."recipe_ingredients"."position", "public"."recipe_ingredients"."ingredient_id", "
+- 0.033 ms, 35 rows · Seq Scan on ingredient_allergens
+  SELECT "public"."ingredient_allergens"."ingredient_id", "public"."ingredient_allergens"."allergen"::text FROM "public"."ingredient_allergens
+- 0.047 ms, 64 rows · Seq Scan on unit_conversions
+  SELECT "public"."unit_conversions"."ingredient_id", "public"."unit_conversions"."unit"::text, "public"."unit_conversions"."unit_qty", "publi
+- 0.472 ms, 396 rows · Seq Scan on ingredient_aliases
+  SELECT "public"."ingredient_aliases"."alias", "public"."ingredient_aliases"."ingredient_id" FROM "public"."ingredient_aliases" WHERE "public
+- 4.202 ms, 1000 rows · Seq Scan on inventory_batches
+  SELECT "public"."inventory_batches"."id", "public"."inventory_batches"."quantity_base", "public"."inventory_batches"."initial_quantity_base"
+- 0.398 ms, 0 rows · Seq Scan on purchase_lines
+  SELECT "public"."purchase_lines"."id", "public"."purchase_lines"."purchase_id", "public"."purchase_lines"."household_id" FROM "public"."purc
+- 0.003 ms, 0 rows · Seq Scan on user_allergens, Seq Scan on users, Seq Scan on household_members
+  SELECT "public"."user_allergens"."user_id", "public"."user_allergens"."allergen"::text FROM "public"."user_allergens" LEFT JOIN "public"."us
+
+## price estimate (prisanslag, handleliste): 13 queries
+- 0.009 ms, 1 rows · Seq Scan on household_members
+  SELECT "public"."household_members"."household_id", "public"."household_members"."user_id", "public"."household_members"."role"::text FROM "
+- 0.060 ms, 60 rows · Seq Scan on shopping_list_items
+  SELECT "public"."shopping_list_items"."id", "public"."shopping_list_items"."text", "public"."shopping_list_items"."ingredient_id", "public".
+- 0.193 ms, 106 rows · Seq Scan on ingredients
+  SELECT "public"."ingredients"."id", "public"."ingredients"."key", "public"."ingredients"."name", "public"."ingredients"."base_unit"::text, "
+- 0.229 ms, 300 rows · Seq Scan on household_barcodes
+  SELECT "public"."household_barcodes"."household_id", "public"."household_barcodes"."gtin", "public"."household_barcodes"."item_id" FROM "pub
+- 0.628 ms, 800 rows · Bitmap Index Scan on inventory_items_household_id_idx
+  SELECT "public"."inventory_items"."id", "public"."inventory_items"."name", "public"."inventory_items"."unit"::text, "public"."inventory_item
+- 1.302 ms, 500 rows · Index Scan using inventory_batches_household_id_idx on inventory_batches
+  SELECT "public"."inventory_batches"."id", "public"."inventory_batches"."item_id", "public"."inventory_batches"."price_ore", "public"."invent
+- 0.473 ms, 396 rows · Seq Scan on ingredient_aliases
+  SELECT "public"."ingredient_aliases"."alias", "public"."ingredient_aliases"."ingredient_id" FROM "public"."ingredient_aliases" WHERE "public
+- 0.377 ms, 0 rows · Seq Scan on purchase_lines
+  SELECT "public"."purchase_lines"."id", "public"."purchase_lines"."purchase_id", "public"."purchase_lines"."household_id" FROM "public"."purc
+- 0.002 ms, 0 rows · (no table)
+  SELECT "public"."purchases"."id", "public"."purchases"."store_name", "public"."purchases"."household_id" FROM "public"."purchases" WHERE ("p
+- 2.181 ms, 450 rows · Seq Scan on inventory_items
+  SELECT "public"."inventory_items"."id", "public"."inventory_items"."unit"::text, "public"."inventory_items"."household_id" FROM "public"."in
+- 0.147 ms, 35 rows · Seq Scan on ingredient_allergens
+  SELECT "public"."ingredient_allergens"."ingredient_id", "public"."ingredient_allergens"."allergen"::text FROM "public"."ingredient_allergens
+- 0.095 ms, 64 rows · Seq Scan on unit_conversions
+  SELECT "public"."unit_conversions"."ingredient_id", "public"."unit_conversions"."unit"::text, "public"."unit_conversions"."unit_qty", "publi
+- 1.513 ms, 900 rows · Seq Scan on price_observations
+  SELECT "public"."price_observations"."id", "public"."price_observations"."source"::text, "public"."price_observations"."gtin", "public"."pri

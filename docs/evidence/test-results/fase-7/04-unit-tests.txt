@@ -1,0 +1,10 @@
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+
+ Test Files  63 passed (63)
+      Tests  863 passed (863)
+   Start at  04:01:55
+   Duration  15.73s (transform 41.12s, setup 27.85s, import 68.07s, tests 108.16s, environment 30.97s)
+
+exit 0

@@ -1,0 +1,4 @@
+$ python3 -I links.py   # samme lenkesjekk som i 02-lenkesjekk.txt (skriptet står der)
+# 2026-10-29T00:36:51Z, fase 14 del 3, etter endringene i KI-erklæringen, sjekklisten, veikartet, testmiljo.md, loggene og CLAUDE.md
+538 lenker i 82 filer, 0 feil
+# exit code: 0

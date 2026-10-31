@@ -1,0 +1,116 @@
+{
+  "slug": "bonnechili",
+  "title": "Chili med svarte bønner",
+  "description": "Vegetarisk chili av svarte bønner, tomat og krydder. Bønnene må bløtlegges over natten.",
+  "servings": 12,
+  "prepMinutes": 20,
+  "cookMinutes": 220,
+  "tags": ["middag", "vegetar", "bønner", "gryte"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Black Bean Chili",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4523913",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 4 timer totalt (pluss bløtlegging). Delingen i forberedelse og koking er gjort av KI. Chipotle og ancho står på én linje fordi begge er chili.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "svarte-bonner",
+      "amount": "8",
+      "unit": "dl",
+      "text": "8 dl tørkede svarte bønner"
+    },
+    {
+      "ingredient": "olje",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss maisolje eller annen vegetabilsk olje"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 middels løk i terninger"
+    },
+    {
+      "ingredient": "hvitlok",
+      "amount": "2",
+      "unit": "stk",
+      "text": "2 fedd hvitløk, finhakket"
+    },
+    {
+      "ingredient": "chili",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 tørket chipotle-chili og ¼ tørket ancho-chili"
+    },
+    {
+      "ingredient": "spisskummen",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss spisskummen"
+    },
+    {
+      "ingredient": "paprikapulver",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss paprikapulver"
+    },
+    {
+      "ingredient": "oregano",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss tørket oregano"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "11",
+      "unit": "ml",
+      "text": "¾ ss havsalt"
+    },
+    {
+      "ingredient": "kajennepepper",
+      "amount": "1",
+      "unit": "krm",
+      "text": "1 krm kajennepepper"
+    },
+    {
+      "ingredient": "eddik",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss vineddik (rød eller hvit)"
+    },
+    {
+      "ingredient": "hakkede-tomater",
+      "amount": "350",
+      "unit": "ml",
+      "text": "3,5 dl hakkede tomater"
+    },
+    {
+      "ingredient": "passata",
+      "amount": "350",
+      "unit": "ml",
+      "text": "3,5 dl passata"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "1",
+      "unit": "l",
+      "text": "1 liter vann"
+    },
+    {
+      "ingredient": "romme",
+      "text": "Rømme til servering",
+      "optional": true
+    }
+  ],
+  "steps": [
+    "Ha bønnene i en stor gryte med så mye vann at det står 5 cm over, og la dem trekke over natten. Hell av vannet og dekk med nytt vann. Kok opp, skru ned varmen og la dem småkoke i 2 timer.",
+    "Varm oljen i en stor gryte på middels høy varme. Fres løken til den er myk, omtrent 3 minutter. Ha i hvitløk, chili, spisskummen, paprikapulver, oregano, salt, kajennepepper og eddik, og fres i 5–10 minutter.",
+    "Ha i tomater, passata og vannet. Kok opp, skru ned varmen og la det småkoke i 10 minutter. Ha i bønnene med kokevannet. La det småkoke i 1 time.",
+    "Server med eller uten rømme."
+  ]
+}

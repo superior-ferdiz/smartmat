@@ -1,13 +1,29 @@
 {
   "app": {
     "name": "SmartMat",
-    "skipToContent": "Hopp til hovedinnhold"
+    "skipToContent": "Hopp til hovedinnhold",
+    "staging": {
+      "title": "Testmiljø.",
+      "text": "Bruk bare testdata. Ikke legg inn ekte allergier eller andre ekte opplysninger."
+    },
+    "backup": {
+      "stale": "Sikkerhetskopien er for gammel.",
+      "failed": "Sikkerhetskopien feilet.",
+      "unknown": "Vi vet ikke om sikkerhetskopien virker.",
+      "newest": "Nyeste kopi: {{when}}. Si fra til teamet.",
+      "none": "Det finnes ingen kopi. Si fra til teamet."
+    },
+    "footer": {
+      "privacy": "Personvern"
+    }
   },
   "common": {
     "loading": "Laster …",
     "retry": "Prøv igjen",
     "close": "Lukk",
-    "sampleData": "Eksempeldata"
+    "sampleData": "Eksempeldata",
+    "cancel": "Avbryt",
+    "save": "Lagre"
   },
   "languages": {
     "nb-NO": "Norsk (bokmål)",
@@ -28,8 +44,12 @@
       "budget": "Kjøp og budsjett",
       "mealPlan": "Måltidsplan",
       "household": "Husholdning",
-      "settings": "Innstillinger"
-    }
+      "settings": "Innstillinger",
+      "waste": "Svinn"
+    },
+    "notifications": "Varsler",
+    "notificationsUnseen_one": "Varsler, {{count}} nytt",
+    "notificationsUnseen_other": "Varsler, {{count}} nye"
   },
   "form": {
     "optional": "valgfritt",
@@ -44,7 +64,7 @@
     "error": "Feil"
   },
   "toast": {
-    "regionLabel": "Varsler"
+    "regionLabel": "Meldinger"
   },
   "states": {
     "error": {
@@ -68,74 +88,187 @@
       "tooLong": "Navnet kan være høyst 50 tegn."
     },
     "itemName": {
-      "required": "Skriv inn navnet på varen."
+      "required": "Skriv inn navnet på varen.",
+      "tooLong": "Navnet kan være høyst 100 tegn."
     },
     "category": {
       "required": "Velg en kategori."
     },
     "date": {
       "invalid": "Skriv inn en gyldig dato."
+    },
+    "email": {
+      "required": "Skriv inn e-postadressen din.",
+      "invalid": "Skriv inn en gyldig e-postadresse, for eksempel navn@eksempel.no.",
+      "tooLong": "E-postadressen kan være høyst 254 tegn."
+    },
+    "password": {
+      "required": "Skriv inn passordet.",
+      "tooShort": "Passordet må være minst 12 tegn.",
+      "tooLong": "Passordet kan være høyst 128 tegn."
+    },
+    "profile": {
+      "nothingToUpdate": "Det er ingenting å lagre."
+    },
+    "deleteAccount": {
+      "confirmRequired": "Kryss av for at du forstår at kontoen slettes for godt."
+    },
+    "nothingToUpdate": "Det er ingenting å lagre.",
+    "unit": {
+      "required": "Velg en enhet."
+    },
+    "location": {
+      "required": "Velg et lagringssted.",
+      "notFound": "Lagringsstedet finnes ikke lenger. Velg et annet.",
+      "kindRequired": "Velg en type sted."
+    },
+    "locationName": {
+      "required": "Skriv inn et navn.",
+      "tooLong": "Navnet kan være høyst 50 tegn."
+    },
+    "quantity": {
+      "required": "Skriv inn en mengde.",
+      "invalid": "Skriv mengden som et tall, for eksempel 1,5.",
+      "notWhole": "Mengden er for nøyaktig. Bruk hele gram, milliliter eller stykk.",
+      "notPositive": "Mengden må være større enn 0.",
+      "tooLarge": "Mengden er for stor.",
+      "moreThanLeft": "Det er ikke så mye igjen i partiet."
+    },
+    "expiry": {
+      "kindRequired": "Velg om datoen er best før eller siste forbruksdag.",
+      "dateRequired": "Skriv inn datoen."
+    },
+    "wasteReason": {
+      "required": "Velg hvorfor maten ble kastet."
+    },
+    "purchase": {
+      "dateRequired": "Skriv inn kjøpsdatoen.",
+      "dateTooEarly": "Datoen kan ikke være før år 2000.",
+      "dateInFuture": "Kjøpsdatoen kan ikke være frem i tid.",
+      "lineTooLarge": "En linje kan være høyst 100 000 kr.",
+      "totalTooLarge": "Et kjøp kan være høyst 1 000 000 kr.",
+      "linesOrTotal": "Legg til minst én linje, eller skriv inn totalsummen.",
+      "totalWithLines": "Et kjøp med linjer får summen fra linjene. Ikke skriv inn totalsum i tillegg.",
+      "tooManyLines": "Et kjøp kan ha høyst 100 linjer.",
+      "nonFoodCategory": "Ikke-mat har ingen matkategori.",
+      "nonFoodInventory": "Bare mat kan legges i matlageret.",
+      "itemNotFound": "Varen finnes ikke lenger. Velg en annen.",
+      "unknownLine": "Linjen finnes ikke lenger. Last inn siden på nytt.",
+      "alreadyInInventory": "Denne linjen er allerede lagt i matlageret."
+    },
+    "storeName": {
+      "tooLong": "Butikknavnet kan være høyst 100 tegn."
+    },
+    "lineDescription": {
+      "required": "Skriv hva du kjøpte.",
+      "tooLong": "Beskrivelsen kan være høyst 100 tegn."
+    },
+    "lineKind": {
+      "required": "Velg om linjen er mat eller ikke mat."
+    },
+    "month": {
+      "invalid": "Ugyldig måned."
+    },
+    "budget": {
+      "tooSmall": "Budsjettet må være minst 1 kr.",
+      "tooLarge": "Budsjettet kan være høyst 1 000 000 kr."
+    },
+    "allergen": {
+      "unknown": "Ukjent allergen.",
+      "duplicate": "Samme allergen står flere ganger."
+    },
+    "ingredient": {
+      "unknown": "Velg en ingrediens fra listen."
+    },
+    "shoppingText": {
+      "required": "Skriv inn hva du skal kjøpe.",
+      "tooLong": "Teksten kan være høyst 100 tegn."
+    },
+    "shopping": {
+      "nothingSelected": "Velg minst én vare.",
+      "tooManyLines": "Du kan legge til høyst 100 linjer om gangen.",
+      "duplicateLine": "Samme vare står to ganger.",
+      "notInRecipe": "Ingrediensen finnes ikke i oppskriften. Last inn siden på nytt.",
+      "itemRequired": "Velg en vare.",
+      "itemNotFound": "Varen finnes ikke lenger. Velg en annen."
+    },
+    "barcode": {
+      "required": "Skriv inn strekkoden.",
+      "digits": "Strekkoden kan bare ha tall.",
+      "length": "Strekkoden skal ha 8, 12, 13 eller 14 sifre.",
+      "checkDigit": "Strekkoden stemmer ikke. Sjekk at alle sifrene er riktige."
+    },
+    "receipt": {
+      "imageRequired": "Velg et bilde av kvitteringen."
+    },
+    "mealPlan": {
+      "meal": "Velg måltid.",
+      "noteRequired": "Skriv en tekst.",
+      "noteTooLong": "Teksten kan ha høyst 100 tegn.",
+      "servings": "Antall porsjoner må være et helt tall fra 1 til 50.",
+      "recipe": "Velg en oppskrift.",
+      "recipeNotFound": "Fant ikke oppskriften. Den kan være fjernet.",
+      "range": "Sluttdatoen kan ikke være før startdatoen.",
+      "rangeTooLong": "Perioden kan være høyst seks uker.",
+      "notARecipe": "Bare oppskrifter har porsjoner.",
+      "notANote": "Bare fritekst kan endres slik.",
+      "notInPlan": "Planen trenger ikke denne ingrediensen i perioden."
+    },
+    "household": {
+      "nameRequired": "Skriv inn et navn på husholdningen.",
+      "nameTooLong": "Navnet kan være høyst 100 tegn.",
+      "invitationInvalid": "Dette er ikke en gyldig invitasjonslenke.",
+      "memberRequired": "Velg et medlem."
+    },
+    "notification": {
+      "key": "Ugyldig varsel.",
+      "keys": "Ugyldig liste over varsler.",
+      "toggle": "Velg på eller av.",
+      "daysBefore": "Velg mellom 0 og 7 dager."
+    },
+    "twoFactor": {
+      "codeRequired": "Skriv inn koden.",
+      "codeInvalid": "Koden skal være 6 sifre fra appen, eller en gjenopprettingskode på 10 tegn.",
+      "totpInvalid": "Skriv inn de 6 sifrene appen viser."
     }
   },
   "pages": {
     "overview": {
       "title": "Oversikt",
       "lead": "Det viktigste på kjøkkenet akkurat nå.",
-      "sampleNoticeTitle": "Dette er eksempeldata",
-      "sampleNoticeText": "Appen er ikke koblet til noen database ennå. Varene og tallene under er oppdiktet for å vise hvordan forsiden skal se ut.",
       "expiring": {
         "title": "Går ut snart",
         "seeAll": "Se hele matlageret",
-        "items": {
-          "chicken": {
-            "name": "Kyllingfilet",
-            "meta": "400 g · Kjøleskap",
-            "status": "Siste forbruksdag i dag",
-            "advice": "Bruk i dag, eller frys ned før dagen er omme."
-          },
-          "mince": {
-            "name": "Kjøttdeig",
-            "meta": "400 g · Kjøleskap",
-            "status": "Siste forbruksdag passert",
-            "advice": "Bør ikke spises. Siste forbruksdag handler om mattrygghet."
-          },
-          "milk": {
-            "name": "Lettmelk",
-            "meta": "1 l · Kjøleskap",
-            "status": "Best før i morgen",
-            "advice": "Best før betyr ofte god lenger. Se, lukt og smak."
-          },
-          "yoghurt": {
-            "name": "Yoghurt naturell",
-            "meta": "500 g · Kjøleskap · Åpnet",
-            "status": "Best før for 2 dager siden",
-            "advice": "Kan ofte fortsatt brukes. Se, lukt og smak før du kaster."
-          }
-        }
+        "none": "Ingenting går ut de neste tre dagene."
       },
       "budget": {
         "title": "Matbudsjett denne måneden",
-        "spent": "Brukt",
-        "remaining": "Igjen",
-        "monthly": "Budsjett",
-        "usedPercent": "{{percent}} % av månedsbudsjettet er brukt",
-        "open": "Se kjøp og budsjett"
+        "open": "Se kjøp og budsjett",
+        "noBudget": "Du har ikke satt et budsjett.",
+        "setBudget": "Sett budsjett"
       },
       "actions": {
         "title": "Hurtighandlinger",
         "scan": "Skann en vare",
         "addItem": "Legg til vare",
-        "addPurchase": "Registrer kjøp"
+        "addPurchase": "Registrer kjøp",
+        "shoppingList": "Handleliste",
+        "shoppingListCount_one": "Handleliste ({{count}} vare)",
+        "shoppingListCount_other": "Handleliste ({{count}} varer)"
       },
       "dinner": {
         "title": "Forslag til middag",
-        "recipe": "Kyllingwok med grønnsaker",
-        "reason": "Bruker kyllingfileten som må brukes i dag. Du har 4 av 6 ingredienser."
+        "open": "Se alle oppskrifter",
+        "noRecipes": "Ingen oppskrifter ennå.",
+        "noMatch": "Ingen oppskrifter passer det du har ennå. Legg varer i matlageret for å få forslag."
       },
       "waste": {
         "title": "Kastet denne måneden",
-        "text_one": "{{count}} vare kastet (estimert verdi)",
-        "text_other": "{{count}} varer kastet (estimert verdi)"
+        "count_one": "{{count}} kassering denne måneden",
+        "count_other": "{{count}} kasseringer denne måneden",
+        "unknown_one": "{{count}} av dem uten kjent verdi",
+        "unknown_other": "{{count}} av dem uten kjent verdi",
+        "open": "Se svinnstatistikken"
       }
     },
     "inventory": {
@@ -144,12 +277,10 @@
       "emptyText": "Her skal du kunne legge til varer, se hva som går ut snart, og registrere forbruk og svinn."
     },
     "scan": {
-      "lead": "Legg til varer raskt med strekkoden.",
-      "emptyTitle": "Skanning kommer i fase 7",
-      "emptyText": "Her skal du kunne skanne strekkoden med kameraet eller skrive den inn selv. Du bekrefter alltid før noe lagres."
+      "lead": "Skann strekkoden eller skriv den inn. Du sjekker og bekrefter alltid før noe legges i matlageret."
     },
     "recipes": {
-      "lead": "Middagsforslag basert på det du allerede har.",
+      "lead": "Rangert etter hva du har hjemme, hva som må brukes først og hva som mangler.",
       "emptyTitle": "Oppskrifter kommer i fase 5",
       "emptyText": "Her skal du finne norske oppskrifter, rangert etter hva du har hjemme og hva som må brukes først."
     },
@@ -159,19 +290,13 @@
       "emptyText": "Her skal du kunne føre handleliste, legge til det som mangler fra en oppskrift, og flytte varer rett inn i matlageret."
     },
     "budget": {
-      "lead": "Hva du bruker på mat, og hvor mye som er igjen denne måneden.",
-      "emptyTitle": "Kjøp og budsjett kommer i fase 4",
-      "emptyText": "Her skal du kunne registrere kjøp, sette et månedlig matbudsjett og se forbruket per kategori."
+      "lead": "Hva du bruker på mat, og hvor mye som er igjen denne måneden."
     },
     "mealPlan": {
-      "lead": "Planlegg ukens middager.",
-      "emptyTitle": "Måltidsplanen kommer senere",
-      "emptyText": "Måltidsplan er planlagt som en valgfri utvidelse etter første innlevering."
+      "lead": "Planlegg uka, se hva som mangler, og legg det på handlelisten."
     },
     "household": {
-      "lead": "Del matlager og handleliste med dem du bor med.",
-      "emptyTitle": "Husholdning kommer senere",
-      "emptyText": "Deling med andre i husstanden er planlagt etter første innlevering. Frem til da har hver bruker sin egen husholdning."
+      "lead": "«{{name}}»: del matlager, kjøp, budsjett, handleliste og måltidsplan med dem du bor med."
     },
     "more": {
       "lead": "Flere deler av SmartMat.",
@@ -185,7 +310,9 @@
         "budget": "Matbudsjett og registrerte kjøp",
         "mealPlan": "Ukens middager",
         "household": "Deling med andre",
-        "settings": "Språk, tema og konto"
+        "settings": "Språk, tema, varsler og konto",
+        "waste": "Hva som kastes, og hvorfor",
+        "privacy": "Hva vi lagrer, og rettighetene dine"
       }
     },
     "settings": {
@@ -193,7 +320,7 @@
       "saved": "Innstillingen er lagret",
       "appearance": "Språk og utseende",
       "language": "Språk",
-      "languageHint": "Gjelder bare denne nettleseren.",
+      "languageHint": "Lagres på kontoen din.",
       "theme": "Tema",
       "themeHint": "Automatisk følger innstillingen på enheten din.",
       "themes": {
@@ -202,9 +329,30 @@
         "dark": "Mørkt"
       },
       "account": "Konto",
-      "accountLater": "Innlogging, profil og sletting av konto kommer i fase 2.",
       "developer": "For utviklere",
-      "developerText": "Oversikt over farger, typografi og komponenter i SmartMat."
+      "developerText": "Oversikt over farger, typografi og komponenter i SmartMat.",
+      "loggedInAs": "Logget inn som {{name}} ({{email}}).",
+      "openProfile": "Profil og konto",
+      "saveFailed": "Fikk ikke lagret innstillingen. Prøv igjen.",
+      "notifications": {
+        "title": "Varsler",
+        "lead": "Varslene vises bare i appen, og valgene gjelder alle husholdningene dine.",
+        "loading": "Henter varselinnstillingene …",
+        "useBy": "Siste forbruksdag",
+        "useByHint": "Før datoen, på dagen og de to dagene etter.",
+        "bestBefore": "Best før",
+        "bestBeforeHint": "Før datoen og på dagen.",
+        "daysBefore": "Når skal varselet komme?",
+        "daysBeforeHint": "Gjelder både siste forbruksdag og best før.",
+        "daysZero": "Bare på dagen",
+        "days_one": "{{count}} dag før",
+        "days_other": "{{count}} dager før",
+        "budget": "Matbudsjettet",
+        "budgetHint": "Når 80 % og når 100 % av månedens budsjett er brukt.",
+        "shopping": "Handlelisten",
+        "shoppingHint": "Når andre i husholdningen legger til noe.",
+        "save": "Lagre varslene"
+      }
     },
     "notFound": {
       "title": "Fant ikke siden",
@@ -280,6 +428,1465 @@
         "loading": "Henter matlageret …"
       },
       "retried": "Prøver igjen (eksempel)"
+    },
+    "profile": {
+      "title": "Profil",
+      "lead": "Navn, språk, allergier, passord og konto.",
+      "about": "Om deg",
+      "save": "Lagre",
+      "saved": "Profilen er lagret",
+      "password": {
+        "title": "Bytt passord",
+        "current": "Nåværende passord",
+        "new": "Nytt passord",
+        "otherDevices": "Når du bytter passord, blir du logget ut på alle andre enheter.",
+        "submit": "Bytt passord",
+        "changed": "Passordet er byttet. Andre enheter er logget ut."
+      },
+      "logout": {
+        "title": "Logg ut",
+        "text": "Avslutter innloggingen i denne nettleseren."
+      },
+      "delete": {
+        "title": "Slett konto",
+        "text": "Kontoen og husholdninger der du er alene, slettes for godt med alt i dem. Eier du en husholdning sammen med andre, går eierskapet til medlemmet som har vært med lengst, og husholdningen blir værende. Dette kan ikke angres.",
+        "password": "Skriv inn passordet ditt for å bekrefte",
+        "confirm": "Jeg forstår at alt slettes og ikke kan gjenopprettes",
+        "submit": "Slett kontoen for godt",
+        "deleted": "Kontoen din er slettet."
+      },
+      "allergies": {
+        "title": "Allergier",
+        "text": "Velg det du ikke tåler. Det brukes bare til å skjule eller varsle om oppskrifter. Det er frivillig, og slettes sammen med kontoen.",
+        "legend": "Mine allergener",
+        "save": "Lagre allergier",
+        "saved": "Allergiene er lagret",
+        "share": {
+          "title": "Del med husholdningen",
+          "label": "Ta hensyn til allergiene mine i «{{name}}»",
+          "text": "Andre medlemmer ser hvilke allergener som er registrert i husholdningen, men ikke hvem som har dem. I en liten husholdning kan de likevel skjønne det. Du kan slå dette av når som helst, og det gjelder bare denne husholdningen.",
+          "on": "Allergiene dine deles nå med «{{name}}».",
+          "off": "Allergiene dine deles ikke lenger med «{{name}}»."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Personvernerklæring",
+      "lead": "Hva SmartMat lagrer om deg, hvorfor, hvor lenge, og hvilke rettigheter du har.",
+      "draft": "Utkast. Teksten er skrevet med hjelp av KI og er ikke kontrollert av noen med juridisk kompetanse. SmartMat er et studentprosjekt og brukes foreløpig bare av teamet.",
+      "controller": {
+        "title": "Hvem som er ansvarlig",
+        "text": "Studentene Ferdinand Risan og Linus Saxe Huseby (emnet APP2000 ved Universitetet i Sørøst-Norge) er behandlingsansvarlige for SmartMat.",
+        "contact": "Kontakt: [kontaktadresse er ikke fylt inn ennå]"
+      },
+      "data": {
+        "title": "Hva vi lagrer",
+        "account": "Kontoen: e-postadresse, navn, språk og passordet som en hash (aldri selve passordet).",
+        "sessions": "Innlogginger: når du logget inn og sist brukte appen, og hvilken nettleser og hvilket system. Ikke IP-adressen.",
+        "content": "Det du legger inn: matlager, kjøp og butikk, budsjett, handleliste, måltidsplan, svinn og strekkoder du har skannet.",
+        "allergies": "Allergier, hvis du velger å legge dem inn. De kan regnes som helseopplysninger. De brukes bare til å skjule eller varsle om oppskrifter, og andre ser dem bare hvis du slår på deling med husholdningen (uten navnet ditt).",
+        "receipts": "Bilder av kvitteringer: bare til du har bekreftet eller forkastet kjøpet, og aldri mer enn 7 dager.",
+        "household": "I en delt husholdning ser de andre medlemmene husholdningens data og navnet ditt."
+      },
+      "purpose": {
+        "title": "Hvorfor",
+        "text": "Vi bruker opplysningene bare til å gi deg det appen gjør: holde oversikt over mat, kjøp og budsjett, foreslå oppskrifter og dele med husholdningen. Ingen reklame, ingen profilering og ingen salg av data.",
+        "basis": "Behandlingsgrunnlaget for allergier (særlige kategorier, personvernforordningen artikkel 9) er ikke endelig vurdert av teamet ennå."
+      },
+      "recipients": {
+        "title": "Hvem som får noe",
+        "off": "Open Food Facts får strekkoden du skanner, fra serveren vår, ikke fra telefonen din.",
+        "kassalapp": "Kassalapp får strekkoden, bare hvis prisoppslag er slått på.",
+        "hibp": "Have I Been Pwned får de 5 første tegnene i en hash av et nytt passord, så vi kan avvise passord fra kjente datalekkasjer. Ut fra det kan ingen finne passordet.",
+        "host": "Serveren står i Tyskland (EØS) hos en leverandør som drifter maskinen.",
+        "none": "Vi bruker ingen analyseverktøy, sporing eller annonsenettverk."
+      },
+      "retention": {
+        "title": "Hvor lenge",
+        "account": "Kontoen og det du har lagt inn: til du sletter kontoen.",
+        "sessions": "Innlogginger: utløper etter 14 dager uten bruk og senest etter 30 dager, og slettes hver natt.",
+        "receipts": "Kvitteringsbilder og teksten som ble lest av dem: til kjøpet er bekreftet eller forkastet, høyst 7 dager.",
+        "backups": "Sikkerhetskopier: hver natt, kryptert, de siste 7 dagene. Noe du har slettet, kan derfor ligge i en kopi i opptil 7 dager. Kvitteringsbilder er aldri med.",
+        "logs": "Serverens logg: hva slags forespørsel og når, uten e-post, navn, IP-adresse eller det du har lagt inn."
+      },
+      "rights": {
+        "title": "Rettighetene dine",
+        "access": "Innsyn og kopi: «Last ned mine data» på profilen gir deg alt i én fil.",
+        "rectify": "Retting: du kan endre det meste selv i appen.",
+        "erase": "Sletting: «Slett konto» på profilen sletter kontoen og husholdninger der du er alene, med en gang.",
+        "portability": "Dataportabilitet: filen fra «Last ned mine data» er i et vanlig, maskinlesbart format (JSON).",
+        "withdraw": "Trekke tilbake: du kan fjerne allergiene og slå av deling når som helst.",
+        "complain": "Klage: du kan klage til Datatilsynet (datatilsynet.no)."
+      },
+      "cookies": {
+        "title": "Informasjonskapsler",
+        "text": "SmartMat bruker bare én informasjonskapsel: den som holder deg innlogget. Den inneholder et tilfeldig tall, ikke opplysninger om deg."
+      },
+      "back": "Tilbake til appen"
+    }
+  },
+  "auth": {
+    "checkingSession": "Sjekker innloggingen …",
+    "sessionCheckFailed": "Vi fikk ikke sjekket om du er logget inn. Sjekk nettforbindelsen og prøv igjen.",
+    "logout": "Logg ut",
+    "fields": {
+      "displayName": "Navn",
+      "email": "E-postadresse",
+      "password": "Passord"
+    },
+    "login": {
+      "title": "Logg inn",
+      "lead": "Velkommen tilbake til SmartMat.",
+      "submit": "Logg inn",
+      "noAccount": "Har du ikke konto?",
+      "createAccount": "Opprett konto"
+    },
+    "register": {
+      "title": "Opprett konto",
+      "lead": "Hold oversikt over matlageret, kast mindre og styr matbudsjettet.",
+      "displayNameHint": "Navnet vises i appen. Du kan endre det senere.",
+      "passwordHint": "Minst {{min}} tegn. Tips: en kort setning er lett å huske og vanskelig å gjette.",
+      "householdNote": "Du får din egen husholdning når du oppretter konto. Deling med andre kommer i en senere versjon.",
+      "submit": "Opprett konto",
+      "haveAccount": "Har du allerede konto?",
+      "logIn": "Logg inn",
+      "closedLogin": "Logg inn"
+    },
+    "twoFactor": {
+      "title": "Skriv inn koden",
+      "lead": "Kontoen din har tofaktorinnlogging. Åpne autentiseringsappen og skriv inn koden for SmartMat.",
+      "code": "Kode",
+      "codeHint": "6 sifre fra appen. Har du mistet telefonen, bruk en av gjenopprettingskodene dine.",
+      "submit": "Bekreft",
+      "back": "Tilbake"
+    }
+  },
+  "errors": {
+    "validation": "Noe i skjemaet må rettes.",
+    "auth": {
+      "invalidCredentials": "Feil e-postadresse eller passord. Etter fem feil på rad må du vente 15 minutter før du kan prøve igjen.",
+      "emailTaken": "Det finnes allerede en konto med denne e-postadressen. Logg inn i stedet.",
+      "wrongPassword": "Passordet er feil.",
+      "passwordPwned": "Dette passordet finnes i kjente datalekkasjer, så andre kan prøve det. Velg et annet. Tips: en kort setning du ikke har brukt andre steder.",
+      "unauthenticated": "Du er ikke logget inn lenger. Logg inn igjen.",
+      "registrationClosed": "Dette er et lukket testmiljø. Nye kontoer lages av teamet.",
+      "twoFactorInvalid": "Koden stemmer ikke, eller den er brukt før. Vent på neste kode i appen og prøv igjen. Etter fem feil på rad må du vente 15 minutter.",
+      "twoFactorUnavailable": "Tofaktorinnlogging er ikke tilgjengelig på denne serveren akkurat nå. Si fra til teamet.",
+      "twoFactorAlreadyOn": "Tofaktorinnlogging er allerede slått på.",
+      "twoFactorNotSetUp": "Start på nytt med «Slå på tofaktorinnlogging».",
+      "twoFactorChallengeInvalid": "Innloggingen tok for lang tid eller ble avbrutt. Logg inn på nytt."
+    },
+    "security": {
+      "forbiddenOrigin": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen.",
+      "invalidCsrf": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen."
+    },
+    "rateLimited": "For mange forsøk på kort tid. Vent litt og prøv igjen.",
+    "notFound": "Fant ikke det du lette etter.",
+    "internal": "Noe gikk galt hos oss. Prøv igjen om litt.",
+    "network": "Fikk ikke kontakt med SmartMat. Sjekk nettforbindelsen og prøv igjen.",
+    "inventory": {
+      "notEnough": "Det er ikke så mye igjen. Last inn siden på nytt og prøv igjen.",
+      "locationNotEmpty": "Stedet har fortsatt varer. Flytt eller bruk dem opp først.",
+      "lastLocation": "Du må ha minst ett lagringssted.",
+      "changedMeanwhile": "Partiet ble endret i mellomtiden. Last inn siden på nytt og prøv igjen.",
+      "nothingToUndo": "Det er ingenting å angre.",
+      "cannotUndo": "Endringen kan ikke angres lenger."
+    },
+    "purchase": {
+      "changedMeanwhile": "Noe i kjøpet ble endret i mellomtiden, for eksempel en vare eller et sted som ble slettet. Last inn siden på nytt og prøv igjen.",
+      "editedMeanwhile": "Noen andre har endret kjøpet mens du rettet det, kanskje på en annen telefon. Ingenting av det du skrev, er lagret. Last inn siden på nytt for å se endringene, og rett igjen."
+    },
+    "shopping": {
+      "changedMeanwhile": "Handlelisten ble endret i mellomtiden, kanskje på en annen enhet. Last inn siden på nytt og prøv igjen.",
+      "alreadyOnList": "Det står allerede en linje for denne varen på listen. Huk av eller fjern den først."
+    },
+    "receipt": {
+      "tooLarge": "Bildet er for stort. Bruk et bilde under 10 MB.",
+      "unsupportedType": "Bruk et bilde i JPEG-, PNG- eller WebP-format.",
+      "unreadable": "Vi klarte ikke å åpne bildet. Prøv å ta et nytt.",
+      "alreadyUploaded": "Dette bildet er allerede lastet opp.",
+      "busy": "Det er mange kvitteringer i kø akkurat nå. Prøv igjen om litt, eller fyll inn kjøpet selv.",
+      "ocrUnavailable": "Kvitteringslesing er ikke satt opp. Fyll inn kjøpet selv.",
+      "notReady": "Kvitteringen er ikke ferdig lest ennå.",
+      "alreadyConfirmed": "Kvitteringen er allerede registrert som et kjøp.",
+      "duplicate": "Denne kvitteringen er allerede registrert.",
+      "possibleDuplicate": "Du har allerede et kjøp med samme dato og sum. Er dette det samme kjøpet?",
+      "cannotRetry": "Kvitteringen kan ikke leses på nytt nå."
+    },
+    "mealPlan": {
+      "dayFull": "Dagen har allerede 20 oppføringer. Fjern noe eller velg en annen dag."
+    },
+    "household": {
+      "ownerOnly": "Bare eieren av husholdningen kan gjøre dette.",
+      "ownerMustTransfer": "Du er eier. Gi eierskapet til et annet medlem før du forlater husholdningen.",
+      "cannotRemoveSelf": "Du kan ikke fjerne deg selv. Forlat husholdningen i stedet.",
+      "full": "Husholdningen er full (høyst 10 medlemmer).",
+      "tooManyHouseholds": "Du er allerede med i 5 husholdninger. Forlat en før du blir med i en ny.",
+      "tooManyInvitations": "Det finnes allerede 5 aktive invitasjoner. Trekk tilbake en før du lager en ny.",
+      "alreadyMember": "Du er allerede medlem av denne husholdningen.",
+      "invitationInvalid": "Invitasjonen er ugyldig, utløpt, trukket tilbake eller allerede brukt. Be om en ny lenke.",
+      "notAMember": "Velg et medlem av husholdningen."
+    },
+    "notification": {
+      "notFound": "Varselet finnes ikke lenger."
+    }
+  },
+  "units": {
+    "g": "g",
+    "kg": "kg",
+    "ml": "ml",
+    "dl": "dl",
+    "l": "l",
+    "stk": "stk"
+  },
+  "inventory": {
+    "loading": "Henter matlageret …",
+    "addItem": "Legg til vare",
+    "added": "{{name}} er lagt til",
+    "backToList": "Til matlageret",
+    "itemEmpty": "Tom",
+    "unknownLocation": "Ukjent sted",
+    "batchCount_one": "{{count}} parti",
+    "batchCount_other": "{{count}} partier",
+    "count_one": "Viser {{shown}} av {{count}} vare",
+    "count_other": "Viser {{shown}} av {{count}} varer",
+    "empty": {
+      "title": "Matlageret er tomt",
+      "text": "Legg til det du har i kjøleskap, fryser og skap, med datoen fra pakken. Da kan SmartMat si fra før noe går ut."
+    },
+    "noMatch": {
+      "title": "Ingen varer passer",
+      "text": "Prøv et annet søk eller fjern noen filtre."
+    },
+    "summary": {
+      "label": "Holdbarhet",
+      "soon_one": "går ut snart",
+      "soon_other": "går ut snart",
+      "passed_one": "har passert datoen",
+      "passed_other": "har passert datoen",
+      "noDate_one": "mangler dato",
+      "noDate_other": "mangler dato"
+    },
+    "filters": {
+      "search": "Søk",
+      "location": "Sted",
+      "allLocations": "Alle steder",
+      "category": "Kategori",
+      "allCategories": "Alle kategorier",
+      "status": "Holdbarhet",
+      "sort": "Sortering",
+      "showEmpty": "Vis også tomme varer",
+      "reset": "Fjern filtre",
+      "more_zero": "Filtrer og sorter",
+      "more_one": "Filtrer og sorter ({{count}} i bruk)",
+      "more_other": "Filtrer og sorter ({{count}} i bruk)"
+    },
+    "statusFilters": {
+      "alle": "Alle",
+      "snart": "Går ut snart",
+      "passert": "Passert datoen",
+      "uten-dato": "Uten dato"
+    },
+    "sortOptions": {
+      "dato": "Første dato",
+      "navn": "Navn (A–Å)",
+      "nylig": "Sist lagt til"
+    },
+    "categories": {
+      "dairy": "Meieri og egg",
+      "meat": "Kjøtt",
+      "fish": "Fisk og sjømat",
+      "fruitVeg": "Frukt og grønt",
+      "bread": "Brød og bakevarer",
+      "dryGoods": "Tørrvarer",
+      "canned": "Hermetikk",
+      "frozen": "Frossenmat",
+      "spreads": "Pålegg",
+      "spicesSauces": "Krydder og sauser",
+      "drinks": "Drikke",
+      "other": "Annet"
+    },
+    "locationKinds": {
+      "fridge": "Kjøleskap",
+      "freezer": "Fryser",
+      "pantry": "Skap",
+      "other": "Annet sted"
+    },
+    "baseUnits": {
+      "g": "Vekt (g, kg)",
+      "ml": "Volum (ml, dl, l)",
+      "stk": "Antall (stk)"
+    },
+    "expiryKinds": {
+      "none": "Ingen dato",
+      "best_before": "Best før",
+      "use_by": "Siste forbruksdag"
+    },
+    "expiry": {
+      "none": "Uten dato",
+      "bestBefore": {
+        "passed": "Best før passert",
+        "today": "Best før i dag",
+        "soon_one": "Best før i morgen",
+        "soon_other": "Best før om {{count}} dager",
+        "on": "Best før {{date}}"
+      },
+      "useBy": {
+        "passed": "Siste forbruksdag passert",
+        "today": "Siste forbruksdag i dag",
+        "soon_one": "Siste forbruksdag i morgen",
+        "soon_other": "Siste forbruksdag om {{count}} dager",
+        "on": "Siste forbruksdag {{date}}"
+      }
+    },
+    "advice": {
+      "useByPassed": "Bør ikke spises. Siste forbruksdag handler om mattrygghet.",
+      "bestBeforePassed": "Ofte fortsatt god. Se, lukt og smak."
+    },
+    "fields": {
+      "name": "Navn på varen",
+      "nameHint": "For eksempel «Lettmelk» eller «Kyllingfilet».",
+      "category": "Kategori",
+      "categoryPlaceholder": "Velg kategori",
+      "baseUnit": "Måles i",
+      "baseUnitHint": "Kan ikke endres senere.",
+      "amount": "Mengde",
+      "unit": "Enhet",
+      "location": "Lagringssted",
+      "locationPlaceholder": "Velg sted",
+      "expiryKind": "Dato på pakken",
+      "expiryKindHint": "Siste forbruksdag gjelder mattrygghet, best før gjelder kvalitet.",
+      "expiryDate": "Dato",
+      "price": "Pris",
+      "priceHint": "For hele pakken. Brukes til å anslå verdien av mat som kastes.",
+      "purchasedOn": "Kjøpt"
+    },
+    "new": {
+      "title": "Legg til vare",
+      "lead": "Skriv inn det som står på pakken.",
+      "submit": "Legg til"
+    },
+    "item": {
+      "notFoundTitle": "Fant ikke varen",
+      "notFoundText": "Den kan ha blitt slettet.",
+      "edit": "Endre navn",
+      "editTitle": "Endre vare",
+      "delete": "Slett vare",
+      "deleteTitle": "Slette {{name}}?",
+      "deleteText": "Varen, alle partier og hele historikken slettes. Bruk «Kast» hvis maten ble kastet – da telles det som svinn.",
+      "deleteConfirm": "Slett varen",
+      "deleted": "{{name}} er slettet"
+    },
+    "batch": {
+      "title": "Partier",
+      "none": "Ingen partier igjen. Legg til et nytt parti når du kjøper varen igjen.",
+      "label": "Parti {{number}}",
+      "add": "Legg til parti",
+      "addTitle": "Nytt parti av {{name}}",
+      "added": "Partiet er lagt til",
+      "consume": "Bruk",
+      "discard": "Kast",
+      "edit": "Rediger",
+      "editTitle": "Rediger parti",
+      "saved": "Partiet er lagret",
+      "delete": "Slett",
+      "deleteTitle": "Slette partiet?",
+      "deleteText": "Partiet og historikken for det slettes. Bruk «Kast» hvis maten ble kastet.",
+      "deleteConfirm": "Slett partiet",
+      "fromPurchase": "Fra kjøp",
+      "openPurchase": "Se kjøpet"
+    },
+    "take": {
+      "all": "Alt ({{quantity}})"
+    },
+    "consume": {
+      "title": "Bruk {{name}}",
+      "submit": "Registrer bruk",
+      "done": "Brukt: {{quantity}}"
+    },
+    "discard": {
+      "title": "Kast {{name}}",
+      "description": "Det du kaster, føres i svinnloggen.",
+      "reason": "Hvorfor ble det kastet?",
+      "reasonPlaceholder": "Velg årsak",
+      "value": "Verdi",
+      "valueHintEstimated": "Står feltet tomt, anslås verdien ut fra prisen på pakken.",
+      "valueHintUnknown": "Partiet har ingen pris. Står feltet tomt, føres verdien som ukjent.",
+      "submit": "Registrer kassering",
+      "done": "Kastet: {{quantity}}"
+    },
+    "wasteReasons": {
+      "expired": "Gått ut på dato",
+      "spoiled": "Ødelagt eller muggen",
+      "leftovers": "Matrester",
+      "tooMuch": "Kjøpt for mye",
+      "other": "Annet"
+    },
+    "history": {
+      "title": "Historikk",
+      "undoLast": "Angre siste endring",
+      "undone": "Endringen er angret",
+      "undoneTag": "Angret",
+      "add": "La til {{quantity}}",
+      "consume": "Brukte {{quantity}}",
+      "discard": "Kastet {{quantity}} ({{reason}})",
+      "move": "Flyttet fra {{from}} til {{to}}",
+      "adjustUp": "Rettet mengden: {{quantity}} mer",
+      "adjustDown": "Rettet mengden: {{quantity}} mindre",
+      "undo": "Angret: {{what}}",
+      "types": {
+        "add": "lagt til",
+        "consume": "brukt",
+        "discard": "kastet",
+        "move": "flyttet",
+        "adjust": "rettet mengde",
+        "undo": "angret"
+      },
+      "valueActual": "verdi {{value}}",
+      "valueEstimated": "anslått verdi {{value}}",
+      "valueUnknown": "verdi ukjent"
+    },
+    "locations": {
+      "manage": "Lagringssteder",
+      "title": "Lagringssteder",
+      "lead": "Hvor maten står. Du kan legge til egne steder, som «Kjeller» eller «Bod».",
+      "add": "Nytt sted",
+      "name": "Navn",
+      "nameHint": "For eksempel «Kjeller».",
+      "rename": "Gi nytt navn",
+      "renameLabel": "Gi nytt navn til {{name}}",
+      "renameTitle": "Gi nytt navn",
+      "delete": "Slett",
+      "deleteLabel": "Slett {{name}}",
+      "deleteTitle": "Slette {{name}}?",
+      "deleteText": "Et sted kan bare slettes når det er tomt. Historikken for varer som har vært der, beholdes.",
+      "deleteConfirm": "Slett stedet",
+      "deleted": "Stedet er slettet",
+      "batchCount_one": "{{count}} parti",
+      "batchCount_other": "{{count}} partier"
+    },
+    "ingredient": {
+      "title": "Ingrediens i oppskrifter",
+      "auto": "{{name}} (automatisk, fra navnet)",
+      "manual": "{{name}} (valgt av deg)",
+      "none": "Ikke en ingrediens (valgt av deg)",
+      "ambiguous": "Navnet passer til flere ingredienser ({{names}}), så varen er ikke koblet. Velg selv.",
+      "unmatched": "Ikke koblet til en ingrediens.",
+      "help": "Koblingen avgjør hvilke oppskrifter varen teller i.",
+      "change": "Endre ingrediens",
+      "dialogTitle": "Ingrediens for {{name}}",
+      "field": "Ingrediens",
+      "optionAuto": "Automatisk (fra navnet)",
+      "optionNone": "Ikke en ingrediens"
+    }
+  },
+  "budget": {
+    "addPurchase": "Registrer kjøp",
+    "setBudget": "Sett budsjett",
+    "changeBudget": "Endre budsjett",
+    "loading": "Laster budsjettet …",
+    "summaryTitle": "Matbudsjett",
+    "noBudget": "Du har ikke satt et matbudsjett for denne måneden.",
+    "categoriesTitle": "Forbruk per kategori",
+    "unallocated": "Ikke fordelt (bare totalsum)",
+    "noSpending": "Ingen matkjøp denne måneden.",
+    "nonFood": "Ikke mat: {{amount}}. Teller ikke med i matbudsjettet.",
+    "purchasesTitle": "Kjøp i {{month}}",
+    "emptyTitle": "Ingen kjøp denne måneden",
+    "emptyText": "Registrer et kjøp for å se hva du bruker på mat.",
+    "month": {
+      "navLabel": "Velg måned",
+      "previous": "Forrige måned",
+      "next": "Neste måned"
+    },
+    "figures": {
+      "spent": "Brukt på mat",
+      "remaining": "Igjen",
+      "over": "Over budsjett med",
+      "budget": "Budsjett",
+      "usedPercent": "{{percent}} % av månedsbudsjettet er brukt",
+      "overText": "Du har brukt {{percent}} % av budsjettet og er over."
+    },
+    "dialog": {
+      "title": "Månedlig matbudsjett",
+      "description": "Gjelder fra og med denne måneden. Tidligere måneder beholder budsjettet de hadde.",
+      "amount": "Beløp per måned",
+      "saved": "Budsjettet er lagret.",
+      "removed": "Budsjettet er fjernet.",
+      "remove": "Fjern budsjettet"
+    },
+    "addFromReceipt": "Fra kvittering"
+  },
+  "purchases": {
+    "noStore": "Ukjent butikk",
+    "onlyTotal": "bare totalsum",
+    "onlyTotalText": "Kjøpet er registrert med bare totalsum, uten linjer.",
+    "lineCount_one": "{{count}} linje",
+    "lineCount_other": "{{count}} linjer",
+    "batchCount_one": "{{count}} i matlageret",
+    "batchCount_other": "{{count}} i matlageret",
+    "total": "Sum: {{amount}}",
+    "notInBudget": "Ikke mat – teller ikke i matbudsjettet",
+    "notFoundTitle": "Fant ikke kjøpet",
+    "notFoundText": "Kjøpet finnes ikke, eller det er slettet.",
+    "backToBudget": "Tilbake til budsjettet",
+    "kinds": {
+      "food": "Mat og drikke",
+      "nonFood": "Ikke mat"
+    },
+    "modes": {
+      "lines": "Med linjer",
+      "linesHint": "Gir forbruk per kategori, og varene kan legges rett i matlageret.",
+      "total": "Bare totalsum",
+      "totalHint": "Raskest. Vises som «ikke fordelt» i oversikten."
+    },
+    "fields": {
+      "store": "Butikk",
+      "storeHint": "For eksempel «Rema 1000 Bø».",
+      "date": "Kjøpsdato",
+      "mode": "Hvordan vil du registrere kjøpet?",
+      "total": "Totalsum",
+      "totalHint": "Det som står nederst på kvitteringen.",
+      "description": "Hva",
+      "kind": "Type",
+      "amount": "Beløp",
+      "item": "Vare i matlageret",
+      "itemHint": "Velg en vare du har fra før, eller lag en ny med navnet fra linjen.",
+      "newItem": "Ny vare (navnet fra linjen)"
+    },
+    "lines": {
+      "title": "Linjer",
+      "label": "Linje {{number}}",
+      "add": "Legg til linje",
+      "remove": "Fjern linje {{number}}",
+      "sum": "Sum: {{amount}}",
+      "sumIncomplete": "(noen beløp mangler eller er ugyldige)",
+      "toInventory": "Legg i matlageret",
+      "linked": "Lagt i matlageret som «{{name}}»",
+      "inInventory": "I matlageret: {{name}}"
+    },
+    "new": {
+      "title": "Registrer kjøp",
+      "lead": "Før inn et matinnkjøp med linjer eller bare totalsum.",
+      "submit": "Lagre kjøpet",
+      "saved": "Kjøpet er registrert.",
+      "savedWithItems_one": "Kjøpet er registrert, og {{count}} vare er lagt i matlageret.",
+      "savedWithItems_other": "Kjøpet er registrert, og {{count}} varer er lagt i matlageret."
+    },
+    "edit": {
+      "open": "Rett kjøpet",
+      "title": "Rett kjøp",
+      "lead": "Endringer oppdaterer budsjettet med en gang. Mengder i matlageret endres ikke herfra.",
+      "saved": "Kjøpet er oppdatert.",
+      "removeUntouched": "Fjern også urørte varer fra matlageret for linjene du har tatt bort",
+      "removeUntouchedHint": "Varer som er brukt, kastet eller flyttet, blir alltid liggende."
+    },
+    "delete": {
+      "open": "Slett kjøpet",
+      "title": "Slette kjøpet?",
+      "text": "Kjøpet forsvinner fra budsjettet. Dette kan ikke angres.",
+      "removeUntouched_one": "Fjern også {{count}} urørt vare fra matlageret",
+      "removeUntouched_other": "Fjern også {{count}} urørte varer fra matlageret",
+      "removeUntouchedHint": "Urørt betyr at ingenting er brukt, kastet, flyttet eller rettet.",
+      "touched_one": "{{count}} vare fra kjøpet er brukt eller endret og blir liggende i matlageret.",
+      "touched_other": "{{count}} varer fra kjøpet er brukt eller endret og blir liggende i matlageret.",
+      "confirm": "Slett kjøpet",
+      "done": "Kjøpet er slettet.",
+      "doneWithItems_one": "Kjøpet er slettet, og {{count}} vare er fjernet fra matlageret.",
+      "doneWithItems_other": "Kjøpet er slettet, og {{count}} varer er fjernet fra matlageret."
+    }
+  },
+  "recipes": {
+    "loading": "Henter oppskrifter …",
+    "listLabel": "Oppskrifter, best egnet først",
+    "empty": {
+      "title": "Ingen oppskrifter ennå",
+      "text": "Ingen oppskrifter er lagt inn ennå."
+    },
+    "noMatch": {
+      "title": "Ingen oppskrifter passer søket",
+      "text": "Prøv et annet søk eller en annen tagg."
+    },
+    "notFound": {
+      "title": "Fant ikke oppskriften",
+      "text": "Den kan være fjernet, eller lenken kan være feil."
+    },
+    "backToList": "Tilbake til oppskriftene",
+    "filters": {
+      "search": "Søk i oppskrifter",
+      "searchHint": "Tittel eller ingrediens",
+      "tag": "Tagg",
+      "allTags": "Alle tagger",
+      "showAllergens": "Vis oppskrifter med registrerte allergener",
+      "reset": "Nullstill søket",
+      "more": "Filtrer ({{count}} i bruk)",
+      "showHidden": "Vis dem likevel"
+    },
+    "count": "{{shown}} av {{count}} oppskrifter",
+    "hiddenByAllergens_one": "{{count}} oppskrift er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).",
+    "hiddenByAllergens_other": "{{count}} oppskrifter er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).",
+    "card": {
+      "have": "Har {{enough}} av {{required}}",
+      "missing_one": "{{count}} mangler",
+      "missing_other": "{{count}} mangler",
+      "expiring_one": "{{count}} går snart ut",
+      "expiring_other": "{{count}} går snart ut"
+    },
+    "score": "{{points}} poeng",
+    "points": "+{{points}}",
+    "total": "Sum",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} t",
+    "hours_other": "{{count}} t",
+    "hoursMinutes": "{{hours}} t {{minutes}} min",
+    "servings_one": "{{count}} porsjon",
+    "servings_other": "{{count}} porsjoner",
+    "testData": "Testdata",
+    "facts": {
+      "time": "Tid",
+      "servings": "Porsjoner",
+      "score": "Poengsum"
+    },
+    "ingredients": "Ingredienser",
+    "steps": "Slik gjør du",
+    "whyTitle": "Hvorfor denne plasseringen",
+    "whyText": "Opptil 100 poeng for det du har (nok gir fullt, litt gir halvt), og 10 poeng for hver av opptil tre ingredienser som snart går ut. Basisvarer og valgfrie ingredienser teller ikke.",
+    "writtenBy": "Skrevet av {{names}}",
+    "license": "Lisens: {{license}}",
+    "groups": {
+      "have": "Har",
+      "short": "For lite eller usikker mengde",
+      "missing": "Mangler",
+      "staple": "Basisvarer"
+    },
+    "line": {
+      "have": "Du har {{amount}}",
+      "approx": "ca. {{amount}}",
+      "notEnough": "Du har {{have}}, mangler {{missing}}",
+      "unknownAmount": "Du har {{items}}, men mengden kan ikke sammenlignes",
+      "staple": "Basisvare – sjekk at du har",
+      "optional": "valgfri",
+      "fromItems": "Fra matlageret: {{items}}",
+      "useByExcluded": "Du har {{items}} med passert siste forbruksdag. Det er ikke regnet med, og bør ikke spises."
+    },
+    "reasons": {
+      "coverage": "Du har nok av {{enough}} av {{required}} ingredienser",
+      "coveragePartial": "Du har nok av {{enough}} av {{required}} ingredienser, og litt av {{partial}}",
+      "nothing": "Du har ingen av ingrediensene",
+      "expiring": "{{item}}: {{status}}",
+      "missing": "Mangler: {{names}}"
+    },
+    "allergens": {
+      "title": "Allergener",
+      "contains": "Inneholder {{list}}",
+      "from": "{{allergen}}: {{ingredients}}",
+      "disclaimer": "Allergeninformasjonen er veiledende og kan være ufullstendig. Sjekk alltid ingredienslisten på varene du bruker.",
+      "noneRegistered": "Ingen av dine registrerte allergener er registrert i ingrediensene.",
+      "noUserAllergens": "Du har ikke registrert allergener.",
+      "register": "Registrer allergener",
+      "household": {
+        "contains": "Inneholder {{list}} (registrert i husholdningen)",
+        "box": "Registrert i husholdningen: {{list}}"
+      }
+    },
+    "allergenNames": {
+      "gluten": "gluten",
+      "crustaceans": "skalldyr",
+      "egg": "egg",
+      "fish": "fisk",
+      "peanuts": "peanøtter",
+      "soy": "soya",
+      "milk": "melk",
+      "nuts": "nøtter",
+      "celery": "selleri",
+      "mustard": "sennep",
+      "sesame": "sesam",
+      "sulphites": "sulfitt",
+      "lupin": "lupin",
+      "molluscs": "bløtdyr"
+    },
+    "aiDraft": "KI-utkast",
+    "origin": {
+      "title": "Kilde og lisens",
+      "source": "Kilde:",
+      "fromSite": "fra {{site}}, skrevet av {{authors}}",
+      "license": "Lisens:",
+      "adaptation": {
+        "none": "Ikke endret",
+        "translated": "Oversatt",
+        "adapted": "Oversatt og tilpasset"
+      },
+      "withAi": "med KI",
+      "retrieved": "Hentet {{date}}",
+      "changes": "Endret: {{note}}",
+      "aiDraft": "KI-utkast – ikke kontrollert av teamet. Mengder, tider og allergener kan være feil.",
+      "reviewed": "Kontrollert av {{names}} {{date}}",
+      "aboutSources": "Om kildene og lisensene"
+    },
+    "sources": {
+      "title": "Kilder og lisenser",
+      "lead": "Oppskriftene er hentet fra åpne kilder, oversatt til norsk og merket med kilde og lisens.",
+      "wikibooks": {
+        "title": "Wikibooks Cookbook",
+        "text": "Kokeboka på engelske Wikibooks er skrevet av frivillige. Den har lisensen CC BY-SA 4.0, som tillater å kopiere og bearbeide innholdet når kilden nevnes og bearbeidelsen får samme lisens. Oversettelsene i SmartMat har derfor også CC BY-SA 4.0.",
+        "link": "Wikibooks Cookbook",
+        "license": "Lisensen CC BY-SA 4.0"
+      },
+      "whatWeDid": "Oppskriftene er oversatt og tilpasset med KI (Claude). Mengdene er gjort om til gram, milliliter og stykk, og hver oppskrift sier hva som er endret. Allergenene regnes ut fra ingrediensene, ikke fra kilden.",
+      "draftExplained": "Oppskrifter merket «KI-utkast» er ikke kontrollert av teamet ennå.",
+      "listTitle": "Oppskrifter fra åpne kilder",
+      "original": "Original:",
+      "siteAndLicense": "({{site}}) · {{license}}",
+      "emptyTitle": "Ingen oppskrifter fra åpne kilder",
+      "emptyText": "Når oppskrifter fra åpne kilder er lagt inn, står de her."
+    },
+    "planServings": "Porsjoner",
+    "scaledTo": "Til {{count}} porsjoner: {{amount}}",
+    "scaledToApprox": "Til {{count}} porsjoner: ca. {{amount}}",
+    "scaledNote": "Mengdene er regnet om til {{count}} porsjoner og rundet opp. Poengsummen gjelder oppskriftens egne porsjoner.",
+    "toPlan": {
+      "button": "Legg i måltidsplanen",
+      "title": "Legg i måltidsplanen",
+      "date": "Dato",
+      "meal": "Måltid",
+      "submit": "Legg til",
+      "added": "Lagt i måltidsplanen.",
+      "open": "Åpne uka",
+      "summary": "{{title}} · {{servings}}"
+    }
+  },
+  "shopping": {
+    "loading": "Laster handlelisten …",
+    "quickAdd": {
+      "title": "Legg til på listen",
+      "text": "Vare",
+      "amount": "Mengde",
+      "unit": "Enhet",
+      "submit": "Legg til",
+      "hint": "Mengden er valgfri."
+    },
+    "empty": {
+      "title": "Handlelisten er tom",
+      "text": "Skriv inn det du skal kjøpe, eller legg til det som mangler fra en oppskrift.",
+      "recipes": "Se oppskrifter"
+    },
+    "open_one": "Skal kjøpes ({{count}})",
+    "open_other": "Skal kjøpes ({{count}})",
+    "checked_one": "Huket av ({{count}})",
+    "checked_other": "Huket av ({{count}})",
+    "allChecked": "Alt er huket av.",
+    "share": "{{title}}: {{amount}}",
+    "shareNoAmount": "{{title}}",
+    "shareFrom": "Fra {{title}}",
+    "actions": {
+      "edit": "Endre {{text}}",
+      "remove": "Fjern {{text}}",
+      "toInventory": "Legg i matlageret",
+      "clearChecked": "Fjern avhukede"
+    },
+    "announce": {
+      "added": "{{text}} er lagt til.",
+      "similar": "{{text}} står allerede på listen. Den nye linjen er lagt til for seg.",
+      "checked": "{{text}} er huket av.",
+      "unchecked": "Haken er fjernet fra {{text}}.",
+      "removed": "{{text}} er fjernet.",
+      "saved": "Endringen er lagret."
+    },
+    "toast": {
+      "checkFailed": "Kunne ikke lagre avhukingen. Prøv igjen.",
+      "cleared_one": "{{count}} linje er fjernet.",
+      "cleared_other": "{{count}} linjer er fjernet.",
+      "stocked_one": "{{count}} vare er lagt i matlageret.",
+      "stocked_other": "{{count}} varer er lagt i matlageret.",
+      "fromRecipe": "Lagt i handlelisten: {{created}} nye, {{merged}} slått sammen med linjer som var der.",
+      "fromRecipeNothing": "Alt sto allerede på handlelisten."
+    },
+    "edit": {
+      "title": "Endre linje",
+      "hint": "Fjern mengden for å kjøpe «noe»."
+    },
+    "clear": {
+      "title": "Fjerne avhukede linjer?",
+      "text_one": "{{count}} avhuket linje fjernes fra listen. Den legges ikke i matlageret.",
+      "text_other": "{{count}} avhukede linjer fjernes fra listen. De legges ikke i matlageret.",
+      "confirm": "Fjern"
+    },
+    "stock": {
+      "title": "Legg i matlageret",
+      "description": "Sjekk vare, mengde, sted og dato for hver vare før du lagrer.",
+      "notPurchase": "Varene registreres ikke som et kjøp og teller ikke i budsjettet.",
+      "registerPurchase": "Registrer kjøpet",
+      "target": "Vare i matlageret",
+      "newItem": "Ny vare",
+      "linkedItems": "Koblet til samme ingrediens",
+      "otherItems": "Andre varer",
+      "name": "Navn på ny vare",
+      "category": "Kategori",
+      "unit": "Enhet",
+      "amount": "Mengde",
+      "location": "Sted",
+      "expiryKind": "Dato",
+      "expiryDate": "Dato",
+      "linkedTo": "Matcher oppskrifter med {{name}}.",
+      "submit": "Legg i matlageret"
+    },
+    "recipe": {
+      "button": "Legg manglende i handlelisten",
+      "title": "Legg i handlelisten",
+      "description": "Det som er krysset av, legges i handlelisten. Du kan endre mengdene.",
+      "amount": "Mengde",
+      "unit": "Enhet",
+      "reasons": {
+        "missing": "Mangler",
+        "notEnough": "Mangler litt",
+        "unknownAmount": "Du har noe, men mengden kan ikke sammenlignes",
+        "staple": "Basisvare – sjekk at du har",
+        "optional": "Valgfri",
+        "onList": "Står allerede på listen"
+      },
+      "nothing": "Du har alt oppskriften trenger.",
+      "submit": "Legg i handlelisten",
+      "open": "Gå til handlelisten"
+    },
+    "mealShare": "Måltidsplan {{day}}: {{title}}",
+    "mealShareAmount": "Måltidsplan {{day}}: {{title}}, {{amount}}"
+  },
+  "scan": {
+    "camera": {
+      "title": "Skann med kameraet",
+      "start": "Start kamera",
+      "privacy": "Bildet fra kameraet blir på enheten din. Bare tallene i strekkoden sendes.",
+      "starting": "Starter kameraet …",
+      "scanning": "Hold strekkoden inne i rammen.",
+      "videoLabel": "Kamerabilde",
+      "stop": "Stopp kamera",
+      "close": "Lukk",
+      "retry": "Prøv igjen",
+      "typeInstead": "Du kan skrive inn strekkoden i stedet.",
+      "problems": {
+        "insecure": {
+          "title": "Kameraet krever en sikker side",
+          "text": "Nettleseren gir bare kameratilgang på sider som er åpnet med https (eller på localhost)."
+        },
+        "unsupported": {
+          "title": "Nettleseren støtter ikke kamera",
+          "text": "Denne nettleseren gir ikke nettsider tilgang til kameraet."
+        },
+        "denied": {
+          "title": "Ingen tilgang til kameraet",
+          "text": "Du eller nettleseren har sagt nei til kameraet. Du kan gi tilgang i nettleserens innstillinger for denne siden."
+        },
+        "noCamera": {
+          "title": "Fant ikke noe kamera",
+          "text": "Vi fant ikke noe kamera på denne enheten, eller et annet program bruker det."
+        },
+        "failed": {
+          "title": "Kameraet startet ikke",
+          "text": "Noe gikk galt da kameraet eller strekkodeleseren skulle starte."
+        }
+      }
+    },
+    "manual": {
+      "title": "Skriv inn strekkoden",
+      "label": "Strekkode",
+      "hint": "Tallene under strekkene, vanligvis 13 eller 8 sifre.",
+      "submit": "Slå opp"
+    },
+    "lookup": {
+      "title": "Strekkode funnet",
+      "code": "Strekkode: {{gtin}}",
+      "loading": "Slår opp strekkoden …",
+      "brand": "Merke: {{brand}}.",
+      "another": "Skann en annen vare",
+      "toReceipts": "Les kvitteringen i stedet",
+      "status": {
+        "found": "Funnet i Open Food Facts. Sjekk og rett før du legger til.",
+        "household": "Dere har skannet denne før. Svarene fra sist er fylt ut.",
+        "notFound": "Vi fant ikke denne strekkoden. Fyll inn selv, så husker vi den til neste gang.",
+        "unavailable": "Produktoppslaget svarer ikke akkurat nå. Fyll inn selv.",
+        "storeCode": "Butikkens egen kode (for eksempel for vekt eller pris). Fyll inn selv. Koden blir ikke husket.",
+        "notAsked": "Fyll inn selv.",
+        "off": "Produktoppslag er ikke slått på i denne versjonen av SmartMat. Fyll inn selv.",
+        "receiptCode": "Dette er strekkoden på en kvittering eller kupong, ikke på en vare."
+      }
+    },
+    "form": {
+      "title": "Sjekk og legg i matlageret",
+      "modeLegend": "Hvor skal pakken?",
+      "existing": "Nytt parti på «{{name}}»",
+      "newItem": "Ny vare",
+      "nameHint": "Rett navnet hvis det er feil eller på et annet språk.",
+      "ingredientAuto": "Automatisk: {{name}}",
+      "ingredientAmbiguous": "Automatisk (navnet passer til flere, ikke koblet)",
+      "ingredientUnmatched": "Automatisk (ikke koblet)",
+      "dateHint": "Datoen fylles aldri ut. Les den på pakken.",
+      "submit": "Legg i matlageret"
+    },
+    "added": "{{name}} er lagt i matlageret.",
+    "seeItem": "Se varen",
+    "attribution": {
+      "text": "Produktdata fra",
+      "source": "Open Food Facts",
+      "license": "lisens ODbL"
+    }
+  },
+  "receipts": {
+    "title": "Kvittering",
+    "lead": "Ta bilde av kvitteringen, så fyller vi inn kjøpet. Du sjekker og retter før noe lagres.",
+    "loading": "Henter kvitteringen …",
+    "backToList": "Til kvitteringene",
+    "manual": "Fyll inn selv",
+    "upload": {
+      "title": "Last opp kvittering",
+      "lead": "Legg kvitteringen flatt, i godt lys, og få med hele.",
+      "camera": "Ta bilde",
+      "file": "Velg fil",
+      "uploading": "Laster opp …",
+      "openExisting": "Åpne den",
+      "privacy": "Bildet behandles bare på vår server. Posisjon og annen informasjon fra kameraet fjernes. Bildet slettes når du har bekreftet kjøpet, eller etter 7 dager."
+    },
+    "camera": {
+      "shoot": "Ta bildet",
+      "cancel": "Avbryt",
+      "hint": "Få med hele kvitteringen, og hold telefonen stille når du trykker.",
+      "fallback": "Bruk kamera-appen",
+      "fallbackText": "Du kan bruke kamera-appen på telefonen eller velge en fil i stedet."
+    },
+    "unavailable": {
+      "title": "Kvitteringslesing er ikke tilgjengelig",
+      "text": "Den er ikke satt opp på denne serveren. Du kan registrere kjøpet selv.",
+      "manual": "Registrer kjøp"
+    },
+    "list": {
+      "title": "Kvitteringer som venter",
+      "empty": "Ingen kvitteringer venter.",
+      "open": "Åpne",
+      "uploaded": "Lastet opp {{time}}"
+    },
+    "status": {
+      "queued": "I kø",
+      "processing": "Leses",
+      "review": "Klar til sjekk",
+      "failed": "Kunne ikke leses",
+      "confirmed": "Registrert"
+    },
+    "waiting": {
+      "queued": "Kvitteringen står i kø …",
+      "processing": "Leser kvitteringen …",
+      "text": "Det tar vanligvis noen sekunder. Du kan bli på siden.",
+      "slow": "Det tar lengre tid enn vanlig. Du kan vente, eller fylle inn kjøpet selv."
+    },
+    "failed": {
+      "title": "Kvitteringen kunne ikke leses",
+      "timeout": "Lesingen tok for lang tid.",
+      "unavailable": "Kvitteringslesingen svarer ikke akkurat nå.",
+      "invalidResponse": "Noe gikk galt under lesingen.",
+      "noText": "Vi fant ingen tekst i bildet. Prøv et skarpere bilde, med hele kvitteringen og godt lys.",
+      "retry": "Prøv igjen",
+      "retryFailed": "Kunne ikke prøve igjen. Last inn siden på nytt."
+    },
+    "review": {
+      "title": "Sjekk kvitteringen",
+      "lead": "Se over det vi leste, og rett det som er feil. Ingenting lagres før du trykker «Bekreft kjøpet».",
+      "imageAlt": "Bildet av kvitteringen",
+      "openImage": "Åpne bildet i full størrelse",
+      "lowConfidenceTitle": "Lav sikkerhet",
+      "lowConfidence": "Bildet var vanskelig å lese. Sjekk alle feltene nøye.",
+      "dateGuessed": "Vi fant ikke datoen. Dagens dato er fylt inn – sjekk den.",
+      "storeGuessed": "Vi fant ikke butikknavnet på kvitteringen. Den ligner på kvitteringer fra {{store}}, der dere handlet sist, så det er fylt inn. Rett det om det er feil.",
+      "totalOnly": "Vi fyller inn butikk, dato og total. Linjene leses ikke godt nok ennå. Vil du ha varene i matlageret, velg «Med linjer» og legg dem til selv.",
+      "sumMismatch": "Linjene blir {{lines}}, men kvitteringen sier {{total}}. Sjekk beløpene.",
+      "rawText": "Teksten vi leste",
+      "check": "Sjekk:",
+      "submit": "Bekreft kjøpet",
+      "saved": "Kjøpet er registrert.",
+      "savedWithItems_one": "Kjøpet er registrert, og {{count}} vare er lagt i matlageret.",
+      "savedWithItems_other": "Kjøpet er registrert, og {{count}} varer er lagt i matlageret.",
+      "duplicateLink": "Se kjøpet som finnes fra før",
+      "allowDuplicate": "Lagre likevel – dette er et annet kjøp",
+      "allowDuplicateHint": "Kryss av hvis du har handlet for samme sum samme dag."
+    },
+    "flags": {
+      "lowConfidence": "teksten var utydelig.",
+      "noAmount": "beløpet ble ikke funnet.",
+      "amountFromQuantity": "beløpet er regnet ut fra antall og pris.",
+      "quantityMismatch": "antall × pris stemte ikke med beløpet.",
+      "discountApplied": "rabatten er trukket fra."
+    },
+    "confirmed": {
+      "title": "Kvitteringen er registrert",
+      "text": "Kjøpet er lagret, og bildet er slettet.",
+      "open": "Se kjøpet"
+    },
+    "notFound": {
+      "title": "Fant ikke kvitteringen",
+      "text": "Den kan være forkastet, eller slettet fordi den ikke ble bekreftet innen 7 dager."
+    },
+    "discard": {
+      "button": "Forkast kvitteringen",
+      "title": "Forkaste kvitteringen?",
+      "text": "Bildet og det vi leste, slettes. Ingen kjøp blir registrert.",
+      "confirm": "Forkast",
+      "done": "Kvitteringen er forkastet.",
+      "failed": "Kunne ikke forkaste kvitteringen. Prøv igjen."
+    }
+  },
+  "mealPlan": {
+    "lead": "Planlegg uka, se hva som mangler, og legg det på handlelisten.",
+    "weekNav": "Velg uke",
+    "previousWeek": "Forrige uke",
+    "nextWeek": "Neste uke",
+    "week": "Uke {{number}}",
+    "weekRange": "{{from}}–{{to}}",
+    "thisWeek": "Gå til denne uka",
+    "showAllMeals": "Vis frokost og lunsj",
+    "loading": "Henter måltidsplanen …",
+    "emptyWeek": "Ingenting er planlagt denne uka. Trykk på pluss under en dag for å legge til en oppskrift eller fritekst.",
+    "hiddenMeals": "Uka har også frokost eller lunsj. Kryss av for «Vis frokost og lunsj» for å se dem.",
+    "today": "I dag",
+    "meals": {
+      "breakfast": "Frokost",
+      "lunch": "Lunsj",
+      "dinner": "Middag"
+    },
+    "addTo": "Legg til {{meal}}, {{day}}",
+    "recipeGone": "{{title}} (oppskriften finnes ikke lenger)",
+    "edit": "Endre eller flytt {{name}}",
+    "remove": "Fjern {{name}}",
+    "removed": "{{name}} er fjernet fra planen.",
+    "removeFailed": "Kunne ikke fjerne. Prøv igjen.",
+    "added": "{{name}} er lagt til i planen.",
+    "add": {
+      "title": "{{meal}}, {{day}}",
+      "what": "Hva vil du legge til?",
+      "modes": {
+        "recipe": "Oppskrift",
+        "note": "Fritekst"
+      },
+      "noRecipes": "Ingen oppskrifter ennå. Du kan skrive fritekst i stedet.",
+      "search": "Søk i oppskrifter",
+      "recipe": "Velg oppskrift",
+      "rankedFor": "Best egnet først, etter det du har som kan brukes den dagen.",
+      "servings": "Porsjoner",
+      "servingsHint_one": "Oppskriften er til {{count}} porsjon.",
+      "servingsHint_other": "Oppskriften er til {{count}} porsjoner.",
+      "quick": {
+        "leftovers": "Rester",
+        "eatingOut": "Spise ute"
+      },
+      "note": "Tekst",
+      "noteHint": "For eksempel «Rester» eller «Spise ute». Høyst 100 tegn.",
+      "submit": "Legg til"
+    },
+    "editDialog": {
+      "title": "Endre {{name}}",
+      "date": "Dato",
+      "day": "Dag",
+      "meal": "Måltid",
+      "otherWeek": "Flytt til en annen uke",
+      "submit": "Lagre"
+    },
+    "needs": {
+      "title": "Hva mangler for uka",
+      "loading": "Regner ut hva som mangler …",
+      "weekOver": "Uka er over. Behovet regnes bare for dager som kommer.",
+      "noRecipes": "Legg oppskrifter i planen, så ser du her hva som mangler.",
+      "period": "Regnet fra {{from}} til {{to}}. Dager som har vært, telles ikke.",
+      "allCovered": "Du har det planen trenger, eller det er lagt på handlelisten.",
+      "intro": "Kryss av for det du vil kjøpe. Ingenting legges på handlelisten før du trykker på knappen.",
+      "reasons": {
+        "missing": "Mangler",
+        "notEnough": "Mangler litt",
+        "unknownAmount": "Du har noe, men mengden kan ikke sammenlignes",
+        "staple": "Basisvare – sjekk at du har",
+        "optional": "Valgfri",
+        "onList": "Lagt på handlelisten fra planen før"
+      },
+      "need": "Trenger {{amount}}",
+      "needApprox": "Trenger ca. {{amount}} (rundet opp)",
+      "have": "har {{amount}}",
+      "haveApprox": "har ca. {{amount}}",
+      "onList": "{{amount}} lagt til fra før",
+      "entry": "{{day}} {{meal}}: {{title}}, {{amount}}",
+      "toTaste": "etter smak",
+      "submit": "Legg på handlelisten",
+      "added": "Lagt på handlelisten: {{created}} nye linjer, {{merged}} slått sammen med linjer som stod der.",
+      "addedNothing": "Ingenting nytt å legge til. Det står allerede på handlelisten.",
+      "openList": "Åpne handlelisten",
+      "covered_one": "Dette har du nok av ({{count}})",
+      "covered_other": "Dette har du nok av ({{count}})",
+      "coveredLine": "{{name}}: {{amount}}",
+      "coveredLineNoAmount": "{{name}}",
+      "unplannedTitle": "Går ut denne uka",
+      "unplannedText": "Ingen oppskrift i planen bruker disse. Kanskje noe å lage mat av?"
+    }
+  },
+  "household": {
+    "activeIn": "Husholdning: {{name}}",
+    "change": "Bytt",
+    "lost": "Du er ikke lenger medlem av {{name}}.",
+    "lostUnknown": "Du er ikke lenger medlem av husholdningen du så på.",
+    "roles": {
+      "owner": "Eier",
+      "member": "Medlem"
+    },
+    "creator": {
+      "addedBy": "Lagt til av {{name}}",
+      "former": "Tidligere medlem",
+      "unknown": "Slettet bruker"
+    },
+    "switcher": {
+      "title": "Dine husholdninger",
+      "text": "Du er med i flere husholdninger. Sidene viser og lagrer data i den aktive.",
+      "active": "Aktiv",
+      "use": "Bruk",
+      "switched": "Du bruker nå {{name}}.",
+      "useNamed": "Bruk {{name}}"
+    },
+    "members": {
+      "title": "Medlemmer",
+      "you": "deg",
+      "joined": "Med siden {{date}}",
+      "aloneTitle": "Du er alene i husholdningen",
+      "aloneText": "Inviter dem du bor med, så deler dere matlager, kjøp, budsjett, handleliste og måltidsplan.",
+      "remove": "Fjern",
+      "removeTitle": "Fjerne {{name}}?",
+      "removeText": "{{name}} mister tilgangen til husholdningen med en gang. Det {{name}} har lagt inn, blir værende.",
+      "removeConfirm": "Fjern fra husholdningen",
+      "removed": "{{name}} er fjernet fra husholdningen.",
+      "removeNamed": "Fjern {{name}}"
+    },
+    "name": {
+      "title": "Navn",
+      "label": "Navn på husholdningen",
+      "save": "Lagre navnet",
+      "saved": "Navnet er lagret."
+    },
+    "invite": {
+      "title": "Inviter",
+      "text": "Lag en lenke og send den til den du vil invitere, for eksempel i en melding. Lenken virker én gang og i 48 timer.",
+      "create": "Lag invitasjonslenke",
+      "createdTitle": "Invitasjonslenken er klar",
+      "createdText": "Lenken vises bare nå. Send den til én person. Den virker til {{time}}.",
+      "linkLabel": "Invitasjonslenke",
+      "share": "Del lenken",
+      "copy": "Kopier lenken",
+      "copied": "Lenken er kopiert.",
+      "copyFailed": "Kunne ikke kopiere. Merk lenken i feltet og kopier den selv.",
+      "shareText": "Bli med i husholdningen min i SmartMat",
+      "listTitle": "Invitasjoner de siste 30 dagene",
+      "none": "Ingen invitasjoner ennå.",
+      "made": "Laget {{time}}",
+      "status": {
+        "active": "Aktiv til {{time}}",
+        "used": "Brukt av {{name}}",
+        "usedFormer": "Brukt av et tidligere medlem",
+        "usedUnknown": "Brukt av en slettet bruker",
+        "revoked": "Trukket tilbake",
+        "expired": "Utløpt"
+      },
+      "revoke": "Trekk tilbake",
+      "revoked": "Invitasjonen er trukket tilbake.",
+      "ownerOnly": "Bare eieren kan invitere nye medlemmer."
+    },
+    "leave": {
+      "title": "Forlat husholdningen",
+      "text": "Du mister tilgangen til matlageret, kjøpene, handlelisten og måltidsplanen her. Det du har lagt inn, blir værende i husholdningen.",
+      "ownerText": "Som eier må du gi eierskapet til et annet medlem før du kan forlate husholdningen.",
+      "submit": "Forlat husholdningen",
+      "confirmTitle": "Forlate {{name}}?",
+      "confirm": "Ja, forlat husholdningen",
+      "left": "Du har forlatt {{name}}."
+    },
+    "transfer": {
+      "title": "Overfør eierskapet",
+      "text": "Den nye eieren kan invitere, fjerne medlemmer og slette husholdningen. Du blir vanlig medlem.",
+      "member": "Ny eier",
+      "choose": "Velg et medlem",
+      "password": "Passordet ditt",
+      "submit": "Overfør eierskapet",
+      "done": "{{name}} er nå eier av husholdningen.",
+      "noMembers": "Det er ingen andre medlemmer å overføre til."
+    },
+    "delete": {
+      "title": "Slett husholdningen",
+      "text": "Alt i husholdningen slettes for alle medlemmene: matlager, kjøp, budsjett, handleliste, måltidsplan og kvitteringer. Dette kan ikke angres. Alle beholder kontoen sin, og den som ikke har en annen husholdning, får en ny og tom.",
+      "password": "Skriv inn passordet ditt for å bekrefte",
+      "confirm": "Jeg forstår at alt i husholdningen slettes for alle",
+      "submit": "Slett husholdningen for godt",
+      "deleted": "Husholdningen er slettet."
+    }
+  },
+  "join": {
+    "title": "Bli med i en husholdning",
+    "checking": "Sjekker invitasjonen …",
+    "invalidTitle": "Invitasjonen virker ikke",
+    "missing": "Det står ingen invitasjon i lenken. Åpne lenken du fikk, eller lim den inn her.",
+    "pasteLabel": "Invitasjonslenke",
+    "pasteSubmit": "Åpne invitasjonen",
+    "loggedOut": "Logg inn eller lag en konto for å se invitasjonen og bli med.",
+    "login": "Logg inn",
+    "register": "Lag konto",
+    "invitedBy": "{{name}} inviterer deg til «{{household}}».",
+    "invited": "Du er invitert til «{{household}}».",
+    "members_one": "Husholdningen har {{count}} medlem.",
+    "members_other": "Husholdningen har {{count}} medlemmer.",
+    "expires": "Invitasjonen virker til {{time}}.",
+    "ownData": "Det du har i din egen husholdning, blir værende der. Ingenting slås sammen eller slettes. Du kan bytte mellom husholdningene under Husholdning.",
+    "accept": "Bli med",
+    "decline": "Nei takk",
+    "alreadyMember": "Du er allerede medlem av «{{household}}».",
+    "goToApp": "Gå til oversikten",
+    "joined": "Du er nå med i {{household}}."
+  },
+  "notifications": {
+    "title": "Varsler",
+    "lead": "Det som trenger oppmerksomhet i husholdningen nå.",
+    "loading": "Henter varsler …",
+    "emptyTitle": "Ingen varsler nå",
+    "emptyText": "Her kommer det et varsel når en vare nærmer seg datoen, når budsjettet er nesten brukt opp, eller når andre legger til på handlelisten.",
+    "settingsLink": "Velg hvilke varsler du vil ha",
+    "listLabel": "Varsler",
+    "new": "Nytt",
+    "dismiss": "Avvis",
+    "dismissLabel": "Avvis varselet: {{title}}",
+    "dismissed": "Varselet er avvist",
+    "dismissFailed": "Fikk ikke avvist varselet. Prøv igjen.",
+    "announce_one": "{{count}} nytt varsel",
+    "announce_other": "{{count}} nye varsler",
+    "kinds": {
+      "useBySoon_one": "{{name}} har siste forbruksdag i morgen",
+      "useBySoon_other": "{{name}} har siste forbruksdag om {{count}} dager",
+      "useByToday": "{{name}} har siste forbruksdag i dag",
+      "useByPassed": "Siste forbruksdag for {{name}} er passert",
+      "bestBeforeSoon_one": "{{name}} er best før i morgen",
+      "bestBeforeSoon_other": "{{name}} er best før om {{count}} dager",
+      "bestBeforeToday": "{{name}} er best før i dag",
+      "budgetNearlyUsed": "{{percent}} % av matbudsjettet for {{month}} er brukt",
+      "budgetExceeded": "Matbudsjettet for {{month}} er brukt opp ({{percent}} %)",
+      "shoppingAdded": "{{who}} la til {{items}} på handlelisten"
+    },
+    "advice": {
+      "useBySoon": "Siste forbruksdag handler om mattrygghet. Bruk den før datoen.",
+      "useByToday": "Etter i dag bør den ikke spises.",
+      "useByPassed": "Bør ikke spises. Siste forbruksdag handler om mattrygghet.",
+      "bestBefore": "Ofte fortsatt god etter datoen. Se, lukt og smak.",
+      "budget": "Se kjøpene for måneden.",
+      "shopping": "Åpne handlelisten for å se alt."
+    },
+    "who": {
+      "former": "Et tidligere medlem",
+      "unknown": "En slettet konto",
+      "several": "Andre i husholdningen"
+    },
+    "moreItems_one": "{{count}} til",
+    "moreItems_other": "{{count}} til"
+  },
+  "waste": {
+    "lead": "Hva husholdningen kaster, hvor mye og hvorfor.",
+    "loading": "Henter svinnstatistikken …",
+    "monthNav": "Velg måned",
+    "previous": "Forrige",
+    "next": "Neste",
+    "summaryTitle": "Kastet i {{month}}",
+    "emptyTitle": "Ingenting kastet i {{month}}",
+    "emptyText": "Når noe kastes fra matlageret med «Kast», kommer det her, med årsak og verdi.",
+    "knownValue": "Kjent verdi",
+    "count_one": "{{count}} kassering",
+    "count_other": "{{count}} kasseringer",
+    "valueSplit": "{{actual}} er beløp dere skrev inn, og {{estimated}} er anslått fra prisen på varen.",
+    "estimatedShare": "{{percent}} % av den kjente verdien er anslått.",
+    "estimatedShareBelowOne": "Under 1 % av den kjente verdien er anslått.",
+    "unknown_one": "{{count}} kassering har ukjent verdi og er ikke med i summen.",
+    "unknown_other": "{{count}} kasseringer har ukjent verdi og er ikke med i summen.",
+    "quantity": "Mengde: {{list}}",
+    "reasonsTitle": "Hvorfor",
+    "categoriesTitle": "Per kategori",
+    "topTitle": "Mest kastet",
+    "trendTitle": "De siste 12 månedene",
+    "shareRow_one": "{{count}} kassering ({{percent}} %)",
+    "shareRow_other": "{{count}} kasseringer ({{percent}} %)",
+    "rowUnknown_one": "{{count}} uten kjent verdi",
+    "rowUnknown_other": "{{count}} uten kjent verdi",
+    "topCount_one": "{{count}} gang",
+    "topCount_other": "{{count}} ganger",
+    "shareNote": "Andelen er av antallet kasseringer, fordi verdien kan mangle.",
+    "trendCaption": "Kastet per måned. Søylen viser kjent verdi: hel for beløp dere skrev inn, skravert for anslått.",
+    "columns": {
+      "month": "Måned",
+      "count": "Kasseringer",
+      "known": "Kjent verdi",
+      "unknown": "Ukjent verdi"
+    },
+    "aboutTitle": "Om tallene",
+    "about": {
+      "value": "Verdien er enten beløpet dere skrev inn ved kasseringen, eller anslått ut fra prisen på varen. Kasseringer uten pris telles, men får ingen verdi.",
+      "undo": "En kassering som er angret, telles ikke. Sletter du en vare, forsvinner også kasseringene av den.",
+      "category": "Kategorien er den varen har nå.",
+      "household": "Tallene gjelder hele husholdningen. Det finnes ingen tall per person."
+    },
+    "trendEstimated": "herav {{amount}} anslått"
+  },
+  "prices": {
+    "title": "Priser",
+    "loading": "Henter priser …",
+    "estimateNote": "Prisene er bare til informasjon. Det du betaler, fører du som et kjøp.",
+    "per": {
+      "kg": "kg",
+      "l": "l",
+      "stk": "stk"
+    },
+    "unitPrice": "{{price}} per {{per}}",
+    "own": {
+      "title": "Det dere har betalt",
+      "forItem": "For «{{name}}» i matlageret.",
+      "emptyNoItem": "Dere har ikke lagt denne strekkoden i matlageret før, så det finnes ingen egne priser for den.",
+      "empty": "Dere har ikke ført noen pris for denne varen ennå. Prisen kommer med når du registrerer et kjøp eller skriver inn pris på et parti.",
+      "amount": "{{quantity}} for {{price}}",
+      "fromPurchase": "Fra kjøp",
+      "fromPurchaseAt": "Fra kjøp hos {{store}}",
+      "enteredOnItem": "Ført på varen",
+      "seePurchase": "Se kjøpet",
+      "old": "Over 3 måneder gammel"
+    },
+    "external": {
+      "title": "Priser hos kjedene",
+      "status": {
+        "off": "Priser fra kjedene er slått av. Bare det dere selv har betalt, vises.",
+        "notAsked": "Butikkens egen kode kan ikke slås opp hos kjedene.",
+        "noBarcode": "Varen er ikke skannet, så vi kan ikke hente priser fra kjedene. Skann varen neste gang du kjøper den.",
+        "notFound": "Kassalapp har ingen priser for denne strekkoden.",
+        "unavailable": "Prisoppslaget svarer ikke akkurat nå. Prøv igjen senere.",
+        "unavailableStored": "Prisoppslaget svarer ikke akkurat nå. Prisene under ble hentet {{date}} og kan være utdaterte.",
+        "noPrices": "Ingen kjeder har pris på denne varen.",
+        "noFresh": "Ingen kjeder har sjekket prisen de siste 14 dagene."
+      },
+      "cheapest": "Billigst sist observert: {{chain}}, {{price}} (sjekket {{date}})",
+      "cheapestOf_one": "Bare {{count}} kjede har en pris som er sjekket de siste 14 dagene.",
+      "cheapestOf_other": "Laveste av {{count}} kjeder med pris sjekket de siste 14 dagene.",
+      "caption": "Siste pris per kjede, billigst først",
+      "columns": {
+        "chain": "Kjede",
+        "price": "Pris",
+        "checked": "Sjekket"
+      },
+      "chainLink": "{{chain}}, se varen hos Kassalapp",
+      "older_one": "Eldre pris ({{count}})",
+      "older_other": "Eldre priser ({{count}})",
+      "olderNote": "Priser som ikke er sjekket på 14 dager, og kjeder Kassalapp ikke lenger henter priser fra. De kan være feil i dag.",
+      "stale": "Ikke sjekket på 14 dager",
+      "uncollected": "Kassalapp henter ikke lenger priser fra denne kjeden",
+      "coverage": "Prisene gjelder kjeden, ikke en bestemt butikk. Tilbud og medlemspriser er ikke med, og Rema 1000, Kiwi og Coop er ikke med. Dette er ikke en fullstendig sammenligning.",
+      "fetchedAt": "Hentet {{date}}.",
+      "attribution": "Priser fra",
+      "attributionLink": "Kassalapp"
+    },
+    "estimate": {
+      "title": "Anslått pris",
+      "loading": "Regner ut anslag …",
+      "error": "Klarte ikke å regne ut anslaget.",
+      "summary": "Anslag for {{estimated}} av {{open}} linjer: ca. {{amount}}",
+      "missing_one": "{{count}} linje mangler pris og er ikke med.",
+      "missing_other": "{{count}} linjer mangler pris og er ikke med.",
+      "sources": "Fra det dere har betalt: {{own}}. Fra Kassalapp: {{kassalapp}}.",
+      "none": "Ingen av linjene har pris ennå. Et anslag kommer fra det dere har betalt for samme vare, eller fra Kassalapp når varen er skannet.",
+      "note": "Et anslag, ikke det du kommer til å betale. Det blir ikke med i budsjettet.",
+      "perLine": "Vis anslag per linje",
+      "basis": {
+        "scaled": "regnet ut fra mengden",
+        "lastTime": "som sist",
+        "onePackage": "én pakke"
+      },
+      "source": {
+        "own": "det dere har betalt",
+        "kassalapp": "Kassalapp"
+      },
+      "lineEstimate": "ca. {{amount}} ({{basis}}, {{source}}, {{date}})",
+      "missingReason": {
+        "noMatch": "ingen vare i matlageret med dette navnet",
+        "noPrice": "ingen pris ennå",
+        "unitMismatch": "annen enhet enn prisen"
+      }
+    }
+  },
+  "account": {
+    "device": "{{browser}} på {{os}}",
+    "browsers": {
+      "edge": "Edge",
+      "samsung": "Samsung Internet",
+      "opera": "Opera",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "safari": "Safari",
+      "other": "Ukjent nettleser"
+    },
+    "systems": {
+      "android": "Android",
+      "ios": "iPhone eller iPad",
+      "windows": "Windows",
+      "macos": "Mac",
+      "chromeos": "ChromeOS",
+      "linux": "Linux",
+      "other": "ukjent system"
+    },
+    "sessions": {
+      "title": "Hvor du er logget inn",
+      "text": "Her ser du hvilke nettlesere som er logget inn på kontoen din. Vi lagrer bare nettleser og system, ikke hvor du er eller IP-adressen. Kjenner du ikke igjen en innlogging, logg den ut og bytt passord.",
+      "current": "Denne enheten",
+      "times": "Logget inn {{started}} · sist brukt {{seen}}",
+      "endOne": "Logg ut",
+      "endOneLabel": "Logg ut {{device}}",
+      "ended": "Enheten er logget ut.",
+      "endOthers": "Logg ut alle andre enheter",
+      "endedOthers_one": "{{count}} annen enhet er logget ut.",
+      "endedOthers_other": "{{count}} andre enheter er logget ut."
+    },
+    "loginNotice": {
+      "title": "Ny innlogging på kontoen din.",
+      "text": "{{device}}, {{when}}.",
+      "itWasMe": "Det var meg",
+      "review": "Var det ikke deg? Se hvor du er logget inn"
+    },
+    "export": {
+      "title": "Last ned dataene dine",
+      "text": "Du får en fil (JSON) med det SmartMat har lagret om deg: kontoen, allergiene, innloggingene og alt i husholdningene du er med i. Passord og kvitteringsbilder er ikke med.",
+      "download": "Last ned mine data",
+      "privacy": "Les personvernerklæringen"
+    },
+    "twoFactor": {
+      "title": "Tofaktorinnlogging",
+      "off": "Av. Med tofaktorinnlogging trenger du både passordet og en kode fra en app på telefonen (for eksempel Google Authenticator, Microsoft Authenticator eller 1Password).",
+      "on_one": "På. Du har {{count}} ubrukt gjenopprettingskode.",
+      "on_other": "På. Du har {{count}} ubrukte gjenopprettingskoder.",
+      "unavailable": "Tofaktorinnlogging er ikke tilgjengelig på denne serveren.",
+      "start": "Slå på tofaktorinnlogging",
+      "passwordFirst": "Skriv inn passordet ditt først.",
+      "continue": "Fortsett",
+      "turnOn": "Slå på",
+      "turnedOn": "Tofaktorinnlogging er slått på.",
+      "turnedOff": "Tofaktorinnlogging er slått av.",
+      "scan": {
+        "app": "Åpne autentiseringsappen og legg til en ny konto.",
+        "key": "Skriv inn denne nøkkelen (store eller små bokstaver, uten mellomrom):",
+        "keyLabel": "Nøkkel til autentiseringsappen",
+        "open": "Eller åpne den direkte i appen på denne telefonen",
+        "code": "Skriv inn koden appen viser for SmartMat.",
+        "codeHint": "6 sifre. Koden skifter hvert 30. sekund."
+      },
+      "codes": {
+        "title": "Ta vare på gjenopprettingskodene",
+        "text": "Hver kode kan brukes én gang hvis du mister telefonen. Skriv dem ned eller lagre dem i en passordbehandler. De vises bare nå.",
+        "done": "Jeg har tatt vare på kodene"
+      },
+      "confirm": {
+        "disable": "Skriv inn passordet og en kode for å slå av tofaktorinnlogging.",
+        "newCodes": "Skriv inn passordet og en kode. De gamle gjenopprettingskodene slutter å virke."
+      },
+      "actions": {
+        "disable": "Slå av",
+        "newCodes": "Lag nye gjenopprettingskoder"
+      }
     }
   }
 }

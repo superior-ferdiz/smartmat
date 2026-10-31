@@ -1,0 +1,10 @@
+# SmartMat (spec 13 NFR-OPS-003): fails (systemctl --failed, journal) and writes the status file for the app's
+# banner when the newest backup is older than 26 hours or cannot be read.
+[Unit]
+Description=SmartMat: is the newest backup recent and readable?
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/Websites/SmartMat/docker/backup/check-backup.sh

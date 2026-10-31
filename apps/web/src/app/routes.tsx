@@ -1,29 +1,94 @@
 import type { RouteObject } from 'react-router';
+import { GuestOnly, RequireAuth } from '../auth/RequireAuth';
 import { AppShell } from '../layout/AppShell';
-import { DesignSystemPage } from '../pages/DesignSystemPage';
-import { MorePage } from '../pages/MorePage';
+import { AuthLayout } from '../layout/AuthLayout';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { OverviewPage } from '../pages/OverviewPage';
-import { SectionPage } from '../pages/SectionPage';
-import { SettingsPage } from '../pages/SettingsPage';
-import { DESIGN_SYSTEM_PATH, MORE_PATH } from './navigation';
+import { pages } from './pages';
+import {
+  BUDGET_PATH,
+  DESIGN_SYSTEM_PATH,
+  HOUSEHOLD_PATH,
+  JOIN_PATH,
+  LOCATIONS_PATH,
+  LOGIN_PATH,
+  MEAL_PLAN_PATH,
+  MORE_PATH,
+  NEW_ITEM_PATH,
+  NEW_PURCHASE_PATH,
+  NOTIFICATIONS_PATH,
+  PRIVACY_PATH,
+  PROFILE_PATH,
+  RECEIPTS_PATH,
+  RECIPE_SOURCES_PATH,
+  RECIPES_PATH,
+  REGISTER_PATH,
+  SCAN_PATH,
+  SHOPPING_LIST_PATH,
+  WASTE_PATH,
+} from './navigation';
 
 /** All routes, shared by the browser router (main.tsx) and the memory router in tests. */
 export const routes: RouteObject[] = [
   {
+    // Login and registration: no menus.
+    element: <AuthLayout />,
+    children: [
+      {
+        path: LOGIN_PATH.slice(1),
+        element: (
+          <GuestOnly>
+            <pages.LoginPage />
+          </GuestOnly>
+        ),
+      },
+      {
+        path: REGISTER_PATH.slice(1),
+        element: (
+          <GuestOnly>
+            <pages.RegisterPage />
+          </GuestOnly>
+        ),
+      },
+      // Spec 10: open both logged in and out (the page itself asks the logged-out visitor to log in).
+      { path: JOIN_PATH.slice(1), element: <pages.JoinPage /> },
+    ],
+  },
+  {
     element: <AppShell />,
     children: [
-      { index: true, element: <OverviewPage /> },
-      { path: 'matlager', element: <SectionPage section="inventory" /> },
-      { path: 'skann', element: <SectionPage section="scan" /> },
-      { path: 'oppskrifter', element: <SectionPage section="recipes" /> },
-      { path: 'handleliste', element: <SectionPage section="shoppingList" /> },
-      { path: 'budsjett', element: <SectionPage section="budget" /> },
-      { path: 'maltidsplan', element: <SectionPage section="mealPlan" /> },
-      { path: 'husholdning', element: <SectionPage section="household" /> },
-      { path: 'innstillinger', element: <SettingsPage /> },
-      { path: MORE_PATH.slice(1), element: <MorePage /> },
-      { path: DESIGN_SYSTEM_PATH.slice(1), element: <DesignSystemPage /> },
+      {
+        // Everything with user data needs a logged-in user (phase 2).
+        element: <RequireAuth />,
+        children: [
+          { index: true, element: <pages.OverviewPage /> },
+          { path: 'matlager', element: <pages.InventoryPage /> },
+          { path: NEW_ITEM_PATH.slice(1), element: <pages.NewItemPage /> },
+          { path: LOCATIONS_PATH.slice(1), element: <pages.LocationsPage /> },
+          { path: 'matlager/:itemId', element: <pages.ItemPage /> },
+          { path: SCAN_PATH.slice(1), element: <pages.ScanPage /> },
+          { path: RECIPES_PATH.slice(1), element: <pages.RecipesPage /> },
+          { path: RECIPE_SOURCES_PATH.slice(1), element: <pages.RecipeSourcesPage /> },
+          { path: 'oppskrifter/:recipeId', element: <pages.RecipePage /> },
+          { path: SHOPPING_LIST_PATH.slice(1), element: <pages.ShoppingListPage /> },
+          { path: BUDGET_PATH.slice(1), element: <pages.BudgetPage /> },
+          { path: NEW_PURCHASE_PATH.slice(1), element: <pages.NewPurchasePage /> },
+          { path: 'budsjett/kjop/:purchaseId', element: <pages.PurchasePage /> },
+          { path: 'budsjett/kjop/:purchaseId/rett', element: <pages.EditPurchasePage /> },
+          { path: RECEIPTS_PATH.slice(1), element: <pages.ReceiptsPage /> },
+          { path: `${RECEIPTS_PATH.slice(1)}/:receiptId`, element: <pages.ReceiptPage /> },
+          { path: MEAL_PLAN_PATH.slice(1), element: <pages.MealPlanPage /> },
+          { path: WASTE_PATH.slice(1), element: <pages.WastePage /> },
+          { path: NOTIFICATIONS_PATH.slice(1), element: <pages.NotificationsPage /> },
+          { path: HOUSEHOLD_PATH.slice(1), element: <pages.HouseholdPage /> },
+          { path: 'innstillinger', element: <pages.SettingsPage /> },
+          { path: MORE_PATH.slice(1), element: <pages.MorePage /> },
+          { path: PROFILE_PATH.slice(1), element: <pages.ProfilePage /> },
+        ],
+      },
+      // Public: the design system is a demo page without user data, and 404 should never redirect.
+      { path: DESIGN_SYSTEM_PATH.slice(1), element: <pages.DesignSystemPage /> },
+      // Spec 13 (FR-PRIV-003): the privacy notice, logged in or not.
+      { path: PRIVACY_PATH.slice(1), element: <pages.PrivacyPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

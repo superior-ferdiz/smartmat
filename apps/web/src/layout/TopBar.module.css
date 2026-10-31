@@ -25,3 +25,9 @@
   background: var(--color-surface-sunken);
   color: var(--color-text);
 }
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}

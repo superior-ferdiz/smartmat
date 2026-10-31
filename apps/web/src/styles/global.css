@@ -48,6 +48,31 @@ a:hover {
   outline-offset: var(--focus-offset);
 }
 
+/*
+ * Spec 13 (WCAG 2.4.7): in Chromium the calendar button inside a date field is its own Tab stop, and
+ * :focus-visible does not match there – the field had no ring at all on that stop. :focus-within does.
+ */
+input[type='date']:focus-within {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/*
+ * Spec 13 (WCAG 2.4.11, focus not obscured): on phones the top bar and the bottom menu are sticky. When Tab moves
+ * focus to something off screen, the browser scrolls it into view – without this, right behind the bottom menu.
+ */
+html {
+  scroll-padding-top: calc(var(--topbar-logo-height) + var(--space-5));
+  scroll-padding-bottom: calc(var(--bottomnav-height) + var(--space-4));
+}
+
+@media (min-width: 900px) {
+  html {
+    scroll-padding-top: var(--space-4);
+    scroll-padding-bottom: var(--space-4);
+  }
+}
+
 /* Headings receive focus after navigation (so screen readers announce the new page); no ring needed. */
 h1[tabindex='-1']:focus {
   outline: none;

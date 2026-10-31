@@ -1,0 +1,13 @@
+
+> smartmat@0.1.0 test:api
+> vitest run --config apps/api/vitest.db.config.ts
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+
+ Test Files  11 passed (11)
+      Tests  195 passed (195)
+   Start at  22:08:01
+   Duration  121.50s (transform 700ms, setup 0ms, import 5.39s, tests 111.38s, environment 1ms)
+

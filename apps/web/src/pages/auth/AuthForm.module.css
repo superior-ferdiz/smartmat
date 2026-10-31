@@ -1,0 +1,27 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.switch {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.switch a {
+  font-weight: var(--font-weight-semibold);
+}
+
+.note {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Spec 13: "Bekreft" and "Tilbake" under each other on the code step. */
+.actions {
+  display: grid;
+  gap: var(--space-2);
+}

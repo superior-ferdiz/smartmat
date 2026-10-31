@@ -1,0 +1,18 @@
+$ npm run test:api
+# Kjørt 2026-10-21 18:16:48 UTC, Node v22.14.0, npm 11.1.0
+
+
+> smartmat@0.1.0 test:api
+> vitest run --config apps/api/vitest.db.config.ts
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+
+ Test Files  9 passed (9)
+      Tests  158 passed (158)
+   Start at  18:16:49
+   Duration  83.63s (transform 601ms, setup 0ms, import 4.46s, tests 74.83s, environment 1ms)
+
+
+# exit code: 0

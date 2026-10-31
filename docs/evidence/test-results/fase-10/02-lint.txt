@@ -1,0 +1,7 @@
+$ npm run lint
+Kjørt 2026-10-25T01:50:00Z
+
+> smartmat@0.1.0 lint
+> eslint .
+
+Avslutningskode: 0

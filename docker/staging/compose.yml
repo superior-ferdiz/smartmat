@@ -1,0 +1,93 @@
+# The closed test environment on smartmat.risansolutions.no (ADR-0015).
+#
+#   cp docker/staging/.env.staging.example docker/staging/.env.staging   # fill in, never commit
+#   docker compose -f docker/staging/compose.yml --env-file docker/staging/.env.staging up -d --build
+#
+# This machine also runs other projects. Everything here is named "smartmat-staging". The only shared thing is
+# the external network `smartmat-edge` (ADR-0022), which has only the Caddy container and the app on it: Caddy
+# reaches the app by its container name, and the app can believe X-Forwarded-For from that network alone.
+# Create it once: docker network create --subnet 192.168.252.0/28 --label smartmat=edge smartmat-edge
+# No port is published. The database and the receipt worker are on an internal network without internet access.
+name: smartmat-staging
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: smartmat-staging-db
+    environment:
+      POSTGRES_USER: smartmat
+      POSTGRES_PASSWORD: ${STAGING_POSTGRES_PASSWORD:?Set STAGING_POSTGRES_PASSWORD in docker/staging/.env.staging}
+      POSTGRES_DB: smartmat
+    volumes:
+      - smartmat_staging_pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U smartmat -d smartmat']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/staging/Dockerfile
+      # The registration link in the web app follows the API's switch, so the two cannot disagree.
+      args:
+        VITE_REGISTRATION_OPEN: ${REGISTRATION_OPEN:-false}
+    image: smartmat-staging-app
+    container_name: smartmat-staging-app
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env.staging
+    environment:
+      DATABASE_URL: postgresql://smartmat:${STAGING_POSTGRES_PASSWORD}@db:5432/smartmat
+    # Spec 13 (NFR-OPS-003, ADR-0021): the backup check's status file (times only), read-only, for the banner.
+    # The backups themselves stay on the host (/var/backups/smartmat) and never enter a container.
+    volumes:
+      - /var/lib/smartmat-backup:/run/smartmat-backup:ro
+    networks:
+      - internal
+      - smartmat-edge
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # Spec 08: reads receipts from the job queue with Tesseract. Same image as the app, but only on the internal
+  # network: it never needs the internet, so an image can never be sent anywhere from here. One receipt at a time.
+  worker:
+    image: smartmat-staging-app
+    container_name: smartmat-staging-worker
+    depends_on:
+      app:
+        condition: service_started
+    env_file: .env.staging
+    environment:
+      DATABASE_URL: postgresql://smartmat:${STAGING_POSTGRES_PASSWORD}@db:5432/smartmat
+    command: ['npm', 'run', 'worker', '-w', '@smartmat/api']
+    networks:
+      - internal
+    restart: unless-stopped
+    # ADR-0017: Tesseract used about 50 MB per receipt in the pilot; Node and sharp come on top.
+    mem_limit: 512m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  smartmat_staging_pgdata:
+    name: smartmat_staging_pgdata
+
+networks:
+  internal:
+    name: smartmat-staging-internal
+    internal: true
+  smartmat-edge:
+    external: true

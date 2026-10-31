@@ -1,0 +1,69 @@
+{
+  "slug": "fylt-paprika",
+  "title": "Fylt paprika",
+  "description": "Røde paprikaer fylt med kjøttdeig og ris, stekt i ovnen.",
+  "servings": 3,
+  "prepMinutes": 20,
+  "cookMinutes": 45,
+  "tags": ["middag", "kjøttdeig", "ovn"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Stuffed Peppers",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4514024",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir ikke antall porsjoner. KI har satt 3 porsjoner (2 paprikaer per person). Forberedelsestiden er anslått av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "ris",
+      "amount": "50",
+      "unit": "g",
+      "text": "50 g parboiled ris"
+    },
+    {
+      "ingredient": "kjottdeig",
+      "amount": "500",
+      "unit": "g",
+      "text": "500 g kjøttdeig (storfe, lam eller svin)"
+    },
+    {
+      "ingredient": "paprika",
+      "amount": "6",
+      "unit": "stk",
+      "text": "6 store røde paprikaer"
+    },
+    {
+      "ingredient": "egg",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 egg"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Pepper"
+    },
+    {
+      "ingredient": "paprikapulver",
+      "text": "Paprikapulver"
+    },
+    {
+      "ingredient": "olje",
+      "text": "Olje"
+    }
+  ],
+  "steps": [
+    "Kok risen.",
+    "Sett ovnen på 200 °C, og sett inn en ildfast form med olje i bunnen (eller vann eller tynn tomatsaus).",
+    "Skjær ut stilken og frøene, så paprikaene blir som små kopper.",
+    "Bland ris, egg og kjøttdeig, og krydre med salt, pepper og paprikapulver.",
+    "Fyll paprikaene, sett dem i formen og stek dem i 45 minutter.",
+    "Server med grønn salat og tomatsaus."
+  ]
+}

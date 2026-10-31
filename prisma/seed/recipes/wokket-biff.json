@@ -1,0 +1,100 @@
+{
+  "slug": "wokket-biff",
+  "title": "Wokket biff med grønnsaker",
+  "description": "Tynne skiver biff wokket med løk, gulrot og vårløk i en saus av soya og honning. Passer til ris eller nudler.",
+  "servings": 2,
+  "prepMinutes": 15,
+  "cookMinutes": 15,
+  "tags": ["middag", "storfe", "wok"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Beef Stir-Fry",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4523801",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Tidene er anslått av KI (originalen oppgir ingen). Hvitløken og vårløken er regnet om fra mål til antall og gram av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "storfekjott",
+      "amount": "170",
+      "unit": "g",
+      "text": "170–225 g entrecôte, skåret i tynne skiver på tvers av fibrene"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt etter smak"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Nykvernet sort pepper"
+    },
+    {
+      "ingredient": "soyasaus",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss soyasaus"
+    },
+    {
+      "ingredient": "chili",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1–2 thailandske chilier, finhakket"
+    },
+    {
+      "ingredient": "hvitlok",
+      "amount": "3",
+      "unit": "stk",
+      "text": "1 ss finhakket hvitløk (ca. 3 fedd)"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1/2",
+      "unit": "stk",
+      "text": "½ stor løk, finhakket"
+    },
+    {
+      "ingredient": "peanottolje",
+      "text": "Peanøttolje til steking"
+    },
+    {
+      "ingredient": "gulrot",
+      "amount": "1/2",
+      "unit": "stk",
+      "text": "½ stor gulrot, skrelt og skåret i fyrstikker"
+    },
+    {
+      "ingredient": "varlok",
+      "amount": "25",
+      "unit": "g",
+      "text": "ca. 0,6 dl vårløk i strimler"
+    },
+    {
+      "ingredient": "honning",
+      "amount": "2",
+      "unit": "ss",
+      "text": "2 ss honning"
+    },
+    {
+      "ingredient": "eddik",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss riseddik"
+    },
+    {
+      "ingredient": "sesamfro",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss ristede sesamfrø"
+    }
+  ],
+  "steps": [
+    "Pensle bunnen av en wok eller stor stekepanne med olje, og varm den opp på middels høy varme. Fres løk og hvitløk til hvitløken er gyllen. Ta det ut og hold det varmt.",
+    "Strø salt og nykvernet pepper på biffskivene. Ha 4 skiver i den varme woken, og stek til de er godt brune og ikke lenger rosa. Ta dem ut, og gjenta med resten av kjøttet.",
+    "Ha chili, gulrot, soyasaus, honning, eddik og vårløk i woken. Wok til grønnsakene er lett brunet i kantene.",
+    "Ha løken, hvitløken og kjøttet tilbake i woken, og vend alt sammen til det er varmt.",
+    "Strø over ristede sesamfrø før servering."
+  ]
+}

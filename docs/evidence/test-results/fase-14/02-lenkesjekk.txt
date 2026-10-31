@@ -1,0 +1,28 @@
+$ python3 -I links.py   # lenkesjekk over alle .md-filer i repoet (skriptet ligger utenfor repoet, innholdet under)
+# 2026-10-27T19:44:41Z, etter siste endring i dokumentasjonen. Første kjøring samme dag: 517 lenker, 1 brutt (kapittel 12, rettet).
+526 lenker i 81 filer, 0 feil
+# exit code: 0
+
+# Skriptet:
+import re,os,subprocess,unicodedata
+files=[f for f in subprocess.run(['git','ls-files','-co','--exclude-standard','*.md'],capture_output=True,text=True).stdout.split() if not f.startswith('node_modules')]
+def slug(h):
+    h=h.strip().lower()
+    h=re.sub(r'[^\w\- ]','',h,flags=re.U)
+    return h.replace(' ','-')
+bad=0;n=0
+for f in files:
+    s=open(f,encoding='utf-8').read()
+    for m in re.finditer(r'\]\(([^)\s]+)\)',s):
+        t=m.group(1)
+        if re.match(r'^[a-z]+:',t) or t.startswith('#') and False: continue
+        if t.startswith('http') or t.startswith('mailto'): continue
+        n+=1
+        path,_,frag=t.partition('#')
+        target=os.path.normpath(os.path.join(os.path.dirname(f),path)) if path else f
+        if not os.path.exists(target):
+            print('MISSING',f,t); bad+=1; continue
+        if frag and target.endswith('.md'):
+            heads=[slug(h) for h in re.findall(r'^#+ (.*)$',open(target,encoding='utf-8').read(),re.M)]
+            if frag not in heads: print('ANCHOR',f,t); bad+=1
+print(f'{n} lenker i {len(files)} filer, {bad} feil')

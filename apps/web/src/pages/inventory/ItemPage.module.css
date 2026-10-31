@@ -1,0 +1,71 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-xl);
+}
+
+/* Batches: one column on phones, two side by side from 900px. */
+.batches {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 900px) {
+  .batches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.facts dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.advice {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* History as a timeline: a line on the left, one entry per event. */
+.history {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 0 0 var(--space-4);
+  border-left: 2px solid var(--color-border);
+  list-style: none;
+}
+
+.event {
+  padding-block: var(--space-2);
+}
+
+.eventText {
+  font-weight: var(--font-weight-medium);
+}

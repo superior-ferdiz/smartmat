@@ -1,0 +1,50 @@
+/* Spec 13 (FR-AUTH-010): the two-factor card on the profile page. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.text {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+
+.steps {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+/* The key in groups of four, large and in a fixed-width font: it is typed into another app by hand. */
+.secret {
+  display: block;
+  margin: var(--space-2) 0;
+  font-size: var(--font-size-lg);
+  letter-spacing: 0.05em;
+  overflow-wrap: anywhere;
+}
+
+/* Recovery codes: two columns from 600 px. */
+.codes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-lg);
+}
+
+@media (min-width: 600px) {
+  .codes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

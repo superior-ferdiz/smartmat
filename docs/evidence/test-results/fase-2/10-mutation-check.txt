@@ -1,0 +1,25 @@
+$ bash docs/evidence/test-results/fase-2/10-mutation-check.sh
+# Kjørt 2026-10-20 13:30:57 UTC, Node v22.14.0, npm 11.1.0
+
+1. CSRF-token sjekkes ikke
+    endret: apps/api/src/plugins/auth.ts
+    resultat: Tests  3 failed | 44 passed (47)
+2. Origin sjekkes ikke
+    endret: apps/api/src/plugins/origin.ts
+    resultat: Tests  3 failed | 44 passed (47)
+3. Medlemskap i husholdningen sjekkes ikke
+    endret: apps/api/src/authz/household.ts
+    resultat: Tests  1 failed | 46 passed (47)
+4. Kontoen sperres aldri
+    endret: apps/api/src/modules/auth/service.ts
+    resultat: Tests  1 failed | 46 passed (47)
+5. X-Forwarded-For blir trodd
+    endret: apps/api/src/app.ts
+    resultat: Tests  1 failed | 46 passed (47)
+6. Standard logging av forespørsler (med IP-adresse)
+    endret: apps/api/src/app.ts
+    resultat: Tests  1 failed | 46 passed (47)
+Uendret kode:
+    Tests  47 passed (47)
+
+# exit code: 0

@@ -1,13 +1,29 @@
 {
   "app": {
     "name": "SmartMat",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "staging": {
+      "title": "Test environment.",
+      "text": "Use test data only. Do not enter real allergies or other real information."
+    },
+    "backup": {
+      "stale": "The backup is too old.",
+      "failed": "The backup failed.",
+      "unknown": "We do not know whether the backup works.",
+      "newest": "Newest copy: {{when}}. Tell the team.",
+      "none": "There is no copy. Tell the team."
+    },
+    "footer": {
+      "privacy": "Privacy"
+    }
   },
   "common": {
     "loading": "Loading …",
     "retry": "Try again",
     "close": "Close",
-    "sampleData": "Sample data"
+    "sampleData": "Sample data",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "languages": {
     "nb-NO": "Norsk (bokmål)",
@@ -28,8 +44,12 @@
       "budget": "Purchases & budget",
       "mealPlan": "Meal plan",
       "household": "Household",
-      "settings": "Settings"
-    }
+      "settings": "Settings",
+      "waste": "Food waste"
+    },
+    "notifications": "Notifications",
+    "notificationsUnseen_one": "Notifications, {{count}} new",
+    "notificationsUnseen_other": "Notifications, {{count}} new"
   },
   "form": {
     "optional": "optional",
@@ -44,7 +64,7 @@
     "error": "Error"
   },
   "toast": {
-    "regionLabel": "Notifications"
+    "regionLabel": "Messages"
   },
   "states": {
     "error": {
@@ -68,74 +88,187 @@
       "tooLong": "The name can be at most 50 characters."
     },
     "itemName": {
-      "required": "Enter the name of the item."
+      "required": "Enter the name of the item.",
+      "tooLong": "The name can be at most 100 characters."
     },
     "category": {
       "required": "Choose a category."
     },
     "date": {
       "invalid": "Enter a valid date."
+    },
+    "email": {
+      "required": "Enter your email address.",
+      "invalid": "Enter a valid email address, for example name@example.com.",
+      "tooLong": "The email address can be at most 254 characters."
+    },
+    "password": {
+      "required": "Enter the password.",
+      "tooShort": "The password must be at least 12 characters.",
+      "tooLong": "The password can be at most 128 characters."
+    },
+    "profile": {
+      "nothingToUpdate": "There is nothing to save."
+    },
+    "deleteAccount": {
+      "confirmRequired": "Tick the box to confirm that you understand the account is deleted for good."
+    },
+    "nothingToUpdate": "There is nothing to save.",
+    "unit": {
+      "required": "Choose a unit."
+    },
+    "location": {
+      "required": "Choose a storage place.",
+      "notFound": "That storage place no longer exists. Choose another.",
+      "kindRequired": "Choose a kind of place."
+    },
+    "locationName": {
+      "required": "Enter a name.",
+      "tooLong": "The name can be at most 50 characters."
+    },
+    "quantity": {
+      "required": "Enter an amount.",
+      "invalid": "Write the amount as a number, for example 1.5.",
+      "notWhole": "The amount is too precise. Use whole grams, millilitres or pieces.",
+      "notPositive": "The amount must be more than 0.",
+      "tooLarge": "The amount is too large.",
+      "moreThanLeft": "There is not that much left in the batch."
+    },
+    "expiry": {
+      "kindRequired": "Choose whether the date is best before or use by.",
+      "dateRequired": "Enter the date."
+    },
+    "wasteReason": {
+      "required": "Choose why the food was thrown away."
+    },
+    "purchase": {
+      "dateRequired": "Enter the date of purchase.",
+      "dateTooEarly": "The date cannot be before the year 2000.",
+      "dateInFuture": "The date of purchase cannot be in the future.",
+      "lineTooLarge": "A line can be at most 100 000 kr.",
+      "totalTooLarge": "A purchase can be at most 1 000 000 kr.",
+      "linesOrTotal": "Add at least one line, or enter the total.",
+      "totalWithLines": "A purchase with lines gets its total from the lines. Do not enter a total as well.",
+      "tooManyLines": "A purchase can have at most 100 lines.",
+      "nonFoodCategory": "Non-food has no food category.",
+      "nonFoodInventory": "Only food can go into the inventory.",
+      "itemNotFound": "The item no longer exists. Choose another one.",
+      "unknownLine": "The line no longer exists. Reload the page.",
+      "alreadyInInventory": "This line is already in the inventory."
+    },
+    "storeName": {
+      "tooLong": "The shop name can be at most 100 characters."
+    },
+    "lineDescription": {
+      "required": "Enter what you bought.",
+      "tooLong": "The description can be at most 100 characters."
+    },
+    "lineKind": {
+      "required": "Choose whether the line is food or not."
+    },
+    "month": {
+      "invalid": "Invalid month."
+    },
+    "budget": {
+      "tooSmall": "The budget must be at least 1 kr.",
+      "tooLarge": "The budget can be at most 1 000 000 kr."
+    },
+    "allergen": {
+      "unknown": "Unknown allergen.",
+      "duplicate": "The same allergen is listed twice."
+    },
+    "ingredient": {
+      "unknown": "Choose an ingredient from the list."
+    },
+    "shoppingText": {
+      "required": "Enter what you need to buy.",
+      "tooLong": "The text can be at most 100 characters."
+    },
+    "shopping": {
+      "nothingSelected": "Choose at least one item.",
+      "tooManyLines": "You can add at most 100 lines at a time.",
+      "duplicateLine": "The same item is listed twice.",
+      "notInRecipe": "The ingredient is not in the recipe. Reload the page.",
+      "itemRequired": "Choose an item.",
+      "itemNotFound": "The item no longer exists. Choose another one."
+    },
+    "barcode": {
+      "required": "Enter the barcode.",
+      "digits": "The barcode can only contain digits.",
+      "length": "The barcode must have 8, 12, 13 or 14 digits.",
+      "checkDigit": "The barcode is not valid. Check that all the digits are right."
+    },
+    "receipt": {
+      "imageRequired": "Choose a photo of the receipt."
+    },
+    "mealPlan": {
+      "meal": "Choose a meal.",
+      "noteRequired": "Write a text.",
+      "noteTooLong": "The text can have at most 100 characters.",
+      "servings": "Servings must be a whole number from 1 to 50.",
+      "recipe": "Choose a recipe.",
+      "recipeNotFound": "The recipe was not found. It may have been removed.",
+      "range": "The end date cannot be before the start date.",
+      "rangeTooLong": "The period can be at most six weeks.",
+      "notARecipe": "Only recipes have servings.",
+      "notANote": "Only notes can be changed like this.",
+      "notInPlan": "The plan does not need this ingredient in the period."
+    },
+    "household": {
+      "nameRequired": "Enter a name for the household.",
+      "nameTooLong": "The name can be at most 100 characters.",
+      "invitationInvalid": "This is not a valid invitation link.",
+      "memberRequired": "Choose a member."
+    },
+    "notification": {
+      "key": "Invalid notification.",
+      "keys": "Invalid list of notifications.",
+      "toggle": "Choose on or off.",
+      "daysBefore": "Choose between 0 and 7 days."
+    },
+    "twoFactor": {
+      "codeRequired": "Enter the code.",
+      "codeInvalid": "The code is 6 digits from the app, or a recovery code of 10 characters.",
+      "totpInvalid": "Enter the 6 digits the app shows."
     }
   },
   "pages": {
     "overview": {
       "title": "Overview",
       "lead": "What matters in your kitchen right now.",
-      "sampleNoticeTitle": "This is sample data",
-      "sampleNoticeText": "The app is not connected to a database yet. The items and numbers below are made up to show how the overview will look.",
       "expiring": {
         "title": "Expiring soon",
         "seeAll": "See the whole pantry",
-        "items": {
-          "chicken": {
-            "name": "Chicken breast",
-            "meta": "400 g · Fridge",
-            "status": "Use by today",
-            "advice": "Use it today, or freeze it before the day is over."
-          },
-          "mince": {
-            "name": "Minced beef",
-            "meta": "400 g · Fridge",
-            "status": "Use-by date passed",
-            "advice": "Do not eat. A use-by date is about food safety."
-          },
-          "milk": {
-            "name": "Semi-skimmed milk",
-            "meta": "1 l · Fridge",
-            "status": "Best before tomorrow",
-            "advice": "Best before often means good after. Look, smell and taste."
-          },
-          "yoghurt": {
-            "name": "Natural yoghurt",
-            "meta": "500 g · Fridge · Opened",
-            "status": "Best before 2 days ago",
-            "advice": "Often still fine. Look, smell and taste before throwing it out."
-          }
-        }
+        "none": "Nothing expires in the next three days."
       },
       "budget": {
         "title": "Food budget this month",
-        "spent": "Spent",
-        "remaining": "Left",
-        "monthly": "Budget",
-        "usedPercent": "{{percent}} % of the monthly budget is used",
-        "open": "See purchases and budget"
+        "open": "See purchases and budget",
+        "noBudget": "You have not set a budget.",
+        "setBudget": "Set budget"
       },
       "actions": {
         "title": "Quick actions",
         "scan": "Scan an item",
         "addItem": "Add item",
-        "addPurchase": "Register purchase"
+        "addPurchase": "Register purchase",
+        "shoppingList": "Shopping list",
+        "shoppingListCount_one": "Shopping list ({{count}} item)",
+        "shoppingListCount_other": "Shopping list ({{count}} items)"
       },
       "dinner": {
         "title": "Dinner suggestion",
-        "recipe": "Chicken stir-fry with vegetables",
-        "reason": "Uses the chicken breast that must be used today. You have 4 of 6 ingredients."
+        "open": "See all recipes",
+        "noRecipes": "No recipes yet.",
+        "noMatch": "No recipe fits what you have yet. Add food to the inventory to get suggestions."
       },
       "waste": {
         "title": "Thrown out this month",
-        "text_one": "{{count}} item thrown out (estimated value)",
-        "text_other": "{{count}} items thrown out (estimated value)"
+        "count_one": "{{count}} item thrown away this month",
+        "count_other": "{{count}} items thrown away this month",
+        "unknown_one": "{{count}} of them without a known value",
+        "unknown_other": "{{count}} of them without a known value",
+        "open": "See the food waste figures"
       }
     },
     "inventory": {
@@ -144,12 +277,10 @@
       "emptyText": "Here you will add items, see what expires soon, and record what you use and throw out."
     },
     "scan": {
-      "lead": "Add items quickly using the barcode.",
-      "emptyTitle": "Scanning arrives in phase 7",
-      "emptyText": "Here you will scan a barcode with the camera or type it in. You always confirm before anything is saved."
+      "lead": "Scan the barcode or type it in. You always check and confirm before anything goes into your pantry."
     },
     "recipes": {
-      "lead": "Dinner ideas based on what you already have.",
+      "lead": "Ranked by what you have at home, what needs using first and what is missing.",
       "emptyTitle": "Recipes arrive in phase 5",
       "emptyText": "Here you will find Norwegian recipes, ranked by what you have at home and what must be used first."
     },
@@ -159,19 +290,13 @@
       "emptyText": "Here you will keep a shopping list, add missing ingredients from a recipe, and move items straight into the pantry."
     },
     "budget": {
-      "lead": "What you spend on food, and how much is left this month.",
-      "emptyTitle": "Purchases and budget arrive in phase 4",
-      "emptyText": "Here you will register purchases, set a monthly food budget and see spending per category."
+      "lead": "What you spend on food, and how much is left this month."
     },
     "mealPlan": {
-      "lead": "Plan the week's dinners.",
-      "emptyTitle": "The meal plan comes later",
-      "emptyText": "The meal plan is planned as an optional extension after the first submission."
+      "lead": "Plan the week, see what is missing, and put it on the shopping list."
     },
     "household": {
-      "lead": "Share the pantry and shopping list with the people you live with.",
-      "emptyTitle": "Households come later",
-      "emptyText": "Sharing with others is planned after the first submission. Until then, each user has their own household."
+      "lead": "“{{name}}”: share inventory, purchases, budget, shopping list and meal plan with the people you live with."
     },
     "more": {
       "lead": "More parts of SmartMat.",
@@ -185,7 +310,9 @@
         "budget": "Food budget and registered purchases",
         "mealPlan": "The week's dinners",
         "household": "Sharing with others",
-        "settings": "Language, theme and account"
+        "settings": "Language, theme, notifications and account",
+        "waste": "What is thrown away, and why",
+        "privacy": "What we store, and your rights"
       }
     },
     "settings": {
@@ -193,7 +320,7 @@
       "saved": "Setting saved",
       "appearance": "Language and appearance",
       "language": "Language",
-      "languageHint": "Only applies to this browser.",
+      "languageHint": "Saved to your account.",
       "theme": "Theme",
       "themeHint": "Automatic follows your device setting.",
       "themes": {
@@ -202,9 +329,30 @@
         "dark": "Dark"
       },
       "account": "Account",
-      "accountLater": "Login, profile and account deletion arrive in phase 2.",
       "developer": "For developers",
-      "developerText": "Overview of the colours, typography and components used in SmartMat."
+      "developerText": "Overview of the colours, typography and components used in SmartMat.",
+      "loggedInAs": "Logged in as {{name}} ({{email}}).",
+      "openProfile": "Profile and account",
+      "saveFailed": "Could not save the setting. Try again.",
+      "notifications": {
+        "title": "Notifications",
+        "lead": "Notifications are only shown in the app, and these choices apply to all your households.",
+        "loading": "Loading notification settings …",
+        "useBy": "Use-by date",
+        "useByHint": "Before the date, on the day and the two days after.",
+        "bestBefore": "Best before",
+        "bestBeforeHint": "Before the date and on the day.",
+        "daysBefore": "When should the notification come?",
+        "daysBeforeHint": "Applies to both use-by and best-before dates.",
+        "daysZero": "Only on the day",
+        "days_one": "{{count}} day before",
+        "days_other": "{{count}} days before",
+        "budget": "Food budget",
+        "budgetHint": "When 80 % and when 100 % of the month’s budget is used.",
+        "shopping": "Shopping list",
+        "shoppingHint": "When others in the household add something.",
+        "save": "Save notifications"
+      }
     },
     "notFound": {
       "title": "Page not found",
@@ -280,6 +428,1465 @@
         "loading": "Loading the pantry …"
       },
       "retried": "Trying again (example)"
+    },
+    "profile": {
+      "title": "Profile",
+      "lead": "Name, language, allergies, password and account.",
+      "about": "About you",
+      "save": "Save",
+      "saved": "Your profile is saved",
+      "password": {
+        "title": "Change password",
+        "current": "Current password",
+        "new": "New password",
+        "otherDevices": "Changing your password logs you out on all other devices.",
+        "submit": "Change password",
+        "changed": "Password changed. Other devices have been logged out."
+      },
+      "logout": {
+        "title": "Log out",
+        "text": "Ends your login in this browser."
+      },
+      "delete": {
+        "title": "Delete account",
+        "text": "The account and households where you are alone are deleted for good with everything in them. If you own a household together with others, ownership goes to the member who has been there longest, and the household stays. This cannot be undone.",
+        "password": "Enter your password to confirm",
+        "confirm": "I understand that everything is deleted and cannot be restored",
+        "submit": "Delete my account for good",
+        "deleted": "Your account has been deleted."
+      },
+      "allergies": {
+        "title": "Allergies",
+        "text": "Choose what you cannot eat. It is only used to hide or warn about recipes. It is voluntary, and is deleted together with your account.",
+        "legend": "My allergens",
+        "save": "Save allergies",
+        "saved": "Your allergies are saved",
+        "share": {
+          "title": "Share with the household",
+          "label": "Take my allergies into account in “{{name}}”",
+          "text": "Other members see which allergens are registered in the household, but not who has them. In a small household they may still work it out. You can turn this off at any time, and it applies only to this household.",
+          "on": "Your allergies are now shared with “{{name}}”.",
+          "off": "Your allergies are no longer shared with “{{name}}”."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy notice",
+      "lead": "What SmartMat stores about you, why, for how long, and what your rights are.",
+      "draft": "Draft. This text was written with the help of AI and has not been checked by anyone with legal training. SmartMat is a student project and is so far used only by the team.",
+      "controller": {
+        "title": "Who is responsible",
+        "text": "The students Ferdinand Risan and Linus Saxe Huseby (course APP2000 at the University of South-Eastern Norway) are the controllers for SmartMat.",
+        "contact": "Contact: [contact address not filled in yet]"
+      },
+      "data": {
+        "title": "What we store",
+        "account": "Your account: e-mail address, name, language, and your password as a hash (never the password itself).",
+        "sessions": "Logins: when you logged in and last used the app, and which browser and system. Not your IP address.",
+        "content": "What you enter: inventory, purchases and shops, budget, shopping list, meal plan, waste and barcodes you have scanned.",
+        "allergies": "Allergies, if you choose to enter them. They may count as health data. They are used only to hide or warn about recipes, and others see them only if you turn on sharing with the household (without your name).",
+        "receipts": "Photos of receipts: only until you have confirmed or discarded the purchase, and never more than 7 days.",
+        "household": "In a shared household the other members see the household's data and your name."
+      },
+      "purpose": {
+        "title": "Why",
+        "text": "We use the data only to give you what the app does: keeping track of food, purchases and budget, suggesting recipes and sharing with your household. No advertising, no profiling and no selling of data.",
+        "basis": "The legal basis for allergies (special categories, GDPR Article 9) has not been finally assessed by the team yet."
+      },
+      "recipients": {
+        "title": "Who gets anything",
+        "off": "Open Food Facts gets the barcode you scan, from our server, not from your phone.",
+        "kassalapp": "Kassalapp gets the barcode, only if price lookups are switched on.",
+        "hibp": "Have I Been Pwned gets the first 5 characters of a hash of a new password, so we can refuse passwords from known data breaches. Nobody can find the password from that.",
+        "host": "The server is in Germany (EEA), with a provider that runs the machine.",
+        "none": "We use no analytics, tracking or ad networks."
+      },
+      "retention": {
+        "title": "For how long",
+        "account": "Your account and what you have entered: until you delete the account.",
+        "sessions": "Logins: expire after 14 days without use and at the latest after 30 days, and are deleted every night.",
+        "receipts": "Receipt photos and the text read from them: until the purchase is confirmed or discarded, at most 7 days.",
+        "backups": "Backups: every night, encrypted, the last 7 days. Something you have deleted may therefore remain in a copy for up to 7 days. Receipt photos are never included.",
+        "logs": "The server's log: what kind of request and when, without e-mail, name, IP address or what you have entered."
+      },
+      "rights": {
+        "title": "Your rights",
+        "access": "Access and a copy: “Download my data” on your profile gives you everything in one file.",
+        "rectify": "Rectification: you can change most things yourself in the app.",
+        "erase": "Erasure: “Delete account” on your profile deletes the account and households where you are alone, at once.",
+        "portability": "Data portability: the file from “Download my data” is in a common, machine-readable format (JSON).",
+        "withdraw": "Withdrawal: you can remove your allergies and turn off sharing at any time.",
+        "complain": "Complaints: you can complain to the Norwegian Data Protection Authority (datatilsynet.no)."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "text": "SmartMat uses only one cookie: the one that keeps you logged in. It holds a random number, not information about you."
+      },
+      "back": "Back to the app"
+    }
+  },
+  "auth": {
+    "checkingSession": "Checking your login …",
+    "sessionCheckFailed": "We could not check whether you are logged in. Check your connection and try again.",
+    "logout": "Log out",
+    "fields": {
+      "displayName": "Name",
+      "email": "Email address",
+      "password": "Password"
+    },
+    "login": {
+      "title": "Log in",
+      "lead": "Welcome back to SmartMat.",
+      "submit": "Log in",
+      "noAccount": "No account yet?",
+      "createAccount": "Create an account"
+    },
+    "register": {
+      "title": "Create an account",
+      "lead": "Keep track of your food, throw away less and stay on budget.",
+      "displayNameHint": "Shown in the app. You can change it later.",
+      "passwordHint": "At least {{min}} characters. Tip: a short sentence is easy to remember and hard to guess.",
+      "householdNote": "You get your own household when you create an account. Sharing with others comes in a later version.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in",
+      "closedLogin": "Log in"
+    },
+    "twoFactor": {
+      "title": "Enter the code",
+      "lead": "Your account has two-factor login. Open the authenticator app and enter the code for SmartMat.",
+      "code": "Code",
+      "codeHint": "6 digits from the app. If you have lost your phone, use one of your recovery codes.",
+      "submit": "Confirm",
+      "back": "Back"
+    }
+  },
+  "errors": {
+    "validation": "Something in the form needs fixing.",
+    "auth": {
+      "invalidCredentials": "Wrong email address or password. After five mistakes in a row you have to wait 15 minutes before trying again.",
+      "emailTaken": "There is already an account with this email address. Log in instead.",
+      "wrongPassword": "The password is wrong.",
+      "passwordPwned": "This password appears in known data breaches, so others may try it. Choose another one. Tip: a short sentence you have not used elsewhere.",
+      "unauthenticated": "You are no longer logged in. Please log in again.",
+      "registrationClosed": "This is a closed test environment. New accounts are made by the team.",
+      "twoFactorInvalid": "The code is wrong, or it has been used before. Wait for the next code in the app and try again. After five failures in a row you must wait 15 minutes.",
+      "twoFactorUnavailable": "Two-factor login is not available on this server right now. Tell the team.",
+      "twoFactorAlreadyOn": "Two-factor login is already on.",
+      "twoFactorNotSetUp": "Start again with “Turn on two-factor login”.",
+      "twoFactorChallengeInvalid": "The login took too long or was interrupted. Log in again."
+    },
+    "security": {
+      "forbiddenOrigin": "The request was blocked for security reasons. Reload the page and try again.",
+      "invalidCsrf": "The request was blocked for security reasons. Reload the page and try again."
+    },
+    "rateLimited": "Too many attempts in a short time. Wait a little and try again.",
+    "notFound": "We could not find what you were looking for.",
+    "internal": "Something went wrong on our side. Try again in a moment.",
+    "network": "Could not reach SmartMat. Check your connection and try again.",
+    "inventory": {
+      "notEnough": "There is not that much left. Reload the page and try again.",
+      "locationNotEmpty": "The place still has food in it. Move or use it up first.",
+      "lastLocation": "You need at least one storage place.",
+      "changedMeanwhile": "The batch was changed meanwhile. Reload the page and try again.",
+      "nothingToUndo": "There is nothing to undo.",
+      "cannotUndo": "This change can no longer be undone."
+    },
+    "purchase": {
+      "changedMeanwhile": "Something in the purchase changed meanwhile, for example an item or place that was deleted. Reload the page and try again.",
+      "editedMeanwhile": "Someone else changed this purchase while you were editing it, perhaps on another phone. Nothing you typed has been saved. Reload the page to see the changes, and edit again."
+    },
+    "shopping": {
+      "changedMeanwhile": "The shopping list was changed meanwhile, perhaps on another device. Reload the page and try again.",
+      "alreadyOnList": "The list already has a line for this item. Tick it off or remove it first."
+    },
+    "receipt": {
+      "tooLarge": "The image is too large. Use an image under 10 MB.",
+      "unsupportedType": "Use a JPEG, PNG or WebP image.",
+      "unreadable": "We could not open the image. Try taking a new one.",
+      "alreadyUploaded": "This image has already been uploaded.",
+      "busy": "Many receipts are waiting right now. Try again shortly, or enter the purchase yourself.",
+      "ocrUnavailable": "Receipt reading is not set up. Enter the purchase yourself.",
+      "notReady": "The receipt has not been read yet.",
+      "alreadyConfirmed": "The receipt is already saved as a purchase.",
+      "duplicate": "This receipt is already saved.",
+      "possibleDuplicate": "You already have a purchase with the same date and total. Is this the same purchase?",
+      "cannotRetry": "The receipt cannot be read again right now."
+    },
+    "mealPlan": {
+      "dayFull": "This day already has 20 entries. Remove something or choose another day."
+    },
+    "household": {
+      "ownerOnly": "Only the owner of the household can do this.",
+      "ownerMustTransfer": "You are the owner. Give ownership to another member before you leave the household.",
+      "cannotRemoveSelf": "You cannot remove yourself. Leave the household instead.",
+      "full": "The household is full (at most 10 members).",
+      "tooManyHouseholds": "You are already in 5 households. Leave one before you join another.",
+      "tooManyInvitations": "There are already 5 active invitations. Revoke one before you make a new one.",
+      "alreadyMember": "You are already a member of this household.",
+      "invitationInvalid": "The invitation is invalid, expired, revoked or already used. Ask for a new link.",
+      "notAMember": "Choose a member of the household."
+    },
+    "notification": {
+      "notFound": "The notification no longer exists."
+    }
+  },
+  "units": {
+    "g": "g",
+    "kg": "kg",
+    "ml": "ml",
+    "dl": "dl",
+    "l": "l",
+    "stk": "pcs"
+  },
+  "inventory": {
+    "loading": "Loading your food …",
+    "addItem": "Add item",
+    "added": "{{name}} was added",
+    "backToList": "Back to food",
+    "itemEmpty": "Empty",
+    "unknownLocation": "Unknown place",
+    "batchCount_one": "{{count}} batch",
+    "batchCount_other": "{{count}} batches",
+    "count_one": "Showing {{shown}} of {{count}} item",
+    "count_other": "Showing {{shown}} of {{count}} items",
+    "empty": {
+      "title": "Nothing here yet",
+      "text": "Add what you have in the fridge, freezer and cupboard, with the date from the pack. SmartMat can then tell you before something expires."
+    },
+    "noMatch": {
+      "title": "No items match",
+      "text": "Try another search or remove some filters."
+    },
+    "summary": {
+      "label": "Expiry",
+      "soon_one": "expires soon",
+      "soon_other": "expire soon",
+      "passed_one": "is past its date",
+      "passed_other": "are past their date",
+      "noDate_one": "has no date",
+      "noDate_other": "have no date"
+    },
+    "filters": {
+      "search": "Search",
+      "location": "Place",
+      "allLocations": "All places",
+      "category": "Category",
+      "allCategories": "All categories",
+      "status": "Expiry",
+      "sort": "Sort by",
+      "showEmpty": "Also show empty items",
+      "reset": "Clear filters",
+      "more_zero": "Filter and sort",
+      "more_one": "Filter and sort ({{count}} in use)",
+      "more_other": "Filter and sort ({{count}} in use)"
+    },
+    "statusFilters": {
+      "alle": "All",
+      "snart": "Expires soon",
+      "passert": "Past the date",
+      "uten-dato": "No date"
+    },
+    "sortOptions": {
+      "dato": "Earliest date",
+      "navn": "Name (A–Z)",
+      "nylig": "Recently added"
+    },
+    "categories": {
+      "dairy": "Dairy and eggs",
+      "meat": "Meat",
+      "fish": "Fish and seafood",
+      "fruitVeg": "Fruit and vegetables",
+      "bread": "Bread and baked goods",
+      "dryGoods": "Dry goods",
+      "canned": "Tinned food",
+      "frozen": "Frozen food",
+      "spreads": "Spreads and toppings",
+      "spicesSauces": "Spices and sauces",
+      "drinks": "Drinks",
+      "other": "Other"
+    },
+    "locationKinds": {
+      "fridge": "Fridge",
+      "freezer": "Freezer",
+      "pantry": "Cupboard",
+      "other": "Other place"
+    },
+    "baseUnits": {
+      "g": "Weight (g, kg)",
+      "ml": "Volume (ml, dl, l)",
+      "stk": "Count (pcs)"
+    },
+    "expiryKinds": {
+      "none": "No date",
+      "best_before": "Best before",
+      "use_by": "Use by"
+    },
+    "expiry": {
+      "none": "No date",
+      "bestBefore": {
+        "passed": "Best before passed",
+        "today": "Best before today",
+        "soon_one": "Best before tomorrow",
+        "soon_other": "Best before in {{count}} days",
+        "on": "Best before {{date}}"
+      },
+      "useBy": {
+        "passed": "Use-by date passed",
+        "today": "Use by today",
+        "soon_one": "Use by tomorrow",
+        "soon_other": "Use by in {{count}} days",
+        "on": "Use by {{date}}"
+      }
+    },
+    "advice": {
+      "useByPassed": "Should not be eaten. The use-by date is about food safety.",
+      "bestBeforePassed": "Often still fine. Look, smell and taste."
+    },
+    "fields": {
+      "name": "Item name",
+      "nameHint": "For example “Semi-skimmed milk” or “Chicken breast”.",
+      "category": "Category",
+      "categoryPlaceholder": "Choose a category",
+      "baseUnit": "Measured in",
+      "baseUnitHint": "Cannot be changed later.",
+      "amount": "Amount",
+      "unit": "Unit",
+      "location": "Storage place",
+      "locationPlaceholder": "Choose a place",
+      "expiryKind": "Date on the pack",
+      "expiryKindHint": "Use by is about food safety, best before is about quality.",
+      "expiryDate": "Date",
+      "price": "Price",
+      "priceHint": "For the whole pack. Used to estimate the value of food thrown away.",
+      "purchasedOn": "Bought"
+    },
+    "new": {
+      "title": "Add item",
+      "lead": "Enter what it says on the pack.",
+      "submit": "Add"
+    },
+    "item": {
+      "notFoundTitle": "Item not found",
+      "notFoundText": "It may have been deleted.",
+      "edit": "Rename",
+      "editTitle": "Edit item",
+      "delete": "Delete item",
+      "deleteTitle": "Delete {{name}}?",
+      "deleteText": "The item, all batches and the whole history are deleted. Use “Throw away” if the food was thrown away – then it counts as waste.",
+      "deleteConfirm": "Delete item",
+      "deleted": "{{name}} was deleted"
+    },
+    "batch": {
+      "title": "Batches",
+      "none": "No batches left. Add a new batch when you buy it again.",
+      "label": "Batch {{number}}",
+      "add": "Add batch",
+      "addTitle": "New batch of {{name}}",
+      "added": "The batch was added",
+      "consume": "Use",
+      "discard": "Throw away",
+      "edit": "Edit",
+      "editTitle": "Edit batch",
+      "saved": "The batch was saved",
+      "delete": "Delete",
+      "deleteTitle": "Delete this batch?",
+      "deleteText": "The batch and its history are deleted. Use “Throw away” if the food was thrown away.",
+      "deleteConfirm": "Delete batch",
+      "fromPurchase": "From purchase",
+      "openPurchase": "See the purchase"
+    },
+    "take": {
+      "all": "All of it ({{quantity}})"
+    },
+    "consume": {
+      "title": "Use {{name}}",
+      "submit": "Record use",
+      "done": "Used: {{quantity}}"
+    },
+    "discard": {
+      "title": "Throw away {{name}}",
+      "description": "What you throw away is recorded in the waste log.",
+      "reason": "Why was it thrown away?",
+      "reasonPlaceholder": "Choose a reason",
+      "value": "Value",
+      "valueHintEstimated": "If left empty, the value is estimated from the price of the pack.",
+      "valueHintUnknown": "The batch has no price. If left empty, the value is recorded as unknown.",
+      "submit": "Record waste",
+      "done": "Thrown away: {{quantity}}"
+    },
+    "wasteReasons": {
+      "expired": "Past its date",
+      "spoiled": "Spoiled or mouldy",
+      "leftovers": "Leftovers",
+      "tooMuch": "Bought too much",
+      "other": "Other"
+    },
+    "history": {
+      "title": "History",
+      "undoLast": "Undo last change",
+      "undone": "The change was undone",
+      "undoneTag": "Undone",
+      "add": "Added {{quantity}}",
+      "consume": "Used {{quantity}}",
+      "discard": "Threw away {{quantity}} ({{reason}})",
+      "move": "Moved from {{from}} to {{to}}",
+      "adjustUp": "Corrected the amount: {{quantity}} more",
+      "adjustDown": "Corrected the amount: {{quantity}} less",
+      "undo": "Undid: {{what}}",
+      "types": {
+        "add": "added",
+        "consume": "used",
+        "discard": "thrown away",
+        "move": "moved",
+        "adjust": "corrected amount",
+        "undo": "undone"
+      },
+      "valueActual": "value {{value}}",
+      "valueEstimated": "estimated value {{value}}",
+      "valueUnknown": "value unknown"
+    },
+    "locations": {
+      "manage": "Storage places",
+      "title": "Storage places",
+      "lead": "Where your food is kept. You can add your own places, like “Cellar” or “Shed”.",
+      "add": "New place",
+      "name": "Name",
+      "nameHint": "For example “Cellar”.",
+      "rename": "Rename",
+      "renameLabel": "Rename {{name}}",
+      "renameTitle": "Rename",
+      "delete": "Delete",
+      "deleteLabel": "Delete {{name}}",
+      "deleteTitle": "Delete {{name}}?",
+      "deleteText": "A place can only be deleted when it is empty. The history of items that were there is kept.",
+      "deleteConfirm": "Delete place",
+      "deleted": "The place was deleted",
+      "batchCount_one": "{{count}} batch",
+      "batchCount_other": "{{count}} batches"
+    },
+    "ingredient": {
+      "title": "Ingredient in recipes",
+      "auto": "{{name}} (automatic, from the name)",
+      "manual": "{{name}} (chosen by you)",
+      "none": "Not an ingredient (chosen by you)",
+      "ambiguous": "The name fits several ingredients ({{names}}), so the item is not linked. Choose one yourself.",
+      "unmatched": "Not linked to an ingredient.",
+      "help": "The link decides which recipes the item counts in.",
+      "change": "Change ingredient",
+      "dialogTitle": "Ingredient for {{name}}",
+      "field": "Ingredient",
+      "optionAuto": "Automatic (from the name)",
+      "optionNone": "Not an ingredient"
+    }
+  },
+  "budget": {
+    "addPurchase": "Add purchase",
+    "setBudget": "Set budget",
+    "changeBudget": "Change budget",
+    "loading": "Loading the budget …",
+    "summaryTitle": "Food budget",
+    "noBudget": "You have not set a food budget for this month.",
+    "categoriesTitle": "Spending by category",
+    "unallocated": "Not allocated (total only)",
+    "noSpending": "No food purchases this month.",
+    "nonFood": "Non-food: {{amount}}. Not counted in the food budget.",
+    "purchasesTitle": "Purchases in {{month}}",
+    "emptyTitle": "No purchases this month",
+    "emptyText": "Add a purchase to see what you spend on food.",
+    "month": {
+      "navLabel": "Choose month",
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "figures": {
+      "spent": "Spent on food",
+      "remaining": "Left",
+      "over": "Over budget by",
+      "budget": "Budget",
+      "usedPercent": "{{percent}} % of the monthly budget is used",
+      "overText": "You have used {{percent}} % of the budget and are over."
+    },
+    "dialog": {
+      "title": "Monthly food budget",
+      "description": "Applies from this month on. Earlier months keep the budget they had.",
+      "amount": "Amount per month",
+      "saved": "The budget is saved.",
+      "removed": "The budget is removed.",
+      "remove": "Remove the budget"
+    },
+    "addFromReceipt": "From a receipt"
+  },
+  "purchases": {
+    "noStore": "Unknown shop",
+    "onlyTotal": "total only",
+    "onlyTotalText": "This purchase was registered with only a total, without lines.",
+    "lineCount_one": "{{count}} line",
+    "lineCount_other": "{{count}} lines",
+    "batchCount_one": "{{count}} in the inventory",
+    "batchCount_other": "{{count}} in the inventory",
+    "total": "Total: {{amount}}",
+    "notInBudget": "Non-food – not counted in the food budget",
+    "notFoundTitle": "Purchase not found",
+    "notFoundText": "The purchase does not exist, or it has been deleted.",
+    "backToBudget": "Back to the budget",
+    "kinds": {
+      "food": "Food and drink",
+      "nonFood": "Non-food"
+    },
+    "modes": {
+      "lines": "With lines",
+      "linesHint": "Gives spending by category, and the items can go straight into the inventory.",
+      "total": "Total only",
+      "totalHint": "Quickest. Shown as “not allocated” in the overview."
+    },
+    "fields": {
+      "store": "Shop",
+      "storeHint": "For example “Rema 1000 Bø”.",
+      "date": "Date of purchase",
+      "mode": "How do you want to register the purchase?",
+      "total": "Total",
+      "totalHint": "The amount at the bottom of the receipt.",
+      "description": "What",
+      "kind": "Type",
+      "amount": "Amount",
+      "item": "Item in the inventory",
+      "itemHint": "Choose an item you already have, or make a new one with the name from the line.",
+      "newItem": "New item (name from the line)"
+    },
+    "lines": {
+      "title": "Lines",
+      "label": "Line {{number}}",
+      "add": "Add line",
+      "remove": "Remove line {{number}}",
+      "sum": "Total: {{amount}}",
+      "sumIncomplete": "(some amounts are missing or invalid)",
+      "toInventory": "Put into the inventory",
+      "linked": "Put into the inventory as “{{name}}”",
+      "inInventory": "In the inventory: {{name}}"
+    },
+    "new": {
+      "title": "Add purchase",
+      "lead": "Register a food purchase with lines or only a total.",
+      "submit": "Save the purchase",
+      "saved": "The purchase is saved.",
+      "savedWithItems_one": "The purchase is saved, and {{count}} item was put into the inventory.",
+      "savedWithItems_other": "The purchase is saved, and {{count}} items were put into the inventory."
+    },
+    "edit": {
+      "open": "Correct the purchase",
+      "title": "Correct purchase",
+      "lead": "Changes update the budget at once. Quantities in the inventory are not changed from here.",
+      "saved": "The purchase is updated.",
+      "removeUntouched": "Also remove untouched items from the inventory for the lines you removed",
+      "removeUntouchedHint": "Items that have been used, thrown away or moved always stay."
+    },
+    "delete": {
+      "open": "Delete the purchase",
+      "title": "Delete the purchase?",
+      "text": "The purchase disappears from the budget. This cannot be undone.",
+      "removeUntouched_one": "Also remove {{count}} untouched item from the inventory",
+      "removeUntouched_other": "Also remove {{count}} untouched items from the inventory",
+      "removeUntouchedHint": "Untouched means nothing has been used, thrown away, moved or corrected.",
+      "touched_one": "{{count}} item from the purchase has been used or changed and stays in the inventory.",
+      "touched_other": "{{count}} items from the purchase have been used or changed and stay in the inventory.",
+      "confirm": "Delete the purchase",
+      "done": "The purchase is deleted.",
+      "doneWithItems_one": "The purchase is deleted, and {{count}} item was removed from the inventory.",
+      "doneWithItems_other": "The purchase is deleted, and {{count}} items were removed from the inventory."
+    }
+  },
+  "recipes": {
+    "loading": "Loading recipes …",
+    "listLabel": "Recipes, best fit first",
+    "empty": {
+      "title": "No recipes yet",
+      "text": "No recipes have been added yet."
+    },
+    "noMatch": {
+      "title": "No recipe matches the search",
+      "text": "Try another search or another tag."
+    },
+    "notFound": {
+      "title": "Recipe not found",
+      "text": "It may have been removed, or the link may be wrong."
+    },
+    "backToList": "Back to the recipes",
+    "filters": {
+      "search": "Search recipes",
+      "searchHint": "Title or ingredient",
+      "tag": "Tag",
+      "allTags": "All tags",
+      "showAllergens": "Show recipes with registered allergens",
+      "reset": "Clear the search",
+      "more": "Filter ({{count}} in use)",
+      "showHidden": "Show them anyway"
+    },
+    "count": "{{shown}} of {{count}} recipes",
+    "hiddenByAllergens_one": "{{count}} recipe is hidden because an ingredient has a registered allergen (yours or the household's).",
+    "hiddenByAllergens_other": "{{count}} recipes are hidden because an ingredient has a registered allergen (yours or the household's).",
+    "card": {
+      "have": "Have {{enough}} of {{required}}",
+      "missing_one": "{{count}} missing",
+      "missing_other": "{{count}} missing",
+      "expiring_one": "{{count}} going off soon",
+      "expiring_other": "{{count}} going off soon"
+    },
+    "score": "{{points}} points",
+    "points": "+{{points}}",
+    "total": "Total",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "servings_one": "{{count}} serving",
+    "servings_other": "{{count}} servings",
+    "testData": "Test data",
+    "facts": {
+      "time": "Time",
+      "servings": "Servings",
+      "score": "Score"
+    },
+    "ingredients": "Ingredients",
+    "steps": "Method",
+    "whyTitle": "Why it ranks here",
+    "whyText": "Up to 100 points for what you have (enough counts fully, some counts half), and 10 points for each of up to three ingredients that are going off soon. Staples and optional ingredients do not count.",
+    "writtenBy": "Written by {{names}}",
+    "license": "Licence: {{license}}",
+    "groups": {
+      "have": "Have",
+      "short": "Too little or unknown amount",
+      "missing": "Missing",
+      "staple": "Staples"
+    },
+    "line": {
+      "have": "You have {{amount}}",
+      "approx": "about {{amount}}",
+      "notEnough": "You have {{have}}, missing {{missing}}",
+      "unknownAmount": "You have {{items}}, but the amount cannot be compared",
+      "staple": "Staple – check that you have it",
+      "optional": "optional",
+      "fromItems": "From the inventory: {{items}}",
+      "useByExcluded": "You have {{items}} past its use-by date. It is not counted, and should not be eaten."
+    },
+    "reasons": {
+      "coverage": "You have enough of {{enough}} of {{required}} ingredients",
+      "coveragePartial": "You have enough of {{enough}} of {{required}} ingredients, and some of {{partial}}",
+      "nothing": "You have none of the ingredients",
+      "expiring": "{{item}}: {{status}}",
+      "missing": "Missing: {{names}}"
+    },
+    "allergens": {
+      "title": "Allergens",
+      "contains": "Contains {{list}}",
+      "from": "{{allergen}}: {{ingredients}}",
+      "disclaimer": "The allergen information is a guide and may be incomplete. Always check the ingredient list on the products you use.",
+      "noneRegistered": "None of your registered allergens are registered for the ingredients.",
+      "noUserAllergens": "You have not registered any allergens.",
+      "register": "Register allergens",
+      "household": {
+        "contains": "Contains {{list}} (registered in the household)",
+        "box": "Registered in the household: {{list}}"
+      }
+    },
+    "allergenNames": {
+      "gluten": "gluten",
+      "crustaceans": "crustaceans",
+      "egg": "egg",
+      "fish": "fish",
+      "peanuts": "peanuts",
+      "soy": "soy",
+      "milk": "milk",
+      "nuts": "nuts",
+      "celery": "celery",
+      "mustard": "mustard",
+      "sesame": "sesame",
+      "sulphites": "sulphites",
+      "lupin": "lupin",
+      "molluscs": "molluscs"
+    },
+    "aiDraft": "AI draft",
+    "origin": {
+      "title": "Source and licence",
+      "source": "Source:",
+      "fromSite": "from {{site}}, written by {{authors}}",
+      "license": "Licence:",
+      "adaptation": {
+        "none": "Not changed",
+        "translated": "Translated",
+        "adapted": "Translated and adapted"
+      },
+      "withAi": "with AI",
+      "retrieved": "Retrieved {{date}}",
+      "changes": "Changed (in Norwegian): {{note}}",
+      "aiDraft": "AI draft – not checked by the team. Amounts, times and allergens may be wrong.",
+      "reviewed": "Checked by {{names}} on {{date}}",
+      "aboutSources": "About the sources and licences"
+    },
+    "sources": {
+      "title": "Sources and licences",
+      "lead": "The recipes come from open sources. They are translated into Norwegian and marked with their source and licence.",
+      "wikibooks": {
+        "title": "Wikibooks Cookbook",
+        "text": "The cookbook on the English Wikibooks is written by volunteers. Its licence, CC BY-SA 4.0, allows copying and adapting the content when the source is credited and the adaptation gets the same licence. The translations in SmartMat are therefore also CC BY-SA 4.0.",
+        "link": "Wikibooks Cookbook",
+        "license": "The CC BY-SA 4.0 licence"
+      },
+      "whatWeDid": "The recipes were translated and adapted with AI (Claude). Amounts are converted to grams, millilitres and pieces, and each recipe says what was changed. Allergens are worked out from the ingredients, not taken from the source.",
+      "draftExplained": "Recipes marked “AI draft” have not been checked by the team yet.",
+      "listTitle": "Recipes from open sources",
+      "original": "Original:",
+      "siteAndLicense": "({{site}}) · {{license}}",
+      "emptyTitle": "No recipes from open sources",
+      "emptyText": "Recipes from open sources will be listed here once they are added."
+    },
+    "planServings": "Servings",
+    "scaledTo": "For {{count}} servings: {{amount}}",
+    "scaledToApprox": "For {{count}} servings: about {{amount}}",
+    "scaledNote": "The amounts are scaled to {{count}} servings and rounded up. The score is for the recipe's own servings.",
+    "toPlan": {
+      "button": "Add to the meal plan",
+      "title": "Add to the meal plan",
+      "date": "Date",
+      "meal": "Meal",
+      "submit": "Add",
+      "added": "Added to the meal plan.",
+      "open": "Open the week",
+      "summary": "{{title}} · {{servings}}"
+    }
+  },
+  "shopping": {
+    "loading": "Loading the shopping list …",
+    "quickAdd": {
+      "title": "Add to the list",
+      "text": "Item",
+      "amount": "Amount",
+      "unit": "Unit",
+      "submit": "Add",
+      "hint": "The amount is optional."
+    },
+    "empty": {
+      "title": "The shopping list is empty",
+      "text": "Type what you need to buy, or add what is missing from a recipe.",
+      "recipes": "See recipes"
+    },
+    "open_one": "To buy ({{count}})",
+    "open_other": "To buy ({{count}})",
+    "checked_one": "Ticked off ({{count}})",
+    "checked_other": "Ticked off ({{count}})",
+    "allChecked": "Everything is ticked off.",
+    "share": "{{title}}: {{amount}}",
+    "shareNoAmount": "{{title}}",
+    "shareFrom": "From {{title}}",
+    "actions": {
+      "edit": "Edit {{text}}",
+      "remove": "Remove {{text}}",
+      "toInventory": "Add to inventory",
+      "clearChecked": "Remove ticked"
+    },
+    "announce": {
+      "added": "{{text}} was added.",
+      "similar": "{{text}} is already on the list. The new line was added separately.",
+      "checked": "{{text}} is ticked off.",
+      "unchecked": "{{text}} is no longer ticked off.",
+      "removed": "{{text}} was removed.",
+      "saved": "The change was saved."
+    },
+    "toast": {
+      "checkFailed": "Could not save the tick. Try again.",
+      "cleared_one": "{{count}} line was removed.",
+      "cleared_other": "{{count}} lines were removed.",
+      "stocked_one": "{{count}} item was added to the inventory.",
+      "stocked_other": "{{count}} items were added to the inventory.",
+      "fromRecipe": "Added to the shopping list: {{created}} new, {{merged}} merged with lines already there.",
+      "fromRecipeNothing": "Everything was already on the shopping list."
+    },
+    "edit": {
+      "title": "Edit line",
+      "hint": "Remove the amount to buy \"some\"."
+    },
+    "clear": {
+      "title": "Remove ticked lines?",
+      "text_one": "{{count}} ticked line will be removed from the list. It is not added to the inventory.",
+      "text_other": "{{count}} ticked lines will be removed from the list. They are not added to the inventory.",
+      "confirm": "Remove"
+    },
+    "stock": {
+      "title": "Add to inventory",
+      "description": "Check the item, amount, place and date for each item before saving.",
+      "notPurchase": "The items are not recorded as a purchase and do not count towards the budget.",
+      "registerPurchase": "Record the purchase",
+      "target": "Item in the inventory",
+      "newItem": "New item",
+      "linkedItems": "Linked to the same ingredient",
+      "otherItems": "Other items",
+      "name": "Name of the new item",
+      "category": "Category",
+      "unit": "Unit",
+      "amount": "Amount",
+      "location": "Place",
+      "expiryKind": "Date",
+      "expiryDate": "Date",
+      "linkedTo": "Matches recipes with {{name}}.",
+      "submit": "Add to inventory"
+    },
+    "recipe": {
+      "button": "Add missing to the shopping list",
+      "title": "Add to the shopping list",
+      "description": "The ticked items are added to the shopping list. You can change the amounts.",
+      "amount": "Amount",
+      "unit": "Unit",
+      "reasons": {
+        "missing": "Missing",
+        "notEnough": "A little short",
+        "unknownAmount": "You have some, but the amount cannot be compared",
+        "staple": "Staple – check that you have it",
+        "optional": "Optional",
+        "onList": "Already on the list"
+      },
+      "nothing": "You have everything the recipe needs.",
+      "submit": "Add to the shopping list",
+      "open": "Go to the shopping list"
+    },
+    "mealShare": "Meal plan {{day}}: {{title}}",
+    "mealShareAmount": "Meal plan {{day}}: {{title}}, {{amount}}"
+  },
+  "scan": {
+    "camera": {
+      "title": "Scan with the camera",
+      "start": "Start camera",
+      "privacy": "The camera picture stays on your device. Only the numbers in the barcode are sent.",
+      "starting": "Starting the camera …",
+      "scanning": "Hold the barcode inside the frame.",
+      "videoLabel": "Camera picture",
+      "stop": "Stop camera",
+      "close": "Close",
+      "retry": "Try again",
+      "typeInstead": "You can type the barcode instead.",
+      "problems": {
+        "insecure": {
+          "title": "The camera needs a secure page",
+          "text": "Browsers only allow the camera on pages opened with https (or on localhost)."
+        },
+        "unsupported": {
+          "title": "This browser does not support the camera",
+          "text": "This browser does not give web pages access to the camera."
+        },
+        "denied": {
+          "title": "No access to the camera",
+          "text": "You or the browser said no to the camera. You can allow it in the browser's settings for this page."
+        },
+        "noCamera": {
+          "title": "No camera found",
+          "text": "We found no camera on this device, or another app is using it."
+        },
+        "failed": {
+          "title": "The camera did not start",
+          "text": "Something went wrong when starting the camera or the barcode reader."
+        }
+      }
+    },
+    "manual": {
+      "title": "Type the barcode",
+      "label": "Barcode",
+      "hint": "The numbers under the bars, usually 13 or 8 digits.",
+      "submit": "Look up"
+    },
+    "lookup": {
+      "title": "Barcode found",
+      "code": "Barcode: {{gtin}}",
+      "loading": "Looking up the barcode …",
+      "brand": "Brand: {{brand}}.",
+      "another": "Scan another item",
+      "toReceipts": "Read the receipt instead",
+      "status": {
+        "found": "Found in Open Food Facts. Check and correct before adding.",
+        "household": "You have scanned this before. Last time's answers are filled in.",
+        "notFound": "We did not find this barcode. Fill it in yourself, and we will remember it next time.",
+        "unavailable": "The product lookup is not answering right now. Fill it in yourself.",
+        "storeCode": "The store's own code (for example for weight or price). Fill it in yourself. The code is not remembered.",
+        "notAsked": "Fill it in yourself.",
+        "off": "Product lookup is not switched on in this version of SmartMat. Fill in the form yourself.",
+        "receiptCode": "This is the barcode on a receipt or coupon, not on a product."
+      }
+    },
+    "form": {
+      "title": "Check and add to the pantry",
+      "modeLegend": "Where should the pack go?",
+      "existing": "New batch of “{{name}}”",
+      "newItem": "New item",
+      "nameHint": "Correct the name if it is wrong or in another language.",
+      "ingredientAuto": "Automatic: {{name}}",
+      "ingredientAmbiguous": "Automatic (the name fits several, not linked)",
+      "ingredientUnmatched": "Automatic (not linked)",
+      "dateHint": "The date is never filled in. Read it on the pack.",
+      "submit": "Add to the pantry"
+    },
+    "added": "{{name}} has been added to the pantry.",
+    "seeItem": "See the item",
+    "attribution": {
+      "text": "Product data from",
+      "source": "Open Food Facts",
+      "license": "licence ODbL"
+    }
+  },
+  "receipts": {
+    "title": "Receipt",
+    "lead": "Take a photo of the receipt and we fill in the purchase. You check and correct it before anything is saved.",
+    "loading": "Loading the receipt …",
+    "backToList": "To the receipts",
+    "manual": "Fill in yourself",
+    "upload": {
+      "title": "Upload a receipt",
+      "lead": "Lay the receipt flat, in good light, and get all of it in the picture.",
+      "camera": "Take a photo",
+      "file": "Choose a file",
+      "uploading": "Uploading …",
+      "openExisting": "Open it",
+      "privacy": "The image is only processed on our server. Location and other camera information are removed. The image is deleted when you confirm the purchase, or after 7 days."
+    },
+    "camera": {
+      "shoot": "Take the photo",
+      "cancel": "Cancel",
+      "hint": "Get the whole receipt in the picture, and hold the phone still when you press.",
+      "fallback": "Use the camera app",
+      "fallbackText": "You can use the phone's camera app or choose a file instead."
+    },
+    "unavailable": {
+      "title": "Receipt reading is not available",
+      "text": "It is not set up on this server. You can enter the purchase yourself.",
+      "manual": "Add purchase"
+    },
+    "list": {
+      "title": "Receipts waiting",
+      "empty": "No receipts are waiting.",
+      "open": "Open",
+      "uploaded": "Uploaded {{time}}"
+    },
+    "status": {
+      "queued": "Queued",
+      "processing": "Reading",
+      "review": "Ready to check",
+      "failed": "Could not be read",
+      "confirmed": "Saved"
+    },
+    "waiting": {
+      "queued": "The receipt is in the queue …",
+      "processing": "Reading the receipt …",
+      "text": "It usually takes a few seconds. You can stay on this page.",
+      "slow": "This is taking longer than usual. You can wait, or enter the purchase yourself."
+    },
+    "failed": {
+      "title": "The receipt could not be read",
+      "timeout": "Reading took too long.",
+      "unavailable": "Receipt reading is not responding right now.",
+      "invalidResponse": "Something went wrong while reading.",
+      "noText": "We found no text in the image. Try a sharper photo of the whole receipt in good light.",
+      "retry": "Try again",
+      "retryFailed": "Could not try again. Reload the page."
+    },
+    "review": {
+      "title": "Check the receipt",
+      "lead": "Look over what we read and correct anything that is wrong. Nothing is saved until you press \"Confirm purchase\".",
+      "imageAlt": "The photo of the receipt",
+      "openImage": "Open the image in full size",
+      "lowConfidenceTitle": "Low confidence",
+      "lowConfidence": "The image was hard to read. Check every field carefully.",
+      "dateGuessed": "We could not find the date. Today’s date is filled in – check it.",
+      "storeGuessed": "We could not find the store name on the receipt. It looks like receipts from {{store}}, where you shopped last, so that is filled in. Correct it if it is wrong.",
+      "totalOnly": "We fill in the store, date and total. The lines are not read well enough yet. To put the items in your food stock, choose \"With lines\" and add them yourself.",
+      "sumMismatch": "The lines add up to {{lines}}, but the receipt says {{total}}. Check the amounts.",
+      "rawText": "The text we read",
+      "check": "Check:",
+      "submit": "Confirm purchase",
+      "saved": "The purchase is saved.",
+      "savedWithItems_one": "The purchase is saved and {{count}} item was added to your food stock.",
+      "savedWithItems_other": "The purchase is saved and {{count}} items were added to your food stock.",
+      "duplicateLink": "See the existing purchase",
+      "allowDuplicate": "Save anyway – this is a different purchase",
+      "allowDuplicateHint": "Tick this if you shopped for the same amount on the same day."
+    },
+    "flags": {
+      "lowConfidence": "the text was unclear.",
+      "noAmount": "the amount was not found.",
+      "amountFromQuantity": "the amount is worked out from count and price.",
+      "quantityMismatch": "count × price did not match the amount.",
+      "discountApplied": "the discount is subtracted."
+    },
+    "confirmed": {
+      "title": "The receipt is saved",
+      "text": "The purchase is saved and the image is deleted.",
+      "open": "See the purchase"
+    },
+    "notFound": {
+      "title": "Receipt not found",
+      "text": "It may have been discarded, or deleted because it was not confirmed within 7 days."
+    },
+    "discard": {
+      "button": "Discard the receipt",
+      "title": "Discard the receipt?",
+      "text": "The image and what we read are deleted. No purchase is saved.",
+      "confirm": "Discard",
+      "done": "The receipt was discarded.",
+      "failed": "Could not discard the receipt. Try again."
+    }
+  },
+  "mealPlan": {
+    "lead": "Plan the week, see what is missing, and put it on the shopping list.",
+    "weekNav": "Choose week",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "week": "Week {{number}}",
+    "weekRange": "{{from}}–{{to}}",
+    "thisWeek": "Go to this week",
+    "showAllMeals": "Show breakfast and lunch",
+    "loading": "Loading the meal plan …",
+    "emptyWeek": "Nothing is planned this week. Press plus under a day to add a recipe or a note.",
+    "hiddenMeals": "The week also has breakfast or lunch. Tick “Show breakfast and lunch” to see them.",
+    "today": "Today",
+    "meals": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner"
+    },
+    "addTo": "Add {{meal}}, {{day}}",
+    "recipeGone": "{{title}} (the recipe no longer exists)",
+    "edit": "Change or move {{name}}",
+    "remove": "Remove {{name}}",
+    "removed": "{{name}} was removed from the plan.",
+    "removeFailed": "Could not remove it. Try again.",
+    "added": "{{name}} was added to the plan.",
+    "add": {
+      "title": "{{meal}}, {{day}}",
+      "what": "What do you want to add?",
+      "modes": {
+        "recipe": "Recipe",
+        "note": "Note"
+      },
+      "noRecipes": "No recipes yet. You can write a note instead.",
+      "search": "Search recipes",
+      "recipe": "Choose a recipe",
+      "rankedFor": "Best fit first, based on what you have that can be used that day.",
+      "servings": "Servings",
+      "servingsHint_one": "The recipe is for {{count}} serving.",
+      "servingsHint_other": "The recipe is for {{count}} servings.",
+      "quick": {
+        "leftovers": "Leftovers",
+        "eatingOut": "Eating out"
+      },
+      "note": "Text",
+      "noteHint": "For example “Leftovers” or “Eating out”. At most 100 characters.",
+      "submit": "Add"
+    },
+    "editDialog": {
+      "title": "Change {{name}}",
+      "date": "Date",
+      "day": "Day",
+      "meal": "Meal",
+      "otherWeek": "Move to another week",
+      "submit": "Save"
+    },
+    "needs": {
+      "title": "What the week needs",
+      "loading": "Working out what is missing …",
+      "weekOver": "This week is over. Needs are only worked out for days to come.",
+      "noRecipes": "Add recipes to the plan to see here what is missing.",
+      "period": "Worked out from {{from}} to {{to}}. Days that are over do not count.",
+      "allCovered": "You have what the plan needs, or it is on the shopping list.",
+      "intro": "Tick what you want to buy. Nothing goes on the shopping list until you press the button.",
+      "reasons": {
+        "missing": "Missing",
+        "notEnough": "Not enough",
+        "unknownAmount": "You have some, but the amount cannot be compared",
+        "staple": "Staple – check that you have it",
+        "optional": "Optional",
+        "onList": "Already added to the shopping list from the plan"
+      },
+      "need": "Needs {{amount}}",
+      "needApprox": "Needs about {{amount}} (rounded up)",
+      "have": "you have {{amount}}",
+      "haveApprox": "you have about {{amount}}",
+      "onList": "{{amount}} added before",
+      "entry": "{{day}} {{meal}}: {{title}}, {{amount}}",
+      "toTaste": "to taste",
+      "submit": "Add to the shopping list",
+      "added": "Added to the shopping list: {{created}} new lines, {{merged}} merged with lines already there.",
+      "addedNothing": "Nothing new to add. It is already on the shopping list.",
+      "openList": "Open the shopping list",
+      "covered_one": "You have enough of this ({{count}})",
+      "covered_other": "You have enough of these ({{count}})",
+      "coveredLine": "{{name}}: {{amount}}",
+      "coveredLineNoAmount": "{{name}}",
+      "unplannedTitle": "Going off this week",
+      "unplannedText": "No recipe in the plan uses these. Something to cook with?"
+    }
+  },
+  "household": {
+    "activeIn": "Household: {{name}}",
+    "change": "Change",
+    "lost": "You are no longer a member of {{name}}.",
+    "lostUnknown": "You are no longer a member of the household you were viewing.",
+    "roles": {
+      "owner": "Owner",
+      "member": "Member"
+    },
+    "creator": {
+      "addedBy": "Added by {{name}}",
+      "former": "Former member",
+      "unknown": "Deleted user"
+    },
+    "switcher": {
+      "title": "Your households",
+      "text": "You are in more than one household. Pages show and save data in the active one.",
+      "active": "Active",
+      "use": "Use",
+      "switched": "You are now using {{name}}.",
+      "useNamed": "Use {{name}}"
+    },
+    "members": {
+      "title": "Members",
+      "you": "you",
+      "joined": "Member since {{date}}",
+      "aloneTitle": "You are alone in the household",
+      "aloneText": "Invite the people you live with, and you will share inventory, purchases, budget, shopping list and meal plan.",
+      "remove": "Remove",
+      "removeTitle": "Remove {{name}}?",
+      "removeText": "{{name}} loses access to the household at once. What {{name}} has added stays.",
+      "removeConfirm": "Remove from the household",
+      "removed": "{{name}} has been removed from the household.",
+      "removeNamed": "Remove {{name}}"
+    },
+    "name": {
+      "title": "Name",
+      "label": "Name of the household",
+      "save": "Save the name",
+      "saved": "The name has been saved."
+    },
+    "invite": {
+      "title": "Invite",
+      "text": "Make a link and send it to the person you want to invite, for example in a message. The link works once and for 48 hours.",
+      "create": "Make an invitation link",
+      "createdTitle": "The invitation link is ready",
+      "createdText": "The link is shown only now. Send it to one person. It works until {{time}}.",
+      "linkLabel": "Invitation link",
+      "share": "Share the link",
+      "copy": "Copy the link",
+      "copied": "The link has been copied.",
+      "copyFailed": "Could not copy. Select the link in the field and copy it yourself.",
+      "shareText": "Join my household in SmartMat",
+      "listTitle": "Invitations in the last 30 days",
+      "none": "No invitations yet.",
+      "made": "Made {{time}}",
+      "status": {
+        "active": "Active until {{time}}",
+        "used": "Used by {{name}}",
+        "usedFormer": "Used by a former member",
+        "usedUnknown": "Used by a deleted user",
+        "revoked": "Revoked",
+        "expired": "Expired"
+      },
+      "revoke": "Revoke",
+      "revoked": "The invitation has been revoked.",
+      "ownerOnly": "Only the owner can invite new members."
+    },
+    "leave": {
+      "title": "Leave the household",
+      "text": "You lose access to the inventory, purchases, shopping list and meal plan here. What you have added stays in the household.",
+      "ownerText": "As the owner you must give ownership to another member before you can leave the household.",
+      "submit": "Leave the household",
+      "confirmTitle": "Leave {{name}}?",
+      "confirm": "Yes, leave the household",
+      "left": "You have left {{name}}."
+    },
+    "transfer": {
+      "title": "Transfer ownership",
+      "text": "The new owner can invite, remove members and delete the household. You become an ordinary member.",
+      "member": "New owner",
+      "choose": "Choose a member",
+      "password": "Your password",
+      "submit": "Transfer ownership",
+      "done": "{{name}} now owns the household.",
+      "noMembers": "There are no other members to transfer to."
+    },
+    "delete": {
+      "title": "Delete the household",
+      "text": "Everything in the household is deleted for all members: inventory, purchases, budget, shopping list, meal plan and receipts. This cannot be undone. Everyone keeps their account, and anyone without another household gets a new, empty one.",
+      "password": "Enter your password to confirm",
+      "confirm": "I understand that everything in the household is deleted for everyone",
+      "submit": "Delete the household for good",
+      "deleted": "The household has been deleted."
+    }
+  },
+  "join": {
+    "title": "Join a household",
+    "checking": "Checking the invitation …",
+    "invalidTitle": "The invitation does not work",
+    "missing": "There is no invitation in the link. Open the link you got, or paste it here.",
+    "pasteLabel": "Invitation link",
+    "pasteSubmit": "Open the invitation",
+    "loggedOut": "Log in or create an account to see the invitation and join.",
+    "login": "Log in",
+    "register": "Create account",
+    "invitedBy": "{{name}} invites you to “{{household}}”.",
+    "invited": "You are invited to “{{household}}”.",
+    "members_one": "The household has {{count}} member.",
+    "members_other": "The household has {{count}} members.",
+    "expires": "The invitation works until {{time}}.",
+    "ownData": "What you have in your own household stays there. Nothing is merged or deleted. You can switch between the households under Household.",
+    "accept": "Join",
+    "decline": "No thanks",
+    "alreadyMember": "You are already a member of “{{household}}”.",
+    "goToApp": "Go to the overview",
+    "joined": "You have joined {{household}}."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "lead": "What needs attention in the household right now.",
+    "loading": "Loading notifications …",
+    "emptyTitle": "No notifications right now",
+    "emptyText": "You get a notification here when an item is close to its date, when the budget is nearly used, or when others add to the shopping list.",
+    "settingsLink": "Choose which notifications you want",
+    "listLabel": "Notifications",
+    "new": "New",
+    "dismiss": "Dismiss",
+    "dismissLabel": "Dismiss the notification: {{title}}",
+    "dismissed": "The notification was dismissed",
+    "dismissFailed": "Could not dismiss the notification. Try again.",
+    "announce_one": "{{count}} new notification",
+    "announce_other": "{{count}} new notifications",
+    "kinds": {
+      "useBySoon_one": "{{name}}: use by tomorrow",
+      "useBySoon_other": "{{name}}: use by in {{count}} days",
+      "useByToday": "{{name}}: use by today",
+      "useByPassed": "The use-by date of {{name}} has passed",
+      "bestBeforeSoon_one": "{{name}}: best before tomorrow",
+      "bestBeforeSoon_other": "{{name}}: best before in {{count}} days",
+      "bestBeforeToday": "{{name}}: best before today",
+      "budgetNearlyUsed": "{{percent}} % of the food budget for {{month}} is used",
+      "budgetExceeded": "The food budget for {{month}} is used up ({{percent}} %)",
+      "shoppingAdded": "{{who}} added {{items}} to the shopping list"
+    },
+    "advice": {
+      "useBySoon": "A use-by date is about food safety. Use it before the date.",
+      "useByToday": "After today it should not be eaten.",
+      "useByPassed": "Should not be eaten. A use-by date is about food safety.",
+      "bestBefore": "Often still good after the date. Look, smell and taste.",
+      "budget": "See the month’s purchases.",
+      "shopping": "Open the shopping list to see everything."
+    },
+    "who": {
+      "former": "A former member",
+      "unknown": "A deleted account",
+      "several": "Others in the household"
+    },
+    "moreItems_one": "{{count}} more",
+    "moreItems_other": "{{count}} more"
+  },
+  "waste": {
+    "lead": "What the household throws away, how much and why.",
+    "loading": "Loading the food waste figures …",
+    "monthNav": "Choose month",
+    "previous": "Previous",
+    "next": "Next",
+    "summaryTitle": "Thrown away in {{month}}",
+    "emptyTitle": "Nothing thrown away in {{month}}",
+    "emptyText": "When something is thrown away from the inventory with “Throw away”, it shows up here with reason and value.",
+    "knownValue": "Known value",
+    "count_one": "{{count}} item thrown away",
+    "count_other": "{{count}} items thrown away",
+    "valueSplit": "{{actual}} are amounts you entered, and {{estimated}} is estimated from the item’s price.",
+    "estimatedShare": "{{percent}} % of the known value is estimated.",
+    "estimatedShareBelowOne": "Less than 1 % of the known value is estimated.",
+    "unknown_one": "{{count}} has an unknown value and is not in the sum.",
+    "unknown_other": "{{count}} have an unknown value and are not in the sum.",
+    "quantity": "Quantity: {{list}}",
+    "reasonsTitle": "Why",
+    "categoriesTitle": "By category",
+    "topTitle": "Thrown away most often",
+    "trendTitle": "The last 12 months",
+    "shareRow_one": "{{count}} time ({{percent}} %)",
+    "shareRow_other": "{{count}} times ({{percent}} %)",
+    "rowUnknown_one": "{{count}} without a known value",
+    "rowUnknown_other": "{{count}} without a known value",
+    "topCount_one": "{{count}} time",
+    "topCount_other": "{{count}} times",
+    "shareNote": "The share is of the number of discards, as the value can be missing.",
+    "trendCaption": "Thrown away per month. The bar shows the known value: solid for amounts you entered, hatched for estimated.",
+    "columns": {
+      "month": "Month",
+      "count": "Discards",
+      "known": "Known value",
+      "unknown": "Unknown value"
+    },
+    "aboutTitle": "About the figures",
+    "about": {
+      "value": "The value is either the amount you entered when throwing it away, or estimated from the item’s price. Discards without a price are counted but get no value.",
+      "undo": "An undone discard does not count. Deleting an item also removes its discards.",
+      "category": "The category is the one the item has now.",
+      "household": "The figures are for the whole household. There are no figures per person."
+    },
+    "trendEstimated": "{{amount}} of it estimated"
+  },
+  "prices": {
+    "title": "Prices",
+    "loading": "Fetching prices …",
+    "estimateNote": "The prices are for information only. What you pay, you record as a purchase.",
+    "per": {
+      "kg": "kg",
+      "l": "l",
+      "stk": "pc"
+    },
+    "unitPrice": "{{price}} per {{per}}",
+    "own": {
+      "title": "What you have paid",
+      "forItem": "For “{{name}}” in the inventory.",
+      "emptyNoItem": "You have not added this barcode to the inventory before, so there are no own prices for it.",
+      "empty": "You have not recorded a price for this item yet. It comes with a purchase, or when you enter a price on a batch.",
+      "amount": "{{quantity}} for {{price}}",
+      "fromPurchase": "From a purchase",
+      "fromPurchaseAt": "From a purchase at {{store}}",
+      "enteredOnItem": "Entered on the item",
+      "seePurchase": "See the purchase",
+      "old": "More than 3 months old"
+    },
+    "external": {
+      "title": "Prices at the chains",
+      "status": {
+        "off": "Prices from the chains are switched off. Only what you have paid is shown.",
+        "notAsked": "A store’s own code cannot be looked up at the chains.",
+        "noBarcode": "The item has not been scanned, so we cannot fetch prices from the chains. Scan it next time you buy it.",
+        "notFound": "Kassalapp has no prices for this barcode.",
+        "unavailable": "The price lookup is not answering right now. Try again later.",
+        "unavailableStored": "The price lookup is not answering right now. The prices below were fetched {{date}} and may be out of date.",
+        "noPrices": "No chain has a price for this item.",
+        "noFresh": "No chain has checked the price in the last 14 days."
+      },
+      "cheapest": "Cheapest last observed: {{chain}}, {{price}} (checked {{date}})",
+      "cheapestOf_one": "Only {{count}} chain has a price checked in the last 14 days.",
+      "cheapestOf_other": "Lowest of {{count}} chains with a price checked in the last 14 days.",
+      "caption": "Latest price per chain, cheapest first",
+      "columns": {
+        "chain": "Chain",
+        "price": "Price",
+        "checked": "Checked"
+      },
+      "chainLink": "{{chain}}, see the item at Kassalapp",
+      "older_one": "Older price ({{count}})",
+      "older_other": "Older prices ({{count}})",
+      "olderNote": "Prices not checked for 14 days, and chains Kassalapp no longer collects prices from. They may be wrong today.",
+      "stale": "Not checked for 14 days",
+      "uncollected": "Kassalapp no longer collects prices from this chain",
+      "coverage": "The prices are for the chain, not a particular shop. Offers and member prices are not included, and Rema 1000, Kiwi and Coop are not included. This is not a complete comparison.",
+      "fetchedAt": "Fetched {{date}}.",
+      "attribution": "Prices from",
+      "attributionLink": "Kassalapp"
+    },
+    "estimate": {
+      "title": "Estimated price",
+      "loading": "Working out the estimate …",
+      "error": "Could not work out the estimate.",
+      "summary": "Estimate for {{estimated}} of {{open}} lines: about {{amount}}",
+      "missing_one": "{{count}} line has no price and is not included.",
+      "missing_other": "{{count}} lines have no price and are not included.",
+      "sources": "From what you have paid: {{own}}. From Kassalapp: {{kassalapp}}.",
+      "none": "None of the lines has a price yet. An estimate comes from what you have paid for the same item, or from Kassalapp once the item has been scanned.",
+      "note": "An estimate, not what you will pay. It is not part of the budget.",
+      "perLine": "Show the estimate per line",
+      "basis": {
+        "scaled": "worked out from the amount",
+        "lastTime": "as last time",
+        "onePackage": "one package"
+      },
+      "source": {
+        "own": "what you have paid",
+        "kassalapp": "Kassalapp"
+      },
+      "lineEstimate": "about {{amount}} ({{basis}}, {{source}}, {{date}})",
+      "missingReason": {
+        "noMatch": "no item in the inventory with this name",
+        "noPrice": "no price yet",
+        "unitMismatch": "a different unit from the price"
+      }
+    }
+  },
+  "account": {
+    "device": "{{browser}} on {{os}}",
+    "browsers": {
+      "edge": "Edge",
+      "samsung": "Samsung Internet",
+      "opera": "Opera",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "safari": "Safari",
+      "other": "Unknown browser"
+    },
+    "systems": {
+      "android": "Android",
+      "ios": "iPhone or iPad",
+      "windows": "Windows",
+      "macos": "Mac",
+      "chromeos": "ChromeOS",
+      "linux": "Linux",
+      "other": "unknown system"
+    },
+    "sessions": {
+      "title": "Where you are logged in",
+      "text": "These are the browsers logged in to your account. We store only the browser and the system, not where you are or your IP address. If you do not recognise a login, log it out and change your password.",
+      "current": "This device",
+      "times": "Logged in {{started}} · last used {{seen}}",
+      "endOne": "Log out",
+      "endOneLabel": "Log out {{device}}",
+      "ended": "The device has been logged out.",
+      "endOthers": "Log out all other devices",
+      "endedOthers_one": "{{count}} other device has been logged out.",
+      "endedOthers_other": "{{count}} other devices have been logged out."
+    },
+    "loginNotice": {
+      "title": "New login to your account.",
+      "text": "{{device}}, {{when}}.",
+      "itWasMe": "It was me",
+      "review": "Not you? See where you are logged in"
+    },
+    "export": {
+      "title": "Download your data",
+      "text": "You get a file (JSON) with what SmartMat has stored about you: your account, allergies, logins and everything in the households you are in. Passwords and receipt photos are not included.",
+      "download": "Download my data",
+      "privacy": "Read the privacy notice"
+    },
+    "twoFactor": {
+      "title": "Two-factor login",
+      "off": "Off. With two-factor login you need both your password and a code from an app on your phone (for example Google Authenticator, Microsoft Authenticator or 1Password).",
+      "on_one": "On. You have {{count}} unused recovery code.",
+      "on_other": "On. You have {{count}} unused recovery codes.",
+      "unavailable": "Two-factor login is not available on this server.",
+      "start": "Turn on two-factor login",
+      "passwordFirst": "Enter your password first.",
+      "continue": "Continue",
+      "turnOn": "Turn on",
+      "turnedOn": "Two-factor login is on.",
+      "turnedOff": "Two-factor login is off.",
+      "scan": {
+        "app": "Open the authenticator app and add a new account.",
+        "key": "Enter this key (upper or lower case, without spaces):",
+        "keyLabel": "Key for the authenticator app",
+        "open": "Or open it directly in the app on this phone",
+        "code": "Enter the code the app shows for SmartMat.",
+        "codeHint": "6 digits. The code changes every 30 seconds."
+      },
+      "codes": {
+        "title": "Keep the recovery codes",
+        "text": "Each code can be used once if you lose your phone. Write them down or save them in a password manager. They are shown only now.",
+        "done": "I have kept the codes"
+      },
+      "confirm": {
+        "disable": "Enter your password and a code to turn off two-factor login.",
+        "newCodes": "Enter your password and a code. The old recovery codes stop working."
+      },
+      "actions": {
+        "disable": "Turn off",
+        "newCodes": "Make new recovery codes"
+      }
     }
   }
 }

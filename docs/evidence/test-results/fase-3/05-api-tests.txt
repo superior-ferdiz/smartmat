@@ -1,0 +1,95 @@
+$ npx vitest run --config apps/api/vitest.db.config.ts --reporter=verbose
+# Kjørt 2026-10-21 12:26:09 UTC, Node v22.14.0, npm 11.1.0
+
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+ ✓ |api-db| test/inventory.api.test.ts > categories and default locations > the database has exactly the categories in packages/shared, in the same order 436ms
+ ✓ |api-db| test/inventory.api.test.ts > categories and default locations > a new household gets Kjøleskap, Fryser and Skap (FR-INV-003) 393ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-001/002 add items and batches > creates the item, its first batch and an "add" event in one go 347ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-001/002 add items and batches > a second batch with another date; batches come sorted by date, undated last 355ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-001/002 add items and batches > validation: name, category, unit, quantity and date pairs (NFR-SEC-002) 278ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-001/002 add items and batches > the database refuses a date kind without a date (CHECK), even if code sent one 326ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-001/002 add items and batches > a location id that is not this household's is refused as a field error 367ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-006 consume > part, then the rest; an empty batch disappears from the item 336ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-006 consume > more than is left → 409 notEnough, nothing changes 304ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-006 consume > ten requests at the same time can never take more than there is 427ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-007 discard and the waste log > estimated value from the batch price (2490 øre for 1000 ml, 250 ml thrown → 623 øre) 299ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-007 discard and the waste log > actual value when given; unknown without a price 344ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-007 discard and the waste log > waste summary for this month in Norwegian time; undone discards do not count (FR-DASH-001) 392ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-007 discard and the waste log > a discard at 00:30 on 1 October in Oslo belongs to October (time zone) 322ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 edit, move, adjust, delete > rename and recategorise the item 308ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 edit, move, adjust, delete > moving a batch records a "move" event; a new quantity records "adjust" with the difference 340ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 edit, move, adjust, delete > removing the date clears both kind and date 306ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 edit, move, adjust, delete > deleting a batch removes it and its history; deleting the item removes everything 349ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 storage locations > add and rename a location 290ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 storage locations > a location with food in it cannot be deleted; an empty one can, and history survives 340ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-003 storage locations > the last location cannot be deleted 306ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > lists events newest first with who did it; the last one can be undone 310ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > undoing a consume puts the quantity back 327ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > undoing a discard puts the quantity back 345ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > undoing a move moves the batch back; undoing an adjust reverses it 341ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > undoing "add" empties the batch; the item stays without batches 295ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > an undo cannot be undone, and nothing older can be undone after it (409) 313ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-INV-008 history and undo > two undo requests at the same time: only one succeeds 330ms
+ ✓ |api-db| test/inventory.api.test.ts > FR-AUTH-005 deleting the account deletes the inventory > items, batches, events and locations are gone 361ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 brute force: lockout per account > after 5 wrong passwords even the right one is refused, with the same answer 884ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 brute force: lockout per account > the lock lifts after 15 minutes 533ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 brute force: lockout per account > locking one account does not affect another 557ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > login: the 4th attempt from the same address within the window gets 429 369ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > a 429 has our error format and says when to try again 332ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > a forged X-Forwarded-For header does not give a fresh limit 379ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > register: limited too 323ms
+ ✓ |api-db| test/security.api.test.ts > FR-AUTH-003 rate limiting per IP address > password check on account deletion is limited too 341ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a changing request without the CSRF token is refused (403), and nothing changes 280ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a wrong token, or another user's valid token, is refused 336ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a request from another site (foreign Origin) is refused even with a valid token 267ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > a changing request without Origin is refused 217ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > login from another site is refused (login CSRF) 275ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > logout needs the token too, so another site cannot log the user out 275ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-005 CSRF: Origin check and CSRF token > reading (GET) needs no token 278ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > a user can read their own household 290ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > another user's household gives 404 – exactly like one that does not exist 337ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > not logged in → 401; a malformed id → 404 281ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > /me always means the caller: Ola's request cannot read or change Kari 348ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-001 no access to another user's data > a session cookie only works for the user it belongs to 319ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-004 no personal data in logs or error responses > the log has no e-mail, name, password, session token or CSRF token 514ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-004 no personal data in logs or error responses > an unexpected error gives a bare 500 and logs no message text 242ms
+ ✓ |api-db| test/security.api.test.ts > NFR-SEC-004 no personal data in logs or error responses > malformed JSON and unknown routes get our format without details 256ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > GET /me returns the logged-in user 546ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > PATCH /me changes name and language 312ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > PATCH /me validates: unknown language, blank name, nothing to change 296ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > PATCH /me cannot change e-mail or password hash 294ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > password change: wrong current password → 400 on that field, nothing changes 358ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > password change: new password too short → 400 258ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-004 profile > password change: old password stops working, other devices are logged out, this one is not 487ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > wrong password → 400, and the account is still there 394ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > deletes the user, the household, the membership and every session – and nothing of other users 515ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > a household shared with someone else is kept; only the membership goes 387ms
+ ✓ |api-db| test/profile.api.test.ts > FR-AUTH-005 delete account > the e-mail address can be registered again afterwards 362ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > 201: creates the user, a household of one with the user as owner, and logs in 509ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > sets the session cookie HttpOnly, Secure, SameSite=Lax, Path=/ (NFR-SEC-003) 302ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > stores an argon2id hash, not the password, and only the hash of the session token (ADR-0005) 305ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > 409 when the e-mail is taken, also with different case 334ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > 400 with i18n keys per field for invalid input (NFR-SEC-002) 226ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-001 POST /auth/register > ignores fields that are not in the schema (cannot set its own id, role or lock) 280ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > login → session → logout → the old cookie no longer works 350ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > logging in again ends the session the browser had before (new session ID at login) 324ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > wrong password and unknown e-mail get exactly the same answer 406ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > GET /auth/session is 401 without a cookie and with a made-up cookie 332ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > a session unused for 14 days stops working 297ms
+ ✓ |api-db| test/auth.api.test.ts > FR-AUTH-002 login, session, logout > logout without a valid session still answers 204 and clears the cookie 244ms
+ ✓ |api-db| test/auth.api.test.ts > GET /health > answers when the database is reachable 220ms
+ ✓ |api-db| test/inventory.security.api.test.ts > NFR-SEC-001 inventory: no access to another household > A) Kari's household id in the URL: every endpoint answers 404 and nothing changes 694ms
+ ✓ |api-db| test/inventory.security.api.test.ts > NFR-SEC-001 inventory: no access to another household > B) Ola's own household id with Kari's item, batch and location ids: 404 and nothing changes 486ms
+ ✓ |api-db| test/inventory.security.api.test.ts > NFR-SEC-001 inventory: no access to another household > Ola cannot put a batch into Kari's location, even inside his own item 392ms
+ ✓ |api-db| test/inventory.security.api.test.ts > NFR-SEC-001 inventory: no access to another household > the database itself refuses a batch that mixes two households (composite foreign key) 381ms
+ ✓ |api-db| test/inventory.security.api.test.ts > NFR-SEC-001 inventory: no access to another household > not logged in: 401 on the inventory 352ms
+
+ Test Files  5 passed (5)
+      Tests  81 passed (81)
+   Start at  12:26:10
+   Duration  35.03s (transform 483ms, setup 0ms, import 2.42s, tests 29.55s, environment 1ms)
+
+
+# exit code: 0

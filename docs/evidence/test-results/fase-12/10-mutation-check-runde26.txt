@@ -1,0 +1,8 @@
+$ (runde 26 fra 10-mutation-check.sh, alene, etter den nye testen)
+Kjørt 2026-10-25T15:30:37Z
+
+26. Egne priser leses for alle husholdninger
+    endret: apps/api/src/modules/prices/repo.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 46 passed (47)
+      feilet: |api-db| test/prices.security.api.test.ts > C) the repo itself filters on the household (not only the service) > Kari’s priced batch is not returned for Ola’s household, also when asked by item id

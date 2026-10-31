@@ -1,0 +1,158 @@
+$ bash docs/evidence/test-results/fase-5/10-mutation-check.sh
+# Kjørt 2026-10-21 17:40:59 UTC, Node v22.14.0, npm 11.1.0
+
+1. Oppskriftsrutene uten householdAccess (bare innlogging)
+    endret: apps/api/src/modules/recipes/routes.ts
+    enhetstester: Tests  637 passed (637)
+    API-tester:   Tests  21 failed | 137 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-001 browse > an empty inventory lists every recipe with score 0, fewest missing first
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-001 browse > an unknown recipe id is 404, a malformed one is 400
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-001 browse > the detail has steps, authors and every ingredient line in order
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > an item in the inventory ranks the recipe first and shows what is missing
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > a used-up item counts for nothing
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > food past its best-before date is counted and gives the going-off bonus
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > food past its use-by date is NEVER counted, and the recipe says so
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > not enough shows how much is missing; another unit is converted (rounded down, approximate)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > several items of the same ingredient are added up
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-004 allergens > an allergen from an OPTIONAL ingredient still warns (the user may add it)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-004 allergens > NFR-SEC-004: allergens never end up in the log
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-004 allergens > recipes with the user’s allergens get a warning; the others do not
+      feilet: |api-db| test/recipes.api.test.ts > spec 05 linking an item to an ingredient > a new item is linked automatically by its name
+      feilet: |api-db| test/recipes.api.test.ts > spec 05 linking an item to an ingredient > manual: the chosen ingredient wins over the name; auto puts it back
+      feilet: |api-db| test/recipes.api.test.ts > spec 05 linking an item to an ingredient > none: a wrong automatic match can be switched off
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > A) Kari's household id in the URL: 404 on every recipe endpoint
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > B) Ola's own ranking never uses Kari's inventory or Kari's allergies
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > C) /me/allergens is always the caller's own: Ola sees and changes only his
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > D) Ola cannot link Kari's item to an ingredient (either household id)
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > E) every new endpoint needs a session; changing allergens needs the CSRF token
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > recipes and ingredients cannot be written through the API
+2. Matlageret leses uten husholdningsfilter (rangeringen ville brukt andres varer)
+    endret: apps/api/src/modules/inventory/repo.ts
+    enhetstester: Tests  637 passed (637)
+    API-tester:   Tests  2 failed | 156 passed (158)
+      feilet: |api-db| test/inventory.security.api.test.ts > NFR-SEC-001 inventory: no access to another household > B) Ola's own household id with Kari's item, batch and location ids: 404 and nothing changes
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > B) Ola's own ranking never uses Kari's inventory or Kari's allergies
+3. Lagring av allergier sletter alle brukeres allergier
+    endret: apps/api/src/modules/recipes/repo.ts
+    enhetstester: Tests  637 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > C) /me/allergens is always the caller's own: Ola sees and changes only his
+4. Valgt ingrediens sjekkes ikke mot ingredienstabellen
+    endret: apps/api/src/modules/inventory/service.ts
+    enhetstester: Tests  637 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > spec 05 linking an item to an ingredient > an ingredient id that does not exist is a field error, and nothing changes
+5. Partier med passert siste forbruksdag regnes med
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > food past its use-by date is NEVER counted, and the recipe says so
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 stockByIngredient > an item with ONLY use-by-passed batches is not present at all
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 stockByIngredient > NEVER counts a batch past its use-by date, and says which item it was
+6. Omregning runder opp i stedet for ned
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |shared| src/recipes/scoring.test.ts > ADR-0006 convertToBase rounds down > 130 g of egg at 60 g per egg is 2 eggs, not 2.17 or 3
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 stockByIngredient > converted amounts are approximate; empty batches are skipped
+7. Valgfrie ingredienser teller i poengsummen
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  5 failed | 153 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-001 browse > an empty inventory lists every recipe with score 0, fewest missing first
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > an item in the inventory ranks the recipe first and shows what is missing
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > food past its best-before date is counted and gives the going-off bonus
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > not enough shows how much is missing; another unit is converted (rounded down, approximate)
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > B) Ola's own ranking never uses Kari's inventory or Kari's allergies
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-002 scoreRecipe > a going-off item only counts for a required ingredient
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-002 scoreRecipe > staples and optional ingredients are not counted
+8. Basisvarer regnes som vanlige ingredienser
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  4 failed | 154 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > an item in the inventory ranks the recipe first and shows what is missing
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > food past its best-before date is counted and gives the going-off bonus
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > not enough shows how much is missing; another unit is converted (rounded down, approximate)
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > B) Ola's own ranking never uses Kari's inventory or Kari's allergies
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-002 scoreRecipe > staples and optional ingredients are not counted
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 evaluateLine > staple whatever the stock
+9. Ingen grense på bonus for «går snart ut»
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  1 failed | 636 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-002 scoreRecipe > +10 per required ingredient going off, at most 3, most urgent first
+10. Best før passert gir ikke bonus
+    endret: packages/shared/src/recipes/scoring.ts
+    enhetstester: Tests  1 failed | 636 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > food past its best-before date is counted and gives the going-off bonus
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 stockByIngredient > use-by today is still usable; best before passed is counted
+11. Tvetydige navn gjettes i stedet for å gi ingen kobling
+    endret: packages/shared/src/recipes/matching.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 linkItem: the user’s choice wins over the name > ambiguous and unmatched names are not linked
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 matchByName > two ingredients matching with as many words is ambiguous, never a guess
+12. Manuell kobling ignoreres
+    endret: packages/shared/src/recipes/matching.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > spec 05 linking an item to an ingredient > manual: the chosen ingredient wins over the name; auto puts it back
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 linkItem: the user’s choice wins over the name > manual uses the chosen ingredient, even if the name says something else
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 stockByIngredient > a manual link counts, a "none" link does not
+13. «Ikke en ingrediens» ignoreres
+    endret: packages/shared/src/recipes/matching.ts
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > spec 05 linking an item to an ingredient > none: a wrong automatic match can be switched off
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 linkItem: the user’s choice wins over the name > none links nothing, even if the name matches
+      feilet: |shared| src/recipes/scoring.test.ts > FR-REC-003 stockByIngredient > a manual link counts, a "none" link does not
+14. Aliaser treffer deler av ord (ikke bare hele ord)
+    endret: packages/shared/src/recipes/matching.ts
+    enhetstester: Tests  3 failed | 634 passed (637)
+    API-tester:   Tests  1 failed | 157 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-002/003 ranking from the inventory > several items of the same ingredient are added up
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 matchByName > Kokosmelk → kokosmelk (via "kokosmelk")
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 matchByName > matches whole words only: "kokosmelk" is not melk, "sjokolademelk" matches nothing
+      feilet: |shared| src/recipes/matching.test.ts > spec 05 matchByName > Rødløk → rodlok (via "rødløk")
+15. Allergener fra valgfrie ingredienser telles ikke
+    endret: apps/api/src/modules/recipes/service.ts
+    enhetstester: Tests  637 passed (637)
+    API-tester:   Tests  2 failed | 156 passed (158)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-004 allergens > an allergen from an OPTIONAL ingredient still warns (the user may add it)
+      feilet: |api-db| test/recipes.api.test.ts > FR-REC-004 allergens > recipes with the user’s allergens get a warning; the others do not
+16. Oppskrift uten forfatter godtas
+    endret: packages/shared/src/recipes/seed.ts
+    enhetstester: Tests  1 failed | 636 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > ADR-0009: a recipe without authors is refused
+17. Samme alias på to ingredienser godtas
+    endret: packages/shared/src/recipes/seed.ts
+    enhetstester: Tests  1 failed | 636 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |shared| src/recipes/seed.test.ts > spec 05 checkSeed > an alias may belong to only one ingredient (also via the name)
+18. Oppskrifter med brukerens allergener skjules ikke
+    endret: apps/web/src/recipes/filter.ts
+    enhetstester: Tests  4 failed | 633 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |web| src/pages/recipes/RecipesPage.test.tsx > FR-REC-004 allergens in the list > hides recipes with the user’s allergens by default and says how many
+      feilet: |web| src/pages/recipes/RecipesPage.test.tsx > FR-REC-004 allergens in the list > when every recipe is hidden, the empty state still says why
+      feilet: |web| src/recipes/filter.test.ts > FR-REC-001/004 filterRecipes > filters by tag; the hidden count only counts recipes the other filters let through
+      feilet: |web| src/recipes/filter.test.ts > FR-REC-001/004 filterRecipes > FR-REC-004: hides recipes with the user’s allergens by default, and counts them
+19. Forbeholdet fjernes fra allergenboksen på oppskriften
+    endret: apps/web/src/recipes/AllergenNotice.tsx
+    enhetstester: Tests  3 failed | 634 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > FR-REC-004 allergen box > names the user’s allergens and the ingredients they come from, with the disclaimer
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > FR-REC-004 allergen box > no match is never worded as "free of": it says none are registered
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > FR-REC-004 allergen box > without registered allergens it links to the profile
+20. En tekst sier at en oppskrift er allergenfri
+    endret: apps/web/src/i18n/locales/nb-NO.json
+    enhetstester: Tests  2 failed | 635 passed (637)
+    API-tester:   Tests  158 passed (158)
+      feilet: |web| src/i18n/locales.test.ts > FR-REC-004 allergen wording > no text in either language says that a recipe is free of an allergen
+      feilet: |web| src/pages/recipes/RecipePage.test.tsx > FR-REC-004 allergen box > no match is never worded as "free of": it says none are registered
+21. Uendret kode (kontroll: ingen tester skal feile)
+    enhetstester: Tests  637 passed (637)
+    API-tester:   Tests  158 passed (158)
+# exit code: 0

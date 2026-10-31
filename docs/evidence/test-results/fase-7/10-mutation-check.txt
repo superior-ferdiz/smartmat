@@ -1,0 +1,231 @@
+1. Strekkoderutene uten householdAccess (bare innlogging)
+    endret: apps/api/src/modules/barcodes/routes.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  33 failed | 208 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the account deletes the remembered barcodes, not the shared cache
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the item keeps the answers, without the item
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the place keeps the answers, without the place
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > seed rule: an ingredient chosen for a remembered barcode is kept when it leaves the seed files
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > a lookup saves nothing for the household
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > known code: suggestion from Open Food Facts, then from the cache
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > NFR-REL-001 invalid answer: unavailable, nothing cached
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > NFR-REL-001 timeout: unavailable, nothing cached, the reason (not the code) is logged
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > store code: never sent to Open Food Facts
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > unknown code: not found, and not asked again within 24 hours
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-003 the code in the URL > UPC-A is normalized before anything else
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > a chosen ingredient is saved on the item and remembered
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > an unknown ingredient id is a field error and nothing is saved
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > a store code is added but not remembered
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > known code → confirm → the item is in the inventory, with its "add" event
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > NFR-DATA-002: the same confirmation at the same moment gives one batch
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > NFR-DATA-002: the same confirmation twice gives one item and one batch (200 the second time)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > spec 05 still works: the scanned item counts as an ingredient by its name
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > the answers are remembered: next lookup comes from the household and offers the same item
+      feilet: |api-db| test/barcodes.security.api.test.ts > A) Kari's household id in the URL > a household id that does not exist → 404
+      feilet: |api-db| test/barcodes.security.api.test.ts > A) Kari's household id in the URL > confirm → 404, nothing is added to Kari
+      feilet: |api-db| test/barcodes.security.api.test.ts > A) Kari's household id in the URL > lookup → 404
+      feilet: |api-db| test/barcodes.security.api.test.ts > B) Ola's household with Kari's item or place > a new batch on Kari's item → 404, nothing changes
+      feilet: |api-db| test/barcodes.security.api.test.ts > B) Ola's household with Kari's item or place > Kari's clientRequestId does not give Ola Kari's item
+      feilet: |api-db| test/barcodes.security.api.test.ts > B) Ola's household with Kari's item or place > Kari's place → 400 on batch.locationId, nothing is saved
+      feilet: |api-db| test/barcodes.security.api.test.ts > B) Ola's household with Kari's item or place > Kari's place together with Kari's item → still refused
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > Ola scanning the same code gets nothing of Kari
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > Ola's confirmation of the same code does not change Kari's answers
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > the repo itself never gives another household's item or answers (a second layer behind the foreign keys)
+      feilet: |api-db| test/barcodes.security.api.test.ts > D) authentication, CSRF and Origin > 30 lookups per user and minute, counted per user (spec 07)
+      feilet: |api-db| test/barcodes.security.api.test.ts > D) authentication, CSRF and Origin > confirm from another site → 403
+      feilet: |api-db| test/barcodes.security.api.test.ts > D) authentication, CSRF and Origin > confirm without the CSRF token → 403
+      feilet: |api-db| test/barcodes.security.api.test.ts > D) authentication, CSRF and Origin > not logged in → 401 on both
+2. Husholdningens strekkoder hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/barcodes/repo.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  3 failed | 238 passed (241)
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > Ola scanning the same code gets nothing of Kari
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > Ola's confirmation of the same code does not change Kari's answers
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > the repo itself never gives another household's item or answers (a second layer behind the foreign keys)
+3. «Varen fra sist» hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/barcodes/repo.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > the repo itself never gives another household's item or answers (a second layer behind the foreign keys)
+4. Nytt parti på en vare: varen hentes uten å filtrere på husholdning
+    endret: apps/api/src/modules/barcodes/repo.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.security.api.test.ts > B) Ola's household with Kari's item or place > a new batch on Kari's item → 404, nothing changes
+5. Partiet lagres uten dedupe_key
+    endret: apps/api/src/modules/barcodes/repo.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  2 failed | 239 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > NFR-DATA-002: the same confirmation at the same moment gives one batch
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > NFR-DATA-002: the same confirmation twice gives one item and one batch (200 the second time)
+6. Stedet i bekreftelsen kontrolleres ikke
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.security.api.test.ts > B) Ola's household with Kari's item or place > Kari's place → 400 on batch.locationId, nothing is saved
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-005 confirm > a location that is not the household's is a field error, and nothing is saved
+7. clientRequestId sjekkes ikke før lagring
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  2 failed | 861 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-005 confirm > lost race on the dedupe key: answers with the one that won
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-005 confirm > the same clientRequestId again: answers with the item, saves nothing
+8. Butikkens egne koder huskes
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > a store code is added but not remembered
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-005 confirm > a store code is added but not remembered
+9. Butikkens egne koder slås opp hos Open Food Facts
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > store code: never sent to Open Food Facts
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > a store code is never looked up
+10. Husholdningens svar brukes ikke
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  5 failed | 236 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the item keeps the answers, without the item
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > seed rule: an ingredient chosen for a remembered barcode is kept when it leaves the seed files
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > a chosen ingredient is saved on the item and remembered
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > the answers are remembered: next lookup comes from the household and offers the same item
+      feilet: |api-db| test/barcodes.security.api.test.ts > C) Kari's remembered answers stay Kari's > Ola's confirmation of the same code does not change Kari's answers
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > the household's own answer wins, and OFF is not asked
+11. Mellomlageret brukes uansett alder
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  2 failed | 861 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > cached for 30 days: OFF is not asked again until then
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > NFR-REL-001: OFF unavailable but an old cached answer exists → the old answer
+12. Feil hos OFF lagres som «fant ingenting»
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  2 failed | 861 passed (863)
+    API-tester:   Tests  2 failed | 239 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > NFR-REL-001 invalid answer: unavailable, nothing cached
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > NFR-REL-001 timeout: unavailable, nothing cached, the reason (not the code) is logged
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > NFR-REL-001: OFF unavailable but an old cached answer exists → the old answer
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > NFR-REL-001: OFF unavailable → empty form, nothing cached, the reason is passed on for the log
+13. Ingen grense per bruker
+    endret: apps/api/src/modules/barcodes/service.ts
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.security.api.test.ts > D) authentication, CSRF and Origin > 30 lookups per user and minute, counted per user (spec 07)
+      feilet: |api| src/modules/barcodes/service.test.ts > FR-SCAN-002 lookup order > 30 lookups per user and minute (spec 07), then 429
+14. Ingen tidsavbrudd mot OFF
+    endret: apps/api/src/providers/barcode/openFoodFacts.ts
+    enhetstester: Tests  2 failed | 861 passed (863)
+    API-tester:   Tests  2 failed | 239 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > NFR-REL-001 timeout: unavailable, nothing cached, the reason (not the code) is logged
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-003 the code in the URL > UPC-A is normalized before anything else
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > asks for one product with only our fields, with the User-Agent, no redirects and a timeout
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > timeout: gives up after timeoutMs
+15. HTTP-feil fra OFF tolkes som svar
+    endret: apps/api/src/providers/barcode/openFoodFacts.ts
+    enhetstester: Tests  6 failed | 857 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > HTTP 301 is an error, not "not found"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > HTTP 403 is an error, not "not found"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > HTTP 429 is an error, not "not found"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > HTTP 500 is an error, not "not found"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > HTTP 502 is an error, not "not found"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > HTTP 503 is an error, not "not found"
+16. Svaret fra OFF valideres ikke med Zod
+    endret: apps/api/src/providers/barcode/openFoodFacts.ts
+    enhetstester: Tests  3 failed | 860 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > invalid answer (a wrong type) is "unavailable"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > invalid answer (categories not a list) is "unavailable"
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > invalid answer (no status) is "unavailable"
+17. Serverens egen grense mot OFF brukes ikke
+    endret: apps/api/src/providers/barcode/openFoodFacts.ts
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |api| src/providers/barcode/openFoodFacts.test.ts > Open Food Facts provider > our own limit: over it, OFF is not called at all
+18. Kontrollsifferet sjekkes ikke
+    endret: packages/shared/src/barcode/gtin.ts
+    enhetstester: Tests  5 failed | 858 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-003 the code in the URL > 4006381333932 → 400 on gtin
+      feilet: |shared| src/barcode/gtin.test.ts > FR-SCAN-003 normalizeGtin > a UPC-E code with a wrong check digit or the wrong shape is refused
+      feilet: |shared| src/barcode/gtin.test.ts > FR-SCAN-003 normalizeGtin > eight digits are EAN-8, unless the camera says UPC-E
+      feilet: |shared| src/barcode/gtin.test.ts > FR-SCAN-003 normalizeGtin > says what is wrong
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-001 camera states > the camera is only started on request; a read code is looked up and the camera stopped
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-003 typing the code > a wrong check digit is refused in the browser, nothing is sent; no axe violations
+19. UPC-A får ikke 0 foran
+    endret: packages/shared/src/barcode/gtin.ts
+    enhetstester: Tests  5 failed | 858 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-003 the code in the URL > UPC-A is normalized before anything else
+      feilet: |shared| src/barcode/gtin.test.ts > FR-SCAN-003 normalizeGtin > eight digits are EAN-8, unless the camera says UPC-E
+      feilet: |shared| src/barcode/gtin.test.ts > FR-SCAN-003 normalizeGtin > UPC-A gets a leading 0
+      feilet: |shared| src/barcode/gtin.test.ts > gtinSchema (URL parameter and form) > gives the normalized code
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-001 camera states > UPC-E from the camera is written out before the lookup
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-003 typing the code > a valid code goes into the URL (normalized) and is looked up
+20. Prefiks 2 regnes ikke som butikkens egen kode
+    endret: packages/shared/src/barcode/gtin.ts
+    enhetstester: Tests  4 failed | 859 passed (863)
+    API-tester:   Tests  2 failed | 239 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > store code: never sent to Open Food Facts
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-005 confirm > a store code is added but not remembered
+      feilet: |shared| src/barcode/gtin.test.ts > store codes (spec 07) > 02123456789010 → true
+      feilet: |shared| src/barcode/gtin.test.ts > store codes (spec 07) > 2012345678909 → true
+      feilet: |shared| src/barcode/gtin.test.ts > store codes (spec 07) > 2312345000125 → true
+      feilet: |shared| src/barcode/gtin.test.ts > store codes (spec 07) > normalizeGtin marks store codes
+21. Strekkoden står i den loggede URL-en
+    endret: apps/api/src/app.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > FR-SCAN-002 lookup > NFR-REL-001 timeout: unavailable, nothing cached, the reason (not the code) is logged
+22. Sletting av en vare tømmer ikke koblingen i household_barcodes
+    endret: apps/api/src/modules/inventory/repo.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  2 failed | 239 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the item keeps the answers, without the item
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the place keeps the answers, without the place
+23. Sletting av et sted tømmer ikke koblingen i household_barcodes
+    endret: apps/api/src/modules/locations/repo.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > deleting the place keeps the answers, without the place
+24. Seed sletter ingredienser som en husket strekkode bruker
+    endret: apps/api/src/modules/recipes/seed.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/barcodes.api.test.ts > deleting what a remembered barcode points at > seed rule: an ingredient chosen for a remembered barcode is kept when it leaves the seed files
+25. trustProxy fra konfigurasjonen brukes ikke
+    endret: apps/api/src/app.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/staging.api.test.ts > trustProxy: the client address behind Caddy > trusted proxy: each client behind it has its own limit (otherwise everyone shares Caddy's)
+26. Stengt registrering slipper likevel gjennom
+    endret: apps/api/src/modules/auth/routes.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/staging.api.test.ts > closed registration > registration answers 403, whatever is sent; log in still works
+27. CSP uten 'wasm-unsafe-eval'
+    endret: apps/api/src/plugins/web.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/staging.api.test.ts > serving the built web app (one origin) > page routes get index.html with a CSP that allows our scripts, the theme script and WebAssembly
+28. __Host--cookien brukes ikke
+    endret: apps/api/src/app.ts
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  1 failed | 240 passed (241)
+      feilet: |api-db| test/staging.api.test.ts > __Host- session cookie > is set with Secure, Path=/ and no Domain, and is the one that is read
+29. En feillest kode fra kameraet godtas
+    endret: apps/web/src/scan/CameraScanner.tsx
+    enhetstester: Tests  1 failed | 862 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-001 camera states > the camera is only started on request; a read code is looked up and the camera stopped
+30. Kameraet stoppes ikke
+    endret: apps/web/src/scan/camera.ts
+    enhetstester: Tests  3 failed | 860 passed (863)
+    API-tester:   Tests  241 passed (241)
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-001 camera states > "Stopp kamera" stops the camera
+      feilet: |web| src/pages/scan/ScanPage.test.tsx > FR-SCAN-001 camera states > the camera is only started on request; a read code is looked up and the camera stopped
+      feilet: |web| src/scan/camera.test.ts > camera helpers > stopStream stops every track (the camera light goes off)
+31. Uendret kode (kontroll: ingen tester skal feile)
+    enhetstester: Tests  863 passed (863)
+    API-tester:   Tests  241 passed (241)
+exit 0

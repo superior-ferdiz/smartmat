@@ -1,0 +1,248 @@
+$ bash docs/evidence/test-results/fase-12/10-mutation-check.sh
+Kjørt 2026-10-25T14:45:45Z
+
+1. En pris med tre desimaler godtas (avrundes stille)
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  2 failed | 1291 passed (1293)
+    API-tester:   Tests  7 failed | 39 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > FR-PRICE-004: the cheapest is among fresh prices only (not the old Oda or Kiwi prices)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > shows each chain with price, unit price and date; fresh first, then old and uncollected ones
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 the item page > own prices, and external ones for the barcode the item was scanned with
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > after the cache has run out, stored prices are shown with their date and status “unavailable”
+      feilet: |api-db| test/prices.api.test.ts > spec 12 cleanup (worker) > deletes lookups and observations not fetched for 30 days, and keeps newer ones
+      feilet: |api-db| test/prices.api.test.ts > spec 12 requests at the same moment > 10 at once for the same barcode: one call to Kassalapp, all answer 200, one row per chain
+      feilet: |api-db| test/prices.api.test.ts > spec 12 the six-hour cache > a new answer replaces what was stored (one row per chain, never duplicates)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 the Kassalapp provider > turns kroner into øre, keeps one row per chain and skips a price with three decimals
+      feilet: |shared| src/prices/rules.test.ts > spec 12 kronerToOre (the one floating-point number, from Kassalapp) > 1.005 kr → null
+2. Grensen for gamle priser er 14 dager inkludert (>= i stedet for >)
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |shared| src/prices/rules.test.ts > spec 12 stale prices (14 days, Kassalapp’s own limit) > exactly 14 days is fresh, a millisecond more is stale
+3. Priser blir aldri gamle
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  3 failed | 1290 passed (1293)
+    API-tester:   Tests  4 failed | 42 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > FR-PRICE-004: the cheapest is among fresh prices only (not the old Oda or Kiwi prices)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > shows each chain with price, unit price and date; fresh first, then old and uncollected ones
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 the item page > own prices, and external ones for the barcode the item was scanned with
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > stored prices that have gone stale are not used
+      feilet: |shared| src/prices/rules.test.ts > spec 12 stale prices (14 days, Kassalapp’s own limit) > an old price from 2024 is stale
+      feilet: |shared| src/prices/rules.test.ts > spec 12 stale prices (14 days, Kassalapp’s own limit) > chains Kassalapp no longer collects are never fresh, however new the date
+      feilet: |shared| src/prices/rules.test.ts > spec 12 stale prices (14 days, Kassalapp’s own limit) > exactly 14 days is fresh, a millisecond more is stale
+4. Coop regnes som en kjede Kassalapp henter priser fra
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |shared| src/prices/rules.test.ts > spec 12 stale prices (14 days, Kassalapp’s own limit) > chains Kassalapp no longer collects are never fresh, however new the date
+5. Egne priser blir aldri merket som gamle
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > prices more than 90 days old are marked
+      feilet: |shared| src/prices/rules.test.ts > spec 12 old own prices (90 days) > 90 days is not old, 91 is
+6. «Billigst» tar med priser som ikke er ferske
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  3 failed | 1290 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > FR-PRICE-004: the cheapest is among fresh prices only (not the old Oda or Kiwi prices)
+      feilet: |api| src/providers/ocr/tesseract.test.ts > TesseractOcr (spec 08 FR-RCPT-003) > many junk words with low confidence do not beat fewer confident ones (the pilot, psm 6)
+      feilet: |shared| src/prices/rules.test.ts > FR-PRICE-004 cheapestFresh > nothing fresh gives no cheapest at all
+      feilet: |shared| src/prices/rules.test.ts > FR-PRICE-004 cheapestFresh > picks the lowest fresh price and never a stale one
+7. Medianen tar den dyreste av de to i midten
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  2 failed | 1291 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |shared| src/prices/rules.test.ts > lowerMedian > [3000,2000] → 2000
+      feilet: |shared| src/prices/rules.test.ts > lowerMedian > [4000,1000,3000,2000] → 2000
+8. Egen pris skaleres selv når enheten er en annen
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  2 failed | 1291 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > own price first (scaled or “as last time”); unknown lines are counted, never 0
+      feilet: |shared| src/prices/rules.test.ts > FR-PRICE-003 estimateLine > own price in another unit and nothing else → unitMismatch
+      feilet: |shared| src/prices/rules.test.ts > FR-PRICE-003 estimateLine > own price in another unit falls back to Kassalapp
+9. En linje uten pris telles som 0 kr i anslaget
+    endret: packages/shared/src/prices/rules.ts
+    enhetstester: Tests  2 failed | 1291 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > own price first (scaled or “as last time”); unknown lines are counted, never 0
+      feilet: |shared| src/prices/rules.test.ts > FR-PRICE-003 summarizeEstimates (honest coverage) > no line with a price gives 0 estimated lines, not a total of 0 kr for the list
+      feilet: |shared| src/prices/rules.test.ts > FR-PRICE-003 summarizeEstimates (honest coverage) > sums only the lines with an estimate and counts the rest as missing
+10. 429 stopper ikke nye kall (Retry-After ignoreres)
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 the Kassalapp provider > 429: no new calls until Retry-After has passed
+11. Ingen egen grense for hele serveren
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 the Kassalapp provider > our own limit for the whole server stops calls before Kassalapp’s
+12. Omdirigeringer følges (nøkkelen kan sendes videre)
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 the Kassalapp provider > never follows a redirect (it could carry the key elsewhere)
+13. Ingen grense på størrelsen av svaret
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 the Kassalapp provider > a huge answer is not read
+14. Lenker til andre nettsteder enn kassal.app godtas
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 reading one product row > keeps only https links to kassal.app
+15. En dato langt fram i tid godtas
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 reading one product row > skips a row with a date three days ahead
+16. http godtas som adresse (nøkkelen ukryptert)
+    endret: apps/api/src/providers/prices/kassalapp.ts
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |api| src/providers/prices/kassalapp.test.ts > spec 12 the Kassalapp provider > refuses an http base address (the key would travel unencrypted)
+17. Hurtiglageret brukes ikke (Kassalapp spørres hver gang)
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  3 failed | 43 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > over the per-user limit: external prices are “unavailable”, the page still answers 200
+      feilet: |api-db| test/prices.api.test.ts > spec 12 the six-hour cache > asks Kassalapp once in six hours, for every household
+      feilet: |api-db| test/prices.api.test.ts > spec 12 the six-hour cache > “not found” is cached too
+18. Lagrede priser vises uansett alder når Kassalapp er nede
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > stored prices older than 30 days are not shown
+19. Ingen grense per bruker
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > over the per-user limit: external prices are “unavailable”, the page still answers 200
+20. Uten nøkkel spørres provideren likevel
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > without a key: status “off”, no request at all, and own prices still work
+21. Butikkens egen kode sendes til Kassalapp
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > a store’s own code is never sent to Kassalapp
+22. Anslaget bruker gamle priser fra Kassalapp
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > stored prices that have gone stale are not used
+23. Samtidige oppslag deler ikke kallet
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > spec 12 requests at the same moment > 10 at once for the same barcode: one call to Kassalapp, all answer 200, one row per chain
+24. Anslaget bruker lagrede Kassalapp-priser også uten nøkkel
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > without a key, stored Kassalapp prices are not used either
+25. Alle egne priser vises (ikke bare de 10 nyeste)
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > at most the 10 newest
+26. Egne priser leses for alle husholdninger
+    endret: apps/api/src/modules/prices/repo.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  46 passed (46)
+27. Varen slås opp uten husholdning (IDOR på varesiden)
+    endret: apps/api/src/modules/prices/repo.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.security.api.test.ts > B) Ola's household with Kari's item id > → 404, and Kari’s price is not in the answer
+28. Anslaget tar med avhukede linjer
+    endret: apps/api/src/modules/prices/repo.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > only open lines count
+29. Samtidig lagring av samme svar gir feil (P2002 slippes gjennom)
+    endret: apps/api/src/modules/prices/repo.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  2 failed | 44 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > spec 12 requests at the same moment > 10 at once for the same barcode: one call to Kassalapp, all answer 200, one row per chain
+      feilet: |api-db| test/prices.api.test.ts > spec 12 requests at the same moment > two servers saving the same answer at once: the second save is dropped, not an error
+30. Prisrutene sjekker ikke medlemskap
+    endret: apps/api/src/modules/prices/routes.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  39 failed | 7 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > a store’s own code is never sent to Kassalapp
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > found without any priced chain
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > FR-PRICE-004: the cheapest is among fresh prices only (not the old Oda or Kiwi prices)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > not found
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-001 external prices for a scanned barcode > shows each chain with price, unit price and date; fresh first, then old and uncollected ones
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > a barcode the household has not used shows no own prices
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > at most the 10 newest
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > a used-up batch keeps its price in the list; batches without a price are not there
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > prices more than 90 days old are marked
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 own prices > the scan page shows what the household paid for the item it put the barcode on
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 the item page > an item without a barcode: no external lookup
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 the item page > an unknown item is a 404
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-002 the item page > own prices, and external ones for the barcode the item was scanned with
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > Kassalapp prices already stored are used when there is no own price – without asking Kassalapp
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > nothing stored yet: no estimate, and still no request to Kassalapp
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > only open lines count
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > own price first (scaled or “as last time”); unknown lines are counted, never 0
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > stored prices that have gone stale are not used
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-003 the shopping list estimate > without a key, stored Kassalapp prices are not used either
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-005 an estimate is never spending > price lookups and estimates change no purchase, batch, budget or waste figure
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > after the cache has run out, stored prices are shown with their date and status “unavailable”
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > a timeout gives “unavailable”, and nothing is stored
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > over the per-user limit: external prices are “unavailable”, the page still answers 200
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > stored prices older than 30 days are not shown
+      feilet: |api-db| test/prices.api.test.ts > NFR-REL-001 when Kassalapp is down > without a key: status “off”, no request at all, and own prices still work
+      feilet: |api-db| test/prices.api.test.ts > NFR-SEC-004 the log > has no barcode and never the key; why Kassalapp did not answer is logged without the code
+      feilet: |api-db| test/prices.api.test.ts > spec 12 cleanup (worker) > deletes lookups and observations not fetched for 30 days, and keeps newer ones
+      feilet: |api-db| test/prices.api.test.ts > spec 12 requests at the same moment > 10 at once for the same barcode: one call to Kassalapp, all answer 200, one row per chain
+      feilet: |api-db| test/prices.api.test.ts > spec 12 the six-hour cache > a new answer replaces what was stored (one row per chain, never duplicates)
+      feilet: |api-db| test/prices.api.test.ts > spec 12 the six-hour cache > asks Kassalapp once in six hours, for every household
+      feilet: |api-db| test/prices.api.test.ts > spec 12 the six-hour cache > “not found” is cached too
+      feilet: |api-db| test/prices.security.api.test.ts > A) Kari's household id in the URL > prices for a barcode → 404, nothing leaks and nothing is asked
+      feilet: |api-db| test/prices.security.api.test.ts > A) Kari's household id in the URL > prices for an item → 404, nothing leaks and nothing is asked
+      feilet: |api-db| test/prices.security.api.test.ts > A) Kari's household id in the URL > the shopping list estimate → 404, nothing leaks and nothing is asked
+      feilet: |api-db| test/prices.security.api.test.ts > B) Ola's household with Kari's item id > → 404, and Kari’s price is not in the answer
+      feilet: |api-db| test/prices.security.api.test.ts > C) Kari's data never shows up for Ola > Ola’s estimate does not use Kari’s items, prices or lines
+      feilet: |api-db| test/prices.security.api.test.ts > C) Kari's data never shows up for Ola > Ola’s own item with the same name gets Ola’s price, never Kari’s
+      feilet: |api-db| test/prices.security.api.test.ts > C) Kari's data never shows up for Ola > stored Kassalapp prices only reach Ola’s estimate through Ola’s own barcodes
+      feilet: |api-db| test/prices.security.api.test.ts > C) Kari's data never shows up for Ola > the same barcode: the external prices are shared, Kari’s own price and item are not
+31. Strekkoden i prisruten logges
+    endret: apps/api/src/app.ts
+    enhetstester: Tests  1293 passed (1293)
+    API-tester:   Tests  1 failed | 45 passed (46)
+      feilet: |api-db| test/prices.api.test.ts > NFR-SEC-004 the log > has no barcode and never the key; why Kassalapp did not answer is logged without the code
+32. «Billigst» vises ikke
+    endret: apps/web/src/prices/PriceViews.tsx
+    enhetstester: Tests  2 failed | 1291 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-001/-004 the scan page > shows the cheapest fresh price, a table of fresh prices and the old ones folded away; no axe violations
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-002 the item page > no own prices yet
+33. Gamle priser står i hovedtabellen
+    endret: apps/web/src/prices/PriceViews.tsx
+    enhetstester: Tests  2 failed | 1291 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-001/-004 the scan page > only old prices: no "cheapest", and it says why
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-001/-004 the scan page > shows the cheapest fresh price, a table of fresh prices and the old ones folded away; no axe violations
+34. Teksten om manglende kjeder vises ikke
+    endret: apps/web/src/prices/PriceViews.tsx
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-001/-004 the scan page > shows the cheapest fresh price, a table of fresh prices and the old ones folded away; no axe violations
+35. Merket for gamle egne priser vises ikke
+    endret: apps/web/src/prices/PriceViews.tsx
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-001/-004 the scan page > FR-PRICE-002: own prices in their own block, with where they came from and an "old" mark
+36. Anslaget sier ikke hvor mange linjer som mangler pris
+    endret: apps/web/src/prices/ShoppingEstimate.tsx
+    enhetstester: Tests  1 failed | 1292 passed (1293)
+    API-tester:   Tests  46 passed (46)
+      feilet: |web| src/prices/prices.test.tsx > FR-PRICE-003 the shopping list estimate > says how many lines the estimate covers and how many are missing – never a total; no axe violations

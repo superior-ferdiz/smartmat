@@ -1,0 +1,178 @@
+/*
+ * Prices (phase 12, spec 12). Mobile first: one column; own and external prices are separate blocks with their own
+ * headings. Tables have three narrow columns that fit 360 px; the unit price goes under the price.
+ */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.blockTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Own prices: one row per batch; price on the right, details under the date. */
+.ownList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ownRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-3);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.ownRow:last-child {
+  border-bottom: none;
+}
+
+.ownMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.amount {
+  font-weight: var(--font-weight-semibold);
+  text-align: end;
+}
+
+.unitPrice {
+  display: block;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+.cheapest {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+}
+
+.cheapestText {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.caption {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  text-align: start;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-1);
+  border-bottom: var(--border-width) solid var(--color-border);
+  vertical-align: top;
+  text-align: start;
+}
+
+.table thead th {
+  font-weight: var(--font-weight-semibold);
+}
+
+.table .number {
+  text-align: end;
+}
+
+.table tbody th {
+  font-weight: var(--font-weight-regular);
+}
+
+.note {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.older summary,
+.perLine summary {
+  min-height: var(--tap-target);
+  padding: var(--space-2) 0;
+  cursor: pointer;
+  font-weight: var(--font-weight-semibold);
+}
+
+.older > * + * {
+  margin-top: var(--space-2);
+}
+
+.attribution {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* The shopping list estimate. */
+.estimate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.estimateSummary {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.lineList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lineList li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+}
+
+.lineText {
+  font-weight: var(--font-weight-medium);
+}

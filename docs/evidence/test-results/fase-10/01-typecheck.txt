@@ -1,0 +1,19 @@
+$ npm run typecheck
+Kjørt 2026-10-25T01:50:23Z
+
+> smartmat@0.1.0 typecheck
+> tsc -p tsconfig.json && npm run typecheck --workspaces --if-present
+
+
+> @smartmat/shared@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @smartmat/api@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @smartmat/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit
+
+Avslutningskode: 0

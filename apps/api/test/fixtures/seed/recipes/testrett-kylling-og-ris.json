@@ -1,0 +1,50 @@
+{
+  "slug": "testrett-kylling-og-ris",
+  "title": "Testrett: kylling og ris",
+  "description": "Fiktiv oppskrift for automatiske tester.",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 25,
+  "tags": ["middag", "test"],
+  "source": "test",
+  "license": "test",
+  "authors": ["Testdata (laget av KI for testene)"],
+  "ingredients": [
+    {
+      "ingredient": "kyllingfilet",
+      "amount": "400",
+      "unit": "g",
+      "text": "400 g kyllingfilet"
+    },
+    {
+      "ingredient": "ris",
+      "amount": "250",
+      "unit": "g",
+      "text": "250 g ris"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 løk"
+    },
+    {
+      "ingredient": "flote",
+      "amount": "2",
+      "unit": "dl",
+      "text": "2 dl fløte"
+    },
+    {
+      "ingredient": "sesamfro",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1 ss sesamfrø",
+      "optional": true
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt"
+    }
+  ],
+  "steps": ["Testtrinn 1.", "Testtrinn 2."]
+}

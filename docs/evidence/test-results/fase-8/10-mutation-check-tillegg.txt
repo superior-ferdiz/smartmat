@@ -1,0 +1,5 @@
+Tillegg til kjøring 2, 2026-10-24T15:35:12Z: den andre sperren bak runde 16.
+39. Repoet lukker kvitteringen uansett status (statusbetingelsen i transaksjonen fjernet)
+    endret: apps/api/src/modules/purchases/repo.ts
+    API-tester:   Tests  1 failed | 87 passed (88)
+      feilet: |api-db| test/receipts.api.test.ts > FR-RCPT-006 confirm > the repo itself refuses to close a receipt that is not in review, and saves nothing

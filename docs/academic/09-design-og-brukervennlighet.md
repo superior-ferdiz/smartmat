@@ -1,7 +1,10 @@
 # Design og brukervennlighet
 
-> **Status: UTKAST.** Første versjon skrevet etter fase 1 (2026-10-20). Innholdet beskriver det som faktisk er
-> implementert og testet i fase 1, men er skrevet av KI (Claude) og ikke gjennomgått av teamet ennå.
+> **Status: Kontrollert mot systemet av KI 2026-10-27 – ikke godkjent av teamet.** (Fase 14: filstier, kodenavn og tall
+> er sjekket mot repoet og de lagrede utdataene, og det som var utdatert, er rettet. Se kapittel 20.)
+> Historikk: Første versjon skrevet etter fase 1 (2026-10-20), et avsnitt om varsler lagt til i fase 11, og
+> oppdatert i fase 14 (2026-10-27) slik at det stemmer med appen etter fase 13. Skrevet av KI (Claude) og ikke
+> gjennomgått av teamet ennå.
 > Brukertesting med ekte personer er ikke gjort. Offisielle APP2000-krav til rapporten er ikke verifisert.
 
 ## Designprinsipper
@@ -18,8 +21,10 @@ bevisste valg:
 - **«Best før» og «Siste forbruksdag» skilles også visuelt.** Best før vises i gult/brunt (maten kan ofte fortsatt
   brukes), siste forbruksdag i rødt (mattrygghet). Rådene i teksten følger det samme skillet, og appen gir aldri råd
   om å spise mat etter siste forbruksdag.
-- **Ærlige plassholdere.** Seksjoner som ikke er bygget ennå, sier hvilken fase de kommer i. Eksempeldata på forsiden
-  er merket «Eksempeldata» både i et varsel øverst og på hvert kort.
+- **Ærlige tall og tydelig opphav.** I fase 1 var forsiden fylt med merkede eksempeldata. Fra fase 3–5 viser den ekte
+  data, og en test sjekker at ordet «Eksempeldata» ikke lenger finnes der. Det samme prinsippet gjelder senere:
+  oppskrifter som ikke er kontrollert, er merket «KI-utkast», priser fra Kassalapp er merket som anslag med dato, og
+  svinnsiden skiller faktisk verdi, anslått verdi og ukjent verdi.
 
 ## Fargesystem
 
@@ -74,7 +79,7 @@ mørkt tema ikke blinker hvitt ved innlasting (testet i Playwright).
 |---|---|
 | < 600 px | Én kolonne, bunnmeny, toppfelt med logo |
 | ≥ 600 px | To kolonner på forsiden, mer luft i kortene |
-| ≥ 900 px | Sidemeny med alle 9 seksjonene erstatter bunnmenyen |
+| ≥ 900 px | Sidemeny med alle 10 seksjonene erstatter bunnmenyen |
 | ≥ 1200 px | Tre kolonner på forsiden, bredere sidemeny |
 
 **CSS Grid** brukes til de store strukturene:
@@ -102,9 +107,10 @@ sentrerte tomtilstander.
 
 - **Mobil:** bunnmeny med Oversikt, Matlager, Skann, Oppskrifter og Mer. «Skann» er en hevet, oransje knapp i midten
   fordi det er den raskeste måten å legge til varer på. «Mer» er en egen side (ikke en meny som legger seg over
-  innholdet) med de fem andre seksjonene. Det er enklere å bruke med tastatur og skjermleser.
-- **Bred skjerm:** sidemeny med alle 9 seksjonene. Seksjoner som kommer senere (Måltidsplan, Husholdning) er merket
-  «Senere».
+  innholdet) med de seks andre seksjonene. Det er enklere å bruke med tastatur og skjermleser.
+- **Bred skjerm:** sidemeny med alle 10 seksjonene (Oversikt, Matlager, Skann, Oppskrifter, Handleliste, Budsjett,
+  Svinn, Måltidsplan, Husholdning, Innstillinger), fra én liste i `apps/web/src/app/navigation.ts`. I fase 1 var
+  seksjonene som ikke var bygd, merket «Senere». Etter fase 11 er ingen merket slik.
 - Aktiv side markeres med `aria-current="page"` og med bakgrunn, fet skrift og en strek – ikke bare farge.
 - Ved sidebytte flyttes fokus til sidens overskrift, slik at skjermlesere leser opp den nye siden.
 
@@ -125,6 +131,35 @@ Mål: WCAG 2.2 nivå AA (NFR-UX-002). Det som er gjort i fase 1:
 - Tallfelt bruker `inputmode="decimal"` i stedet for `type="number"`, fordi `type="number"` håndterer norsk
   desimalkomma dårlig.
 
+### Varsler og svinn (fase 11)
+
+- **Bjella** står i toppfeltet på telefon og øverst i sidemenyen på bred skjerm. Antallet nye varsler står i lenkens
+  navn («Varsler, 3 nye»), så skjermlesere hører det. Merket på bjella er bare den synlige kopien.
+- **Én live-region** sier «2 nye varsler» når antallet øker mens appen er åpen, ikke ved hver innlasting.
+- **Varslene** har en farget kant etter alvor (fare, advarsel, info), men meningen står i teksten. «Avvis» har et
+  navn med hele varselet, og fokus blir i listen når et varsel forsvinner.
+- **Siste forbruksdag og best før** har ulik ordlyd. Rådet for best før («se, lukt og smak») brukes aldri om siste
+  forbruksdag.
+- **Svinnsiden:** tall som tekst, søyler som pynt, en ekte tabell for 12 måneder, og skravering i tillegg til farge for
+  det som er anslått. Fire smale kolonner, så tabellen får plass på 360 px uten å skjule noe.
+- **Toast-regionen** het «Varsler» fra fase 1. Den heter nå «Meldinger», så skjermlesere ikke får to landemerker med
+  samme navn.
+
+### Endringer i fase 2–13
+
+Lagt til i fase 14. Detaljene og bevisene står i kapittel 11 og i [tilgjengelighet.md](../development/testing/tilgjengelighet.md).
+
+- **Delte husholdninger (fase 10):** en velger for aktiv husholdning, og «Lagt til av» bare når husholdningen er delt.
+  Knapper med et navn i («Fjern Ola») har navnet i `aria-label` fra i18n, fordi en skjult `<span>` ga «FjernOla».
+- **Måltidsplanen (fase 9):** én blokk per måltid med overskrifter, ikke `section`, fordi like landemerker gjorde
+  siden vanskelig å navigere med skjermleser (axe `landmark-unique`).
+- **Fokus på telefon (fase 13):** `scroll-padding` på `html`, så et felt med fokus ikke havner bak toppfeltet eller
+  bunnmenyen (WCAG 2.4.11), og fokusring på kalenderknappen i datofelt (2.4.7).
+- **Kodedeling (fase 13):** hver side lastes når den åpnes. Det gjorde at fokus ved sidebytte kom før overskriften
+  fantes, så hooken venter nå på `<h1>`.
+- **Ny kontroll (fase 13):** `e2e/a11y.spec.ts` går gjennom hvert tabulatorstopp på alle sider, tester 200 % zoom,
+  320 px, tekstavstand og redusert bevegelse.
+
 ## Hvordan designet ble testet og forbedret
 
 Testing i fase 1 er automatisk og gjort av KI-verktøyet, ikke av brukere:
@@ -141,7 +176,9 @@ Forbedringer som kom ut av dette (se kapittel 11 for detaljer):
 3. Sidemenyens bakgrunn sluttet ved skjermhøyden på lange sider. Rettet ved å la bare innholdet være «sticky».
 4. Fargeprøvene på designsystem-siden fikk bare én kolonne på mobil. Rettet.
 
-**Ikke gjort ennå:** testing med ekte skjermleser (NVDA/VoiceOver), manuell tastaturtest av teamet og brukertesting.
+**Ikke gjort per 2026-10-27:** testing med ekte skjermleser (VoiceOver, TalkBack eller NVDA), test på ekte telefon,
+manuell tastaturtest av teamet og brukertesting. Sjekklisten for teamet står i
+[tilgjengelighet.md](../development/testing/tilgjengelighet.md).
 Automatiske verktøy finner bare en del av tilgjengelighetsproblemene.
 
 ## Kilder i prosjektet

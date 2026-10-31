@@ -1,0 +1,109 @@
+{
+  "slug": "tortillasuppe",
+  "title": "Tortillasuppe med kylling",
+  "description": "Tomatsuppe med kylling, koriander og chili, servert med tortillachips, ost og oliven. Kan kokes på komfyren eller i saktekoker.",
+  "servings": 6,
+  "prepMinutes": 15,
+  "cookMinutes": 45,
+  "tags": ["middag", "suppe", "kylling", "tex-mex"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Tortilla Soup",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4600878",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir verken porsjoner eller tid. Antall porsjoner (6) og tidene for komfyren er anslått av KI. De to variantene i originalen er slått sammen.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "olje",
+      "amount": "3",
+      "unit": "ss",
+      "text": "3 ss olivenolje",
+      "optional": true
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 løk, hakket"
+    },
+    {
+      "ingredient": "hvitlok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 fedd hvitløk, finhakket"
+    },
+    {
+      "ingredient": "hakkede-tomater",
+      "amount": "400",
+      "unit": "g",
+      "text": "1 boks (400 g) hakkede tomater"
+    },
+    {
+      "ingredient": "tomatpure",
+      "amount": "170",
+      "unit": "g",
+      "text": "1 boks (170–225 g) tomatpuré"
+    },
+    {
+      "ingredient": "buljong",
+      "amount": "1,4",
+      "unit": "l",
+      "text": "1,4 liter kyllingkraft"
+    },
+    {
+      "ingredient": "koriander",
+      "text": "1 ss hakket frisk koriander (eller 1 ts tørket)"
+    },
+    {
+      "ingredient": "kyllingfilet",
+      "amount": "300",
+      "unit": "g",
+      "text": "2–3 kyllingfileter uten skinn og bein (ca. 300 g)"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "1/2",
+      "unit": "ts",
+      "text": "½ ts salt",
+      "optional": true
+    },
+    {
+      "ingredient": "pepper",
+      "amount": "1/2",
+      "unit": "ts",
+      "text": "½ ts nykvernet sort pepper"
+    },
+    {
+      "ingredient": "chili",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 jalapeño uten frø, i terninger (eller ½ ts kajennepepper)",
+      "optional": true
+    },
+    {
+      "ingredient": "tortillachips",
+      "text": "Sprø tortillaer eller tortillachips"
+    },
+    {
+      "ingredient": "gulost",
+      "text": "Revet ost, for eksempel Monterey Jack"
+    },
+    {
+      "ingredient": "oliven",
+      "text": "Svarte oliven i skiver",
+      "optional": true
+    }
+  ],
+  "steps": [
+    "Fres løk og hvitløk i olivenolje i en stor gryte.",
+    "Ha i tomater, tomatpuré, koriander, kylling, kraft, salt, pepper og jalapeño.",
+    "La suppen småkoke på middels varme til kyllingen er gjennomkokt.",
+    "Ta ut kyllingen, del den grovt og ha den tilbake i suppen.",
+    "Server suppen i skåler med tortillachips, ost og oliven på toppen.",
+    "I saktekoker: Ha alt unntatt chips, ost og oliven i saktekokeren, og kok på lav varme i 6–9 timer. Fortsett så fra punkt 4."
+  ]
+}

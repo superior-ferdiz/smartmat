@@ -1,0 +1,72 @@
+{
+  "slug": "ertesuppe",
+  "title": "Ertesuppe med røkt svinekjøtt",
+  "description": "Ertesuppe av tørkede gule erter og røkt svinekjøtt. Ertene må bløtlegges over natten.",
+  "servings": 12,
+  "prepMinutes": 20,
+  "cookMinutes": 120,
+  "tags": ["middag", "suppe", "norsk", "svin"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Ertesuppe (Pea Soup)",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4524739",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen bruker amerikanske mål (cups, pund). De er regnet om til metriske mål av KI. Tidene er anslått av KI (originalen sier «over natten pluss 2 timer»).",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "gule-erter",
+      "amount": "450",
+      "unit": "g",
+      "text": "450 g tørkede gule erter"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "2,8",
+      "unit": "l",
+      "text": "2,8 liter vann"
+    },
+    {
+      "ingredient": "rokt-svinekjott",
+      "amount": "900",
+      "unit": "g",
+      "text": "900 g–1,4 kg røkt svinebog eller nakke"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 stor gul løk, skrelt og hakket"
+    },
+    {
+      "ingredient": "pepper",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ts sort pepper"
+    },
+    {
+      "ingredient": "salt",
+      "amount": "1",
+      "unit": "ts",
+      "text": "1 ts salt"
+    },
+    {
+      "ingredient": "timian",
+      "amount": "1/4",
+      "unit": "ts",
+      "text": "¼ ts timian"
+    }
+  ],
+  "steps": [
+    "Bløtlegg ertene over natten i omtrent 1 liter kaldt vann.",
+    "Tilsett 1,8 liter vann til ertene og bløtleggingsvannet. La ertene småkoke i en gryte til de er myke.",
+    "Kok det røkte kjøttet i en annen gryte, omtrent 1½ time per kilo.",
+    "Skjær kjøttet i små terninger, og ha det i ertesuppen.",
+    "Tilsett løken og halvparten av saltet og pepperet. Smak til, og rør inn timianen.",
+    "Kok alt sammen i minst 5 minutter. Spe med kokevann fra kjøttet hvis suppen er for tykk, og kok lenger hvis den er for tynn.",
+    "Server med en gang, eller avkjøl og varm opp neste dag. Passer som middag, eller med brød som et enkelt måltid."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "slug": "rod-linsesuppe",
+  "title": "Rød linsesuppe",
+  "description": "Enkel suppe av røde linser, løk, gulrot og hvitløk.",
+  "servings": 4,
+  "prepMinutes": 10,
+  "cookMinutes": 30,
+  "tags": ["middag", "suppe", "vegetar", "vegansk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Red Lentil Soup",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4518501",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Tidene er anslått av KI (originalen oppgir ingen). Vann eller kraft er regnet som vann.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "olje",
+      "amount": "1",
+      "unit": "ss",
+      "text": "1–2 ss olivenolje"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 løk i terninger"
+    },
+    {
+      "ingredient": "gulrot",
+      "amount": "2",
+      "unit": "stk",
+      "text": "2 gulrøtter i terninger"
+    },
+    {
+      "ingredient": "hvitlok",
+      "amount": "2",
+      "unit": "stk",
+      "text": "2 fedd hvitløk, finhakket"
+    },
+    {
+      "ingredient": "linser",
+      "amount": "225",
+      "unit": "g",
+      "text": "225 g tørkede røde linser"
+    },
+    {
+      "ingredient": "vann",
+      "amount": "1,4",
+      "unit": "l",
+      "text": "1,4 liter vann eller kraft"
+    },
+    {
+      "ingredient": "laurbaerblad",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 laurbærblad"
+    }
+  ],
+  "steps": [
+    "Plukk bort eventuelt rusk fra linsene. Skyll dem godt.",
+    "Varm olivenoljen i en stor kjele på middels varme. Når oljen er varm, har du i løk og gulrot. Fres i noen minutter til grønnsakene begynner å bli myke, og ha så i hvitløken.",
+    "Ha linsene, laurbærbladet og vannet i kjelen. La suppen småkoke på lav til middels varme i 20–30 minutter, til linsene er myke.",
+    "Server varm."
+  ]
+}

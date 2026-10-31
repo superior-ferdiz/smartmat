@@ -1,0 +1,13 @@
+$ npx prisma migrate status
+# Kjørt 2026-10-21 18:18:24 UTC, Node v22.14.0, npm 11.1.0
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": PostgreSQL database "smartmat", schema "public" at "127.0.0.1:55432"
+
+5 migrations found in prisma/migrations
+
+Database schema is up to date!
+
+# exit code: 0

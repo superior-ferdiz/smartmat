@@ -1,0 +1,63 @@
+{
+  "slug": "kalsuppe",
+  "title": "Kålsuppe",
+  "description": "Svensk kålsuppe av hvitkål brunet i smør og kokt i kraft med allehånde.",
+  "servings": 4,
+  "prepMinutes": 15,
+  "cookMinutes": 30,
+  "tags": ["middag", "suppe", "svensk"],
+  "source": "external",
+  "license": "CC-BY-SA-4.0",
+  "authors": ["Bidragsytere til Wikibooks"],
+  "sourceTitle": "Swedish Cabbage Soup (Kålsoppa)",
+  "sourceUrl": "https://en.wikibooks.org/w/index.php?oldid=4630364",
+  "retrievedOn": "2026-10-24",
+  "adaptation": "adapted",
+  "adaptationNote": "Originalen oppgir 45 minutter totalt. Delingen i forberedelse og koking er gjort av KI.",
+  "aiAssisted": true,
+  "reviewedBy": [],
+  "ingredients": [
+    {
+      "ingredient": "smor",
+      "text": "Smør til bruning"
+    },
+    {
+      "ingredient": "lok",
+      "amount": "1",
+      "unit": "stk",
+      "text": "1 gul løk, hakket",
+      "optional": true
+    },
+    {
+      "ingredient": "hvitkal",
+      "amount": "1",
+      "unit": "kg",
+      "text": "1 kg hvitkål i strimler"
+    },
+    {
+      "ingredient": "buljong",
+      "text": "Svinekraft"
+    },
+    {
+      "ingredient": "salt",
+      "text": "Salt"
+    },
+    {
+      "ingredient": "pepper",
+      "text": "Malt hvit pepper"
+    },
+    {
+      "ingredient": "allehande",
+      "text": "12 hele allehåndekorn"
+    }
+  ],
+  "steps": [
+    "Del kålhodet i fire, og fjern stilken i midten.",
+    "Skjær kålen på tvers i strimler som er 3 mm eller tynnere.",
+    "Smelt litt smør i en støpejernsgryte, og fres løken til den er myk.",
+    "Ha i kålen og fres til den er lett brunet.",
+    "Hell på kraft så det dekker kålen. Krydre med salt, hvit pepper og 12 hele allehåndekorn.",
+    "La suppen koke forsiktig i 30–45 minutter.",
+    "Server med knekkebrød, smør og ost."
+  ]
+}

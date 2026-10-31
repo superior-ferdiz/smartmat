@@ -1,8 +1,7 @@
 import { useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { localeSchema, SUPPORTED_LOCALES } from '@smartmat/shared';
-import { Alert } from '../components/Alert/Alert';
-import { LinkButton } from '../components/Button/Button';
+import { Button, LinkButton } from '../components/Button/Button';
 import { Card } from '../components/Card/Card';
 import { Select } from '../components/Select/Select';
 import { useToast } from '../components/Toast/toastContext';
@@ -12,22 +11,35 @@ import {
   THEME_PREFERENCES,
   type ThemePreference,
 } from '../app/theme';
-import { DESIGN_SYSTEM_PATH } from '../app/navigation';
-import { changeLocale } from '../i18n';
+import { DESIGN_SYSTEM_PATH, PROFILE_PATH } from '../app/navigation';
+import { useCurrentUser, useLogout, useUpdateProfile } from '../auth/session';
 import { Page } from '../layout/Page';
+import { NotificationSettingsCard } from '../notifications/NotificationSettingsCard';
 import styles from './SettingsPage.module.css';
 
-/** FR-UI-004 (theme) and FR-UI-005 (language). Both apply immediately – no save button. */
+/**
+ * FR-UI-004 (theme) and FR-UI-005 (language). Both apply immediately – no save button.
+ * The language is saved on the account (FR-AUTH-004), so it follows the user to other devices.
+ * The theme stays in this browser: it is about the screen, not the person.
+ */
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { show } = useToast();
+  const user = useCurrentUser();
+  const updateProfile = useUpdateProfile();
+  const logout = useLogout();
   const [theme, setTheme] = useState<ThemePreference>(readThemePreference);
 
-  async function handleLanguage(event: ChangeEvent<HTMLSelectElement>) {
+  function handleLanguage(event: ChangeEvent<HTMLSelectElement>) {
     const parsed = localeSchema.safeParse(event.target.value);
     if (!parsed.success) return;
-    await changeLocale(parsed.data);
-    show({ message: t('pages.settings.saved') });
+    updateProfile.mutate(
+      { locale: parsed.data },
+      {
+        onSuccess: () => show({ message: t('pages.settings.saved') }),
+        onError: () => show({ variant: 'error', message: t('pages.settings.saveFailed') }),
+      },
+    );
   }
 
   function handleTheme(event: ChangeEvent<HTMLSelectElement>) {
@@ -49,7 +61,7 @@ export function SettingsPage() {
               label={t('pages.settings.language')}
               hint={t('pages.settings.languageHint')}
               value={i18n.resolvedLanguage ?? 'nb-NO'}
-              onChange={(event) => void handleLanguage(event)}
+              onChange={handleLanguage}
               options={SUPPORTED_LOCALES.map((locale) => ({
                 value: locale,
                 label: t(`languages.${locale}`),
@@ -69,8 +81,20 @@ export function SettingsPage() {
           </div>
         </Card>
 
+        <NotificationSettingsCard />
+
         <Card title={t('pages.settings.account')}>
-          <Alert variant="info">{t('pages.settings.accountLater')}</Alert>
+          <p className={styles.text}>
+            {t('pages.settings.loggedInAs', { name: user.displayName, email: user.email })}
+          </p>
+          <div className={styles.buttons}>
+            <LinkButton to={PROFILE_PATH} variant="secondary">
+              {t('pages.settings.openProfile')}
+            </LinkButton>
+            <Button variant="ghost" loading={logout.isPending} onClick={() => logout.mutate()}>
+              {t('auth.logout')}
+            </Button>
+          </div>
         </Card>
 
         <Card title={t('pages.settings.developer')}>

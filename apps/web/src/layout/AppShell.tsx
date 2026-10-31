@@ -1,9 +1,15 @@
-import { useEffect, useRef } from 'react';
-import { Outlet, ScrollRestoration, useLocation } from 'react-router';
+import { useRef } from 'react';
+import { Outlet, ScrollRestoration } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { ActiveHousehold } from './ActiveHousehold';
+import { BackupBanner } from './BackupBanner';
 import { BottomNav } from './BottomNav';
+import { LoginNotices } from './LoginNotices';
+import { NotificationAnnouncer } from './NotificationAnnouncer';
 import { SideNav } from './SideNav';
+import { StagingBanner } from './StagingBanner';
 import { TopBar } from './TopBar';
+import { useFocusHeadingOnNavigate } from './useFocusHeadingOnNavigate';
 import styles from './AppShell.module.css';
 
 /**
@@ -12,19 +18,8 @@ import styles from './AppShell.module.css';
  */
 export function AppShell() {
   const { t } = useTranslation();
-  const { pathname } = useLocation();
   const mainRef = useRef<HTMLElement>(null);
-  const isFirstRender = useRef(true);
-
-  // After client-side navigation, move focus to the new page's <h1>. Screen readers then announce the
-  // page, and keyboard users continue from the top of the content instead of the menu.
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    mainRef.current?.querySelector<HTMLElement>('h1')?.focus();
-  }, [pathname]);
+  useFocusHeadingOnNavigate(mainRef);
 
   return (
     <div className={styles.shell}>
@@ -34,9 +29,14 @@ export function AppShell() {
       <TopBar className={styles.top} />
       <SideNav className={styles.side} />
       <main id="hovedinnhold" ref={mainRef} className={styles.main} tabIndex={-1}>
+        <StagingBanner />
+        <BackupBanner />
+        <LoginNotices />
+        <ActiveHousehold />
         <Outlet />
       </main>
       <BottomNav className={styles.bottom} />
+      <NotificationAnnouncer />
       <ScrollRestoration />
     </div>
   );

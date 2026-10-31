@@ -1,0 +1,16 @@
+# Andre kjøring, bare runde 15, 19 og 26, 2026-10-27T13:49:09Z: ONLY="15 19 26" bash docs/evidence/test-results/fase-13/10-mutation-check.sh
+15. En sjekk som har sluttet å kjøre, vises som ok
+    endret: apps/api/src/modules/ops/backupStatus.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  57 passed (57)
+19. Samme kode to ganger samtidig gir to økter (betinget skriving fjernet)
+    endret: apps/api/src/modules/twoFactor/repo.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 56 passed (57)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > a code works once: the same code in a new login is refused (no replay)
+26. En sperret konto kan fullføre steg to
+    endret: apps/api/src/modules/auth/service.ts
+    enhetstester: Tests  1362 passed (1362)
+    API-tester:   Tests  1 failed | 56 passed (57)
+      feilet: |api-db| test/twoFactor.security.api.test.ts > FR-AUTH-010 logging in with two-factor > a challenge made before the lock cannot be used while the account is locked
+# Ferdig 2026-10-27T13:52:58Z
