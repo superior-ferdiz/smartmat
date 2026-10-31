@@ -2,7 +2,7 @@
 
 > **Status: UTKAST skrevet av KI (Claude) i fase 14, 2026-10-27, fra [KI-loggen](../evidence/ai-usage/ai-logg.md).
 > Fakta oppdatert 2026-10-29 (del 3).**
-> Dette er ikke teamets erklæring før Ferdinand Risan og Linus Saxe Huseby har lest den, rettet det som er feil,
+> Dette er ikke teamets erklæring før Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni har lest den, rettet det som er feil,
 > skrevet sine egne avsnitt og signert. KI-assistenten har bare fylt inn fakta fra loggene. Teamets meninger og
 > vurderinger er ikke fylt inn. Kravene emnet stiller til en slik erklæring, er ikke kjent, så formen er et forslag.
 
@@ -52,6 +52,8 @@ Fra loggene. **Teamet må rette og utfylle denne listen.**
 - 2026-10-29 oppga Ferdinand at endringene i fase 2–14 er «gjennomgått i plenum og godkjent». Hvem som var med, omfang og funn er
   ikke oppgitt.
 - Linus Saxe Huseby har ikke vært med i noen økt med KI-verktøyet.
+- 2026-10-31 oppga Ferdinand at teamet også omfatter Hasan Alhafni, og at hver fase er laget av de tre. Hasan Alhafni
+  har ikke vært med i noen økt med KI-verktøyet, og hva han har gjort i hver fase, er ikke oppgitt.
 
 <!-- Teamet skriver: hva dere har gjort utenom øktene med KI – lest kode, testet appen, diskutert, skrevet tekst,
 endret noe selv. Bare det som faktisk er gjort. -->
@@ -86,6 +88,7 @@ av KI. -->
 |---|---|---|
 | Ferdinand Risan | | |
 | Linus Saxe Huseby | | |
+| Hasan Alhafni | | |
 
 ## Kilder i prosjektet
 

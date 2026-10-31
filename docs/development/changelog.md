@@ -2,6 +2,11 @@
 
 ## [Ikke utgitt]
 
+### Dokumentasjon – 2026-10-31 (grenen `fase-14`, Ferdinands forespørsel)
+- **README og veikart:** status oppdatert til fase 15 (pågår); fase 15 lagt inn i veikartet.
+- **Teamet:** Hasan Alhafni lagt til der teamet nevnes (README, CLAUDE.md, behandlingsansvarlige, kapittel 15,
+  KI-erklæringen med signaturlinje). Datert logg over hvem som var med i hver økt er ikke endret.
+
 ### Fase 15 – 2026-10-30 (grenen `fase-15`)
 - **Egne oppskrifter** (FR-REC-007–010, ADR-0023): husholdningen kan lage, endre og slette oppskrifter i den felles
   oppskriftstabellen (`source = household`, `household_id`). Linjer velges fra ingredienslisten med mengde og enhet,

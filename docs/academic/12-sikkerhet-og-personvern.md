@@ -244,7 +244,7 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   User-Agent. En strekkode alene sier ikke hvem som skannet den. Det mellomlagrede svaret (`products`) har ingen
   data om brukere.
 - **Det lukkede testmiljøet** (ADR-0015, ikke satt opp per 2026-10-22):
-  - Behandlingsansvarlige er studentene (Ferdinand Risan og Linus Saxe Huseby), etter Ferdinands svar i chat
+  - Behandlingsansvarlige er studentene (Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni), etter Ferdinands svar i chat
     2026-10-22.
   - Serveren står i Tyskland (EØS) og driftes av Ferdinand. Leverandøren av serveren er dermed databehandler. Om det
     finnes en databehandleravtale, er ikke undersøkt.

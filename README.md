@@ -4,13 +4,15 @@ SmartMat er en norsk webapplikasjon som skal hjelpe husholdninger å redusere ma
 matbudsjettet: digitalt matlager med holdbarhetsdatoer, registrering av kjøp, budsjett, oppskriftsforslag
 basert på det man har, handleliste, måltidsplan og strekkode- og kvitteringsskanning.
 
-Prosjektet utvikles av Ferdinand Risan og Linus Saxe Huseby som gruppeprosjekt i APP2000 –
+Prosjektet utvikles av Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni som gruppeprosjekt i APP2000 –
 Applikasjonsutvikling for web (USN, 2026/2027), med KI-assistert og spesifikasjonsdrevet utvikling (SDD).
 
 ## Status
 
-Fase 1–13 er implementert og testet av KI (Claude), og fase 14 (akademisk ferdigstilling) pågår (2026-10-27). Hver
-fase har sin egen gren (`fase-2` … `fase-14`), og ingenting er merget til `main` ennå. Appen har innlogging (med
+Fase 1–14 er gjennomført, og fase 15 (egne oppskrifter, allergier i Innstillinger og priser på oppskrifter) pågår
+(2026-10-31). Alle fasene er laget av teamet med KI-assistanse (Claude Code); hvordan KI er brukt, står i
+[KI-loggen](docs/evidence/ai-usage/ai-logg.md) og [KI-erklæringen](docs/academic/vedlegg-ki-erklaering.md). Hver fase
+har sin egen gren (`fase-2` … `fase-15`) og slås sammen til `main` med en pull request. Appen har innlogging (med
 valgfri tofaktor), matlager med holdbarhet og svinnlogg, kjøp og budsjett, oppskrifter fra Wikibooks med forklart
 rangering, handleliste, strekkodeskanning, kvitteringslesing (eksperimentell), måltidsplan, delte husholdninger,
 svinnstatistikk, varsler i appen og prisanslag. Et lukket testmiljø kjører på `smartmat.risansolutions.no` bak basic
