@@ -29,6 +29,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
       sensitive: { max: 1000, windowMs: 60_000 },
       invitation: { max: 1000, windowMs: 60_000 },
       export: { max: 1000, windowMs: 60_000 },
+      passwordReset: { max: 1000, windowMs: 60_000 },
     },
     invitationAttemptsPerUser: 1000,
     // No User-Agent: Open Food Facts is never called from tests. Tests pass a fake provider instead.
@@ -54,6 +55,16 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     totpEncryptionKey: Buffer.alloc(32, 7),
     // Off: tests that need the check pass `pwnedPasswords` with a fake fetch (fakePwned.ts).
     pwnedPasswords: { enabled: false, baseUrl: 'https://api.pwnedpasswords.com', timeoutMs: 2000 },
+    // Spec 17: made-up settings. No test ever connects: they pass a fake mail queue and a fake sender (fakeMail.ts).
+    mail: {
+      host: 'smtp.example.test',
+      port: 587,
+      user: 'smartmat@example.test',
+      password: 'not-a-real-password',
+      from: { address: 'smartmat@example.test', name: 'SmartMat' },
+      linkOrigin: ORIGIN,
+    },
+    passwordResetsPerHour: 3,
     // No key: Kassalapp is never called from tests. Tests pass a provider with a fake fetch instead.
     prices: {
       kassalappBaseUrl: 'https://kassal.app/api/v1',

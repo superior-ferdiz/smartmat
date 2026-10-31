@@ -7,6 +7,10 @@ import {
   loginSchema,
   newPasswordSchema,
   PASSWORD_MAX_LENGTH,
+  passwordResetConfirmSchema,
+  passwordResetLink,
+  passwordResetRequestSchema,
+  tokenFromResetHash,
   PASSWORD_MIN_LENGTH,
   registerSchema,
   updateProfileSchema,
@@ -120,5 +124,47 @@ describe('FR-AUTH-004/005 profile, password change, delete', () => {
     expect(firstMessage(deleteAccountSchema.safeParse({ password: '' }))).toBe(
       'validation.password.required',
     );
+  });
+});
+
+describe('FR-AUTH-006 "Glemt passord" (spec 17)', () => {
+  const token = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJ0123-_6';
+
+  it('the link has the token after #, so a browser never sends it to the server', () => {
+    expect(passwordResetLink('https://smartmat.example.test/', token)).toBe(
+      `https://smartmat.example.test/nytt-passord#${token}`,
+    );
+  });
+
+  it('reads the token from the fragment; anything else is no token', () => {
+    expect(tokenFromResetHash(`#${token}`)).toBe(token);
+    expect(tokenFromResetHash(token)).toBe(token);
+    expect(tokenFromResetHash('')).toBeNull();
+    expect(tokenFromResetHash('#kort')).toBeNull();
+    expect(tokenFromResetHash(`#${token}x`)).toBeNull();
+    expect(tokenFromResetHash(`#${token.slice(0, 42)}!`)).toBeNull();
+  });
+
+  it('the request has only the address, trimmed and in lower case', () => {
+    expect(passwordResetRequestSchema.parse({ email: '  Kari@Example.TEST ' })).toEqual({
+      email: 'kari@example.test',
+    });
+    expect(firstMessage(passwordResetRequestSchema.safeParse({ email: '' }))).toBe(
+      'validation.email.required',
+    );
+  });
+
+  it('the new password follows the same rules as at registration; a missing token is a dead link', () => {
+    expect(firstMessage(passwordResetConfirmSchema.safeParse({ token, newPassword: 'kort' }))).toBe(
+      'validation.password.tooShort',
+    );
+    expect(
+      firstMessage(
+        passwordResetConfirmSchema.safeParse({ token: '', newPassword: 'langt nok passord' }),
+      ),
+    ).toBe('errors.auth.resetLinkInvalid');
+    expect(
+      passwordResetConfirmSchema.safeParse({ token, newPassword: 'langt nok passord' }).success,
+    ).toBe(true);
   });
 });

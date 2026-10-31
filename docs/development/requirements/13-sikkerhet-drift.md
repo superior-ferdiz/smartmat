@@ -27,7 +27,8 @@ lest og dokumentert i [integrations/pwned-passwords.md](../integrations/pwned-pa
 
 ## Utenfor fasen (venter på teamet)
 
-- **E-post (FR-AUTH-006):** ingen tjeneste, så ingen kode. Se «Hva e-post krever» nederst.
+- **E-post (FR-AUTH-006):** ingen tjeneste, så ingen kode. Se «Hva e-post krever» nederst. *Oppdatert 2026-10-31:
+  tilbakestilling av passord er gjort i fase 16 ([spesifikasjon 17](17-glemt-passord.md), ADR-0024).*
 - **Produksjon:** ikke bestemt, så ingen ADR og ikke noe oppsett. Bare det lukkede testmiljøet.
 - **Varsler på e-post eller push:** krever egen ADR (ADR-0019).
 
@@ -146,6 +147,10 @@ lest og dokumentert i [integrations/pwned-passwords.md](../integrations/pwned-pa
 - En sjekkliste for VoiceOver og TalkBack som teamet fyller ut. Det som bare kan testes av mennesker, står der.
 
 ## Hva e-post krever (FR-AUTH-006, beslutningsnotat)
+
+*Oppdatert 2026-10-31:* teamet valgte en Gmail-konto (fase 16). Punkt 2–4 er fulgt (ADR-0024, flyten i
+[spesifikasjon 17](17-glemt-passord.md)); punkt 1 er ikke, fordi en vanlig Gmail-konto ikke har databehandleravtale.
+Det står som åpen risiko i ADR-0024. Teksten under er notatet slik det var.
 
 Ingen kode før teamet har bestemt seg. Det som trengs:
 

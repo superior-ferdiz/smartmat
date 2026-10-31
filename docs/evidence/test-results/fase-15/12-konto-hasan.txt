@@ -1,0 +1,10 @@
+Konto i testmiljøet for Hasan Alhafni (2026-10-31, ca. 12:38 UTC). Kjørt av Claude på Ferdinands forespørsel.
+Passordet er tilfeldig (20 tegn), ligger i /opt/Websites/smartmat-private/kontoer-testmiljo.txt (0600) og står
+ikke i denne filen.
+
+$ printf '%s\n' "<passord>" | docker exec -i smartmat-staging-app npm run -s create-user -w @smartmat/api -- --email hasan@smartmat.test --name "Hasan Alhafni"
+Kontoen er laget (bruker-id 01a191f8-474e-74ab-a6f1-344d71a1d257).
+
+Kontroll: POST https://smartmat.risansolutions.no/api/v1/auth/login (gjennom Caddy, med basic auth og Origin)
+hasan@smartmat.test -> 200
+Kontrollinnloggingen laget en økt og et varsel om ny innlogging på kontoen.

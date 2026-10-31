@@ -412,6 +412,18 @@ Lagt til i fase 15 (migrering `20261030120000_household_recipes`, ADR-0023).
   globale oppskrifter har ingen husholdning, og med `MATCH SIMPLE` sjekkes ikke en nøkkel der én kolonne er tom.
   Derfor en trigger.
 
+### Lenker for nytt passord (fase 16)
+
+Lagt til i fase 16 (migrering `20261031120000_password_reset`, spesifikasjon 17).
+
+- **`password_reset_tokens`** (`user_id`, `token_hash` unik, `created_at`, `expires_at`, `used_at`): en engangslenke.
+  Bare SHA-256 av tokenet lagres. CASCADE fra brukeren. Ingen `household_id`: raden tilhører kontoen.
+  - CHECK `password_reset_tokens_expiry`: `expires_at > created_at`.
+  - CHECK `password_reset_tokens_used`: `used_at` er tom eller ikke før `created_at`.
+  - Indeks på (`user_id`, `created_at`) for grensen per time, og på `created_at` for nattjobben.
+- «Brukt» og «erstattet av en nyere lenke» lagres likt (`used_at` satt). Raden blir liggende et døgn, så den teller
+  med i grensen på 3 e-poster i timen, og slettes så av nattjobben.
+
 ## Viktige begrensninger
 
 | Begrensning | Hvorfor |

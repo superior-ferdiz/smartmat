@@ -25,3 +25,9 @@
   display: grid;
   gap: var(--space-2);
 }
+
+/* Spec 17: "Glemt passordet?" under the login button. */
+.forgot {
+  justify-self: center;
+  padding-block: var(--space-2);
+}

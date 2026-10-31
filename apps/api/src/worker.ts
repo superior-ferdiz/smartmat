@@ -12,6 +12,7 @@ import { ReceiptProcessor } from './modules/receipts/processor';
 import { createPriceRepo } from './modules/prices/repo';
 import { PRICE_KEEP_MS } from './modules/prices/service';
 import { createReceiptRepo } from './modules/receipts/repo';
+import { createPasswordResetRepo } from './modules/passwordReset/repo';
 import { createSessionsRepo } from './modules/sessions/repo';
 import { createTwoFactorRepo } from './modules/twoFactor/repo';
 import { TesseractOcr } from './providers/ocr/tesseract';
@@ -20,7 +21,7 @@ import { disabledOcrProvider, type OcrProvider } from './providers/ocr/types';
 /*
  * The background worker (spec 08 FR-RCPT-003/008): reads queued receipts one at a time, and every 15 minutes
  * deletes unconfirmed receipts past their deadline and (spec 12) external prices not fetched for 30 days, and every
- * night (spec 13, FR-PRIV-002) sessions past their expiry. It is a
+ * night (spec 13, FR-PRIV-002) sessions past their expiry and (spec 17) old password reset links. It is a
  * second entry point of the API package because it uses the same database code and providers:
  *   npm run worker -w @smartmat/api
  * The log gets ids, outcomes and times only (NFR-SEC-004).
@@ -79,6 +80,8 @@ await boss.work(RECEIPT_CLEANUP_QUEUE, async () => {
 // used the app. Without this they were only removed at the same user's next login.
 const sessions = createSessionsRepo(db);
 const twoFactor = createTwoFactorRepo(db);
+const passwordResets = createPasswordResetRepo(db);
+const DAY = 24 * 60 * 60 * 1000;
 await boss.schedule(SESSION_CLEANUP_QUEUE, '17 3 * * *', null, { tz: 'Europe/Oslo' });
 await boss.work(SESSION_CLEANUP_QUEUE, async () => {
   const now = new Date();
@@ -86,6 +89,8 @@ await boss.work(SESSION_CLEANUP_QUEUE, async () => {
     {
       deleted: await sessions.deleteExpired(now),
       challenges: await twoFactor.deleteExpiredChallenges(now),
+      // Spec 17: reset links live 30 minutes; the rows are kept a day for the per-hour count, then go.
+      resetLinks: await passwordResets.deleteCreatedBefore(new Date(now.getTime() - DAY)),
     },
     'session cleanup',
   );

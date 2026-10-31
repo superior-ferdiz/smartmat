@@ -6,6 +6,8 @@ import type {
   LoginInput,
   LoginResponse,
   LoginSecondStepInput,
+  PasswordResetConfirmInput,
+  PasswordResetRequestInput,
   RegisterInput,
   SessionResponse,
   SessionUser,
@@ -131,6 +133,31 @@ export function useChangePassword() {
   return useMutation({
     mutationFn: (input: ChangePasswordInput) =>
       apiFetch<void>('/me/password', { method: 'POST', body: input }),
+  });
+}
+
+/** Spec 17 (FR-AUTH-006a): the answer is the same whether the address has an account. */
+export function useRequestPasswordReset() {
+  return useMutation({
+    mutationFn: (input: PasswordResetRequestInput) =>
+      apiFetch<void>('/auth/password-reset', { method: 'POST', body: input }),
+  });
+}
+
+/**
+ * Spec 17 (FR-AUTH-006c/d): every session of the account ends on the server, so a session this browser had is
+ * forgotten too (with everything cached for it).
+ */
+export function useConfirmPasswordReset() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: PasswordResetConfirmInput) =>
+      apiFetch<void>('/auth/password-reset/confirm', { method: 'POST', body: input }),
+    // removeQueries, not clear(): clear() also empties the mutation cache, and the page's own onSuccess is lost.
+    onSuccess: () => {
+      queryClient.removeQueries();
+      setSession(queryClient, null);
+    },
   });
 }
 

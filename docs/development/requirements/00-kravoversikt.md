@@ -19,7 +19,7 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-AUTH-003 | Gjentatte mislykkede innlogginger begrenses | M | 2 |
 | FR-AUTH-004 | Bruker kan endre visningsnavn, språk og passord | M | 2 |
 | FR-AUTH-005 | Bruker kan slette kontoen sin og alle tilhørende data | M | 2 |
-| FR-AUTH-006 | Tilbakestilling av passord og e-postverifisering | K | Utsatt: krever e-posttjeneste (ikke valgt per 2026-10-27) |
+| FR-AUTH-006 | Tilbakestilling av passord og e-postverifisering | K | Delvis i 16: «Glemt passord» med e-post ([spesifikasjon 17](17-glemt-passord.md)). E-postverifisering er fortsatt utsatt. |
 | FR-INV-001 | Bruker kan legge til en vare med navn, kategori, mengde, enhet, lagringssted og valgfrie datoer/pris | M | 3 |
 | FR-INV-002 | Samme vare kan ha flere partier med ulike datoer | M | 3 |
 | FR-INV-003 | Bruker kan redigere, flytte og slette varer/partier | M | 3 |
@@ -117,8 +117,10 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-PRIV-002 | Lagringstider er dokumentert og håndheves, også for utløpte økter | K | 13 |
 | FR-PRIV-003 | Personvernerklæring som kan leses uten å logge inn | K | 13 |
 
-FR-AUTH-006 (tilbakestilling av passord og e-postverifisering) er **ikke** gjort i fase 13, fordi teamet ikke har en
-e-posttjeneste. Hva som trengs, står i spesifikasjon 13.
+FR-AUTH-006 (tilbakestilling av passord og e-postverifisering) ble ikke gjort i fase 13, fordi teamet ikke hadde en
+e-posttjeneste. I fase 16 er tilbakestilling av passord gjort, med e-post fra en Gmail-konto (ADR-0024,
+[spesifikasjon 17](17-glemt-passord.md)). E-postverifisering ved registrering og endring av e-postadresse er fortsatt
+utsatt.
 
 ## Ikke-funksjonelle krav
 

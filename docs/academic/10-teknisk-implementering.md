@@ -753,6 +753,33 @@ repoet linjene i to lister: `lines` (bare ingredienslinjer, typen sier at `ingre
 `freeTextLines`. Matching, poengsum, måltidsplan, handleliste og priser bruker `lines` som før, og kan ikke telle
 fritekst uten at noen skriver kode for det. Siden og allergiboksen viser `freeTextLines` og sier at de ikke er sjekket.
 
+## Eksempel 56: tokenet som aldri lagres (FR-AUTH-006b, fase 16)
+
+Det enkle hadde vært å lage lenken i API-et og legge den i jobben til `mailer`. Da ville tokenet ligget i klartekst i
+`pgboss.job` til jobben ble slettet. I stedet har jobben bare konto-id og tidspunkt, og `mailer` lager tokenet rett
+før den sender:
+
+```ts
+const token = newSessionToken();
+const { id } = await repo.createToken({ userId, tokenHash: hashSessionToken(token), createdAt: at, expiresAt });
+try {
+  await this.deps.sender.send(resetMail(recipient, this.deps.linkOrigin, token));
+} catch (error) {
+  await repo.deleteToken(id); // ingen har fått lenken: den skal verken virke eller telle
+  throw error instanceof MailSendError ? error : new MailSendError('EUNKNOWN');
+}
+```
+
+Bare feilkoden går videre. Feilmeldingen fra SMTP-serveren kan inneholde mottakerens adresse, og den havner ellers
+i loggen og i jobbens resultat. Mutasjonssjekken har en runde for å la lenken ligge når sendingen feiler (runde 13).
+
+## Eksempel 57: `clear()` tømte mer enn spørringene (fase 16)
+
+Når passordet er byttet, er alle økter slettet på serveren, så nettleseren skal glemme sin. Første utkast brukte
+`queryClient.clear()` i `onSuccess` til mutasjonen. `clear()` tømmer også mutasjonshurtiglageret, og da kan
+TanStack miste sidens egen `onSuccess` (den som viser «Passordet er endret»). Rettet til `removeQueries()` før testene
+ble kjørt; samme type feil som i fase 9 og 11 (tilbakekall som forsvinner).
+
 ## Lagring i nettleseren
 
 Bare tema og språk lagres i `localStorage`. All tilgang er pakket inn i `try/catch`, fordi lagring kan være blokkert

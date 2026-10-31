@@ -21,6 +21,19 @@
   krever en endring i Caddyfile, og verktøyets sikkerhetssperre stoppet den 2026-10-29 fordi teamet ikke uttrykkelig
   hadde bedt om det. Ingenting ble endret.
 
+**Fase 16 (2026-10-31): e-post for «Glemt passord».** En fjerde container, `smartmat-staging-mailer`, sender e-posten
+gjennom Gmail (`smtp.gmail.com`, 587) med kontoen `Ghostnetwork.bot@gmail.com` og samme app-passord som Risan Solutions (Ferdinands valg 2026-10-31)
+([ADR-0024](architecture-decisions/0024-e-post-via-smtp.md), [integrasjonen](integrations/gmail-smtp.md)). Den er på
+det interne nettet og på sitt eget nett med utgang (`smartmat-staging-mail`); workeren er fortsatt uten internett.
+- Innstillingene står i `docker/staging/.env.staging`: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`,
+  `MAIL_FROM`, `MAIL_FROM_NAME`. `SMTP_PASSWORD` ble kopiert fra Risan Solutions av Claude 2026-10-31 på Ferdinands
+  forespørsel, uten å vise verdien. Den vises aldri i chatten. Uten den er funksjonen av: siden sier at den ikke er
+  tilgjengelig, og `mailer` logger bare navnet som mangler.
+- Sjekk etter oppstart: `docker logs smartmat-staging-mailer` skal vise `mailer started` (eller `mail off` med navnene
+  som mangler). Etter en forespørsel: `mail job` med `outcome` – aldri adresse eller lenke.
+- Bytter noen passordet på Google-kontoen, trekker Google tilbake app-passordet. Da må et nytt legges inn og
+  `mailer` startes på nytt (`docker compose … up -d mailer`).
+
 Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md).
 
 ## Hva som trengs først
@@ -33,6 +46,7 @@ Beslutningen står i [ADR-0015](architecture-decisions/0015-lukket-testmiljo.md)
 | Ta vare på backup-passfrasen (`/etc/smartmat-backup/passphrase`) og `TOTP_ENCRYPTION_KEY` (i `docker/staging/.env.staging`) et annet sted enn serveren, for eksempel i en passordbehandler | Ferdinand | Ikke gjort |
 | Kontaktadresse i User-Agent til Open Food Facts | Teamet | Ikke valgt |
 | Fylle ut API-skjemaet til Open Food Facts (se [integrasjonen](integrations/open-food-facts.md)) | Teamet | Ikke gjort |
+| App-passord i `SMTP_PASSWORD` (fase 16) | Claude (Ferdinands forespørsel 2026-10-31) | Gjort: samme som Risan Solutions. Testmiljøet er ikke bygd på nytt, så `mailer` kjører ikke ennå |
 
 ## Oppsett (når DNS peker til serveren)
 

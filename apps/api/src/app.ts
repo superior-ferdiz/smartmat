@@ -62,6 +62,10 @@ import { opsRoutes } from './modules/ops/routes';
 import { createPrivacyRepo } from './modules/privacy/repo';
 import { privacyRoutes } from './modules/privacy/routes';
 import { PrivacyService } from './modules/privacy/service';
+import type { MailQueue } from './modules/passwordReset/jobs';
+import { createPasswordResetRepo } from './modules/passwordReset/repo';
+import { passwordResetRoutes } from './modules/passwordReset/routes';
+import { PasswordResetService } from './modules/passwordReset/service';
 import { createSessionsRepo } from './modules/sessions/repo';
 import { sessionsRoutes } from './modules/sessions/routes';
 import { SessionsService } from './modules/sessions/service';
@@ -110,6 +114,8 @@ export interface AppDeps {
   pwnedPasswords?: PwnedPasswordCheck;
   /** Spec 08: where uploaded receipts go for the worker. server.ts passes pg-boss; tests pass a fake. */
   receiptQueue?: ReceiptQueue;
+  /** Spec 17: where e-mails go for the mailer. server.ts passes pg-boss when e-mail is set up; tests pass a fake. */
+  mailQueue?: MailQueue;
 }
 
 /** Without a queue, an upload is refused before anything is saved (the API was started without OCR). */
@@ -245,6 +251,15 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     pwned,
     twoFactor: twoFactorService,
   });
+  const passwordResetService = new PasswordResetService({
+    repo: createPasswordResetRepo(db),
+    // FR-AUTH-006e: without SMTP settings nothing could ever be sent, so the feature says it is off.
+    queue: config.mail && deps.mailQueue ? deps.mailQueue : null,
+    hasher,
+    pwned,
+    now,
+    onQueueError: () => app.log.error('password changed mail not queued'),
+  });
   const profileRepo = createProfileRepo(db);
   const profileService = new ProfileService({ repo: profileRepo, hasher, pwned });
   const sessionsService = new SessionsService({ repo: createSessionsRepo(db), now });
@@ -339,6 +354,10 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
         requireAuth,
         rateLimits: config.rateLimits,
         registrationOpen: config.registrationOpen,
+      });
+      await api.register(passwordResetRoutes, {
+        service: passwordResetService,
+        rateLimit: config.rateLimits.passwordReset,
       });
       await api.register(profileRoutes, {
         service: profileService,

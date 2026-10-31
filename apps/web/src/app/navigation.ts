@@ -41,6 +41,8 @@ export const MORE_PATH = '/mer';
 export const DESIGN_SYSTEM_PATH = '/designsystem';
 export const LOGIN_PATH = '/logg-inn';
 export const REGISTER_PATH = '/registrer';
+/** Spec 17: "Glemt passord", and the page the e-mail's link opens (`/nytt-passord#<token>`). */
+export { FORGOT_PASSWORD_PATH, PASSWORD_RESET_PATH } from '@smartmat/shared';
 export const PROFILE_PATH = '/profil';
 /** Spec 13 (FR-PRIV-003): public, logged in or not. */
 export const PRIVACY_PATH = '/personvern';

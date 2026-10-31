@@ -78,6 +78,9 @@ Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
 - **Teamet (2026-10-31):** Ferdinand oppga at teamet er Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni, og at
   hver fase er laget av de tre. Det er registrert som Ferdinands erklæring. Hasan Alhafni har ikke vært med i noen økt
   med KI-assistenten, og hva han har gjort i hver fase, er ikke oppgitt.
+- **Gjennomgang av fase 15 (2026-10-31):** Ferdinand oppga at Linus og Hasan har gjennomgått systemet og godtatt det.
+  Det er registrert som Ferdinands erklæring; omfang og funn er ikke oppgitt, og ingen av dem har bekreftet det selv i
+  en økt.
 
 ## Kilder i prosjektet
 

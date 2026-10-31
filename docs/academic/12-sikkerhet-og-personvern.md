@@ -367,6 +367,26 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 - **Egne oppskrifter** er husholdningsdata. En annen husholdning får 404 på alle rutene, og databasen stopper
   kryssreferanser (ADR-0023). Tekst i oppskriftene vises som ren tekst og logges ikke.
 
+## Glemt passord med e-post (fase 16, spesifikasjon 17, ADR-0024)
+
+| Trussel | Eksempel | Tiltak | Test |
+|---|---|---|---|
+| Finne ut hvem som har konto | Be om lenke for mange adresser og se på svaret | Alltid `202` uten innhold. Grensen per konto sjekkes av `mailer`, ikke i svaret. | `passwordReset.api.test.ts` |
+| Gjette eller stjele en lenke | Prøve tokens, lese logger, `Referer` eller databasen | 256 tilfeldige bit etter `#` (sendes aldri i en URL), bare SHA-256 lagret, 30 minutter, én gang, `no-referrer` | `passwordReset.api.test.ts`, `auth.test.ts` (delt), `PasswordReset.test.tsx` |
+| Bruke samme lenke to ganger | To faner, eller en angriper samtidig med eieren | Betinget `updateMany` i samme transaksjon som passordbyttet | `passwordReset.api.test.ts` (samtidige forsøk) |
+| Fylle noens innboks | Be om lenke mange ganger for samme adresse | 5 per IP-adresse per 15 min, høyst 3 e-poster per konto i timen | `passwordReset.api.test.ts` |
+| Overta kontoen etter et bytte | Gamle økter eller en ventende tofaktor-utfordring | Alle økter og utfordringer slettes; tofaktor gjelder fortsatt; e-post om at passordet er endret | `passwordReset.api.test.ts`, `passwordReset.spec.ts` |
+| Lekkasje til logg eller jobbkø | Adresse eller lenke i loggen, i `pgboss`-tabellene eller i SMTP-feil | Jobben har bare konto-id; `mailer` logger jobb-id, utfall og feilkode | `passwordReset.api.test.ts` (logg), `smtp.test.ts` |
+| Topptekst-injeksjon | Linjeskift i emnet | Faste emner; nodemailer fjerner linjeskift (testet) | `smtp.test.ts` |
+
+**Ny mottaker:** Google (Gmail) får mottakerens e-postadresse, navnet i kontoen og innholdet i e-posten, fordi den
+sendes fra Gmail-kontoen `Ghostnetwork.bot@gmail.com`. En vanlig Gmail-konto har ingen databehandleravtale (art. 28).
+Det er akseptert av Ferdinand for det lukkede testmiljøet og står som åpen risiko i ADR-0024; teamet må vurdere det før
+appen brukes av andre. Personvernerklæringen (`/personvern`) sier det. Kvoten og app-passordet deles med Risan
+Solutions.
+
+**Ikke i eksporten:** lenkene er kortlivde sikkerhetsdata (bare tidspunkter og en hash), som tofaktor-utfordringene.
+
 ## Sletting
 
 - «Slett konto» på profilsiden sletter brukeren og husholdninger der brukeren er eneste medlem, i én transaksjon.
@@ -390,6 +410,8 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 | Konto, husholdning og alt brukeren har lagt inn | Til brukeren sletter det (eller kontoen) | Sletting i appen, `ON DELETE CASCADE` (testet) |
 | Økter | 14 dager uten bruk, høyst 30 dager | Sjekkes ved hver forespørsel; utløpte slettes hver natt (workeren, fase 13) |
 | Utfordringer mellom passord og kode | 5 minutter | Sjekkes ved bruk; slettes når brukt og hver natt |
+| Lenker for nytt passord (fase 16) | Virker i 30 minutter; raden ligger i et døgn (teller e-poster per time) | Sjekkes ved bruk; slettes av nattjobben etter 24 timer og med kontoen (`CASCADE`) |
+| E-postjobber (fase 16) | Bare konto-id og tidspunkt; høyst en time | pg-boss sletter dem; `pgboss` er ikke med i sikkerhetskopien |
 | Kvitteringsbilder og OCR-tekst | Til kjøpet er bekreftet eller forkastet, høyst 7 dager | Workeren hvert 15. minutt (fase 8) |
 | Tilstand for varsler | 45 dager | Lat sletting: eldre rader slettes neste gang samme bruker skriver en tilstand i husholdningen (fase 11). En bruker som slutter å bruke appen, beholder dem til kontoen slettes. |
 | Invitasjoner | 30 dager | Lat sletting: eldre rader slettes neste gang eieren lager en invitasjon (fase 10). Ellers til husholdningen slettes. |
@@ -418,7 +440,7 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 
 - **E-post som allerede finnes:** Registrering sier ærlig fra om dette. Da kan noen finne ut om en adresse har konto.
   Rate limiting begrenser det. Ordentlig løsning (svar «sjekk e-posten din») krever e-postverifisering
-  (FR-AUTH-006, fase 13).
+  (FR-AUTH-006). Fase 16 la til e-post, men bare for «Glemt passord»; registreringen svarer fortsatt 409.
 - **Grensen per IP-adresse** er i praksis felles for alle lokalt, fordi alt går via Vite-proxyen fra 127.0.0.1. I
   testmiljøet hentes klientens adresse fra Caddy (`TRUST_PROXY`). Restrisikoen fra `ghostweb` (andre containere kunne
   sende et falskt `X-Forwarded-For`) er **fjernet i fase 13**: appen er på et eget nett med bare Caddy (ADR-0022).
@@ -463,9 +485,10 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
 - **Gjort i fase 13:** tofaktorinnlogging, varsel om ny innlogging, sjekk mot lekkede passord, og sikkerhetsheadere
   for nettsiden (kontrollert i API-testene og mot domenet). Testmiljøet svarer med HTTPS og basic auth fra
   2026-10-27.
-- **Glemt passord:** uten e-posttjeneste (FR-AUTH-006) kan en bruker som har glemt passordet, ikke tilbakestille det
-  selv. Det samme gjelder den som har tofaktor på og har mistet både telefonen og gjenopprettingskodene. Teamet må
-  da gjøre det manuelt på serveren. Det er greit i et lukket testmiljø, men ikke for åpen bruk.
+- **Glemt passord:** ~~uten e-posttjeneste (FR-AUTH-006) kan en bruker som har glemt passordet, ikke tilbakestille det
+  selv.~~ *Gjort i fase 16* (se «Glemt passord med e-post» under). Den som har tofaktor på og har mistet både telefonen
+  og gjenopprettingskodene, kommer fortsatt ikke inn: et nytt passord slår ikke av tofaktor. Teamet må da gjøre det
+  manuelt på serveren.
 - **Varsel om ny innlogging gjelder hver innlogging:** vi lagrer ingen historikk over enheter ut over aktive økter, så
   vi vet ikke hva som er en «ny» enhet. Det gir flere varsler enn nødvendig, men aldri færre.
 - **Sjekken mot lekkede passord er åpen ved feil:** er tjenesten nede, godtas passordet. Det er valgt så

@@ -1,4 +1,5 @@
 import { PgBoss } from 'pg-boss';
+import type { MailQueue } from '../modules/passwordReset/jobs';
 import type { ReceiptQueue } from '../modules/receipts/service';
 
 /*
@@ -10,13 +11,15 @@ export const RECEIPT_OCR_QUEUE = 'receipt-ocr';
 export const RECEIPT_CLEANUP_QUEUE = 'receipt-cleanup';
 /** Spec 13 (FR-PRIV-002): expired sessions, every night. */
 export const SESSION_CLEANUP_QUEUE = 'session-cleanup';
+/** Spec 17: e-mails, sent by the mailer (src/mailer.ts). A job carries only an account id. */
+export const MAIL_QUEUE = 'mail';
 const SCHEMA = 'pgboss';
 
 /**
- * The API only sends jobs: no maintenance or schedules there (the worker does those).
+ * The API and the mailer only send or take jobs: no maintenance or schedules there (the worker does those).
  * One retry if a worker dies mid-job; a job not finished in 3 minutes counts as failed.
  */
-export async function startJobs(databaseUrl: string, role: 'api' | 'worker') {
+export async function startJobs(databaseUrl: string, role: 'api' | 'worker' | 'mailer') {
   const boss = new PgBoss({
     connectionString: databaseUrl,
     schema: SCHEMA,
@@ -34,6 +37,15 @@ export async function startJobs(databaseUrl: string, role: 'api' | 'worker') {
   });
   await boss.createQueue(RECEIPT_CLEANUP_QUEUE, { retryLimit: 0, expireInSeconds: 300 });
   await boss.createQueue(SESSION_CLEANUP_QUEUE, { retryLimit: 0, expireInSeconds: 300 });
+  // Spec 17: two more tries 30 and 60 s later if the SMTP server does not answer; jobs are gone after an hour.
+  await boss.createQueue(MAIL_QUEUE, {
+    retryLimit: 2,
+    retryDelay: 30,
+    retryBackoff: true,
+    expireInSeconds: 60,
+    retentionSeconds: 60 * 60,
+    deleteAfterSeconds: 60 * 60,
+  });
   return boss;
 }
 
@@ -43,6 +55,14 @@ export function pgBossReceiptQueue(boss: PgBoss): ReceiptQueue {
       // A second job for the same receipt (a retry) is harmless: the worker claims a receipt only while it is
       // queued, so a job that finds it already read is skipped (processor.ts).
       await boss.send(RECEIPT_OCR_QUEUE, { receiptId });
+    },
+  };
+}
+
+export function pgBossMailQueue(boss: PgBoss): MailQueue {
+  return {
+    async enqueue(job) {
+      await boss.send(MAIL_QUEUE, job);
     },
   };
 }

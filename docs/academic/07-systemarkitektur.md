@@ -220,6 +220,34 @@ flowchart LR
 Allergier og matvarer brukeren ikke tåler, tilhører fortsatt brukeren (`/me/…`) og redigeres under Innstillinger.
 Prisanslaget for en oppskrift bruker samme beregning som handlelisten og spør aldri Kassalapp.
 
+## E-post for «Glemt passord» (fase 16, ADR-0024)
+
+Lagt til i fase 16. API-et sender aldri e-post selv: det legger en jobb i pg-boss-køen `mail`, og en egen prosess,
+`mailer` (`src/mailer.ts`, et tredje inngangspunkt i API-pakken), sender den gjennom SMTP. I testmiljøet har `mailer`
+sin egen container, og det er den eneste med utgang til internett (OCR-workeren er fortsatt uten).
+
+```mermaid
+sequenceDiagram
+  participant B as Nettleser
+  participant A as API
+  participant Q as Jobbkø (pg-boss)
+  participant M as mailer
+  participant G as Gmail (SMTP)
+  B->>A: POST /auth/password-reset { email }
+  A->>Q: { kind, userId, requestedAt } (bare hvis kontoen finnes)
+  A-->>B: 202 (alltid)
+  M->>Q: hent jobb
+  M->>M: lag token, lagre SHA-256 (30 min)
+  M->>G: e-post med /nytt-passord#token
+  B->>A: POST /auth/password-reset/confirm { token, newPassword }
+  A->>A: bruk lenken + bytt passord + slett økter (én transaksjon)
+  A->>Q: { kind: passwordChanged, userId }
+  A-->>B: 204
+```
+
+Tokenet finnes bare i `mailer`-prosessen og i e-posten: jobben har bare konto-id, og databasen har bare hashen.
+Uten SMTP-innstillinger er funksjonen av (503), og resten av appen virker som før.
+
 ## Sikkerhetsgrenser
 
 - **All tilgangskontroll skjer i API-et.** `RequireAuth` i React bestemmer bare hva som vises. Den beskytter ingenting.

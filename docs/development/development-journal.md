@@ -1125,3 +1125,114 @@ hvem som var med i øktene er ikke endret. Ferdinand valgte at teamet åpner pul
 
 **Neste:** Teamet åpner og godkjenner pull requesten `fase-14` → `main` på GitHub; Hasan leser og signerer
 KI-erklæringen og skriver sin del av kapittel 15.
+
+## 2026-10-31 – Fase 15 i testmiljøet og teamets gjennomgang
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+**Bakgrunn:** Ferdinand: «They have reviewed the system and accepted it» (om Linus og Hasan), og at allergiene ikke
+vises på `smartmat.risansolutions.no`. Testmiljøet kjørte fortsatt fase 14.
+
+**Gjennomgang:** registrert som Ferdinands erklæring. Omfang og funn er ikke oppgitt.
+
+**Utført:** ny kryptert backup (`smartmat-20261031T123253Z`, `smartmat-backup.service`, status 0), deretter
+`up -d --build` fra `fase-15` (24705c3). Migreringen `20261030120000_household_recipes` ble kjørt ved oppstart. Sjekket:
+containerne kjører, `/api/health` svarer 200, `/api/v1/me/allergens` svarer 401 uten innlogging, nettappen inneholder
+«Allergier og matvarer», og domenet svarer 401 (basic auth). Ikke testet innlogget i nettleser eller på telefon av KI.
+
+**Neste:** merge pull requesten `fase-15` → `main`; teamet prøver allergier og egne oppskrifter på telefon.
+
+## 2026-10-31 – Konto i testmiljøet for Hasan Alhafni
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+Ferdinand ba om en konto til Hasan. `hasan@smartmat.test` («Hasan Alhafni») er laget med `create-user`, med et
+tilfeldig passord i `smartmat-private/kontoer-testmiljo.txt`. Innlogging gjennom domenet svarte 200. Bevis:
+`docs/evidence/test-results/fase-15/12-konto-hasan.txt`.
+
+## 2026-10-31 – Nytt passord på Linus' konto i testmiljøet
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+Ferdinand ba om at passordet til `linus@smartmat.test` skulle være «smartmat». Claude sa nei: det er under kravet på 12
+tegn, likt brukernavnet for basic auth, og kunne bare settes ved å gå forbi appens regler i databasen. Ferdinand valgte
+i stedet et passord av fire tilfeldige ord og et tall. Det ble byttet gjennom `POST /api/v1/me/password` (svar 204), og
+innlogging med det nye passordet svarte 200. Passordet er vist i chatten etter Ferdinands ønske og står i
+`smartmat-private/kontoer-testmiljo.txt`, ikke i repoet.
+
+## 2026-10-31 – Test-kontoene til Linus og Hasan slettet
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+Passordet i forrige oppføring ble byttet på feil konto: Linus bruker kontoen han registrerte selv 2026-10-30, og Hasan
+registrerte sin egen 2026-10-31 kl. 12:54. Etter Ferdinands valg ble `linus@smartmat.test` og `hasan@smartmat.test`
+slettet gjennom `DELETE /api/v1/me` (begge 204) og fjernet fra kontofilen i `smartmat-private`. `ferdinand@smartmat.test`
+er beholdt til Ferdinand har svart. Loggene viste mislykkede innlogginger 12:45–12:52 og et registreringsforsøk med en
+e-post som fantes (409): det finnes ingen måte å få tilbake et glemt passord på (FR-AUTH-006 er utsatt). Ferdinand
+valgte tilbakestilling med e-post, og meldte at registreringen ikke virker i Brave.
+
+Senere samme dag: `ferdinand@smartmat.test` er også slettet (204) etter Ferdinands valg, og kontofilen er tom.
+Brave: Ferdinand oppga at man «blir bare kastet vekk» ved registrering, og at det skal vente. Ikke undersøkt videre.
+E-post: Ferdinand valgte Risan Solutions' e-postadresse som avsender, og at den ikke skal inn i Git.
+
+## 2026-10-31 – Plan for fase 16 («Glemt passord» med e-post) godkjent
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+Claude la fram en plan etter fasemalen. Ferdinand godkjente den («Godkjent, ny chat»), så fase 16 startes i en egen
+chat. Om avsender: Ferdinand ba om å bruke SMTP-innstillingene til Risan Solutions-nettsiden. Claude leste bare
+navnene og de ikke-hemmelige verdiene: tjenesten er Gmail (`smtp.gmail.com`, port 587) med en Gmail-konto som avsender,
+ikke en adresse på risansolutions.no. Etter at Claude forklarte følgene (Gmail-avsender, Google som databehandler,
+delt kvote og delt app-passord), valgte Ferdinand samme konto med et eget app-passord for SmartMat. Feltene er lagt i
+`docker/staging/.env.staging` (ignorert av Git), med `SMTP_PASSWORD` tomt til Ferdinand fyller det inn selv.
+Ingen kode er skrevet.
+
+## 2026-10-31 – Fase 16: «Glemt passord» med e-post
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+**Oppstart:** ny chat for fase 16. Grenen `fase-16` er laget fra `main` (78acafa, der fase 15 er flettet inn); lokal
+`main` ble spolt fram fra 0f7296c. Dokumentasjonen fra slutten av fase 15 som ikke var committet, ble med over.
+Claude la fram planen etter fasemalen. Ferdinand: «Godkjent av alle i gruppa i plenum. Sørg for at serveren ikke blir
+for lite plass». Registrert som Ferdinands erklæring; de sju åpne spørsmålene ble ikke besvart enkeltvis, så
+anbefalingene gjelder (spesifikasjon 17).
+
+**Utført:** spesifikasjon 17 før koden, ADR-0024 og `integrations/gmail-smtp.md` (tre av Googles hjelpesider lest av
+Claude; Googles vilkår og personvernerklæring er ikke lest). Tabellen `password_reset_tokens`, modulen
+`passwordReset`, SMTP-leverandøren, prosessen `mailer` og en ny container i staging-oppsettet, sidene
+`/glemt-passord` og `/nytt-passord`, personvernerklæringen og testene. Disken ble sjekket før arbeidet (90 % brukt,
+46 GB ledig); ingen Docker-bygg ble gjort.
+
+**Funn underveis:**
+- **nodemailer:** den første valgte versjonen (10.0.5, minst to uker gammel) hadde sju kjente sårbarheter
+  (`npm audit`, høy). Byttet til 10.1.7 (2026-10-18), som ikke har noen.
+- **`queryClient.clear()`** tømmer også mutasjonene, så sidens `onSuccess` kunne forsvinne. Rettet til
+  `removeQueries()` før testene ble kjørt.
+- **Playwright:** å åpne samme lenke på nytt fra `/nytt-passord` er en navigering innenfor siden (bare `#` endres), så
+  siden lastes ikke på nytt. En lenke fra e-post gir alltid ny lasting; testen går via innloggingssiden.
+- **Hemmelighet vist i verktøyutskrift:** for å se SMTP-feltene leste Claude linje 40–50 i `docker/staging/.env.staging`
+  med `grep -v PASSWORD`. Det filtrerte bort `SMTP_PASSWORD` (som er tomt), men ikke `TOTP_ENCRYPTION_KEY`, som ble
+  skrevet ut i verktøyutskriften i chatten. Verdien er ikke gjentatt noe annet sted. Å bytte nøkkelen krever at
+  tofaktor-hemmelighetene krypteres på nytt (eller at tofaktor slås av og på igjen for hver konto); Ferdinand må
+  avgjøre. CLAUDE.md sier nå at filen ikke skal leses uten at alle hemmeligheter filtreres bort.
+
+**Ikke gjort:** `SMTP_PASSWORD` er tomt, så ingen ekte e-post er sendt og funksjonen er av i testmiljøet. Testmiljøet
+er ikke bygd på nytt, og ingenting er committet (CLAUDE.md: bare når teamet ber om det).
+
+**Neste:** Ferdinand fyller inn app-passordet; testmiljøet bygges på nytt (backup først) og én ekte e-post sendes til en
+adresse teamet velger; teamet vurderer Google som mottaker uten databehandleravtale; pull request `fase-16` → `main`.
+
+## 2026-10-31 – App-passordet fra Risan Solutions, commit og push av fase 16
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+Ferdinand: «Fyll inn passordet fra Risan Solutions siden du har min godkjenning. Commit og push». Det endrer valget fra
+tidligere samme dag (et eget app-passord for SmartMat). Claude fant SMTP-innstillingene i
+`/opt/Websites/risansolutions/.env`, sjekket uten å skrive ut noe at brukeren er samme Gmail-konto, og kopierte
+`SMTP_PASSWORD` inn i `docker/staging/.env.staging` med et skript som bare skrev ut lengden. Ingenting i
+Risan Solutions-prosjektet ble endret. Appens `loadConfig` med staging-filen sier at e-post er på (port 587).
+Følge: et bytte eller en lekkasje av app-passordet rammer begge prosjektene (ADR-0024).
+
+Testmiljøet er **ikke** bygd på nytt, så `mailer` kjører ikke, og ingen ekte e-post er sendt.
+
+**Neste:** bygge testmiljøet på nytt (backup og diskplass først) og sende én ekte e-post når teamet ber om det.

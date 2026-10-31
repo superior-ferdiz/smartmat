@@ -187,6 +187,7 @@ describe('FR-PRIV-001 export of my own data', () => {
           sensitive: { max: 1000, windowMs: 60_000 },
           invitation: { max: 1000, windowMs: 60_000 },
           export: { max: 2, windowMs: 60_000 },
+          passwordReset: { max: 1000, windowMs: 60_000 },
         },
       },
     });

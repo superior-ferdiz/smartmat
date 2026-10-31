@@ -8,6 +8,7 @@
 # reaches the app by its container name, and the app can believe X-Forwarded-For from that network alone.
 # Create it once: docker network create --subnet 192.168.252.0/28 --label smartmat=edge smartmat-edge
 # No port is published. The database and the receipt worker are on an internal network without internet access.
+# Spec 17: the mailer is the only container with its own way out (network `mail`), for SMTP and nothing else it needs.
 name: smartmat-staging
 
 services:
@@ -81,6 +82,29 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  # Spec 17 (ADR-0024): sends the e-mails for "Glemt passord" through SMTP. Same image as the app. On the internal
+  # network for the database, and on its own network with internet access, so the receipt worker can stay offline.
+  # Without SMTP settings in .env.staging it logs which names are missing and waits.
+  mailer:
+    image: smartmat-staging-app
+    container_name: smartmat-staging-mailer
+    depends_on:
+      app:
+        condition: service_started
+    env_file: .env.staging
+    environment:
+      DATABASE_URL: postgresql://smartmat:${STAGING_POSTGRES_PASSWORD}@db:5432/smartmat
+    command: ['npm', 'run', 'mailer', '-w', '@smartmat/api']
+    networks:
+      - internal
+      - mail
+    restart: unless-stopped
+    mem_limit: 256m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
 volumes:
   smartmat_staging_pgdata:
     name: smartmat_staging_pgdata
@@ -91,3 +115,5 @@ networks:
     internal: true
   smartmat-edge:
     external: true
+  mail:
+    name: smartmat-staging-mail

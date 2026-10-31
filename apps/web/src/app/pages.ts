@@ -5,6 +5,11 @@ import { lazyPage } from './lazyPage';
 export const pages = {
   LoginPage: lazyPage(() => import('../pages/auth/LoginPage'), 'LoginPage'),
   RegisterPage: lazyPage(() => import('../pages/auth/RegisterPage'), 'RegisterPage'),
+  ForgotPasswordPage: lazyPage(
+    () => import('../pages/auth/ForgotPasswordPage'),
+    'ForgotPasswordPage',
+  ),
+  ResetPasswordPage: lazyPage(() => import('../pages/auth/ResetPasswordPage'), 'ResetPasswordPage'),
   JoinPage: lazyPage(() => import('../pages/household/JoinPage'), 'JoinPage'),
   OverviewPage: lazyPage(() => import('../pages/OverviewPage'), 'OverviewPage'),
   InventoryPage: lazyPage(() => import('../pages/inventory/InventoryPage'), 'InventoryPage'),

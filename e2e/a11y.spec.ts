@@ -237,14 +237,23 @@ test.describe('NFR-UX-005 WCAG 2.2 AA checks on every page', () => {
   });
 });
 
+// Spec 17: "/nytt-passord" without a token shows the "ask for a new link" state, which is what can be reached here.
+const LOGGED_OUT_PAGES = [
+  '/logg-inn',
+  '/registrer',
+  '/glemt-passord',
+  '/nytt-passord',
+  '/personvern',
+];
+
 test.describe('NFR-UX-005 logged-out pages', () => {
   test.use({ storageState: LOGGED_OUT });
 
-  test('login, registration and the privacy notice: keyboard, zoom and spacing', async ({
+  test('login, registration, forgotten password and the privacy notice: keyboard, zoom and spacing', async ({
     page,
   }) => {
     const problems: string[] = [];
-    for (const path of ['/logg-inn', '/registrer', '/personvern']) {
+    for (const path of LOGGED_OUT_PAGES) {
       await page.goto(path);
       await page.waitForLoadState('networkidle');
       const result = await tabThrough(page);
@@ -252,7 +261,7 @@ test.describe('NFR-UX-005 logged-out pages', () => {
     }
     expect(problems).toEqual([]);
     await page.setViewportSize({ width: 320, height: 400 });
-    for (const path of ['/logg-inn', '/registrer', '/personvern']) {
+    for (const path of LOGGED_OUT_PAGES) {
       await page.goto(path);
       await expectNoHorizontalScroll(page);
     }

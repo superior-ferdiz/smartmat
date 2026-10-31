@@ -9,9 +9,8 @@ It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN
 - **Environment:** local development. A closed HTTPS test environment on `smartmat.risansolutions.no` (ADR-0015):
   DNS points at the server and the containers run (phase 13), on their own network `smartmat-edge` with Caddy
   (ADR-0022), with a nightly encrypted backup (ADR-0021). The Caddy block is live since 2026-10-27 (basic auth user
-  `smartmat`, random password in `/opt/Websites/smartmat-private/testmiljo-passord.txt`, never shown in the chat). Team accounts
-  `ferdinand@smartmat.test` / `linus@smartmat.test` since 2026-10-29 (passwords in `smartmat-private/kontoer-testmiljo.txt`;
-  Ferdinand asked to see them in the chat). Changing the basic-auth password needs an explicit request (Caddyfile).
+  `smartmat`, random password in `/opt/Websites/smartmat-private/testmiljo-passord.txt`, never shown in the chat). No test accounts: the
+  `@smartmat.test` accounts were deleted 2026-10-31 (the team registered their own). Changing the basic-auth password needs an explicit request (Caddyfile).
   Since 2026-10-30 (Ferdinand's requests) staging has `REGISTRATION_OPEN=true` (the web flag follows it via
   compose), `OFF_USER_AGENT` with Ferdinand's e-mail, and `RECEIPT_LINE_SUGGESTIONS=true` (ADR-0017 note).
   `caddy hash-password` reads a line from stdin: pipe it with a trailing newline, never use `-t` with a redirect. Git since 2026-10-20 (ADR-0013): private repo
@@ -81,6 +80,12 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   + notice on every new login (no device history), optional TOTP 2FA with recovery codes (fail **closed** without
   `TOTP_ENCRYPTION_KEY`), `purchases.version` (409 on a stale edit), `/me/export`, `/personvern` (contact address is
   a placeholder the team must fill in). No e-mail service (FR-AUTH-006 deferred), no production setup (not decided).
+- Phase 16 (spec 17, ADR-0024, accepted 2026-10-31): "Glemt passord" by e-mail. SMTP through a separate `mailer`
+  process/container (the OCR worker stays offline). Sender in staging: the Gmail account `Ghostnetwork.bot@gmail.com`
+  with the **same app password as Risan Solutions** (Ferdinand's choice 2026-10-31; copied by Claude into
+  `SMTP_PASSWORD` in `docker/staging/.env.staging` without printing it) – never print it or read the file without
+  filtering every secret. No DPA with Google: open risk, staging only.
+  Never touch the Risan Solutions project. E-mail verification, address change and e-mail notifications still deferred.
 
 ## Code conventions (established in phase 1)
 
@@ -411,6 +416,25 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   `hasRegisteredAllergens` covers avoided ingredients too. Recipe form: `recipes/RecipeForm.tsx` + `recipeForm.ts`.
 - Playwright: `getByLabel('Trinn 1')` also matches the "Fjern trinn 1" button – use `{ exact: true }`; and
   `getByLabel('egg')` in the settings card also matches the food picker – use `getByRole('checkbox', …)`.
+
+## Code conventions (added in phase 16)
+
+- Reset flow: `modules/passwordReset/` (repo/service/routes, `mail.ts` texts in nb-NO/en, `processor.ts` = the mailer's
+  job). `POST /auth/password-reset` always 202; `/confirm` 204 or 400 `errors.auth.resetLinkInvalid` for every dead
+  link. A mail job (`MAIL_QUEUE`, `pgBossMailQueue`) carries only `{ kind, userId, requestedAt }`: the **mailer makes
+  the token** when it sends, so no token or address is ever in `pgboss`. The confirm transaction uses the link with a
+  conditional `updateMany`, then changes the password, deletes all sessions and login challenges, clears the lock.
+- `config.mail` is null unless `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` are all set → 503
+  `passwordResetUnavailable`. `AppDeps.mailQueue`; server.ts starts pg-boss when OCR **or** mail is on.
+- Mail provider `providers/mail/` (`MailSender`, `MailSendError(code)`); only the SMTP error code is logged.
+  nodemailer pinned to 10.1.7 (≤ 10.1.3 has advisories). Tests use `test/fakeMail.ts` (`fakeMailQueue`,
+  `fakeMailSender`, `runMailJobs`, `tokenFromMail`); `smtp.test.ts` uses nodemailer's `streamTransport` (no network).
+- The e2e server's fake sender writes each e-mail to `e2e/.mail/<address>.txt` (git-ignored); `passwordReset.spec.ts`
+  reads the link there. Opening `/nytt-passord#…` from `/nytt-passord` is a same-document navigation (no reload):
+  tests go via another page first.
+- Web: `/glemt-passord` (GuestOnly) and `/nytt-passord` (not GuestOnly – a redirect would drop the fragment); the token
+  lives only in page state. After a reset use `queryClient.removeQueries()`, never `clear()` (it drops the page's
+  mutation callbacks).
 
 ## Integrity rules (non-negotiable)
 

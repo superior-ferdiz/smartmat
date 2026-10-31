@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadConfig } from './config';
+import { loadConfig, missingMailVariables } from './config';
 
 const base = {
   DATABASE_URL: 'postgresql://u:hemmelig-passord@127.0.0.1:55432/smartmat',
@@ -103,5 +103,56 @@ describe('config for the test environment (ADR-0015) and barcodes (spec 07)', ()
       /OFF_BASE_URL/,
     );
     expect(() => loadConfig({ ...base, OFF_MAX_PER_MINUTE: '16' })).toThrow(/OFF_MAX_PER_MINUTE/);
+  });
+});
+
+describe('config for e-mail (spec 17, FR-AUTH-006e)', () => {
+  const mailEnv = {
+    SMTP_HOST: 'smtp.example.test',
+    SMTP_USER: 'avsender@example.test',
+    SMTP_PASSWORD: 'et-hemmelig-app-passord',
+    MAIL_FROM: 'avsender@example.test',
+  };
+
+  it('off unless host, user, password and sender are all set; the names of the missing ones, never values', () => {
+    expect(loadConfig(base).mail).toBeNull();
+    expect(missingMailVariables({})).toEqual([
+      'SMTP_HOST',
+      'SMTP_USER',
+      'SMTP_PASSWORD',
+      'MAIL_FROM',
+    ]);
+    // An empty SMTP_PASSWORD= (as in the staging file before it is filled in) means "not set".
+    const blank = { ...base, ...mailEnv, SMTP_PASSWORD: '' };
+    expect(loadConfig(blank).mail).toBeNull();
+    expect(missingMailVariables(blank)).toEqual(['SMTP_PASSWORD']);
+  });
+
+  it('on with all four: port 587 and the name "SmartMat" by default, links to the first allowed origin', () => {
+    expect(loadConfig({ ...base, ...mailEnv }).mail).toEqual({
+      host: 'smtp.example.test',
+      port: 587,
+      user: 'avsender@example.test',
+      password: 'et-hemmelig-app-passord',
+      from: { address: 'avsender@example.test', name: 'SmartMat' },
+      linkOrigin: 'http://127.0.0.1:5173',
+    });
+  });
+
+  it('a bad sender address stops the start without printing the password', () => {
+    expect(() => loadConfig({ ...base, ...mailEnv, MAIL_FROM: 'ikke en adresse' })).toThrow(
+      /MAIL_FROM/,
+    );
+    try {
+      loadConfig({ ...base, ...mailEnv, MAIL_FROM: 'ikke en adresse' });
+    } catch (error) {
+      expect(String(error)).not.toContain('et-hemmelig-app-passord');
+    }
+  });
+
+  it('limits: 5 per IP address in 15 minutes, 3 e-mails per account per hour', () => {
+    const config = loadConfig(base);
+    expect(config.rateLimits.passwordReset).toEqual({ max: 5, windowMs: 15 * 60_000 });
+    expect(config.passwordResetsPerHour).toBe(3);
   });
 });

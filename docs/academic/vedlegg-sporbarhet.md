@@ -3,7 +3,9 @@
 **Status:** Laget av KI (Claude) i fase 14, 2026-10-27, med skriptet [`scripts/traceability.mjs`](../../scripts/traceability.mjs).
 Oppdatert i fase 15, 2026-10-30: [`11-sporbarhet.txt`](../evidence/test-results/fase-15/11-sporbarhet.txt). De nye
 testfilene var ikke committet ennå, så skriptet ble kjørt med `git ls-files --cached --others --exclude-standard` i
-stedet for `git ls-files`. Ikke gjennomgått av teamet.
+stedet for `git ls-files`. Oppdatert i fase 16, 2026-10-31, på samme måte:
+[`11-sporbarhet.txt`](../evidence/test-results/fase-16/11-sporbarhet.txt). FR-AUTH-006 er nå delvis laget
+(tilbakestilling av passord) og har testfiler. Ikke gjennomgått av teamet.
 
 ## Hva tabellen viser, og hva den ikke viser
 
@@ -22,7 +24,6 @@ regnes som alle kravene de viser til.
 
 | Krav | Forklaring (kontrollert av KI 2026-10-27) |
 |---|---|
-| FR-AUTH-006 | Ikke laget: krever en e-posttjeneste (utsatt). Riktig at ingen test finnes. |
 | FR-REC-005 | Testet uten krav-ID: `apps/api/src/modules/recipes/seed.test.ts` («spec 09: every external recipe links to the exact revision it was translated from») og frødatasjekken. |
 | NFR-REL-002 | Testet uten krav-ID: `apps/api/test/receipts.api.test.ts` («without OCR set up (no queue), uploads are refused and the list says so»). |
 | NFR-SEC-007 | Testet uten krav-ID: `apps/api/test/staging.api.test.ts` («trusted proxy …» og «a client outside the trusted range cannot choose its address with the header») og `security.api.test.ts` (falskt `X-Forwarded-For`). |
@@ -37,10 +38,10 @@ Kravene til kurset (KURS-01–09) er antatt og ikke tatt med. Hvor de vises i ap
 |---|---|---|---|---|
 | FR-AUTH-001 | 3 | 1 | 1 | `service.test.ts`, `RegisterPage.test.tsx`, `auth.test.ts`, `auth.api.test.ts`, `auth.spec.ts` |
 | FR-AUTH-002 | 4 | 1 | 1 | `service.test.ts`, `ProfilePage.test.tsx`, `LoginPage.test.tsx`, `auth.test.ts`, `auth.api.test.ts`, `auth.spec.ts` |
-| FR-AUTH-003 | 2 | 1 | 1 | `policy.test.ts`, `service.test.ts`, `security.api.test.ts`, `auth.spec.ts` |
+| FR-AUTH-003 | 2 | 2 | 1 | `policy.test.ts`, `service.test.ts`, `passwordReset.api.test.ts`, `security.api.test.ts`, `auth.spec.ts` |
 | FR-AUTH-004 | 4 | 1 | 1 | `service.test.ts`, `ProfilePage.test.tsx`, `SettingsPage.test.tsx`, `auth.test.ts`, `profile.api.test.ts`, `auth.spec.ts` |
 | FR-AUTH-005 | 4 | 4 | 1 | `service.test.ts`, `ProfilePage.test.tsx`, `rules.test.ts`, `auth.test.ts`, `households.api.test.ts`, `inventory.api.test.ts`, `notifications.api.test.ts`, `profile.api.test.ts`, `auth.spec.ts` |
-| FR-AUTH-006 | – | – | – | **ingen test nevner kravet** |
+| FR-AUTH-006 | 4 | 1 | 1 | `smtp.test.ts`, `PasswordReset.test.tsx`, `config.test.ts`, `auth.test.ts`, `passwordReset.api.test.ts`, `passwordReset.spec.ts` |
 | FR-INV-001 | 4 | 1 | 1 | `batchForm.test.ts`, `NewItemPage.test.tsx`, `quantity.test.ts`, `inventory.test.ts`, `inventory.api.test.ts`, `inventory.spec.ts` |
 | FR-INV-002 | 1 | 2 | 2 | `ItemPage.test.tsx`, `barcodes.api.test.ts`, `inventory.api.test.ts`, `inventory.spec.ts`, `scan.spec.ts` |
 | FR-INV-003 | – | 1 | 1 | `inventory.api.test.ts`, `inventory.spec.ts` |
@@ -61,7 +62,7 @@ Kravene til kurset (KURS-01–09) er antatt og ikke tatt med. Hvor de vises i ap
 | FR-REC-004 | 4 | 1 | 1 | `locales.test.ts`, `RecipePage.test.tsx`, `RecipesPage.test.tsx`, `filter.test.ts`, `recipes.api.test.ts`, `recipes.spec.ts` |
 | FR-REC-005 | – | – | – | **ingen test nevner kravet** |
 | FR-REC-006 | 1 | 1 | – | `RecipeSourcesPage.test.tsx`, `recipeSources.api.test.ts` |
-| FR-REC-007 | 3 | 1 | 1 | `OwnRecipes.test.tsx`, `recipeForm.test.ts`, `filter.test.ts`, `ownRecipes.api.test.ts`, `ownRecipes.spec.ts` |
+| FR-REC-007 | 3 | 1 | 1 | `OwnRecipes.test.tsx`, `filter.test.ts`, `recipeForm.test.ts`, `ownRecipes.api.test.ts`, `ownRecipes.spec.ts` |
 | FR-REC-008 | 3 | 1 | 1 | `OwnRecipes.test.tsx`, `recipeForm.test.ts`, `household.test.ts`, `ownRecipes.api.test.ts`, `ownRecipes.spec.ts` |
 | FR-REC-009 | 1 | 2 | 1 | `recipeQueries.test.ts`, `ownRecipes.api.test.ts`, `ownRecipes.security.api.test.ts`, `ownRecipes.spec.ts` |
 | FR-REC-010 | – | 1 | – | `ownRecipes.api.test.ts` |
@@ -93,8 +94,8 @@ Kravene til kurset (KURS-01–09) er antatt og ikke tatt med. Hvor de vises i ap
 | FR-HH-005 | 1 | 1 | 1 | `HouseholdPage.test.tsx`, `households.api.test.ts`, `household.spec.ts` |
 | FR-HH-006 | 1 | 1 | 1 | `filter.test.ts`, `households.api.test.ts`, `household.spec.ts` |
 | FR-HH-007 | 1 | 1 | 1 | `rules.test.ts`, `households.api.test.ts`, `household.spec.ts` |
-| FR-ALG-001 | 2 | 1 | 1 | `AllergiesCard.test.tsx`, `ProfilePage.test.tsx`, `avoidedIngredients.api.test.ts`, `ownRecipes.spec.ts` |
-| FR-ALG-002 | 3 | 1 | 1 | `OwnRecipes.test.tsx`, `household.test.ts`, `filter.test.ts`, `avoidedIngredients.api.test.ts`, `ownRecipes.spec.ts` |
+| FR-ALG-001 | 2 | 1 | 1 | `ProfilePage.test.tsx`, `AllergiesCard.test.tsx`, `avoidedIngredients.api.test.ts`, `ownRecipes.spec.ts` |
+| FR-ALG-002 | 3 | 1 | 1 | `OwnRecipes.test.tsx`, `filter.test.ts`, `household.test.ts`, `avoidedIngredients.api.test.ts`, `ownRecipes.spec.ts` |
 | FR-ALG-003 | 2 | 1 | – | `OwnRecipes.test.tsx`, `household.test.ts`, `avoidedIngredients.api.test.ts` |
 | FR-WASTE-001 | 2 | 1 | 1 | `WastePage.test.tsx`, `stats.test.ts`, `waste.api.test.ts`, `notifications.spec.ts` |
 | FR-WASTE-002 | 2 | 1 | 1 | `WastePage.test.tsx`, `stats.test.ts`, `waste.api.test.ts`, `notifications.spec.ts` |
@@ -114,21 +115,21 @@ Kravene til kurset (KURS-01–09) er antatt og ikke tatt med. Hvor de vises i ap
 | FR-PRICE-005 | – | 1 | 1 | `prices.api.test.ts`, `prices.spec.ts` |
 | FR-PRICE-006 | – | 1 | – | `prices.api.test.ts` |
 | FR-PRICE-007 | 1 | 1 | 1 | `OwnRecipes.test.tsx`, `prices.api.test.ts`, `ownRecipes.spec.ts` |
-| FR-AUTH-008 | 2 | 1 | 1 | `pwnedPasswords.test.ts`, `account.test.tsx`, `passwords.security.api.test.ts`, `account.spec.ts` |
+| FR-AUTH-008 | 3 | 2 | 1 | `PasswordReset.test.tsx`, `pwnedPasswords.test.ts`, `account.test.tsx`, `passwordReset.api.test.ts`, `passwords.security.api.test.ts`, `account.spec.ts` |
 | FR-AUTH-009 | 2 | 1 | 2 | `account.test.tsx`, `device.test.ts`, `sessions.security.api.test.ts`, `account.spec.ts`, `screenshots.spec.ts` |
-| FR-AUTH-010 | 2 | 1 | 2 | `totp.test.ts`, `twoFactor.test.tsx`, `twoFactor.security.api.test.ts`, `account.spec.ts`, `screenshots.spec.ts` |
+| FR-AUTH-010 | 2 | 2 | 2 | `totp.test.ts`, `twoFactor.test.tsx`, `passwordReset.api.test.ts`, `twoFactor.security.api.test.ts`, `account.spec.ts`, `screenshots.spec.ts` |
 | FR-BUD-006 | 3 | 2 | 1 | `service.test.ts`, `PurchasePages.test.tsx`, `purchases.test.ts`, `purchaseVersion.api.test.ts`, `purchases.api.test.ts`, `account.spec.ts` |
-| FR-PRIV-001 | 1 | 1 | 1 | `account.test.tsx`, `privacy.api.test.ts`, `account.spec.ts` |
+| FR-PRIV-001 | 1 | 2 | 1 | `account.test.tsx`, `passwordReset.api.test.ts`, `privacy.api.test.ts`, `account.spec.ts` |
 | FR-PRIV-002 | – | 1 | – | `sessions.security.api.test.ts` |
 | FR-PRIV-003 | 1 | – | 2 | `account.test.tsx`, `account.spec.ts`, `screenshots.spec.ts` |
-| NFR-SEC-001 | – | 13 | 1 | `ownRecipes.security.api.test.ts`, `barcodes.security.api.test.ts`, `households.security.api.test.ts`, `inventory.security.api.test.ts`, `mealPlan.api.test.ts`, `notifications.security.api.test.ts`, `prices.security.api.test.ts`, `purchases.security.api.test.ts`, `receipts.security.api.test.ts`, `recipes.security.api.test.ts`, `security.api.test.ts`, `sessions.security.api.test.ts`, `shopping.security.api.test.ts`, `household.spec.ts` |
-| NFR-SEC-002 | – | 4 | – | `ownRecipes.api.test.ts`, `auth.api.test.ts`, `inventory.api.test.ts`, `shopping.api.test.ts` |
+| NFR-SEC-001 | – | 13 | 1 | `barcodes.security.api.test.ts`, `households.security.api.test.ts`, `inventory.security.api.test.ts`, `mealPlan.api.test.ts`, `notifications.security.api.test.ts`, `ownRecipes.security.api.test.ts`, `prices.security.api.test.ts`, `purchases.security.api.test.ts`, `receipts.security.api.test.ts`, `recipes.security.api.test.ts`, `security.api.test.ts`, `sessions.security.api.test.ts`, `shopping.security.api.test.ts`, `household.spec.ts` |
+| NFR-SEC-002 | – | 4 | – | `auth.api.test.ts`, `inventory.api.test.ts`, `ownRecipes.api.test.ts`, `shopping.api.test.ts` |
 | NFR-SEC-003 | 2 | 1 | 1 | `password.test.ts`, `auth.test.ts`, `auth.api.test.ts`, `auth.spec.ts` |
-| NFR-SEC-004 | – | 8 | – | `avoidedIngredients.api.test.ts`, `notifications.api.test.ts`, `prices.api.test.ts`, `purchases.api.test.ts`, `receipts.api.test.ts`, `recipes.api.test.ts`, `security.api.test.ts`, `shopping.api.test.ts` |
+| NFR-SEC-004 | – | 9 | – | `passwordReset.api.test.ts`, `avoidedIngredients.api.test.ts`, `notifications.api.test.ts`, `prices.api.test.ts`, `purchases.api.test.ts`, `receipts.api.test.ts`, `recipes.api.test.ts`, `security.api.test.ts`, `shopping.api.test.ts` |
 | NFR-DATA-001 | 3 | 1 | – | `budget.test.ts`, `purchases.test.ts`, `stats.test.ts`, `purchases.api.test.ts` |
-| NFR-DATA-002 | 1 | 5 | 3 | `service.test.ts`, `ownRecipes.api.test.ts`, `barcodes.api.test.ts`, `purchases.api.test.ts`, `receipts.api.test.ts`, `shopping.api.test.ts`, `budget.spec.ts`, `scan.spec.ts`, `shopping.spec.ts` |
-| NFR-UX-001 | – | – | 12 | `ownRecipes.spec.ts`, `app-shell.spec.ts`, `budget.spec.ts`, `household.spec.ts`, `inventory.spec.ts`, `mealplan.spec.ts`, `notifications.spec.ts`, `prices.spec.ts`, `receipts.spec.ts`, `recipes.spec.ts`, `scan.spec.ts`, `shopping.spec.ts` |
-| NFR-UX-002 | 1 | – | 12 | `tokens.test.ts`, `ownRecipes.spec.ts`, `app-shell.spec.ts`, `budget.spec.ts`, `household.spec.ts`, `inventory.spec.ts`, `mealplan.spec.ts`, `notifications.spec.ts`, `prices.spec.ts`, `receipts.spec.ts`, `recipes.spec.ts`, `scan.spec.ts`, `shopping.spec.ts` |
+| NFR-DATA-002 | 1 | 5 | 3 | `service.test.ts`, `barcodes.api.test.ts`, `ownRecipes.api.test.ts`, `purchases.api.test.ts`, `receipts.api.test.ts`, `shopping.api.test.ts`, `budget.spec.ts`, `scan.spec.ts`, `shopping.spec.ts` |
+| NFR-UX-001 | – | – | 12 | `app-shell.spec.ts`, `budget.spec.ts`, `household.spec.ts`, `inventory.spec.ts`, `mealplan.spec.ts`, `notifications.spec.ts`, `ownRecipes.spec.ts`, `prices.spec.ts`, `receipts.spec.ts`, `recipes.spec.ts`, `scan.spec.ts`, `shopping.spec.ts` |
+| NFR-UX-002 | 1 | – | 12 | `tokens.test.ts`, `app-shell.spec.ts`, `budget.spec.ts`, `household.spec.ts`, `inventory.spec.ts`, `mealplan.spec.ts`, `notifications.spec.ts`, `ownRecipes.spec.ts`, `prices.spec.ts`, `receipts.spec.ts`, `recipes.spec.ts`, `scan.spec.ts`, `shopping.spec.ts` |
 | NFR-UX-003 | 2 | – | – | `RecipePage.test.tsx`, `RecipesPage.test.tsx` |
 | NFR-UX-004 | 1 | – | – | `locales.test.ts` |
 | NFR-REL-001 | 3 | 3 | 2 | `service.test.ts`, `openFoodFacts.test.ts`, `kassalapp.test.ts`, `barcodes.api.test.ts`, `passwords.security.api.test.ts`, `prices.api.test.ts`, `prices.spec.ts`, `scan.spec.ts` |
@@ -142,3 +143,5 @@ Kravene til kurset (KURS-01–09) er antatt og ikke tatt med. Hvor de vises i ap
 | NFR-OPS-004 | – | – | – | **ingen test nevner kravet** |
 | NFR-PERF-001 | 1 | – | – | `account.test.tsx` |
 | NFR-UX-005 | – | – | 1 | `a11y.spec.ts` |
+
+107 krav, 156 testfiler, 6 krav uten en testfil som nevner dem.

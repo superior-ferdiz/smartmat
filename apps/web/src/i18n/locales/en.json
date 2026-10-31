@@ -105,7 +105,8 @@
     "password": {
       "required": "Enter the password.",
       "tooShort": "The password must be at least 12 characters.",
-      "tooLong": "The password can be at most 128 characters."
+      "tooLong": "The password can be at most 128 characters.",
+      "mismatch": "The passwords are not the same."
     },
     "profile": {
       "nothingToUpdate": "There is nothing to save."
@@ -540,6 +541,7 @@
         "off": "Open Food Facts gets the barcode you scan, from our server, not from your phone.",
         "kassalapp": "Kassalapp gets the barcode, only if price lookups are switched on.",
         "hibp": "Have I Been Pwned gets the first 5 characters of a hash of a new password, so we can refuse passwords from known data breaches. Nobody can find the password from that.",
+        "mail": "Google (Gmail) gets your e-mail address, your name and the content of the e-mail when you ask for a new password, because the e-mail is sent from a Gmail account. We have no data processing agreement with Google; that is accepted for the test environment only.",
         "host": "The server is in Germany (EEA), with a provider that runs the machine.",
         "none": "We use no analytics, tracking or ad networks."
       },
@@ -549,7 +551,8 @@
         "sessions": "Logins: expire after 14 days without use and at the latest after 30 days, and are deleted every night.",
         "receipts": "Receipt photos and the text read from them: until the purchase is confirmed or discarded, at most 7 days.",
         "backups": "Backups: every night, encrypted, the last 7 days. Something you have deleted may therefore remain in a copy for up to 7 days. Receipt photos are never included.",
-        "logs": "The server's log: what kind of request and when, without e-mail, name, IP address or what you have entered."
+        "logs": "The server's log: what kind of request and when, without e-mail, name, IP address or what you have entered.",
+        "resetLinks": "Links for a new password: work for 30 minutes, only a hash is stored, and they are deleted after a day."
       },
       "rights": {
         "title": "Your rights",
@@ -581,7 +584,8 @@
       "lead": "Welcome back to SmartMat.",
       "submit": "Log in",
       "noAccount": "No account yet?",
-      "createAccount": "Create an account"
+      "createAccount": "Create an account",
+      "forgot": "Forgot your password?"
     },
     "register": {
       "title": "Create an account",
@@ -601,6 +605,25 @@
       "codeHint": "6 digits from the app. If you have lost your phone, use one of your recovery codes.",
       "submit": "Confirm",
       "back": "Back"
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "lead": "Enter the e-mail address of your account, and we will send a link where you can choose a new password.",
+      "submit": "Send link",
+      "sent": "If the address has an account, we have sent a link to it. The link works for {{minutes}} minutes and only once. If you cannot find the e-mail, look in your spam folder.",
+      "again": "Send a new link",
+      "back": "Back to login"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "lead": "When the password is changed, the account is logged out on every device. If you use two-factor login, you still need the code.",
+      "newPassword": "New password",
+      "repeatPassword": "Repeat new password",
+      "submit": "Save new password",
+      "noLink": "The link is missing or incomplete. Open the link from the e-mail again, or ask for a new one.",
+      "askNew": "Ask for a new link",
+      "done": "Your password has been changed. Log in with the new password.",
+      "login": "Log in"
     }
   },
   "errors": {
@@ -616,7 +639,9 @@
       "twoFactorUnavailable": "Two-factor login is not available on this server right now. Tell the team.",
       "twoFactorAlreadyOn": "Two-factor login is already on.",
       "twoFactorNotSetUp": "Start again with “Turn on two-factor login”.",
-      "twoFactorChallengeInvalid": "The login took too long or was interrupted. Log in again."
+      "twoFactorChallengeInvalid": "The login took too long or was interrupted. Log in again.",
+      "resetLinkInvalid": "The link no longer works. It may have been used, be older than 30 minutes or have been replaced by a newer link. Ask for a new one.",
+      "passwordResetUnavailable": "Resetting the password is not available on this server right now. Tell the team."
     },
     "security": {
       "forbiddenOrigin": "The request was blocked for security reasons. Reload the page and try again.",
