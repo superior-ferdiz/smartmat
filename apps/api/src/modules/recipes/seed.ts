@@ -3,11 +3,15 @@ import { join } from 'node:path';
 import { checkSeed, type ResolvedSeed } from '@smartmat/shared';
 import type { Db } from '../../db';
 import { toDbDate } from '../../lib/dbDates';
+import { GLOBAL_RECIPES } from './repo';
 
 /*
  * Seeding the global recipe tables (spec 05, ADR-0016) from a directory with ingredients.json and
  * recipes/*.json: prisma/seed/ for development (`npm run db:seed`), apps/api/test/fixtures/seed/ for the
  * test databases. Everything is checked first; the database is only touched when all files are valid.
+ *
+ * ADR-0023 (spec 16, FR-REC-010): a household's own recipes are never read, changed or removed here – every
+ * recipe query below is limited to GLOBAL_RECIPES.
  */
 
 export class SeedError extends Error {
@@ -49,8 +53,8 @@ export interface SeedSummary {
   removedRecipes: number;
   removedIngredients: number;
   /**
-   * Ingredients no longer in the files that are kept because an inventory item or a shopping list line
-   * (spec 06) is linked to them.
+   * Ingredients no longer in the files that are kept because an inventory item, a shopping list line (spec 06),
+   * a household's own recipe or someone's avoided-ingredient list (spec 16) is linked to them.
    */
   keptIngredients: string[];
 }
@@ -132,8 +136,9 @@ export async function applySeed(db: Db, seed: ResolvedSeed): Promise<SeedSummary
           reviewedBy: recipe.reviewedBy,
           reviewedOn: recipe.reviewedOn ? toDbDate(recipe.reviewedOn) : null,
         };
+        // A slug is never on a household's own recipe (CHECK), so this can only find a global one.
         const row = await tx.recipe.upsert({
-          where: { slug: recipe.slug },
+          where: { slug: recipe.slug, ...GLOBAL_RECIPES },
           create: { slug: recipe.slug, ...data },
           update: data,
           select: { id: true },
@@ -152,18 +157,27 @@ export async function applySeed(db: Db, seed: ResolvedSeed): Promise<SeedSummary
       }
 
       const removedRecipes = await tx.recipe.deleteMany({
-        where: { slug: { notIn: seed.recipes.map((r) => r.slug) } },
+        where: { ...GLOBAL_RECIPES, slug: { notIn: seed.recipes.map((r) => r.slug) } },
       });
       const stale = await tx.ingredient.findMany({
         where: { id: { notIn: ids } },
         select: {
           id: true,
           key: true,
-          _count: { select: { items: true, shoppingItems: true, barcodes: true } },
+          _count: {
+            select: {
+              items: true,
+              shoppingItems: true,
+              barcodes: true,
+              // Only household recipes are left: the global ones not in the files were removed above.
+              recipes: true,
+              avoidedBy: true,
+            },
+          },
         },
       });
-      const inUse = (i: (typeof stale)[number]) =>
-        i._count.items + i._count.shoppingItems + i._count.barcodes > 0;
+      const inUse = ({ _count: c }: (typeof stale)[number]) =>
+        c.items + c.shoppingItems + c.barcodes + c.recipes + c.avoidedBy > 0;
       const unused = stale.filter((i) => !inUse(i));
       await tx.ingredient.deleteMany({ where: { id: { in: unused.map((i) => i.id) } } });
 

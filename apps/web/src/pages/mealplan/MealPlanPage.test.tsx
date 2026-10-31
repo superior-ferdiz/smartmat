@@ -34,6 +34,8 @@ function entry(overrides: Partial<MealEntryResponse> = {}): MealEntryResponse {
     note: null,
     allergenWarnings: [],
     householdAllergenWarnings: [],
+    ingredientWarnings: [],
+    householdIngredientWarnings: [],
     createdAt: '2026-10-24T10:00:00.000Z',
     createdBy: { kind: 'member', displayName: 'Kari' },
     ...overrides,
@@ -234,6 +236,8 @@ describe('FR-PLAN-001 the week', () => {
         ],
         userAllergens: ['milk'],
         householdAllergens: [],
+        avoidedIngredients: [],
+        householdAvoidedIngredients: [],
       },
       onWrite: (r) => {
         posts.push(r.body);

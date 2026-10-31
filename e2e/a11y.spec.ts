@@ -115,6 +115,7 @@ const APP_PAGES = [
   '/skann',
   '/oppskrifter',
   '/oppskrifter/kilder',
+  '/oppskrifter/ny',
   '/handleliste',
   '/budsjett',
   '/budsjett/kjop/ny',

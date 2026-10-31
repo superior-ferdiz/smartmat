@@ -3,10 +3,11 @@
 > **Status: UTKAST (KI).** Skrevet av KI (Claude) i fase 14, 2026-10-27. Bare påstander med bevis i repoet er tatt
 > med, og hver har en lenke. **Teamets evaluering står tom.** Ikke gjennomgått av teamet. Offisielle APP2000-krav
 > er ikke verifisert.
+> Fase 15 (2026-10-30): kravtallet (107 FR og NFR, KURS-kravene ikke med) og en rad for fase 15 lagt til av KI (Claude).
 
 ## Hvilke krav som er oppfylt
 
-98 av 99 krav i [kravoversikten](../development/requirements/00-kravoversikt.md) er implementert. Det som mangler, er
+106 av 107 funksjonelle og ikke-funksjonelle krav i [kravoversikten](../development/requirements/00-kravoversikt.md) er implementert. Det som mangler, er
 FR-AUTH-006 (tilbakestilling av passord og e-postverifisering), fordi teamet ikke har en e-posttjeneste. Oversikten
 per modul står i kapittel 05, og koblingen fra krav til tester i [vedlegg-sporbarhet.md](vedlegg-sporbarhet.md).
 
@@ -18,6 +19,7 @@ per modul står i kapittel 05, og koblingen fra krav til tester i [vedlegg-sporb
 | FR-PRICE-001, 003, 004 (eksterne priser) | Av uten nøkkel til Kassalapp. Bare testet mot et falskt Kassalapp med oppdiktede priser |
 | FR-RCPT-004 (tolke kvitteringen) | Målt på 3 kvitteringer. Linjer foreslås ikke som standard (ADR-0017, ikke godkjent) |
 | FR-REC-001–006 (oppskrifter) | De 27 oppskriftene og allergenene er oversatt og anslått av KI, ikke kontrollert |
+| FR-REC-007–010, FR-ALG-001–003, FR-PRICE-007 (fase 15) | Testet automatisk 2026-10-30. Ikke gjennomgått av teamet. Prisanslaget bygger bare på egne priser uten nøkkel. Art. 9 for matvarer og deling er ikke vurdert av teamet |
 | FR-PRIV-003 (personvernerklæring) | Utkast. Kontaktadressen og behandlingsgrunnlaget for allergier mangler |
 | NFR-UX-002, NFR-UX-005 (WCAG 2.2 AA) | Testet automatisk og ved lesing av koden. Ikke med skjermleser eller av mennesker |
 

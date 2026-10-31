@@ -40,6 +40,10 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-REC-004 | Oppskrifter med brukerens registrerte allergener filtreres bort eller varsles, med tydelig forbehold | B | 5 |
 | FR-REC-005 | Oppskrifter kan importeres fra åpne kilder med kilde, lisens og hva som er endret (lagt til i fase 9, ADR-0016) | B | 9 |
 | FR-REC-006 | Oppskriften viser kilde og lisens, og om teamet har kontrollert den (lagt til i fase 9) | B | 9 |
+| FR-REC-007 | Husholdningen kan lage, endre og slette egne oppskrifter, merket «Egen oppskrift» (lagt til i fase 15, ADR-0023) | K | 15 |
+| FR-REC-008 | Ingredienslinjer velges fra ingredienslisten med mengde og enhet. Fritekstlinjer er lov, men teller ikke. (fase 15) | K | 15 |
+| FR-REC-009 | Ingen husholdning kan se, endre, rangere, planlegge eller handle inn en annen husholdnings oppskrift (fase 15) | K | 15 |
+| FR-REC-010 | Seed-skriptet rører aldri egne oppskrifter, og eksporten tar dem med (fase 15) | K | 15 |
 | FR-SHOP-001 | Bruker kan føre handleliste manuelt og huke av varer | B | 6 |
 | FR-SHOP-002 | Manglende ingredienser kan legges til fra en oppskrift | B | 6 |
 | FR-SHOP-003 | Avhukede varer kan legges inn i lageret | B | 6 |
@@ -75,6 +79,9 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-HH-005 | Medlemmer kan forlate og fjernes, uten at data lekker etterpå | K | 10 |
 | FR-HH-006 | Allergier kan deles med husholdningen etter eget valg, uten navn | K | 10 |
 | FR-HH-007 | Det vises hvem som la til noe, men bare for nåværende medlemmer | K | 10 |
+| FR-ALG-001 | Allergier og matvarer brukeren ikke tåler, legges inn under Innstillinger, med frivillig deling (fase 15) | K | 15 |
+| FR-ALG-002 | Oppskrifter og måltider varsler om registrerte matvarer, egne og delte, uten navn (fase 15) | K | 15 |
+| FR-ALG-003 | Fritekstlinjer sjekkes ikke mot allergiene, og det står på oppskriften (fase 15) | K | 15 |
 
 | ID | Krav (svinn og varsler, lagt til i fase 11) | Prio | Fase |
 |---|---|---|---|
@@ -98,6 +105,7 @@ Prioritet: **M** = må (MVP), **B** = bør (første innlevering), **K** = kan (s
 | FR-PRICE-004 | «Billigst sist observert hos», bare blant ferske priser | K | 12 |
 | FR-PRICE-005 | En ekstern pris er et anslag og blir aldri en utgift (ADR-0007) | K | 12 |
 | FR-PRICE-006 | Hver pris har kilde og dato | K | 12 |
+| FR-PRICE-007 | Prisanslag for en oppskrift og hver ingrediens, med hva som mangler og uten «total» (fase 15) | K | 15 |
 
 | ID | Krav (sikkerhet og personvern, lagt til i fase 13) | Prio | Fase |
 |---|---|---|---|

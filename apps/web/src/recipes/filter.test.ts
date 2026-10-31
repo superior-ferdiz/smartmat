@@ -24,8 +24,10 @@ const all = [vafler, wok, suppe];
 
 describe('FR-REC-001 recipe filter in the URL', () => {
   it('defaults are left out of the URL, and read back the same', () => {
-    expect(recipeFilterToParams({ q: '', tag: '', showAllergens: false }).toString()).toBe('');
-    const filter = { q: 'wok', tag: 'middag', showAllergens: true };
+    expect(
+      recipeFilterToParams({ q: '', tag: '', showAllergens: false, ownOnly: false }).toString(),
+    ).toBe('');
+    const filter = { q: 'wok', tag: 'middag', showAllergens: true, ownOnly: false };
     const params = recipeFilterToParams(filter);
     expect(params.toString()).toBe('q=wok&tagg=middag&allergener=vis');
     expect(parseRecipeFilter(params)).toEqual(filter);
@@ -37,7 +39,7 @@ describe('FR-REC-001 recipe filter in the URL', () => {
 });
 
 describe('FR-REC-001/004 filterRecipes', () => {
-  const none = { q: '', tag: '', showAllergens: false };
+  const none = { q: '', tag: '', showAllergens: false, ownOnly: false };
 
   it('FR-REC-004: hides recipes with the user’s allergens by default, and counts them', () => {
     expect(filterRecipes(all, none, 'nb-NO')).toEqual({
@@ -100,7 +102,7 @@ describe('FR-REC-003 lineGroup', () => {
 
 describe('spec 10 FR-HH-006 allergens the household shares', () => {
   const eggy = recipeSummary('Omelett', { householdAllergenWarnings: ['egg'], score: score(90) });
-  const filter = { q: '', tag: '', showAllergens: false };
+  const filter = { q: '', tag: '', showAllergens: false, ownOnly: false };
 
   it('hides them by default, counts them, and the switch shows them', () => {
     expect(filterRecipes([eggy, wok], filter, 'nb')).toEqual({
@@ -115,5 +117,30 @@ describe('spec 10 FR-HH-006 allergens the household shares', () => {
 
   it('is never the dinner suggestion', () => {
     expect(dinnerSuggestion([eggy, wok])).toBe(wok);
+  });
+});
+
+describe('spec 16 own recipes and avoided ingredients', () => {
+  const own = recipeSummary('Bestemors kjøttkaker', { source: 'household', score: score(40) });
+  const kiwi = recipeSummary('Fruktsalat', { ingredientWarnings: ['Kiwi'], score: score(95) });
+  const shared = recipeSummary('Kiwikake', {
+    householdIngredientWarnings: ['Kiwi'],
+    score: score(92),
+  });
+  const filter = { q: '', tag: '', showAllergens: false, ownOnly: false };
+
+  it('FR-REC-007: ?egne=1 shows only the household’s own recipes, and goes back and forth through the URL', () => {
+    expect(filterRecipes([wok, own], { ...filter, ownOnly: true }, 'nb').shown).toEqual([own]);
+    const params = recipeFilterToParams({ ...filter, ownOnly: true });
+    expect(params.toString()).toBe('egne=1');
+    expect(parseRecipeFilter(params).ownOnly).toBe(true);
+  });
+
+  it('FR-ALG-002: own and shared avoided ingredients are hidden like allergens, and never the dinner suggestion', () => {
+    expect(filterRecipes([kiwi, shared, wok], filter, 'nb')).toEqual({
+      shown: [wok],
+      hiddenByAllergens: 2,
+    });
+    expect(dinnerSuggestion([kiwi, shared, wok])).toBe(wok);
   });
 });

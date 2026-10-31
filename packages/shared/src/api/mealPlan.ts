@@ -27,6 +27,9 @@ export const mealEntryResponseSchema = z.object({
   allergenWarnings: z.array(z.enum(ALLERGENS)),
   /** Spec 10 (FR-HH-006): allergens other members share with the household (never whose). */
   householdAllergenWarnings: z.array(z.enum(ALLERGENS)),
+  /** Spec 16 (FR-ALG-002): avoided ingredients in the recipe – the user's, and those others share. */
+  ingredientWarnings: z.array(z.string()),
+  householdIngredientWarnings: z.array(z.string()),
   createdAt: z.string(),
   /** Spec 10 (FR-HH-007): who planned it. */
   createdBy: creatorRefSchema,

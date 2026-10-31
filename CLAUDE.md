@@ -64,6 +64,10 @@ Each phase runs in its **own chat**. At the start of a phase chat:
   licence and what was changed (`source=external`), shown as "KI-utkast" until a team member is in `reviewedBy`.
   No recipe API at runtime (Spoonacular forbids storing ingredients; TheMealDB is dev-only/English). No pure AI
   recipes (`source=ai`) – the team has not decided. Never write recipes as `source=team`.
+- Own recipes (ADR-0023, spec 16, accepted 2026-10-30): a household's own recipes live in the shared `recipes` table
+  (`source = household`, `household_id`, CHECK binds them). No household may ever see, change, rank, plan or shop
+  another's: enforced in the repo, in the database (trigger) and by 404 tests on every route. No images, no public
+  recipes. Allergies live in Innstillinger with avoided ingredients; sharing stays opt-in (never switched on).
 - Prices (ADR-0020, accepted 2026-10-25): no scraping. Kassalapp (Hobby, non-commercial; terms read and documented
   in `docs/development/integrations/kassalapp.md`) is **off without `KASSALAPP_API_KEY`** – the team had no key as of
   2026-10-25. Only GTINs are sent, from the server. External prices are estimates, kept apart from the household's
@@ -147,14 +151,16 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 
 ## Code conventions (added in phase 5)
 
-- Recipe/ingredient tables are **global** (no `household_id`), written only by `npm run db:seed` from
-  `prisma/seed/` (checked by `checkSeed` in `packages/shared/src/recipes/seed.ts`; `-- --check` only validates).
+- Ingredient tables and the *global* recipes are written only by `npm run db:seed` from `prisma/seed/` (checked by
+  `checkSeed` in `packages/shared/src/recipes/seed.ts`; `-- --check` only validates). Since phase 15 a household's
+  own recipes are in the same table (see "added in phase 15").
   Test and e2e databases get the fictional fixtures in `apps/api/test/fixtures/seed/` (`source=test`) via
   `globalSetup` / `e2e-server.ts` – never the team's recipes. Never write recipes as `source=team` (ADR-0009).
 - Matching and scoring are pure functions in `packages/shared/src/recipes/` (used by API and web). Whole-word aliases,
   most words wins, a tie is "ambiguous" (no guess). Conversions round **down**; use-by-passed batches never count.
 - Allergen wording: only "registered", never "free of"; `AllergenDisclaimer` wherever recipes are shown;
-  `locales.test.ts` blocks forbidden phrases. Allergies are `/me/allergens` (user, not household).
+  `locales.test.ts` blocks forbidden phrases. Allergies are `/me/allergens` (user, not household); since phase 15
+  edited in Innstillinger together with `/me/avoided-ingredients`.
 - Recipe queries live under `['household', id, 'recipes']`, so inventory/purchase invalidation re-ranks them.
 - A shared type like `Pick<T, 'a' | 'b'>` also trips the øre-code regex in `locales.test.ts` (`| 'x'`): split into
   `Pick<T,'a'> & Pick<T,'b'>`.
@@ -378,6 +384,33 @@ Each phase runs in its **own chat**. At the start of a phase chat:
 - Sources in `docs/academic/19-kildeliste.md` (APA 7, Norwegian) are marked [T] / [KI-lest] / [KI-delvis] /
   [KI-kunnskap]. Never invent bibliographic details (law numbers, dates) you are not sure of: leave them out and say so.
 - `docs/academic/vedlegg-ki-erklaering.md` is a draft from the AI log: facts only, the team's assessment stays empty.
+
+## Code conventions (added in phase 15)
+
+- **Every recipe query goes through `apps/api/src/modules/recipes/repo.ts`** (ADR-0023): `recipes(householdId)` and
+  `recipe(householdId, id)` take the household, and `visibleTo` (global OR this household) is the only filter.
+  `recipeQueries.test.ts` fails on `db.recipe`/raw SQL elsewhere – allowed: repo, seed (uses `GLOBAL_RECIPES`),
+  `scripts/perf-explain.ts`. The seed script must keep `GLOBAL_RECIPES` in every recipe query.
+- DB guards (migration `household_recipes`): CHECK `recipes_household_source`/`_fields`; `recipe_ingredients.household_id`
+  is copied by a trigger (never set in code); trigger `recipe_household_guard` on `meal_plan_entries` and
+  `shopping_list_item_recipes`. Free-text lines (`ingredient_id IS NULL`) only in own recipes, never with a quantity.
+- `RecipeRecord.lines` are ingredient lines only; free text is `freeTextLines`, so matching, scoring, meal plan,
+  shopping and prices cannot count it by accident. Warnings come from `dietWarnings` (shared) + `loadDiet`
+  (`recipes/diet.ts`), used by recipes and the meal plan alike.
+- Own-recipe lines keep what the user typed (`input_amount`/`input_unit`) and are converted with `lineQuantityBase`
+  (= `seedQuantityBase`). `GET /ingredients` has `units`. PUT needs `version` (409 `errors.recipe.changedMeanwhile`).
+- An unknown recipe in `POST /meal-plan/entries` is **404** (was 400) – same answer as another household's.
+- **Test DB reset uses `DELETE FROM households; DELETE FROM users`**, not `TRUNCATE … CASCADE`: `recipes` references
+  `households`, and a truncate cascade empties the whole table (also the global fixtures). Never go back to it.
+- Avoided ingredients (`user_avoided_ingredients`) are treated like allergies (art. 9): exported, CASCADE on the user,
+  RESTRICT on the ingredient (seed keeps it), never logged. Shared via the same `share_allergens` switch.
+- Prices for a recipe: `PriceService.recipeEstimate` reuses the shopping estimator (`estimator()`), never calls
+  Kassalapp, skips staples/free text/no-amount lines and never shows a total. Kassalapp name search: read, not built.
+- Web: allergies card is `settings/AllergiesCard.tsx` (`/innstillinger#allergier`, `ALLERGIES_PATH`); the profile only
+  links there. `AllergenWarningTag` takes `warnings={…}` (any object with the four warning arrays).
+  `hasRegisteredAllergens` covers avoided ingredients too. Recipe form: `recipes/RecipeForm.tsx` + `recipeForm.ts`.
+- Playwright: `getByLabel('Trinn 1')` also matches the "Fjern trinn 1" button – use `{ exact: true }`; and
+  `getByLabel('egg')` in the settings card also matches the food picker – use `getByRole('checkbox', …)`.
 
 ## Integrity rules (non-negotiable)
 

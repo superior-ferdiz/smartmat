@@ -74,7 +74,7 @@ function setup(
   };
   const recipes = {
     catalog: vi.fn(async () => catalog),
-    recipe: vi.fn(async (id: string) =>
+    recipe: vi.fn(async (_householdId: string, id: string) =>
       id === RECIPE ? { lines: [{ ingredientId: MELK }, { ingredientId: EGG }] } : null,
     ),
   };

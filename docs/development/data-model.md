@@ -156,7 +156,7 @@ Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–12)
+## Kjernemodell (fase 2–15)
 
 ```mermaid
 erDiagram
@@ -182,7 +182,10 @@ erDiagram
   PurchaseLine ||--o| InventoryBatch : skaper
   Ingredient ||--o{ IngredientAlias : kalles_også
   Recipe ||--o{ RecipeIngredient : krever
-  Ingredient ||--o{ RecipeIngredient : brukes_i
+  Ingredient |o--o{ RecipeIngredient : brukes_i
+  Household |o--o{ Recipe : egne_oppskrifter
+  User ||--o{ UserAvoidedIngredient : tåler_ikke
+  Ingredient ||--o{ UserAvoidedIngredient : registrert_som
   Household ||--|| ShoppingList : har
   ShoppingList ||--o{ ShoppingListItem : inneholder
   Ingredient ||--o{ ShoppingListItem : kobles_til
@@ -226,8 +229,9 @@ erDiagram
 | `FoodBudget` | household_id, valid_from, amount_ore? | Gjelder fra en måned og fremover | 4 |
 | `Ingredient` / `IngredientAlias` | key, name, base_unit, is_staple, category_key? / alias (unik) | Normalisering: "lettmelk", "melk 1%" → melk | 5 |
 | `UnitConversion` | ingredient_id?, from_unit, to_base_factor | f.eks. 1 dl melk = 100 ml, 1 egg ≈ 60 g | 5 |
-| `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license, image?; fra fase 9: source_title?, source_url?, retrieved_on?, adaptation?, adaptation_note?, ai_assisted, reviewed_by, reviewed_on? | Frødata (fra fase 9: oversatt fra Wikibooks, ADR-0016) | 5/9 |
-| `RecipeIngredient` | recipe_id, ingredient_id, quantity_base, display_text, optional | | 5 |
+| `Recipe` | title, description, servings, prep_min, cook_min, instructions, tags, source, license?, slug?; fra fase 9: source_title?, source_url?, retrieved_on?, adaptation?, adaptation_note?, ai_assisted, reviewed_by, reviewed_on?; fra fase 15: household_id?, created_by?, version, dedupe_key? | Frødata (fra fase 9: oversatt fra Wikibooks, ADR-0016). Fra fase 15 også husholdningens egne oppskrifter (`source = household`, ADR-0023): CHECK binder `source` og `household_id`, egne har ingen slug, lisens, forfattere eller kildefelt. | 5/9/15 |
+| `RecipeIngredient` | recipe_id, ingredient_id?, quantity_base?, display_text, optional; fra fase 15: household_id? (kopiert av en trigger), input_amount?, input_unit? | `ingredient_id` tom = fritekstlinje, bare i egne oppskrifter (CHECK). Triggeren `recipe_household_guard` stopper måltider og handlelistebidrag som peker på en annen husholdnings oppskrift. | 5/15 |
+| `UserAvoidedIngredient` | user_id + ingredient_id (PK) | Matvarer brukeren ikke tåler (spesifikasjon 16). Som allergiene: frivillig, slettes med kontoen, deles bare med `share_allergens`. | 15 |
 | `ShoppingList` / `ShoppingListItem` / `ShoppingListItemRecipe` | household_id (unik) / household_id, list_id, text, ingredient_id?, quantity_base?, unit?, checked, checked_at?, dedupe_key? / item_id, recipe_id, quantity_base? | Én liste per husholdning; én åpen linje per ingrediens | 6 |
 | `Receipt` | household_id, status, failure_code?, image_sha256?, uploaded_by?, purchase_id?, delete_after, confirmed_at? | Én opplastet kvittering. Etter bekreftelse bare koblingen til kjøpet. | 8 |
 | `ReceiptImage` | receipt_id (PK), household_id, bytes, width, height | Bildet uten metadata. Slettes ved bekreftelse, forkasting eller etter 7 dager. | 8 |

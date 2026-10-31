@@ -1,0 +1,6 @@
+$ npx prettier --check .
+# 2026-10-30T16:42:40Z
+Checking formatting...
+[warn] scripts/check-files.mjs
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.
+exit=1

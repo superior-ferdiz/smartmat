@@ -1,0 +1,4 @@
+$ npm run -s check:files
+# 2026-10-30T16:01:19Z
+check:files: 1211 files, no stray images
+exit=0

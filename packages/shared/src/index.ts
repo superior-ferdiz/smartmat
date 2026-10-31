@@ -16,6 +16,8 @@ export * from './recipes/allergens';
 export * from './recipes/matching';
 export * from './recipes/scoring';
 export * from './recipes/seed';
+export * from './recipes/household';
+export * from './schemas/recipes';
 export * from './api/recipes';
 export * from './schemas/shopping';
 export * from './api/shopping';

@@ -35,6 +35,7 @@ en ekte telefon eller med skjermleser. Hva som *ikke* er testet, står i [eget a
 | 12 | 2026-10-25 | 1293 | 442 | 187 | 0 | 881 kB | [fase-12/](test-results/fase-12/) |
 | 13 | 2026-10-27 | 1364 | 491 | 209 | 0 | 608 kB | [fase-13/](test-results/fase-13/) |
 | 14 | 2026-10-27 | 1364 | 491 | 209 | 0 | 608 kB | [fase-14/](test-results/fase-14/) |
+| 15 | 2026-10-30 | 1412 | 538 | 215 | 0 | 616 kB | [fase-15/](test-results/fase-15/) |
 
 Typesjekk, lint og formatering er lagret som `01`–`03` i hver mappe, og migreringsstatus som `09` fra fase 2.
 Fase 14 endret ingen appkode. Kjøringen viser at ingenting er brutt av endringene i fase 14 (dokumentasjon og
@@ -55,6 +56,8 @@ Fase 6 og 7 har ikke tidspunkt i filhodet. Datoen er hentet fra veikartet.
 | 13 | [05-api-tests-forsok1.txt](test-results/fase-13/05-api-tests-forsok1.txt) | 1 av 491 feilet | Dato i en test fra fase 11 («tidsbombe»), rettet |
 | 13 | [07-e2e-forsok1.txt](test-results/fase-13/07-e2e-forsok1.txt) | 3 feilet | Kodedelingen brøt fokus ved sidebytte, og et axe-funn med `scroll-padding` (funn 4, rettet) |
 | 14 | [13-format-check-forsok1.txt](test-results/fase-14/13-format-check-forsok1.txt) | én fil ikke formatert (`scripts/traceability.mjs`) | Formatert, format og lint kjørt på nytt |
+| 15 | [04-unit-tests-forsok1.txt](test-results/fase-15/04-unit-tests-forsok1.txt) | 1411 av 1411 besto | Besto, men mutasjonssjekken viste at én ny webtest gikk over 5 sekunder i 17 av 21 runder. Testen ble delt i to, og enhetstestene kjørt på nytt (`04`). |
+| 15 | [03-format-check.txt](test-results/fase-15/03-format-check.txt) | `scripts/check-files.mjs` ikke formatert | Fila er fra fase 14 (eebc39d) og ikke endret i fase 15. Ikke rettet. |
 
 ## Mutasjonskontroll
 
@@ -72,6 +75,7 @@ Fase 6 og 7 har ikke tidspunkt i filhodet. Datoen er hentet fra veikartet.
 | 11 | 28 av 29 | 29 av 29 | – | [run1](test-results/fase-11/10-mutation-check-run1.txt), [siste](test-results/fase-11/10-mutation-check.txt) |
 | 12 | 35 av 36 | 36 av 36 | – | [run1](test-results/fase-12/10-mutation-check-run1.txt), [siste](test-results/fase-12/10-mutation-check.txt) |
 | 13 | 24 av 27 | 2 av 3 (bare de tre som ikke ble fanget) | Runde 15, gir samme oppførsel (forklart i kapittel 11) | [run1](test-results/fase-13/10-mutation-check-run1.txt), [run2](test-results/fase-13/10-mutation-check-run2.txt) |
+| 15 | 21 av 21 | 21 av 21 | – (hver runde ble fanget av en relevant test, ikke bare av den ustabile webtesten) | [run1](test-results/fase-15/10-mutation-check-run1.txt) |
 
 Skriptene som gjør endringene, ligger ved siden av utdataene (`10-mutation-check.sh`). Fase 1 hadde ingen
 mutasjonskontroll.

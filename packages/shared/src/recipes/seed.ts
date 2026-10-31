@@ -160,7 +160,13 @@ export interface ResolvedSeed {
 export type SeedCheck = { ok: true; data: ResolvedSeed } | { ok: false; errors: string[] };
 
 /** What converting a recipe amount needs to know about the ingredient. */
-type SeedIngredientUnits = Pick<IngredientSeed, 'baseUnit'> & Pick<IngredientSeed, 'conversions'>;
+/** Read-only, so the API can pass its own catalog rows (spec 16) as well as seed rows. */
+type SeedIngredientUnits = Pick<IngredientSeed, 'baseUnit'> & {
+  conversions: readonly Pick<
+    IngredientSeed['conversions'][number],
+    'unit' | 'unitQty' | 'baseQty'
+  >[];
+};
 
 /** "2" → 2/1, "1,5" → 15/10, "1/2" → 1/2. Null if it is not a positive number. */
 export function parseSeedAmount(amount: string): { num: number; den: number } | null {

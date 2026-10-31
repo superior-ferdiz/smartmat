@@ -28,10 +28,13 @@ export interface CatalogEntry extends MatchableIngredient {
 export interface ShoppingServiceDeps {
   repo: ShoppingRepo;
   locations: Pick<LocationRepo, 'exists'>;
-  /** The global ingredients and recipes (phase 5). Read only. */
+  /** The ingredients and the recipes the household can see (global and its own, ADR-0023). Read only. */
   recipes: {
     catalog(): Promise<CatalogEntry[]>;
-    recipe(recipeId: string): Promise<{ lines: { ingredientId: string }[] } | null>;
+    recipe(
+      householdId: string,
+      recipeId: string,
+    ): Promise<{ lines: { ingredientId: string }[] } | null>;
   };
   now: Clock;
 }
@@ -134,7 +137,9 @@ export class ShoppingService {
     recipeId: string,
     body: AddFromRecipeBody,
   ): Promise<AddFromRecipeResponse> {
-    const recipe = await this.deps.recipes.recipe(recipeId);
+    // Another household's own recipe is "not found", like an unknown one (FR-REC-009). Free-text lines are not in
+    // `lines`, so they can never be added.
+    const recipe = await this.deps.recipes.recipe(householdId, recipeId);
     if (!recipe) throw notFound();
     const inRecipe = new Set(recipe.lines.map((l) => l.ingredientId));
     const catalog = new Map((await this.deps.recipes.catalog()).map((i) => [i.id, i]));

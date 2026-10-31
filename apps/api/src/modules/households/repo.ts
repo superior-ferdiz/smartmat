@@ -111,6 +111,11 @@ export interface HouseholdRepo {
   setActiveHousehold(userId: string, householdId: string): Promise<boolean>;
   /** FR-HH-006: allergens other current members share with this household (never whose). */
   sharedAllergens(householdId: string, exceptUserId: string): Promise<string[]>;
+  /** Spec 16 (FR-ALG-002): avoided ingredients of the other current members who share (same switch). */
+  sharedAvoidedIngredients(
+    householdId: string,
+    exceptUserId: string,
+  ): Promise<{ id: string; name: string }[]>;
 }
 
 type Tx = Prisma.TransactionClient;
@@ -508,6 +513,19 @@ export function createHouseholdRepo(db: Db): HouseholdRepo {
         distinct: ['allergen'],
       });
       return rows.map((row) => row.allergen);
+    },
+
+    async sharedAvoidedIngredients(householdId, exceptUserId) {
+      const rows = await db.userAvoidedIngredient.findMany({
+        where: {
+          userId: { not: exceptUserId },
+          user: { memberships: { some: { householdId, shareAllergens: true } } },
+        },
+        select: { ingredient: { select: { id: true, name: true } } },
+        distinct: ['ingredientId'],
+        orderBy: [{ ingredientId: 'asc' }],
+      });
+      return rows.map((row) => row.ingredient).sort((a, b) => a.name.localeCompare(b.name, 'nb'));
     },
   };
 }

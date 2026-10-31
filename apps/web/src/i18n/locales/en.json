@@ -230,6 +230,33 @@
       "codeRequired": "Enter the code.",
       "codeInvalid": "The code is 6 digits from the app, or a recovery code of 10 characters.",
       "totpInvalid": "Enter the 6 digits the app shows."
+    },
+    "recipe": {
+      "title": "Enter a name for the recipe.",
+      "titleTooLong": "The name can be at most 120 characters.",
+      "descriptionTooLong": "The description can be at most 500 characters.",
+      "servings": "Enter a whole number of servings from 1 to 50.",
+      "minutes": "Enter a whole number of minutes from 0 to 1440.",
+      "tag": "A tag can have 1–30 characters.",
+      "tooManyTags": "You can have at most 10 tags.",
+      "ingredient": "Choose an ingredient from the list.",
+      "amount": "Enter the amount as a number, for example 2, 1.5 or 1/2.",
+      "unit": "Choose a unit that fits the ingredient.",
+      "amountAndUnit": "Enter both amount and unit, or neither (“to taste”).",
+      "lineText": "Enter the text of the line.",
+      "lineTextTooLong": "The text can be at most 120 characters.",
+      "noLines": "Add at least one ingredient.",
+      "tooManyLines": "A recipe can have at most 40 lines.",
+      "duplicateIngredient": "The ingredient is already in the recipe.",
+      "step": "Write what to do in the step, or remove it.",
+      "stepTooLong": "A step can be at most 1000 characters.",
+      "noSteps": "Add at least one step.",
+      "tooManySteps": "A recipe can have at most 30 steps."
+    },
+    "avoided": {
+      "unknown": "The food is not in the ingredient list.",
+      "tooMany": "You can register at most 50 foods.",
+      "duplicate": "The food is already in the list."
     }
   },
   "pages": {
@@ -352,6 +379,30 @@
         "shopping": "Shopping list",
         "shoppingHint": "When others in the household add something.",
         "save": "Save notifications"
+      },
+      "allergies": {
+        "title": "Allergies and foods",
+        "text": "Choose what you do not tolerate. It is only used to warn about recipes and meals. It is voluntary, and deleted with your account.",
+        "saved": "The allergies are saved",
+        "allergensLegend": "Allergens",
+        "foodsLegend": "Foods I do not tolerate",
+        "foodsText": "Choose foods from the ingredient list, for example kiwi. You get a warning when a recipe has them.",
+        "noFoods": "No foods are registered.",
+        "removeFood": "Remove {{name}}",
+        "remove": "Remove",
+        "addFood": "Add a food",
+        "chooseFood": "Choose food",
+        "add": "Add",
+        "addHint": "Press “Add” and then “Save” to register {{name}}.",
+        "save": "Save",
+        "share": {
+          "title": "Share with the household",
+          "text": "Applies to both allergens and foods. Other members see what is registered in the household, but not who registered it. In a small household they may still work it out. Sharing is off until you turn it on, you can turn it off at any time, and it applies only to this household.",
+          "notShared": "What you have registered is not shared with “{{name}}”. The other members get no warning about it.",
+          "label": "Take my allergies and foods into account in “{{name}}”",
+          "on": "Your allergies and foods are now shared with “{{name}}”.",
+          "off": "Your allergies and foods are no longer shared with “{{name}}”."
+        }
       }
     },
     "notFound": {
@@ -457,17 +508,8 @@
       },
       "allergies": {
         "title": "Allergies",
-        "text": "Choose what you cannot eat. It is only used to hide or warn about recipes. It is voluntary, and is deleted together with your account.",
-        "legend": "My allergens",
-        "save": "Save allergies",
-        "saved": "Your allergies are saved",
-        "share": {
-          "title": "Share with the household",
-          "label": "Take my allergies into account in “{{name}}”",
-          "text": "Other members see which allergens are registered in the household, but not who has them. In a small household they may still work it out. You can turn this off at any time, and it applies only to this household.",
-          "on": "Your allergies are now shared with “{{name}}”.",
-          "off": "Your allergies are no longer shared with “{{name}}”."
-        }
+        "moved": "Allergies and foods you do not tolerate are now under Settings.",
+        "open": "Go to allergies"
       }
     },
     "privacy": {
@@ -629,6 +671,10 @@
     },
     "notification": {
       "notFound": "The notification no longer exists."
+    },
+    "recipe": {
+      "changedMeanwhile": "Someone else changed the recipe while you were writing. Open it again and make your change again.",
+      "tooMany": "The household has reached the limit of 200 own recipes. Delete one before making a new one."
     }
   },
   "units": {
@@ -1017,14 +1063,15 @@
       "searchHint": "Title or ingredient",
       "tag": "Tag",
       "allTags": "All tags",
-      "showAllergens": "Show recipes with registered allergens",
+      "showAllergens": "Show recipes with registered allergens and foods",
       "reset": "Clear the search",
       "more": "Filter ({{count}} in use)",
-      "showHidden": "Show them anyway"
+      "showHidden": "Show them anyway",
+      "ownOnly": "Only own recipes"
     },
     "count": "{{shown}} of {{count}} recipes",
-    "hiddenByAllergens_one": "{{count}} recipe is hidden because an ingredient has a registered allergen (yours or the household's).",
-    "hiddenByAllergens_other": "{{count}} recipes are hidden because an ingredient has a registered allergen (yours or the household's).",
+    "hiddenByAllergens_one": "{{count}} recipe is hidden because it has a registered allergen or food (yours or the household's).",
+    "hiddenByAllergens_other": "{{count}} recipes are hidden because they have a registered allergen or food (yours or the household's).",
     "card": {
       "have": "Have {{enough}} of {{required}}",
       "missing_one": "{{count}} missing",
@@ -1154,6 +1201,109 @@
       "added": "Added to the meal plan.",
       "open": "Open the week",
       "summary": "{{title}} · {{servings}}"
+    },
+    "own": {
+      "badge": "Own recipe",
+      "new": "New recipe",
+      "newTitle": "New recipe",
+      "newLead": "The recipe is saved in the household. All members can see, use and change it.",
+      "create": "Save the recipe",
+      "created": "The recipe is saved",
+      "editTitle": "Change recipe",
+      "edit": "Change",
+      "saved": "The changes are saved",
+      "notEditable": "Only the household’s own recipes can be changed.",
+      "delete": "Delete",
+      "deleteTitle": "Delete the recipe?",
+      "deleteText": "“{{title}}” is deleted for the whole household. Planned meals keep the name. Lines on the shopping list stay.",
+      "deleteConfirm": "Delete the recipe",
+      "deleted": "The recipe is deleted",
+      "addedBy": "The household’s own recipe · Added by {{name}}",
+      "loadingIngredients": "Loading the ingredient list …",
+      "linesHint": "Choose the ingredient from the list, so it counts in the inventory, shopping list, meal plan and allergy warnings. If it is not in the list, you can use a free-text line.",
+      "remove": "Remove",
+      "removeLine": "Remove line {{number}}",
+      "removeStep": "Remove step {{number}}",
+      "addLine": "Add ingredient",
+      "addFreeText": "Add free-text line",
+      "addStep": "Add step",
+      "fields": {
+        "title": "Name",
+        "description": "Short description",
+        "servings": "Servings",
+        "prepMinutes": "Preparation (minutes)",
+        "cookMinutes": "Cooking (minutes)",
+        "tags": "Tags",
+        "tagsHint": "Separate with commas, for example “dinner, quick”.",
+        "freeText": "Free-text line {{number}}",
+        "step": "Step {{number}}",
+        "ingredient": "Ingredient {{number}}",
+        "chooseIngredient": "Choose ingredient",
+        "amount": "Amount",
+        "amountHint": "For example 2, 1.5 or 1/2. Empty = to taste.",
+        "unit": "Unit",
+        "noUnit": "No unit",
+        "lineText": "Text on the line",
+        "lineTextHint": "Empty = made from amount, unit and ingredient (for example “2 dl Melk”)."
+      },
+      "units": {
+        "g": "gram (g)",
+        "kg": "kilo (kg)",
+        "ml": "millilitre (ml)",
+        "dl": "decilitre (dl)",
+        "l": "litre (l)",
+        "ss": "tablespoon (ss)",
+        "ts": "teaspoon (ts)",
+        "krm": "pinch (krm)",
+        "stk": "piece (stk)"
+      }
+    },
+    "avoided": {
+      "contains": "Contains {{list}} (registered by you)",
+      "householdContains": "Contains {{list}} (registered in the household)",
+      "box": "Foods you have registered: {{list}}",
+      "householdBox": "Foods registered in the household: {{list}}",
+      "noneRegistered": "None of the foods you have registered are registered for the ingredients.",
+      "lineTag": {
+        "own": "Registered by you",
+        "household": "Registered in the household"
+      }
+    },
+    "freeText": {
+      "title": "Free text",
+      "neverCounts": "Free text – not counted in the inventory, shopping list, meal plan, price estimate or allergy warnings.",
+      "notChecked_one": "{{count}} line is free text and is not checked against the allergies.",
+      "notChecked_other": "{{count}} lines are free text and are not checked against the allergies.",
+      "formNote_one": "{{count}} line is free text. It is not counted in the inventory, shopping list, meal plan, price estimate or allergy warnings.",
+      "formNote_other": "{{count}} lines are free text. They are not counted in the inventory, shopping list, meal plan, price estimate or allergy warnings."
+    },
+    "price": {
+      "title": "Estimated price of the ingredients",
+      "loading": "Working out the estimate …",
+      "failed": "Could not work out the estimate.",
+      "none": "None of the ingredients has a price yet. An estimate comes from what you have paid for the same item, or from Kassalapp when the item has been scanned.",
+      "summary_one": "Estimate for {{estimated}} of {{count}} ingredient: about {{amount}}",
+      "summary_other": "Estimate for {{estimated}} of {{count}} ingredients: about {{amount}}",
+      "missing_one": "{{count}} ingredient has no price and is not included.",
+      "missing_other": "{{count}} ingredients have no price and are not included.",
+      "fromOwn_one": "{{count}} from what you have paid",
+      "fromOwn_other": "{{count}} from what you have paid",
+      "fromKassalapp_one": "{{count}} from Kassalapp",
+      "fromKassalapp_other": "{{count}} from Kassalapp",
+      "skippedCount_one": "{{count}} line is not included: a staple, free text or without an amount.",
+      "skippedCount_other": "{{count}} lines are not included: staples, free text or without an amount.",
+      "perLine": "Show the estimate per ingredient",
+      "skipped": {
+        "freeText": "free text, not included",
+        "staple": "staple, not included",
+        "noAmount": "no amount, not included"
+      },
+      "from": {
+        "own": "about {{amount}} (share of what you paid {{date}})",
+        "kassalapp": "about {{amount}} (Kassalapp, checked {{date}})"
+      },
+      "honesty": "This is an estimate for the amounts in the recipe, not what you pay in the shop. You often have to buy a whole pack. The estimate is not part of the budget.",
+      "externalOff": "Prices from online shops (Kassalapp) are turned off, so the estimate only uses what you have paid yourselves. Rema 1000, Kiwi and Coop are not in Kassalapp anyway."
     }
   },
   "shopping": {

@@ -310,6 +310,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     repo: createPriceRepo(db),
     provider: deps.priceProvider ?? defaultPriceProvider(config, now),
     ingredients: { catalog: () => recipeRepo.catalog() },
+    recipes: recipeRepo,
     userLimiter: new WindowLimiter(config.prices.lookupsPerUserPerMinute, MINUTE, now),
     now,
   });

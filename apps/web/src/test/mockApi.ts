@@ -1,6 +1,21 @@
 import { vi } from 'vitest';
 import type { ExternalPrices } from '@smartmat/shared';
 
+/** Spec 16 (FR-PRICE-007): a recipe estimate with no lines priced and Kassalapp off. */
+export const EMPTY_RECIPE_ESTIMATE = {
+  externalEnabled: false,
+  lines: [],
+  summary: {
+    pricedLines: 0,
+    estimatedLines: 0,
+    missingLines: 0,
+    skippedLines: 0,
+    estimatedOre: 0,
+    fromOwn: 0,
+    fromKassalapp: 0,
+  },
+};
+
 export interface RecordedRequest {
   method: string;
   path: string;
@@ -139,7 +154,16 @@ export const defaultApi: Handler = (request) => {
     return { status: 200, body: { month: '2026-10', purchases: [] } };
   }
   if (/^\/households\/[^/]+\/recipes(\?for=[\d-]+)?$/.test(request.path))
-    return { status: 200, body: { recipes: [], userAllergens: [], householdAllergens: [] } };
+    return {
+      status: 200,
+      body: {
+        recipes: [],
+        userAllergens: [],
+        householdAllergens: [],
+        avoidedIngredients: [],
+        householdAvoidedIngredients: [],
+      },
+    };
   // Spec 09: an empty meal plan.
   const plan = /^\/households\/[^/]+\/meal-plan(\/needs)?\?from=([\d-]+)&to=([\d-]+)$/.exec(
     request.path,
@@ -161,6 +185,9 @@ export const defaultApi: Handler = (request) => {
       : { status: 200, body: { from, to, entries: [] } };
   }
   if (request.path === '/me/allergens') return { status: 200, body: { allergens: [] } };
+  if (request.path === '/me/avoided-ingredients') return { status: 200, body: { ingredients: [] } };
+  if (/^\/households\/[^/]+\/recipes\/[^/]+\/price-estimate$/.test(request.path))
+    return { status: 200, body: EMPTY_RECIPE_ESTIMATE };
   if (/^\/households\/[^/]+\/shopping-list$/.test(request.path))
     return { status: 200, body: { items: [] } };
   if (request.path === '/ingredients') return { status: 200, body: [] };

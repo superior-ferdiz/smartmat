@@ -4,6 +4,7 @@
 > kravoversikten, de 13 fasespesifikasjonene og sporbarhetsmatrisen. Kravene og kriteriene er også skrevet av KI og
 > godkjent av Ferdinand Risan som en del av hver faseplan. Ikke gjennomgått av teamet som helhet. Offisielle
 > APP2000-krav er ikke verifisert. Kravene til kurset (KURS-*) er antatt.
+> Fase 15 (2026-10-30): tre rader lagt til i tabellen over funksjonelle krav (spesifikasjon 16), av KI (Claude).
 
 ## Hvordan kravene er organisert
 
@@ -18,7 +19,7 @@ nevner ID-ene i navnet, slik at et krav kan følges fra spesifikasjon til test o
 
 ## Funksjonelle krav
 
-| Modul | Krav | Prioritet | Fase | Status (2026-10-27) |
+| Modul | Krav | Prioritet | Fase | Status (2026-10-30) |
 |---|---|---|---|---|
 | Konto og innlogging | FR-AUTH-001–005, 008–010 | M / K | 2, 13 | Implementert |
 | Tilbakestilling av passord, e-postverifisering | FR-AUTH-006 | K | – | **Ikke laget** (krever e-posttjeneste) |
@@ -33,6 +34,9 @@ nevner ID-ene i navnet, slik at et krav kan følges fra spesifikasjon til test o
 | Svinn og varsler | FR-WASTE-001–005, FR-NOTIF-001–006 | K | 11 | Implementert |
 | Priser | FR-PRICE-001–006 | K | 12 | Implementert, men av uten nøkkel til Kassalapp |
 | Personvern | FR-PRIV-001–003 | K | 13 | Implementert. Kontaktadressen i personvernerklæringen mangler. |
+| Egne oppskrifter | FR-REC-007–010 | K | 15 | Implementert (ADR-0023). Ikke gjennomgått av teamet. |
+| Allergier og matvarer i Innstillinger | FR-ALG-001–003 | K | 15 | Implementert. Behandlingsgrunnlaget (art. 9) er ikke vurdert av teamet. |
+| Prisanslag på oppskrifter | FR-PRICE-007 | K | 15 | Implementert. Bare egne priser uten nøkkel til Kassalapp. |
 
 «Implementert» betyr at koden finnes og at automatiske tester består (se [bevisoversikten](../evidence/bevisoversikt.md)).
 Det betyr ikke at teamet har gjennomgått koden, eller at kravet er testet på en ekte telefon.

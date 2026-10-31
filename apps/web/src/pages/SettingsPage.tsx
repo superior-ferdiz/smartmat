@@ -15,6 +15,7 @@ import { DESIGN_SYSTEM_PATH, PROFILE_PATH } from '../app/navigation';
 import { useCurrentUser, useLogout, useUpdateProfile } from '../auth/session';
 import { Page } from '../layout/Page';
 import { NotificationSettingsCard } from '../notifications/NotificationSettingsCard';
+import { AllergiesCard } from '../settings/AllergiesCard';
 import styles from './SettingsPage.module.css';
 
 /**
@@ -80,6 +81,8 @@ export function SettingsPage() {
             />
           </div>
         </Card>
+
+        <AllergiesCard />
 
         <NotificationSettingsCard />
 

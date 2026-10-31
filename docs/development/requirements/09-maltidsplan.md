@@ -220,6 +220,14 @@ Se [api-documentation.md](../api-documentation.md). Alt ligger under `/household
   `prisma/seed/` i stedet for testoppskriftene. Bare skjermbildekjøringen bruker det. De vanlige e2e-testene bruker
   fortsatt bare de fiktive oppskriftene.
 
+## Endret i fase 15 (spesifikasjon 16)
+
+- **Ukjent oppskrift i en ny oppføring gir 404**, ikke 400 med feltfeil som under «Sikkerhet og personvern» over.
+  Grunnen er at en annen husholdnings egen oppskrift skal gi samme svar som en oppskrift som ikke finnes
+  (FR-REC-009, avgjørelse 7 i spesifikasjon 16).
+- Oppføringene varsler også om matvarer brukeren eller husholdningen har registrert (FR-ALG-002).
+- Behovet for uka regner bare ingredienslinjer. Fritekstlinjer i egne oppskrifter telles aldri.
+
 ## Utenfor fasen
 Kopiere en uke, faste ukeplaner, dra-og-slipp, varsler, ernæring og kalorier (ingen helseråd), oppskrifter på
 engelsk, bilder fra Wikibooks, brukerens egne oppskrifter, deling i husholdningen i sanntid (fase 10).

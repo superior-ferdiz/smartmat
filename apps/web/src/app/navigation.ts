@@ -58,6 +58,9 @@ export const SCAN_PATH = '/skann';
 export const scanCodePath = (gtin: string) => `${SCAN_PATH}?kode=${gtin}`;
 export const RECIPES_PATH = '/oppskrifter';
 export const recipePath = (recipeId: string) => `/oppskrifter/${recipeId}`;
+/** Spec 16 (FR-REC-007): a household's own recipe. */
+export const NEW_RECIPE_PATH = '/oppskrifter/ny';
+export const editRecipePath = (recipeId: string) => `/oppskrifter/${recipeId}/endre`;
 /** FR-REC-006 (spec 09): the open sources the recipes come from, with licences. */
 export const RECIPE_SOURCES_PATH = '/oppskrifter/kilder';
 export const SHOPPING_LIST_PATH = '/handleliste';
@@ -79,6 +82,8 @@ export const WASTE_PATH = '/svinn';
 export const wasteMonthPath = (month: string) => `${WASTE_PATH}?maned=${month}`;
 export const NOTIFICATIONS_PATH = '/varsler';
 export const SETTINGS_PATH = '/innstillinger';
+/** Spec 16 (FR-ALG-001): the allergies card in the settings. */
+export const ALLERGIES_PATH = '/innstillinger#allergier';
 
 export const BOTTOM_NAV_SECTIONS = SECTIONS.filter((section) => section.inBottomNav);
 export const MORE_SECTIONS = SECTIONS.filter((section) => !section.inBottomNav);

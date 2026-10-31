@@ -1,10 +1,10 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import type { Allergen, RecipeDetail } from '@smartmat/shared';
+import type { DietWarnings, RecipeDetail } from '@smartmat/shared';
 import { Alert } from '../components/Alert/Alert';
 import { Icon } from '../components/Icon/Icon';
 import { Tag } from '../components/Tag/Tag';
-import { PROFILE_PATH } from '../app/navigation';
+import { ALLERGIES_PATH } from '../app/navigation';
 import { useAllergenNames, useJoinList } from './formatHooks';
 import styles from './recipes.module.css';
 
@@ -26,30 +26,42 @@ export function AllergenDisclaimer() {
 }
 
 /**
- * "Inneholder melk" on a recipe card that has the user's allergens, and "Inneholder egg (registrert i
- * husholdningen)" for those other members share (spec 10, FR-HH-006) – never whose they are.
+ * "Inneholder melk" on a recipe card that has the user's allergens, "Inneholder egg (registrert i
+ * husholdningen)" for those other members share (spec 10, FR-HH-006), and the same for avoided ingredients
+ * (spec 16, FR-ALG-002: "Inneholder kiwi (registrert av deg)") – never whose they are.
  */
-export function AllergenWarningTag({
-  allergens,
-  household = [],
-}: {
-  allergens: readonly Allergen[];
-  household?: readonly Allergen[];
-}) {
+export function AllergenWarningTag({ warnings }: { warnings: DietWarnings }) {
   const { t } = useTranslation();
   const names = useAllergenNames();
+  const join = useJoinList();
   return (
     <>
-      {allergens.length > 0 && (
+      {warnings.allergenWarnings.length > 0 && (
         <Tag tone="danger">
           <Icon name="warning" size={14} />
-          {t('recipes.allergens.contains', { list: names(allergens) })}
+          {t('recipes.allergens.contains', { list: names(warnings.allergenWarnings) })}
         </Tag>
       )}
-      {household.length > 0 && (
+      {warnings.ingredientWarnings.length > 0 && (
+        <Tag tone="danger">
+          <Icon name="warning" size={14} />
+          {t('recipes.avoided.contains', { list: join(warnings.ingredientWarnings) })}
+        </Tag>
+      )}
+      {warnings.householdAllergenWarnings.length > 0 && (
         <Tag tone="warning">
           <Icon name="warning" size={14} />
-          {t('recipes.allergens.household.contains', { list: names(household) })}
+          {t('recipes.allergens.household.contains', {
+            list: names(warnings.householdAllergenWarnings),
+          })}
+        </Tag>
+      )}
+      {warnings.householdIngredientWarnings.length > 0 && (
+        <Tag tone="warning">
+          <Icon name="warning" size={14} />
+          {t('recipes.avoided.householdContains', {
+            list: join(warnings.householdIngredientWarnings),
+          })}
         </Tag>
       )}
     </>
@@ -63,15 +75,23 @@ export function AllergenBox({ recipe }: { recipe: RecipeDetail }) {
   const join = useJoinList();
 
   const household = recipe.householdAllergenWarnings;
-  const warned = recipe.allergenWarnings.length > 0 || household.length > 0;
+  const avoided = recipe.ingredientWarnings;
+  const householdAvoided = recipe.householdIngredientWarnings;
+  const warned =
+    recipe.allergenWarnings.length > 0 ||
+    household.length > 0 ||
+    avoided.length > 0 ||
+    householdAvoided.length > 0;
   let body;
-  if (recipe.userAllergens.length === 0) {
+  if (recipe.userAllergens.length === 0 && recipe.avoidedIngredients.length === 0) {
     body = (
       <p>
         {t('recipes.allergens.noUserAllergens')}{' '}
-        <Link to={PROFILE_PATH}>{t('recipes.allergens.register')}</Link>
+        <Link to={ALLERGIES_PATH}>{t('recipes.allergens.register')}</Link>
       </p>
     );
+  } else if (recipe.userAllergens.length === 0) {
+    body = null;
   } else if (recipe.allergenWarnings.length === 0) {
     body = <p>{t('recipes.allergens.noneRegistered')}</p>;
   } else {
@@ -93,20 +113,33 @@ export function AllergenBox({ recipe }: { recipe: RecipeDetail }) {
     );
   }
 
+  let title;
+  if (recipe.allergenWarnings.length > 0)
+    title = t('recipes.allergens.contains', { list: names(recipe.allergenWarnings) });
+  else if (avoided.length > 0) title = t('recipes.avoided.contains', { list: join(avoided) });
+  else if (household.length > 0)
+    title = t('recipes.allergens.household.contains', { list: names(household) });
+  else if (householdAvoided.length > 0)
+    title = t('recipes.avoided.householdContains', { list: join(householdAvoided) });
+  else title = t('recipes.allergens.title');
+
   return (
-    <Alert
-      variant={warned ? 'warning' : 'info'}
-      title={
-        recipe.allergenWarnings.length > 0
-          ? t('recipes.allergens.contains', { list: names(recipe.allergenWarnings) })
-          : household.length > 0
-            ? t('recipes.allergens.household.contains', { list: names(household) })
-            : t('recipes.allergens.title')
-      }
-    >
+    <Alert variant={warned ? 'warning' : 'info'} title={title}>
       {body}
+      {recipe.avoidedIngredients.length > 0 &&
+        (avoided.length > 0 ? (
+          <p>{t('recipes.avoided.box', { list: join(avoided) })}</p>
+        ) : (
+          <p>{t('recipes.avoided.noneRegistered')}</p>
+        ))}
       {household.length > 0 && (
         <p>{t('recipes.allergens.household.box', { list: names(household) })}</p>
+      )}
+      {householdAvoided.length > 0 && (
+        <p>{t('recipes.avoided.householdBox', { list: join(householdAvoided) })}</p>
+      )}
+      {recipe.freeTextCount > 0 && (
+        <p>{t('recipes.freeText.notChecked', { count: recipe.freeTextCount })}</p>
       )}
       <p className={styles.disclaimerText}>{t('recipes.allergens.disclaimer')}</p>
     </Alert>

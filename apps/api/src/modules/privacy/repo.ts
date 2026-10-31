@@ -23,6 +23,9 @@ export const HOUSEHOLD_TABLES = [
   { table: 'shopping_list_item_meals', omit: [] },
   { table: 'meal_plan_entries', omit: [] },
   { table: 'household_barcodes', omit: [] },
+  // Spec 16 (FR-REC-010): the household's own recipes and their lines (global recipes have no household_id).
+  { table: 'recipes', omit: [] },
+  { table: 'recipe_ingredients', omit: [] },
   // Images and OCR text are not exported: they are deleted within 7 days anyway (spec 08), and the image is binary.
   { table: 'receipts', omit: [] },
 ] as const;
@@ -42,6 +45,8 @@ export interface HouseholdExport {
 export interface AccountExport {
   account: Row;
   allergens: string[];
+  /** Spec 16 (FR-ALG-001): the ingredients the user does not tolerate, by name. */
+  avoidedIngredients: { id: string; name: string }[];
   notificationSettings: Row | null;
   sessions: Row[];
   households: HouseholdExport[];
@@ -73,6 +78,13 @@ export function createPrivacyRepo(db: Db): PrivacyRepo {
           const allergens = (
             await tx.userAllergen.findMany({ where: { userId }, select: { allergen: true } })
           ).map((a) => a.allergen);
+          const avoidedIngredients = (
+            await tx.userAvoidedIngredient.findMany({
+              where: { userId },
+              orderBy: { ingredient: { name: 'asc' } },
+              select: { ingredient: { select: { id: true, name: true } } },
+            })
+          ).map((a) => a.ingredient);
           const [settings] = await read(
             `SELECT to_jsonb(s)${minus(['user_id'])} AS row FROM notification_settings s WHERE user_id = $1::uuid`,
             userId,
@@ -134,6 +146,7 @@ export function createPrivacyRepo(db: Db): PrivacyRepo {
           return {
             account,
             allergens,
+            avoidedIngredients,
             notificationSettings: settings ?? null,
             sessions,
             households,

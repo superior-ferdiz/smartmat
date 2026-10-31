@@ -1,8 +1,7 @@
 import {
-  ALLERGENS,
   API_ERRORS,
-  allergenConflicts,
   buildAliasIndex,
+  dietWarnings,
   MEAL_PLAN_MAX_PER_DAY,
   osloDate,
   planNeeds,
@@ -10,7 +9,6 @@ import {
   unplannedExpiring,
   type AddPlanToShoppingBody,
   type AddPlanToShoppingResponse,
-  type Allergen,
   type CreateMealEntryBody,
   type ItemResponse,
   type MealEntryResponse,
@@ -24,16 +22,19 @@ import {
 import type { Clock } from '../../lib/clock';
 import { AppError, notFound } from '../../lib/errors';
 import type { CatalogIngredient, RecipeRecord, RecipeRepo } from '../recipes/repo';
-import type { HouseholdAllergens } from '../recipes/service';
+import { loadDiet, type Diet, type SharedDiet } from '../recipes/diet';
 import type { ShoppingRepo } from '../shopping/repo';
 import type { MealEntryRecord, MealPlanRepo } from './repo';
 
 export interface MealPlanServiceDeps {
   repo: MealPlanRepo;
-  recipes: Pick<RecipeRepo, 'catalog' | 'recipes' | 'recipe' | 'userAllergens'>;
+  recipes: Pick<
+    RecipeRepo,
+    'catalog' | 'recipes' | 'recipe' | 'userAllergens' | 'avoidedIngredients'
+  >;
   inventory: { listItems(householdId: string): Promise<ItemResponse[]> };
   shopping: Pick<ShoppingRepo, 'mealContributions' | 'addFromMealPlan'>;
-  households: HouseholdAllergens;
+  households: SharedDiet;
   now: Clock;
 }
 
@@ -79,8 +80,9 @@ export class MealPlanService {
     if ((await repo.countOnDay(householdId, body.date)) >= MEAL_PLAN_MAX_PER_DAY) throw dayFull();
     let result;
     if (body.kind === 'recipe') {
-      const recipe = await this.deps.recipes.recipe(body.recipeId);
-      if (!recipe) throw fieldError({ recipeId: 'validation.mealPlan.recipeNotFound' });
+      // Spec 16 (decision 7): an unknown recipe and another household's own give the same 404 (FR-REC-009).
+      const recipe = await this.deps.recipes.recipe(householdId, body.recipeId);
+      if (!recipe) throw notFound();
       result = await repo.create(
         householdId,
         actorId,
@@ -197,7 +199,7 @@ export class MealPlanService {
     const to = range.to;
     const [entries, recipes, catalog, items] = await Promise.all([
       from <= to ? this.deps.repo.list(householdId, from, to) : Promise.resolve([]),
-      this.deps.recipes.recipes(),
+      this.deps.recipes.recipes(householdId),
       this.deps.recipes.catalog(),
       this.deps.inventory.listItems(householdId),
     ]);
@@ -254,22 +256,16 @@ export class MealPlanService {
   }
 
   private async recipeContext(householdId: string, userId: string) {
-    const [recipes, catalog, ownList] = await Promise.all([
-      this.deps.recipes.recipes(),
+    const [recipes, catalog, diet] = await Promise.all([
+      this.deps.recipes.recipes(householdId),
       this.deps.recipes.catalog(),
-      this.deps.recipes.userAllergens(userId),
+      // Spec 10 (FR-HH-006) and spec 16 (FR-ALG-002): own, and what other current members share.
+      loadDiet(this.deps.recipes, this.deps.households, householdId, userId),
     ]);
-    const userAllergens = ALLERGENS.filter((a) => ownList.includes(a));
     return {
       recipes: new Map(recipes.map((r) => [r.id, r])),
       catalog: new Map<string, CatalogIngredient>(catalog.map((i) => [i.id, i])),
-      userAllergens,
-      // Spec 10 (FR-HH-006): what other current members share with this household.
-      householdAllergens: await this.deps.households.sharedAllergens(
-        householdId,
-        userId,
-        userAllergens,
-      ),
+      diet,
     };
   }
 
@@ -278,13 +274,15 @@ export class MealPlanService {
     context: {
       recipes: Map<string, RecipeRecord>;
       catalog: Map<string, CatalogIngredient>;
-      userAllergens: Allergen[];
-      householdAllergens: Allergen[];
+      diet: Diet;
     },
   ): MealEntryResponse {
     const recipe = entry.recipeId ? context.recipes.get(entry.recipeId) : undefined;
-    const registered = recipe
-      ? recipe.lines.flatMap((l) => context.catalog.get(l.ingredientId)?.allergens ?? [])
+    const ingredients = recipe
+      ? recipe.lines.flatMap((l) => {
+          const ingredient = context.catalog.get(l.ingredientId);
+          return ingredient ? [ingredient] : [];
+        })
       : [];
     return {
       id: entry.id,
@@ -297,8 +295,7 @@ export class MealPlanService {
       recipeServings: recipe?.servings ?? null,
       servings: entry.servings,
       note: entry.note,
-      allergenWarnings: allergenConflicts(registered, context.userAllergens),
-      householdAllergenWarnings: allergenConflicts(registered, context.householdAllergens),
+      ...dietWarnings(ingredients, context.diet.own, context.diet.household),
       createdAt: entry.createdAt.toISOString(),
       createdBy: entry.createdBy,
     };

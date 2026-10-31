@@ -201,6 +201,17 @@ export class HouseholdService {
     return ALLERGENS.filter((a) => shared.includes(a) && !own.includes(a));
   }
 
+  /** Spec 16 (FR-ALG-002): the same for avoided ingredients – what others share, minus the caller's own. */
+  async sharedAvoidedIngredients(
+    householdId: string,
+    userId: string,
+    own: readonly { id: string }[],
+  ): Promise<{ id: string; name: string }[]> {
+    const shared = await this.deps.repo.sharedAvoidedIngredients(householdId, userId);
+    const mine = new Set(own.map((i) => i.id));
+    return shared.filter((i) => !mine.has(i.id));
+  }
+
   private limitAttempts(userId: string) {
     if (!this.deps.invitationLimiter.take(userId)) throw new AppError(429, API_ERRORS.rateLimited);
   }

@@ -10,6 +10,7 @@ import {
 import { createFakeClock } from '../src/test/fakes';
 import { call, createTestApp, registerUser, useTestDatabase, type Client } from './helpers';
 import { createItem } from './inventoryHelpers';
+import { ingredientIdsByKey, ownRecipeBody } from './recipeHelpers';
 
 /*
  * NFR-SEC-001 for recipes (spec 05). Recipes are global, but how they rank is built from one household's
@@ -153,19 +154,21 @@ describe('NFR-SEC-001 recipes: no access to another household', () => {
     expect(await snapshot()).toBe(before);
   });
 
-  it('recipes and ingredients cannot be written through the API', async () => {
+  it('global recipes and ingredients cannot be written through the API (spec 16: only own recipes)', async () => {
     await seed();
     const h = kari.user.householdId;
+    const body = { ...ownRecipeBody(await ingredientIdsByKey(app, kari)), version: 1 };
     for (const [method, path] of [
-      ['POST', `/households/${h}/recipes`],
       ['PUT', `/households/${h}/recipes/${recipeId}`],
       ['PATCH', `/households/${h}/recipes/${recipeId}`],
       ['DELETE', `/households/${h}/recipes/${recipeId}`],
+      ['GET', `/households/${h}/recipes/${recipeId}/edit`],
       ['POST', '/ingredients'],
     ] as const) {
-      const response = await call(app, method, path, { client: kari, body: {} });
+      const response = await call(app, method, path, { client: kari, body });
       expect(response.statusCode, `${method} ${path}`).toBe(404);
     }
     expect(await db.recipe.count()).toBe(3);
+    expect((await db.recipe.findUniqueOrThrow({ where: { id: recipeId } })).version).toBe(1);
   });
 });

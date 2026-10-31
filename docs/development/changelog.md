@@ -7,6 +7,23 @@
 - **Teamet:** Hasan Alhafni lagt til der teamet nevnes (README, CLAUDE.md, behandlingsansvarlige, kapittel 15,
   KI-erklæringen med signaturlinje). Datert logg over hvem som var med i hver økt er ikke endret.
 
+### Fase 15 – 2026-10-30 (grenen `fase-15`)
+- **Egne oppskrifter** (FR-REC-007–010, ADR-0023): husholdningen kan lage, endre og slette oppskrifter i den felles
+  oppskriftstabellen (`source = household`, `household_id`). Linjer velges fra ingredienslisten med mengde og enhet,
+  eller er fritekst som aldri teller. Merket «Egen oppskrift» og «Lagt inn av …». Filteret «Bare egne oppskrifter».
+  Grensen mellom husholdninger håndheves i repoet (husholdning som påkrevd argument, statisk test), i databasen
+  (CHECK og triggeren `recipe_household_guard`) og med 404-tester på hver rute. Seed-skriptet rører bare globale
+  oppskrifter, og eksporten tar med egne.
+- **Allergier i Innstillinger** (FR-ALG-001–003): kortet «Allergier og matvarer» med de 14 allergenene og matvarer fra
+  ingredienslisten brukeren ikke tåler. Varsler («registrert av deg» / «registrert i husholdningen») på
+  oppskriftslisten, oppskriften, måltidsplanen og forsiden. Delingen bygger på `share_allergens`, er fortsatt av som
+  standard og gjelder nå også matvarene. Fritekstlinjer er merket som ikke sjekket.
+- **Prisanslag på oppskrifter** (FR-PRICE-007): egne priser som andel av det husholdningen har betalt, og lagrede
+  Kassalapp-priser uten nye kall. Basisvarer, fritekst og linjer uten mengde er ikke med og telles for seg. Ingen
+  «total». Kassalapps søk etter navn er lest og dokumentert, men ikke bygd.
+- **Endret:** en ukjent oppskrift i måltidsplanen gir 404 (var 400). Testhjelperen tømmer databasen med `DELETE` i
+  stedet for `TRUNCATE … CASCADE`, som nå ville tømt de globale testoppskriftene.
+
 ### Fase 14, tillegg – 2026-10-30 (grenen `fase-14`, Ferdinands forespørsler)
 - **Kvitteringer:** kameraet åpnes i siden (`getUserMedia`), med telefonens kamera-app som reserve. Linjeforslag er på
   i testmiljøet, og matvarelinjer krysses av for matlageret fra start (antall eller vekt fra kvitteringen). Ny lesing

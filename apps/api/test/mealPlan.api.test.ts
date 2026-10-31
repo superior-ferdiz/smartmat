@@ -202,7 +202,6 @@ describe('FR-PLAN-001 week plan', () => {
   });
 
   it.each([
-    [{ kind: 'recipe', recipeId: '0199f0a0-0000-7000-8000-000000000001', servings: 4 }, 'recipeId'],
     [{ kind: 'recipe', servings: 0 }, 'servings'],
     [{ kind: 'recipe', servings: 51 }, 'servings'],
     [{ kind: 'recipe', servings: 2.5 }, 'servings'],
@@ -218,6 +217,21 @@ describe('FR-PLAN-001 week plan', () => {
     });
     expect(response.statusCode).toBe(400);
     expect(Object.keys(response.json().error.fields ?? {}).join()).toContain(field);
+  });
+
+  it('spec 16 decision 7: an unknown recipe is 404 (the same answer as an own recipe of another household)', async () => {
+    const response = await call(app, 'POST', planPath(kari, '/entries'), {
+      client: kari,
+      body: {
+        kind: 'recipe',
+        recipeId: '0199f0a0-0000-7000-8000-000000000001',
+        servings: 4,
+        date: '2026-10-26',
+        meal: 'dinner',
+      },
+    });
+    expect(response.statusCode).toBe(404);
+    expect(await db.mealPlanEntry.count()).toBe(0);
   });
 
   it('at most 20 entries per day, also when moving one there', async () => {

@@ -71,6 +71,8 @@ describe('FR-REC-006 source and licence on the recipe', () => {
       recipes: [recipeSummary('Fårikål', { source: 'external', origin: recipeOrigin() })],
       userAllergens: [],
       householdAllergens: [],
+      avoidedIngredients: [],
+      householdAvoidedIngredients: [],
     });
     renderApp('/oppskrifter');
     const card = (await screen.findByRole('link', { name: 'Fårikål' })).closest('li')!;
@@ -94,6 +96,8 @@ describe('FR-REC-006 the sources page', () => {
       ],
       userAllergens: [],
       householdAllergens: [],
+      avoidedIngredients: [],
+      householdAvoidedIngredients: [],
     });
     const { container } = renderApp('/oppskrifter/kilder');
     expect(
@@ -120,6 +124,8 @@ describe('FR-REC-006 the sources page', () => {
       recipes: [recipeSummary('Testrett', { source: 'test' })],
       userAllergens: [],
       householdAllergens: [],
+      avoidedIngredients: [],
+      householdAvoidedIngredients: [],
     });
     renderApp('/oppskrifter/kilder');
     expect(await screen.findByText('Ingen oppskrifter fra åpne kilder')).toBeInTheDocument();

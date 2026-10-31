@@ -5,6 +5,7 @@ import {
   barcodePricesResponseSchema,
   gtinSchema,
   itemPricesResponseSchema,
+  recipePriceEstimateSchema,
   shoppingPriceEstimateResponseSchema,
 } from '@smartmat/shared';
 import { householdOf } from '../../authz/household';
@@ -73,5 +74,18 @@ export const priceRoutes: FastifyPluginAsyncZod<PriceRoutesOptions> = async (app
       schema: { params: household, response: { 200: shoppingPriceEstimateResponseSchema } },
     },
     async (request) => service.shoppingEstimate(householdOf(request).id),
+  );
+
+  // Spec 16 (FR-PRICE-007): another household's own recipe is 404, like an unknown one (FR-REC-009).
+  app.get(
+    `${BASE}/recipes/:recipeId/price-estimate`,
+    {
+      preHandler,
+      schema: {
+        params: household.extend({ recipeId: z.uuid() }),
+        response: { 200: recipePriceEstimateSchema },
+      },
+    },
+    async (request) => service.recipeEstimate(householdOf(request).id, request.params.recipeId),
   );
 };

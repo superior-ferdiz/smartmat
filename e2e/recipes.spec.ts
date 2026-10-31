@@ -113,13 +113,13 @@ test.describe('recipes ranked by the inventory', () => {
 test.describe('FR-REC-004 allergens', () => {
   test.use({ isolatedAccount: true });
 
-  test('registered on the profile → recipes with them are hidden, can be shown with a warning', async ({
+  test('registered in the settings (spec 16) → recipes with them are hidden, can be shown with a warning', async ({
     page,
   }) => {
-    await page.goto('/profil');
-    const allergies = page.getByRole('region', { name: 'Allergier' });
-    await allergies.getByLabel('melk').check();
-    await allergies.getByRole('button', { name: 'Lagre allergier' }).click();
+    await page.goto('/innstillinger');
+    const allergies = page.getByRole('region', { name: 'Allergier og matvarer' });
+    await allergies.getByRole('checkbox', { name: 'melk' }).check();
+    await allergies.getByRole('button', { name: 'Lagre', exact: true }).click();
     await expect(page.getByText('Allergiene er lagret')).toBeVisible();
 
     await page.goto('/oppskrifter');
@@ -128,14 +128,16 @@ test.describe('FR-REC-004 allergens', () => {
     await expect(cards(page).first()).toContainText('Testrett: pasta med tomat');
     await expect(
       page.getByText(
-        '2 oppskrifter er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).',
+        '2 oppskrifter er skjult fordi de har et registrert allergen eller en registrert matvare (din eller husholdningens).',
       ),
     ).toBeVisible();
     await expect(page.getByText(DISCLAIMER)).toBeVisible();
 
     // The hidden count links to the list with the switch on (the switch itself sits under "Filtrer").
     await page.getByRole('link', { name: 'Vis dem likevel' }).click();
-    await expect(page.getByLabel('Vis oppskrifter med registrerte allergener')).toBeChecked();
+    await expect(
+      page.getByLabel('Vis oppskrifter med registrerte allergener og matvarer'),
+    ).toBeChecked();
     await expect(cards(page)).toHaveCount(3);
     const pancakes = cards(page).filter({ hasText: 'Testrett: pannekaker' });
     await expect(pancakes).toContainText('Inneholder melk');
@@ -159,7 +161,7 @@ test.describe('recipe pages: layout and accessibility', () => {
   test.use({ isolatedAccount: true });
 
   for (const colorScheme of ['light', 'dark'] as const) {
-    test(`(${colorScheme}) /oppskrifter, a recipe, /profil and the overview: no horizontal scroll, no axe violations`, async ({
+    test(`(${colorScheme}) /oppskrifter, a recipe, the allergies in /innstillinger and the overview: no horizontal scroll, no axe violations`, async ({
       page,
       playwright,
       account,
@@ -195,8 +197,12 @@ test.describe('recipe pages: layout and accessibility', () => {
       await useTallPhoneViewport(page);
       await expectNoAxeViolations(page);
 
-      await page.goto('/profil');
-      await expect(page.getByRole('region', { name: 'Allergier' }).getByLabel('egg')).toBeChecked();
+      await page.goto('/innstillinger');
+      await expect(
+        page
+          .getByRole('region', { name: 'Allergier og matvarer' })
+          .getByRole('checkbox', { name: 'egg' }),
+      ).toBeChecked();
       await expectNoHorizontalScroll(page);
       await useTallPhoneViewport(page);
       await expectNoAxeViolations(page);

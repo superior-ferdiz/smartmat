@@ -24,6 +24,10 @@ export function recipeSummary(
     allergens: [],
     allergenWarnings: [],
     householdAllergenWarnings: [],
+    ingredientWarnings: [],
+    householdIngredientWarnings: [],
+    freeTextCount: 0,
+    createdBy: null,
     score: {
       total: 0,
       coverage: 0,
@@ -76,8 +80,11 @@ export function recipeDetail(
     license: 'egen',
     authors: ['Linus Saxe Huseby'],
     lines: lines.map((line, position) => ({ ...line, position })),
+    freeTextLines: [],
     userAllergens: [],
     householdAllergens: [],
+    avoidedIngredients: [],
+    householdAvoidedIngredients: [],
     ...overrides,
   };
 }

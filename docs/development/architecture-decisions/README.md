@@ -30,3 +30,4 @@ En beslutning endres ved å skrive en ny ADR som erstatter den gamle (og markere
 | [0020](0020-priser-fra-kassalapp-som-anslag.md) | Priser fra Kassalapp som anslag, holdt adskilt fra husholdningens egne priser (akseptert 2026-10-25) |
 | [0021](0021-sikkerhetskopi-og-gjenoppretting.md) | Nattlig, kryptert sikkerhetskopi uten kvitteringsbilder, med full lesetest ved gjenoppretting (akseptert 2026-10-25, endrer 0015) |
 | [0022](0022-eget-nett-for-caddy-og-smartmat.md) | Eget Docker-nett for Caddy og SmartMat (akseptert 2026-10-25, endrer 0015) |
+| [0023](0023-egne-oppskrifter-i-felles-tabell.md) | Husholdningens egne oppskrifter i den felles oppskriftstabellen, med grensen håndhevet i repo, database og tester (akseptert 2026-10-30) |

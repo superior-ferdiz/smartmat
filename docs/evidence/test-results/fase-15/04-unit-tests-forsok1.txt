@@ -1,0 +1,17 @@
+$ npm run -s test
+# 2026-10-30T16:02:22Z
+
+ RUN  v4.1.12 /opt/Websites/SmartMat
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ Test Files  100 passed (100)
+      Tests  1411 passed (1411)
+   Start at  16:02:23
+   Duration  27.15s (transform 446.71s, setup 121.87s, import 60.56s, tests 237.52s, environment 50.22s)
+
+exit=0

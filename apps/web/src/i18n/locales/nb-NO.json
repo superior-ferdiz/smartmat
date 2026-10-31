@@ -230,6 +230,33 @@
       "codeRequired": "Skriv inn koden.",
       "codeInvalid": "Koden skal være 6 sifre fra appen, eller en gjenopprettingskode på 10 tegn.",
       "totpInvalid": "Skriv inn de 6 sifrene appen viser."
+    },
+    "recipe": {
+      "title": "Skriv et navn på oppskriften.",
+      "titleTooLong": "Navnet kan ha høyst 120 tegn.",
+      "descriptionTooLong": "Beskrivelsen kan ha høyst 500 tegn.",
+      "servings": "Skriv et helt antall porsjoner fra 1 til 50.",
+      "minutes": "Skriv et helt antall minutter fra 0 til 1440.",
+      "tag": "En tagg kan ha 1–30 tegn.",
+      "tooManyTags": "Du kan ha høyst 10 tagger.",
+      "ingredient": "Velg en ingrediens fra listen.",
+      "amount": "Skriv mengden som et tall, for eksempel 2, 1,5 eller 1/2.",
+      "unit": "Velg en enhet som passer til ingrediensen.",
+      "amountAndUnit": "Skriv både mengde og enhet, eller ingen av dem («etter smak»).",
+      "lineText": "Skriv teksten på linjen.",
+      "lineTextTooLong": "Teksten kan ha høyst 120 tegn.",
+      "noLines": "Legg til minst én ingrediens.",
+      "tooManyLines": "En oppskrift kan ha høyst 40 linjer.",
+      "duplicateIngredient": "Ingrediensen står allerede i oppskriften.",
+      "step": "Skriv hva som skal gjøres i trinnet, eller fjern det.",
+      "stepTooLong": "Et trinn kan ha høyst 1000 tegn.",
+      "noSteps": "Legg til minst ett trinn.",
+      "tooManySteps": "En oppskrift kan ha høyst 30 trinn."
+    },
+    "avoided": {
+      "unknown": "Matvaren finnes ikke i ingredienslisten.",
+      "tooMany": "Du kan registrere høyst 50 matvarer.",
+      "duplicate": "Matvaren står allerede i listen."
     }
   },
   "pages": {
@@ -352,6 +379,30 @@
         "shopping": "Handlelisten",
         "shoppingHint": "Når andre i husholdningen legger til noe.",
         "save": "Lagre varslene"
+      },
+      "allergies": {
+        "title": "Allergier og matvarer",
+        "text": "Velg det du ikke tåler. Det brukes bare til å varsle om oppskrifter og måltider. Det er frivillig, og slettes sammen med kontoen.",
+        "saved": "Allergiene er lagret",
+        "allergensLegend": "Allergener",
+        "foodsLegend": "Matvarer jeg ikke tåler",
+        "foodsText": "Velg matvarer fra ingredienslisten, for eksempel kiwi. Du får varsel når en oppskrift har dem.",
+        "noFoods": "Ingen matvarer er registrert.",
+        "removeFood": "Fjern {{name}}",
+        "remove": "Fjern",
+        "addFood": "Legg til en matvare",
+        "chooseFood": "Velg matvare",
+        "add": "Legg til",
+        "addHint": "Trykk «Legg til» og så «Lagre» for å registrere {{name}}.",
+        "save": "Lagre",
+        "share": {
+          "title": "Del med husholdningen",
+          "text": "Gjelder både allergener og matvarer. Andre medlemmer ser hva som er registrert i husholdningen, men ikke hvem som har registrert det. I en liten husholdning kan de likevel skjønne det. Delingen er av til du slår den på, du kan slå den av når som helst, og den gjelder bare denne husholdningen.",
+          "notShared": "Det du har registrert, deles ikke med «{{name}}». De andre medlemmene får ikke varsel om det.",
+          "label": "Ta hensyn til allergiene og matvarene mine i «{{name}}»",
+          "on": "Allergiene og matvarene dine deles nå med «{{name}}».",
+          "off": "Allergiene og matvarene dine deles ikke lenger med «{{name}}»."
+        }
       }
     },
     "notFound": {
@@ -457,17 +508,8 @@
       },
       "allergies": {
         "title": "Allergier",
-        "text": "Velg det du ikke tåler. Det brukes bare til å skjule eller varsle om oppskrifter. Det er frivillig, og slettes sammen med kontoen.",
-        "legend": "Mine allergener",
-        "save": "Lagre allergier",
-        "saved": "Allergiene er lagret",
-        "share": {
-          "title": "Del med husholdningen",
-          "label": "Ta hensyn til allergiene mine i «{{name}}»",
-          "text": "Andre medlemmer ser hvilke allergener som er registrert i husholdningen, men ikke hvem som har dem. I en liten husholdning kan de likevel skjønne det. Du kan slå dette av når som helst, og det gjelder bare denne husholdningen.",
-          "on": "Allergiene dine deles nå med «{{name}}».",
-          "off": "Allergiene dine deles ikke lenger med «{{name}}»."
-        }
+        "moved": "Allergier og matvarer du ikke tåler, legger du inn under Innstillinger.",
+        "open": "Gå til allergier"
       }
     },
     "privacy": {
@@ -629,6 +671,10 @@
     },
     "notification": {
       "notFound": "Varselet finnes ikke lenger."
+    },
+    "recipe": {
+      "changedMeanwhile": "Noen andre har endret oppskriften mens du skrev. Åpne den på nytt og gjør endringen igjen.",
+      "tooMany": "Husholdningen har nådd grensen på 200 egne oppskrifter. Slett en før du lager en ny."
     }
   },
   "units": {
@@ -1017,14 +1063,15 @@
       "searchHint": "Tittel eller ingrediens",
       "tag": "Tagg",
       "allTags": "Alle tagger",
-      "showAllergens": "Vis oppskrifter med registrerte allergener",
+      "showAllergens": "Vis oppskrifter med registrerte allergener og matvarer",
       "reset": "Nullstill søket",
       "more": "Filtrer ({{count}} i bruk)",
-      "showHidden": "Vis dem likevel"
+      "showHidden": "Vis dem likevel",
+      "ownOnly": "Bare egne oppskrifter"
     },
     "count": "{{shown}} av {{count}} oppskrifter",
-    "hiddenByAllergens_one": "{{count}} oppskrift er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).",
-    "hiddenByAllergens_other": "{{count}} oppskrifter er skjult fordi en ingrediens har et registrert allergen (ditt eller husholdningens).",
+    "hiddenByAllergens_one": "{{count}} oppskrift er skjult fordi den har et registrert allergen eller en registrert matvare (din eller husholdningens).",
+    "hiddenByAllergens_other": "{{count}} oppskrifter er skjult fordi de har et registrert allergen eller en registrert matvare (din eller husholdningens).",
     "card": {
       "have": "Har {{enough}} av {{required}}",
       "missing_one": "{{count}} mangler",
@@ -1154,6 +1201,109 @@
       "added": "Lagt i måltidsplanen.",
       "open": "Åpne uka",
       "summary": "{{title}} · {{servings}}"
+    },
+    "own": {
+      "badge": "Egen oppskrift",
+      "new": "Ny oppskrift",
+      "newTitle": "Ny oppskrift",
+      "newLead": "Oppskriften blir lagret i husholdningen. Alle medlemmene kan se, bruke og endre den.",
+      "create": "Lagre oppskriften",
+      "created": "Oppskriften er lagret",
+      "editTitle": "Endre oppskrift",
+      "edit": "Endre",
+      "saved": "Endringene er lagret",
+      "notEditable": "Bare husholdningens egne oppskrifter kan endres.",
+      "delete": "Slett",
+      "deleteTitle": "Slette oppskriften?",
+      "deleteText": "«{{title}}» blir slettet for hele husholdningen. Måltider som er planlagt, beholder navnet. Linjene på handlelisten blir stående.",
+      "deleteConfirm": "Slett oppskriften",
+      "deleted": "Oppskriften er slettet",
+      "addedBy": "Egen oppskrift for husholdningen · Lagt inn av {{name}}",
+      "loadingIngredients": "Henter ingredienslisten …",
+      "linesHint": "Velg ingrediensen fra listen, så telles den i matlageret, handlelisten, måltidsplanen og allergivarslene. Står den ikke i listen, kan du bruke en fritekstlinje.",
+      "remove": "Fjern",
+      "removeLine": "Fjern linje {{number}}",
+      "removeStep": "Fjern trinn {{number}}",
+      "addLine": "Legg til ingrediens",
+      "addFreeText": "Legg til fritekstlinje",
+      "addStep": "Legg til trinn",
+      "fields": {
+        "title": "Navn",
+        "description": "Kort beskrivelse",
+        "servings": "Porsjoner",
+        "prepMinutes": "Forberedelse (minutter)",
+        "cookMinutes": "Koking og steking (minutter)",
+        "tags": "Tagger",
+        "tagsHint": "Skill med komma, for eksempel «middag, rask».",
+        "freeText": "Fritekstlinje {{number}}",
+        "step": "Trinn {{number}}",
+        "ingredient": "Ingrediens {{number}}",
+        "chooseIngredient": "Velg ingrediens",
+        "amount": "Mengde",
+        "amountHint": "For eksempel 2, 1,5 eller 1/2. Tom = etter smak.",
+        "unit": "Enhet",
+        "noUnit": "Ingen enhet",
+        "lineText": "Tekst på linjen",
+        "lineTextHint": "Tom = lages av mengde, enhet og ingrediens (for eksempel «2 dl Melk»)."
+      },
+      "units": {
+        "g": "gram (g)",
+        "kg": "kilo (kg)",
+        "ml": "milliliter (ml)",
+        "dl": "desiliter (dl)",
+        "l": "liter (l)",
+        "ss": "spiseskje (ss)",
+        "ts": "teskje (ts)",
+        "krm": "klype (krm)",
+        "stk": "stykk (stk)"
+      }
+    },
+    "avoided": {
+      "contains": "Inneholder {{list}} (registrert av deg)",
+      "householdContains": "Inneholder {{list}} (registrert i husholdningen)",
+      "box": "Matvarer du har registrert: {{list}}",
+      "householdBox": "Matvarer registrert i husholdningen: {{list}}",
+      "noneRegistered": "Ingen av matvarene du har registrert, er registrert i ingrediensene.",
+      "lineTag": {
+        "own": "Registrert av deg",
+        "household": "Registrert i husholdningen"
+      }
+    },
+    "freeText": {
+      "title": "Fritekst",
+      "neverCounts": "Fritekst – telles ikke i matlageret, handlelisten, måltidsplanen, prisanslaget eller allergivarslene.",
+      "notChecked_one": "{{count}} linje er fritekst og er ikke sjekket mot allergiene.",
+      "notChecked_other": "{{count}} linjer er fritekst og er ikke sjekket mot allergiene.",
+      "formNote_one": "{{count}} linje er fritekst. Den telles ikke i matlageret, handlelisten, måltidsplanen, prisanslaget eller allergivarslene.",
+      "formNote_other": "{{count}} linjer er fritekst. De telles ikke i matlageret, handlelisten, måltidsplanen, prisanslaget eller allergivarslene."
+    },
+    "price": {
+      "title": "Anslått pris på ingrediensene",
+      "loading": "Regner ut anslag …",
+      "failed": "Klarte ikke å regne ut anslaget.",
+      "none": "Ingen av ingrediensene har pris ennå. Et anslag kommer fra det dere har betalt for samme vare, eller fra Kassalapp når varen er skannet.",
+      "summary_one": "Anslag for {{estimated}} av {{count}} ingrediens: ca. {{amount}}",
+      "summary_other": "Anslag for {{estimated}} av {{count}} ingredienser: ca. {{amount}}",
+      "missing_one": "{{count}} ingrediens mangler pris og er ikke med.",
+      "missing_other": "{{count}} ingredienser mangler pris og er ikke med.",
+      "fromOwn_one": "{{count}} fra det dere har betalt",
+      "fromOwn_other": "{{count}} fra det dere har betalt",
+      "fromKassalapp_one": "{{count}} fra Kassalapp",
+      "fromKassalapp_other": "{{count}} fra Kassalapp",
+      "skippedCount_one": "{{count}} linje er ikke med: basisvare, fritekst eller uten mengde.",
+      "skippedCount_other": "{{count}} linjer er ikke med: basisvarer, fritekst eller uten mengde.",
+      "perLine": "Vis anslag per ingrediens",
+      "skipped": {
+        "freeText": "fritekst, ikke med",
+        "staple": "basisvare, ikke med",
+        "noAmount": "uten mengde, ikke med"
+      },
+      "from": {
+        "own": "ca. {{amount}} (andel av det dere betalte {{date}})",
+        "kassalapp": "ca. {{amount}} (Kassalapp, sjekket {{date}})"
+      },
+      "honesty": "Dette er et anslag for mengdene i oppskriften, ikke det du betaler i butikken. Du må ofte kjøpe en hel pakke. Anslaget blir ikke med i budsjettet.",
+      "externalOff": "Priser fra butikkene på nett (Kassalapp) er slått av, så anslaget bygger bare på det dere har betalt selv. Rema 1000, Kiwi og Coop er uansett ikke med hos Kassalapp."
     }
   },
   "shopping": {

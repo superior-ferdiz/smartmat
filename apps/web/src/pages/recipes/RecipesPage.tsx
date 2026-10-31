@@ -4,12 +4,13 @@ import type { RecipeSummary } from '@smartmat/shared';
 import { LinkButton } from '../../components/Button/Button';
 import { Checkbox } from '../../components/Checkbox/Checkbox';
 import { EmptyState } from '../../components/EmptyState/EmptyState';
+import { Icon } from '../../components/Icon/Icon';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
 import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { Select } from '../../components/Select/Select';
 import { Tag } from '../../components/Tag/Tag';
 import { TextField } from '../../components/TextField/TextField';
-import { recipePath } from '../../app/navigation';
+import { NEW_RECIPE_PATH, recipePath } from '../../app/navigation';
 import { Page } from '../../layout/Page';
 import { AllergenDisclaimer, AllergenWarningTag } from '../../recipes/AllergenNotice';
 import { useRecipes } from '../../recipes/api';
@@ -24,13 +25,21 @@ import { RecipeBadge } from '../../recipes/RecipeBadge';
 import { useFormatMinutes, useReasonText } from '../../recipes/formatHooks';
 import styles from '../../recipes/recipes.module.css';
 
-/** FR-REC-001/002/004: all recipes, ranked by what the household has, with search, tags and allergens. */
+/**
+ * FR-REC-001/002/004: all recipes, ranked by what the household has, with search, tags and allergens. Spec 16:
+ * the household's own recipes are among them, and "Ny oppskrift" makes one.
+ */
 export function RecipesPage() {
   const { t } = useTranslation();
   const recipes = useRecipes();
 
   return (
     <Page title={t('nav.sections.recipes')} lead={t('pages.recipes.lead')}>
+      <div className={styles.pageActions}>
+        <LinkButton to={NEW_RECIPE_PATH} icon={<Icon name="plus" size={20} />}>
+          {t('recipes.own.new')}
+        </LinkButton>
+      </div>
       {recipes.isPending ? (
         <LoadingState label={t('recipes.loading')} />
       ) : recipes.isError ? (
@@ -45,7 +54,10 @@ export function RecipesPage() {
         <RecipeList
           recipes={recipes.data.recipes}
           hasAllergens={
-            recipes.data.userAllergens.length > 0 || recipes.data.householdAllergens.length > 0
+            recipes.data.userAllergens.length > 0 ||
+            recipes.data.householdAllergens.length > 0 ||
+            recipes.data.avoidedIngredients.length > 0 ||
+            recipes.data.householdAvoidedIngredients.length > 0
           }
         />
       )}
@@ -69,7 +81,8 @@ function RecipeList({
     filter,
     i18n.resolvedLanguage ?? 'nb-NO',
   );
-  const activeFilters = [filter.tag, filter.showAllergens].filter(Boolean).length;
+  const activeFilters = [filter.tag, filter.showAllergens, filter.ownOnly].filter(Boolean).length;
+  const hasOwn = recipes.some((r) => r.source === 'household');
   const update = (patch: Partial<RecipeFilter>) =>
     setParams(recipeFilterToParams({ ...filter, ...patch }), { replace: true });
 
@@ -86,7 +99,7 @@ function RecipeList({
           onChange={(e) => update({ q: e.target.value })}
         />
         {/* Like the inventory: the rest folds away so the list starts high on a phone; open when in use. */}
-        {(tags.length > 0 || hasAllergens) && (
+        {(tags.length > 0 || hasAllergens || hasOwn) && (
           <details className={styles.more} open={activeFilters > 0 || undefined}>
             <summary className={styles.moreSummary}>
               {t('recipes.filters.more', { count: activeFilters })}
@@ -103,6 +116,14 @@ function RecipeList({
                     { value: '', label: t('recipes.filters.allTags') },
                     ...tags.map((tag) => ({ value: tag, label: tag })),
                   ]}
+                />
+              )}
+              {hasOwn && (
+                <Checkbox
+                  id="recipe-own-only"
+                  label={t('recipes.filters.ownOnly')}
+                  checked={filter.ownOnly}
+                  onChange={(e) => update({ ownOnly: e.target.checked })}
                 />
               )}
               {hasAllergens && (
@@ -195,10 +216,7 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
       </p>
       {score.reasons[0] && <p className={styles.meta}>{reasonText(score.reasons[0])}</p>}
       <div className={styles.tags}>
-        <AllergenWarningTag
-          allergens={recipe.allergenWarnings}
-          household={recipe.householdAllergenWarnings}
-        />
+        <AllergenWarningTag warnings={recipe} />
         <RecipeBadge recipe={recipe} />
         {recipe.tags.map((tag) => (
           <Tag key={tag}>{tag}</Tag>

@@ -1,0 +1,12 @@
+$ npm run -s test:api
+# 2026-10-30T16:02:56Z
+
+ RUN  v4.1.12 /opt/Websites/SmartMat/apps/api
+
+
+ Test Files  35 passed (35)
+      Tests  538 passed (538)
+   Start at  16:02:57
+   Duration  147.46s (transform 2.07s, setup 206ms, import 25.22s, tests 112.92s, environment 5ms)
+
+exit=0
