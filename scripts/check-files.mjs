@@ -3,7 +3,8 @@
 import { execFileSync } from 'node:child_process';
 
 const IMAGE = /\.(jpe?g|png|webp|heic|heif|gif|tiff?|bmp)$/i;
-const ALLOWED = /^(docs\/evidence\/screenshots\/fase-\d+\/|apps\/web\/src\/assets\/smartmat-logo\.webp$|apps\/web\/public\/(favicon-\d+|apple-touch-icon)\.png$)/;
+const ALLOWED =
+  /^(docs\/evidence\/screenshots\/fase-\d+\/|apps\/web\/src\/assets\/smartmat-logo\.webp$|apps\/web\/public\/(favicon-\d+|apple-touch-icon)\.png$)/;
 
 const git = (...args) =>
   execFileSync('git', args, { encoding: 'utf8' }).split('\n').filter(Boolean);
