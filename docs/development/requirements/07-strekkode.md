@@ -16,7 +16,7 @@ og vilkårene i [integrations/open-food-facts.md](../integrations/open-food-fact
 | 2 | Dato | Alltid tom. OFF vet ikke hva som står på akkurat din pakke. Datotype og sted hentes fra forrige gang. |
 | 3 | Huke av på handlelisten ved skanning | Utsatt |
 | 4 | Kontakt i User-Agent | Ikke valgt per 2026-10-22. Uten `OFF_USER_AGENT` er oppslag slått av. |
-| 5 | Behandlingsansvarlig for testmiljøet | Studentene (Ferdinand Risan og Linus Saxe Huseby). Serveren står i Tyskland og driftes av Ferdinand. |
+| 5 | Behandlingsansvarlig for testmiljøet | Studentene (Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni). Serveren står i Tyskland og driftes av Ferdinand. |
 | 6 | Domene for testmiljøet | `smartmat.risansolutions.no` (DNS ikke satt opp per 2026-10-22) |
 
 ## Begreper

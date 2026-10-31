@@ -18,7 +18,7 @@ av pull requests), og hvordan dere delte arbeidet med KI-assistenten. Bare det s
 
 ## Ansvarsregister
 
-Fylles ut og godkjennes av Ferdinand Risan og Linus Saxe Huseby. KI-assistenten er ikke en ansvarlig person, men det
+Fylles ut og godkjennes av Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni. KI-assistenten er ikke en ansvarlig person, men det
 skal stå i «Bevis» når en oppgave er gjort av KI.
 
 | Oppgave | Ansvarlig | Støtte | Status | Gjennomgått av | Bevis |
@@ -75,6 +75,9 @@ Dette er bare fakta fra loggene, ikke kapittelets endelige tekst:
   prompten. KI lager utkast, teamet skriver kapittel 02, 03, refleksjonen i 13, 15 og 18.
 - **Linus Saxe Huseby** har ikke vært med i noen økt med KI-assistenten, og har ikke selv bekreftet noen gjennomgang i
   en økt. Alt som står om ham over, er Ferdinands erklæringer.
+- **Teamet (2026-10-31):** Ferdinand oppga at teamet er Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni, og at
+  hver fase er laget av de tre. Det er registrert som Ferdinands erklæring. Hasan Alhafni har ikke vært med i noen økt
+  med KI-assistenten, og hva han har gjort i hver fase, er ikke oppgitt.
 
 ## Kilder i prosjektet
 

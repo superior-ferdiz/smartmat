@@ -56,7 +56,7 @@ så skanning kan ikke testes på en ekte telefon. Serveren kjører også andre n
   - Ingen andre containere røres.
 
 ## Personvern (GDPR)
-- **Behandlingsansvarlig:** studentene (Ferdinand Risan og Linus Saxe Huseby).
+- **Behandlingsansvarlig:** studentene (Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni).
 - **Server:** står i Tyskland (EØS) og driftes av Ferdinand. Leverandøren av serveren er databehandler. Det er ikke
   vurdert om det finnes en databehandleravtale.
 - **Personopplysninger:** bare teamets egne kontoer (e-post, navn, sesjoner) og testdata. Dette er ikke en tjeneste

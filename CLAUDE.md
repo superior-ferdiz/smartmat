@@ -4,7 +4,8 @@ SmartMat is a Norwegian-first web app that helps households reduce food waste an
 (inventory + expiry, purchases/budget, recipe suggestions, barcode/receipt scanning).
 It is also the group project in **APP2000 – Applikasjonsutvikling for web (USN Bø, 2026/2027)**.
 
-- **Team:** Ferdinand Risan and Linus Saxe Huseby. Never name anyone else as a contributor.
+- **Team:** Ferdinand Risan, Linus Saxe Huseby and Hasan Alhafni (Hasan added 2026-10-31 at Ferdinand's request).
+  Never name anyone else as a contributor.
 - **Environment:** local development. A closed HTTPS test environment on `smartmat.risansolutions.no` (ADR-0015):
   DNS points at the server and the containers run (phase 13), on their own network `smartmat-edge` with Caddy
   (ADR-0022), with a nightly encrypted backup (ADR-0021). The Caddy block is live since 2026-10-27 (basic auth user

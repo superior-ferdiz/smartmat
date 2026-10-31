@@ -1074,3 +1074,21 @@ det ble stoppet og fjernet, og workeren var tilbake på normalt minne.
 lagret som bevisfil). Kjent begrensning: en skrått fotografert kvittering gir beløp på feil linje.
 
 **Neste:** Teamet bør prøve kameraet og kvitteringene på egne telefoner og avgjøre ADR-0017.
+
+## 2026-10-31 – Dokumentasjonen på GitHub oppdatert
+
+**Deltakere:** Ferdinand Risan (i chat med Claude Code).
+
+**Bakgrunn:** Ferdinand: dokumentasjonen på GitHub «henger etter» og sier at bare fase 1 er ferdig og fase 2 pågår,
+mens prosjektet er i fase 15. Han oppga at hver fase er laget av Ferdinand Risan, Linus Saxe Huseby og Hasan Alhafni.
+
+**Årsak:** GitHub viser `main`, som fortsatt står på 0f7296c (fase 0–1). Fase 2–14 finnes bare på grenene
+`fase-2` … `fase-14`, og ingen pull request er slått sammen.
+
+**Endret (på `fase-14`):** README og veikart viser fase 15 som pågående; README sier at fasene er laget av teamet med
+KI-assistanse og lenker til KI-loggen og KI-erklæringen. Hasan Alhafni er lagt til der teamet nevnes (README,
+CLAUDE.md, behandlingsansvarlige i kapittel 12, ADR-0015 og krav 07, kapittel 15 og KI-erklæringen). Datert logg over
+hvem som var med i øktene er ikke endret. Ferdinand valgte at teamet åpner pull requesten `fase-14` → `main` selv.
+
+**Neste:** Teamet åpner og godkjenner pull requesten `fase-14` → `main` på GitHub; Hasan leser og signerer
+KI-erklæringen og skriver sin del av kapittel 15.
