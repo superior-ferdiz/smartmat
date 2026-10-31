@@ -5,6 +5,8 @@
 > Historikk: Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Tiltakene og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. **Kapittelet er ingen juridisk vurdering.** Samsvar med GDPR og
 > personopplysningsloven er ikke vurdert av noen med kompetanse på det. Offisielle APP2000-krav er ikke verifisert.
+> Fase 15 (2026-10-30): avsnittet «Matvarer brukeren ikke tåler og egne oppskrifter» er skrevet av KI (Claude) og kontrollert mot koden og de lagrede utdataene i
+> `docs/evidence/test-results/fase-15/`. Ikke godkjent av teamet.
 
 ## Trusselbilde (fase 2)
 
@@ -352,6 +354,18 @@ Det ble ikke brukt noen eksterne tjenester eller databehandlere i fase 2–6. Al
   tom («Ukjent»).
 - **Ikke håndtert:** om de andre medlemmene skal få beskjed når noen går ut eller sletter kontoen. Det ble ikke tatt
   med i fase 11 (avgjørelse 6 i spesifikasjon 11).
+
+### Matvarer brukeren ikke tåler og egne oppskrifter (fase 15)
+
+- **Matvarer brukeren ikke tåler** (for eksempel kiwi) kan si noe om helse, som allergiene. De behandles likt:
+  frivillig, slettes med kontoen, med i eksporten, deles bare når brukeren har slått på delingen, vises aldri med navn
+  og kommer aldri i logger (testet i `avoidedIngredients.api.test.ts`). Behandlingsgrunnlaget (GDPR art. 9) er ikke
+  vurdert av teamet.
+- **Delingen er av som standard** (spesifikasjon 16, avgjørelse 3). KI-ens begrunnelse: uttrykkelig samtykke etter
+  art. 9 nr. 2 bokstav a må være et aktivt valg, så en deling som står på fra start, er trolig ikke gyldig samtykke.
+  Teamet bør ta spørsmålet med veilederen.
+- **Egne oppskrifter** er husholdningsdata. En annen husholdning får 404 på alle rutene, og databasen stopper
+  kryssreferanser (ADR-0023). Tekst i oppskriftene vises som ren tekst og logges ikke.
 
 ## Sletting
 

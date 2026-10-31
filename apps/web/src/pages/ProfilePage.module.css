@@ -43,38 +43,6 @@
   border-color: var(--color-danger);
 }
 
-/* Allergies: two columns of checkboxes from 600px. */
-.allergens {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2) var(--space-4);
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-@media (min-width: 600px) {
-  .allergens {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.legend {
-  margin-bottom: var(--space-2);
-  padding: 0;
-  font-weight: var(--font-weight-semibold);
-}
-
-/* Spec 10: sharing the allergies with the household, under the allergy form. */
-.share {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  margin-top: var(--space-5);
-  padding-top: var(--space-4);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
 /* Spec 13 (FR-AUTH-009): one row per session; the button wraps under the text on a phone. */
 .sessions {
   display: grid;

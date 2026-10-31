@@ -7,6 +7,7 @@
 > [fase-1/](../evidence/test-results/fase-1/), [fase-2/](../evidence/test-results/fase-2/),
 > [fase-3/](../evidence/test-results/fase-3/) og [fase-4/](../evidence/test-results/fase-4/).
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
+> Fase 15 (2026-10-30): avsnittet «Fase 15» er skrevet av KI (Claude) fra de lagrede utdataene. Ikke godkjent av teamet.
 
 ## Testmiljø
 
@@ -1280,6 +1281,52 @@ I tillegg ble dokumentasjonen kontrollert:
 - **Lenker** i alle Markdown-filer (526 i siste kjøring; i første kjøring var én av 517 brutt, og den er rettet) og **kodehenvisninger** i kapittel 07–12.
 
 Oversikten over alle fasene står i [bevisoversikten](../evidence/bevisoversikt.md).
+
+## Fase 15: egne oppskrifter, allergier og priser (kjørt 2026-10-30)
+
+Utdata i [`docs/evidence/test-results/fase-15/`](../evidence/test-results/fase-15/). Kjørt av KI (Claude).
+
+| Kontroll | Resultat | Fil |
+|---|---|---|
+| Typesjekk, lint | 0 feil | `01`, `02` |
+| Formatering | 1 fil ikke formatert: `scripts/check-files.mjs` fra fase 14, ikke endret i fase 15 | `03` |
+| Enhetstester | 1412 av 1412 | `04` (første kjøring 1411 av 1411, `04-…-forsok1`) |
+| API-tester mot testdatabasen | 538 av 538 | `05` |
+| Bygg | OK, hovedfilen 616 kB (608 kB i fase 14) | `06` |
+| Playwright (360 px og skrivebord) | 215 av 215 på første forsøk | `07` |
+| `npm audit --omit=dev` | 0 sårbarheter | `08` |
+| Migreringsstatus | oppdatert | `09` |
+| Mutasjonskontroll | 21 av 21 fanget | `10` |
+| Sporbarhet | 107 krav, 7 uten testfil (de samme som i fase 14) | `11` |
+
+**Nye tester og hva de viser (sporbarhet til spesifikasjon 16):**
+- `ownRecipes.security.api.test.ts`: 404 for en annen husholdning på liste, rangering for en dag, detalj,
+  skjemadata, endre, slette, prisanslag, måltidsplan og handleliste, og at ingenting endres. SQL-tester viser at
+  triggeren og CHECK-ene stopper kryssreferanser (FR-REC-009).
+- `ownRecipes.api.test.ts`: lage, endre med versjon (409), slette, dobbel innsending, grensen på 200, validering av
+  linjer, deling i husholdningen, at oppskriften blir igjen når medlemmet går ut, seed og eksport (FR-REC-007–010).
+- `avoidedIngredients.api.test.ts`: lagring, validering, sletting med kontoen, eksport, seed, logg, og varsler egne
+  og delte, bare med deling på og bare for nåværende medlemmer (FR-ALG-001–003).
+- `prices.api.test.ts` (FR-PRICE-007): egen pris som andel, lagret Kassalapp-pris uten nye kall, basisvarer,
+  fritekst og linjer uten mengde holdt utenfor, ingenting skrevet.
+- `recipeQueries.test.ts`: ingen oppskriftsspørringer utenfor repoet.
+- Web: `OwnRecipes.test.tsx`, `AllergiesCard.test.tsx`, `recipeForm.test.ts`, `filter.test.ts`. E2E:
+  `ownRecipes.spec.ts` (inkludert en fremmed husholdning i en annen nettleser) og `/oppskrifter/ny` i `a11y.spec.ts`.
+
+**Mutasjonskontrollen** endret 21 regler én om gangen (husholdningsfilteret, seed, eksport, validering, deling av
+matvarer, filteret i nettleseren, prisanslaget). Alle ble fanget. Den viste også at en ny webtest
+(`OwnRecipes.test.tsx`, utfylling av skjemaet) gikk over grensen på 5 sekunder i 17 av 21 runder når hele pakken
+kjørte. Den besto i den første kjøringen bare så vidt. Testen ble delt i to (axe på det tomme skjemaet for seg), og
+webpakken besto 3 av 3 ganger etterpå. Hver mutasjon ble regnet som fanget bare når en annen, relevant test feilet.
+
+**Feil funnet i fase 15:**
+1. Testoppsettet tømte databasen med `TRUNCATE … CASCADE`. Med fremmednøkkelen fra `recipes` til `households` tømte det
+   hele oppskriftstabellen (32 handlelistetester feilet). Rettet med `DELETE` (kapittel 10, eksempel 54).
+2. To Playwright-lokatorer traff for mye (`Trinn 1` traff også «Fjern trinn 1», `egg` traff også matvarevelgeren).
+   Rettet med `exact` og rolle.
+3. På 360 px meldte axe en knapp bak bunnmenyen før den høye visningen ble brukt. Rettet i testen, som i fase 3.
+
+Ikke testet: ekte telefon, skjermleser, og priser fra Kassalapp mot et ekte svar (ingen nøkkel).
 
 ## Begrensninger
 

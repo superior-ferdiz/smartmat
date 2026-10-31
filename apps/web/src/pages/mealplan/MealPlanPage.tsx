@@ -29,6 +29,7 @@ import { useMealPlan, useRemoveMealEntry } from '../../mealplan/api';
 import { useDayLabel } from '../../mealplan/format';
 import styles from '../../mealplan/mealplan.module.css';
 import { AllergenDisclaimer, AllergenWarningTag } from '../../recipes/AllergenNotice';
+import { hasRegisteredAllergens } from '../../recipes/filter';
 import { useAddedBy } from '../../household/format';
 import { useIsShared } from '../../household/api';
 
@@ -275,12 +276,9 @@ function Entry({
           <span className={styles.meta}>{t('recipes.servings', { count: entry.servings })}</span>
         )}
         {addedBy && <span className={styles.meta}>{addedBy}</span>}
-        {(entry.allergenWarnings.length > 0 || entry.householdAllergenWarnings.length > 0) && (
+        {hasRegisteredAllergens(entry) && (
           <span>
-            <AllergenWarningTag
-              allergens={entry.allergenWarnings}
-              household={entry.householdAllergenWarnings}
-            />
+            <AllergenWarningTag warnings={entry} />
           </span>
         )}
       </span>

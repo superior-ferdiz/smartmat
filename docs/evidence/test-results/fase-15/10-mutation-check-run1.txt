@@ -1,0 +1,143 @@
+$ bash docs/evidence/test-results/fase-15/10-mutation-check.sh
+# 2026-10-30T16:09:54Z
+1. Alle oppskrifter er synlige for alle (husholdningsfilteret fjernet)
+    endret: apps/api/src/modules/recipes/repo.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  6 failed | 183 passed (189)
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > detail: 404, and nothing changes
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > list: the recipe is not in Ola’s list – but it is in Kari’s
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > meal plan: planning it is 404, and no entry is made
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > price estimate: 404, and nothing changes
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > ranking for a planned day: the recipe is not in Ola’s ranking
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > shopping list: adding it is 404, and the list is unchanged
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+2. Detaljen slår opp bare på id, uten husholdning
+    endret: apps/api/src/modules/recipes/repo.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  5 failed | 184 passed (189)
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > detail: 404, and nothing changes
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > meal plan: planning it is 404, and no entry is made
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > price estimate: 404, and nothing changes
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > shopping list: adding it is 404, and the list is unchanged
+      feilet: |api-db| test/recipeSources.api.test.ts > FR-REC-006 source and licence > RECIPES_INCLUDE_UNREVIEWED=false hides unchecked external recipes, also by id
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+3. Endre og slette treffer en oppskrift i en annen husholdning
+    endret: apps/api/src/modules/recipes/repo.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  4 failed | 185 passed (189)
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > change: 404, and nothing changes
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > delete: 404, and nothing changes
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > edit form: 404, and nothing changes
+      feilet: |api-db| test/recipes.security.api.test.ts > NFR-SEC-001 recipes: no access to another household > global recipes and ingredients cannot be written through the API (spec 16: only own recipes)
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+4. Endring uten versjonskontroll (siste lagring vinner)
+    endret: apps/api/src/modules/recipes/repo.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-007 create, change and delete an own recipe > a stale version is 409 and nothing changes
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+5. Seed-skriptet sletter også egne oppskrifter
+    endret: apps/api/src/modules/recipes/seed.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-010 the seed script never touches own recipes, and the export has them > a re-seed keeps the own recipe and its lines, and keeps an ingredient only it uses
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+6. Seed sletter en ingrediens som bare brukes i en egen oppskrift
+    endret: apps/api/src/modules/recipes/seed.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-010 the seed script never touches own recipes, and the export has them > a re-seed keeps the own recipe and its lines, and keeps an ingredient only it uses
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+7. Eksporten mangler egne oppskrifter
+    endret: apps/api/src/modules/privacy/repo.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  2 failed | 187 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-010 the seed script never touches own recipes, and the export has them > /me/export has the recipe and its lines for the household
+      feilet: |api-db| test/privacy.api.test.ts > FR-PRIV-001 export of my own data > column contract: every exported column is listed here, so a new column must be decided on
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+8. En ukjent ingrediens godtas
+    endret: apps/api/src/modules/recipes/service.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-008 lines are checked on the server (NFR-SEC-002) > refuses an unknown ingredient
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+9. Grensen på 200 egne oppskrifter gjelder ikke
+    endret: apps/api/src/modules/recipes/service.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-007 create, change and delete an own recipe > at most 200 own recipes per household (409), but a repeat of a saved form is still 200
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+10. En enhet som ikke kan regnes om, godtas
+    endret: packages/shared/src/recipes/household.ts
+    enhetstester: Tests  2 failed | 1409 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/ownRecipes.api.test.ts > FR-REC-008 lines are checked on the server (NFR-SEC-002) > refuses a unit that cannot be converted
+      feilet: |shared| src/recipes/household.test.ts > FR-REC-008 units and amounts > says what is wrong: the amount or the unit
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+11. En ukjent oppskrift i måltidsplanen gir 400 i stedet for 404
+    endret: apps/api/src/modules/mealplan/service.ts
+    enhetstester: Tests  1411 passed (1411)
+    API-tester:   Tests  2 failed | 187 passed (189)
+      feilet: |api-db| test/mealPlan.api.test.ts > FR-PLAN-001 week plan > spec 16 decision 7: an unknown recipe is 404 (the same answer as an own recipe of another household)
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > meal plan: planning it is 404, and no entry is made
+12. Delte matvarer telles uten at medlemmet har slått på deling
+    endret: apps/api/src/modules/households/repo.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/avoidedIngredients.api.test.ts > FR-ALG-002 warnings for avoided ingredients > household: only after the member has chosen to share, never with a name, never the caller’s own
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+13. Egne matvarer vises også som husholdningens
+    endret: apps/api/src/modules/households/service.ts
+    enhetstester: Tests  1411 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/avoidedIngredients.api.test.ts > FR-ALG-002 warnings for avoided ingredients > household: only after the member has chosen to share, never with a name, never the caller’s own
+14. Husholdningens matvarer gir ingen varsel
+    endret: packages/shared/src/recipes/household.ts
+    enhetstester: Tests  2 failed | 1409 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/avoidedIngredients.api.test.ts > FR-ALG-002 warnings for avoided ingredients > household: only after the member has chosen to share, never with a name, never the caller’s own
+      feilet: |shared| src/recipes/household.test.ts > FR-ALG-002 warnings > own and household warnings for allergens and ingredients, from every ingredient line
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+15. En ukjent matvare kan registreres
+    endret: apps/api/src/modules/recipes/service.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/avoidedIngredients.api.test.ts > FR-ALG-001 the list of avoided ingredients > refuses an unknown ingredient, the same one twice and more than the limit; nothing is saved
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+16. Oppskrifter med registrerte matvarer skjules ikke
+    endret: apps/web/src/recipes/filter.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  189 passed (189)
+      feilet: |web| src/recipes/filter.test.ts > spec 16 own recipes and avoided ingredients > FR-ALG-002: own and shared avoided ingredients are hidden like allergens, and never the dinner suggestion
+17. «Bare egne oppskrifter» filtrerer ikke
+    endret: apps/web/src/recipes/filter.ts
+    enhetstester: Tests  3 failed | 1408 passed (1411)
+    API-tester:   Tests  189 passed (189)
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 the list > has "Ny oppskrift", and "Bare egne oppskrifter" filters to the household’s own
+      feilet: |web| src/recipes/filter.test.ts > spec 16 own recipes and avoided ingredients > FR-REC-007: ?egne=1 shows only the household’s own recipes, and goes back and forth through the URL
+18. Delingen slås på av seg selv når husholdningen er delt
+    endret: apps/web/src/settings/AllergiesCard.tsx
+    enhetstester: Tests  2 failed | 1409 passed (1411)
+    API-tester:   Tests  189 passed (189)
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+      feilet: |web| src/settings/AllergiesCard.test.tsx > spec 16 decision 3: sharing is the user’s own choice > is off by default and is never sent on its own; it covers both allergens and foods
+19. Basisvarer prises og telles med
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-007 (spec 16) the estimate for a recipe > own price as a share of what was paid; free text, staples and lines without an amount are left out
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+20. Fritekstlinjer telles ikke som hoppet over
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1 failed | 1410 passed (1411)
+    API-tester:   Tests  1 failed | 188 passed (189)
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-007 (spec 16) the estimate for a recipe > own price as a share of what was paid; free text, staples and lines without an amount are left out
+      feilet: |web| src/pages/recipes/OwnRecipes.test.tsx > FR-REC-007 a new own recipe > sends the lines from the ingredient list and the free text, once, and goes to the recipe
+21. Prisanslaget slår opp en oppskrift uten husholdning (annen husholdnings oppskrift)
+    endret: apps/api/src/modules/prices/service.ts
+    enhetstester: Tests  1411 passed (1411)
+    API-tester:   Tests  2 failed | 187 passed (189)
+      feilet: |api-db| test/ownRecipes.security.api.test.ts > FR-REC-009 another household gets 404 on every route > price estimate: 404, and nothing changes
+      feilet: |api-db| test/prices.api.test.ts > FR-PRICE-007 (spec 16) the estimate for a recipe > a global recipe has an estimate too; an unknown recipe is 404
+exit=0

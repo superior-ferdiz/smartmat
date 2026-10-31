@@ -612,3 +612,32 @@ En id som ikke er brukerens egen, gir 404.
 | `RATE_LIMIT_EXPORT_MAX` | 5 | 5 | Eksporter per IP-adresse per time |
 
 En tom verdi i en env-fil (`KASSALAPP_API_KEY=`) betyr «ikke satt» fra fase 13. Før det stoppet appen ved oppstart.
+
+## Egne oppskrifter, allergier i Innstillinger og priser på oppskrifter (fase 15)
+
+Se [spesifikasjon 16](requirements/16-egne-oppskrifter-allergier-priser.md) og
+[ADR-0023](architecture-decisions/0023-egne-oppskrifter-i-felles-tabell.md). Alle oppskriftsruter ligger under
+`/households/:householdId/` med `requireAuth` og `householdAccess`. En annen husholdnings egen oppskrift gir 404 på
+alle rutene, samme svar som en oppskrift som ikke finnes (FR-REC-009).
+
+### Endringer i eksisterende svar og forespørsler
+
+| Hva | Endring |
+|---|---|
+| `GET /recipes`, `GET /recipes/:id` | Tar med husholdningens egne oppskrifter. `source` kan være `household`, og `slug` og `license` er `null` for dem. Nye felt: `createdBy` (FR-HH-007, `null` for globale), `ingredientWarnings`, `householdIngredientWarnings`, `freeTextCount`. Listen og detaljen har `avoidedIngredients` og `householdAvoidedIngredients` (navn). Detaljen har `freeTextLines` (`position`, `displayText`). |
+| `GET /meal-plan…` | Oppføringene har `ingredientWarnings` og `householdIngredientWarnings`. |
+| `POST /meal-plan/entries` | En ukjent oppskrift eller en annen husholdnings egen oppskrift gir **404** (var 400 med feltfeil, spesifikasjon 16 avgjørelse 7). |
+| `GET /ingredients` | Har `units`: enhetene en oppskriftslinje for ingrediensen kan skrives i. |
+| `GET /me/export` | Har `avoidedIngredients`, og `recipes` og `recipe_ingredients` per husholdning. |
+
+### Endepunkter
+
+| Metode | Sti | Svar | Merknad |
+|---|---|---|---|
+| POST | `/households/:h/recipes` | 201 `{ id, version }` (200 ved gjentatt `clientRequestId`) | Ny egen oppskrift. Linjer: `{ kind: 'ingredient', ingredientId, amount?, unit?, text?, optional? }` eller `{ kind: 'freeText', text }`. Ukjent ingrediens, enhet som ikke kan regnes om, eller ugyldig mengde: 400 med feltfeil (`lines.N.ingredientId` / `.unit` / `.amount`). Høyst 200 per husholdning: 409 `errors.recipe.tooMany`. |
+| GET | `/households/:h/recipes/:id/edit` | `{ id, version, title, …, lines, steps }` | Skjemadataene, med det brukeren skrev (mengde og enhet). Globale oppskrifter: 404. |
+| PUT | `/households/:h/recipes/:id` | `{ id, version }` | Hele oppskriften og `version`. Utdatert versjon: 409 `errors.recipe.changedMeanwhile`. Globale: 404. |
+| DELETE | `/households/:h/recipes/:id` | 204 | Måltider beholder tittelen, handlelistebidrag slettes. Globale: 404. |
+| GET | `/households/:h/recipes/:id/price-estimate` | `{ externalEnabled, lines, summary }` | FR-PRICE-007. Per linje: `estimateOre`, `source` (`own`/`kassalapp`), `basis`, `date`, `missing` (`noMatch`/`noPrice`/`unitMismatch`) eller `skipped` (`freeText`/`staple`/`noAmount`). `summary`: `pricedLines`, `estimatedLines`, `missingLines`, `skippedLines`, `estimatedOre` (summen av linjene som har anslag, aldri en total), `fromOwn`, `fromKassalapp`. Ingen nye kall til Kassalapp. |
+| GET | `/me/avoided-ingredients` | `{ ingredients: [{ id, name }] }` | Sortert etter navn |
+| PUT | `/me/avoided-ingredients` | samme | `{ ingredientIds }`, høyst 50, uten duplikater. Ukjent id: 400 `ingredientIds.N`. |

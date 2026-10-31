@@ -1,17 +1,15 @@
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ALLERGENS,
   changePasswordSchema,
   deleteAccountSchema,
   PASSWORD_MIN_LENGTH,
   SUPPORTED_LOCALES,
   updateProfileSchema,
-  type Allergen,
   type Locale,
 } from '@smartmat/shared';
 import { Alert } from '../components/Alert/Alert';
-import { AnchorButton, Button } from '../components/Button/Button';
+import { AnchorButton, Button, LinkButton } from '../components/Button/Button';
 import { Card } from '../components/Card/Card';
 import { Checkbox } from '../components/Checkbox/Checkbox';
 import { ErrorState } from '../components/ErrorState/ErrorState';
@@ -30,25 +28,26 @@ import {
 import { fieldErrorsFromZod, summaryItems, type FieldErrors } from '../forms/fieldErrors';
 import { useValidationMessage } from '../i18n/useValidationMessage';
 import { Page } from '../layout/Page';
-import { useHousehold, useSetShareAllergens } from '../household/api';
 import { apiErrorState } from '../household/format';
-import { useAllergens, useSetAllergens } from '../recipes/api';
 import { EXPORT_URL, useEndOtherSessions, useEndSession, useSessions } from '../account/api';
 import { useDeviceLabel } from '../account/deviceLabel';
 import { TwoFactorCard } from '../account/TwoFactorCard';
-import { PRIVACY_PATH } from '../app/navigation';
+import { ALLERGIES_PATH, PRIVACY_PATH } from '../app/navigation';
 import { useFormatDateTime } from '../household/format';
 import { Link } from 'react-router';
 import styles from './ProfilePage.module.css';
 
-/** FR-AUTH-004 (name, language, password), FR-REC-004 (allergies) and FR-AUTH-005 (delete account), plus log out. */
+/**
+ * FR-AUTH-004 (name, language, password) and FR-AUTH-005 (delete account), plus log out. The allergies (FR-REC-004)
+ * moved to the settings in spec 16; a card here points there.
+ */
 export function ProfilePage() {
   const { t } = useTranslation();
   return (
     <Page title={t('pages.profile.title')} lead={t('pages.profile.lead')}>
       <div className={styles.grid}>
         <ProfileForm />
-        <AllergiesForm />
+        <AllergiesLink />
         <PasswordForm />
         <TwoFactorCard />
         <SessionsCard />
@@ -60,126 +59,18 @@ export function ProfilePage() {
   );
 }
 
-/**
- * FR-REC-004: the user's allergies, used only to hide or warn about recipes. Voluntary, and may be health
- * data (GDPR art. 9), so the card says what it is used for.
- */
-function AllergiesForm() {
+/** Spec 16 (FR-ALG-001): the allergies moved to the settings; the profile points there. */
+function AllergiesLink() {
   const { t } = useTranslation();
-  const message = useValidationMessage();
-  const { show } = useToast();
-  const saved = useAllergens();
-  const save = useSetAllergens();
-  const [chosen, setChosen] = useState<Allergen[] | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
-  const current = chosen ?? saved.data ?? [];
-
-  function toggle(allergen: Allergen, on: boolean) {
-    setChosen(ALLERGENS.filter((a) => (a === allergen ? on : current.includes(a))));
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setFormError(null);
-    save.mutate(current, {
-      onSuccess: () => {
-        setChosen(null);
-        show({ variant: 'success', message: t('pages.profile.allergies.saved') });
-      },
-      onError: (error) => setFormError(apiErrorState(error).form ?? 'errors.validation'),
-    });
-  }
-
   return (
     <Card id="profile-allergies" title={t('pages.profile.allergies.title')}>
-      <p className={styles.text}>{t('pages.profile.allergies.text')}</p>
-      {saved.isPending ? (
-        <LoadingState />
-      ) : saved.isError ? (
-        <ErrorState headingLevel={3} onRetry={() => void saved.refetch()} />
-      ) : (
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          {formError && (
-            <Alert variant="error" live>
-              {message(formError)}
-            </Alert>
-          )}
-          <fieldset className={styles.allergens}>
-            <legend className={styles.legend}>{t('pages.profile.allergies.legend')}</legend>
-            {ALLERGENS.map((allergen) => (
-              <Checkbox
-                key={allergen}
-                id={`allergen-${allergen}`}
-                label={t(`recipes.allergenNames.${allergen}`)}
-                checked={current.includes(allergen)}
-                onChange={(e) => toggle(allergen, e.target.checked)}
-              />
-            ))}
-          </fieldset>
-          <p className={styles.note}>{t('recipes.allergens.disclaimer')}</p>
-          <div>
-            <Button type="submit" loading={save.isPending}>
-              {t('pages.profile.allergies.save')}
-            </Button>
-          </div>
-        </form>
-      )}
-      <ShareWithHousehold />
+      <p className={styles.text}>{t('pages.profile.allergies.moved')}</p>
+      <div>
+        <LinkButton to={ALLERGIES_PATH} variant="secondary">
+          {t('pages.profile.allergies.open')}
+        </LinkButton>
+      </div>
     </Card>
-  );
-}
-
-/**
- * Spec 10 (FR-HH-006): the allergies count for the whole active household only if the user says so. Off by
- * default, per household, and the text says what the others can and cannot see (GDPR art. 9).
- */
-function ShareWithHousehold() {
-  const { t } = useTranslation();
-  const message = useValidationMessage();
-  const { show } = useToast();
-  const user = useCurrentUser();
-  const household = useHousehold();
-  const share = useSetShareAllergens();
-  const [error, setError] = useState<string | null>(null);
-  const name = user.households.find((h) => h.id === user.householdId)?.name ?? '';
-
-  if (household.isPending) return <LoadingState />;
-  if (household.isError) {
-    return <ErrorState headingLevel={3} onRetry={() => void household.refetch()} />;
-  }
-  return (
-    <div className={styles.share}>
-      <h3 className={styles.legend}>{t('pages.profile.allergies.share.title')}</h3>
-      <p className={styles.note}>{t('pages.profile.allergies.share.text')}</p>
-      {error && (
-        <Alert variant="error" live>
-          {message(error)}
-        </Alert>
-      )}
-      <Checkbox
-        id="allergies-share"
-        label={t('pages.profile.allergies.share.label', { name })}
-        checked={household.data.shareAllergens}
-        disabled={share.isPending}
-        onChange={(e) => {
-          const on = e.target.checked;
-          setError(null);
-          share.mutate(on, {
-            onSuccess: () =>
-              show({
-                variant: 'success',
-                message: t(
-                  on ? 'pages.profile.allergies.share.on' : 'pages.profile.allergies.share.off',
-                  {
-                    name,
-                  },
-                ),
-              }),
-            onError: (err) => setError(apiErrorState(err).form ?? 'errors.internal'),
-          });
-        }}
-      />
-    </div>
   );
 }
 

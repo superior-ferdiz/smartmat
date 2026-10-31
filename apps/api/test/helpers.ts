@@ -70,9 +70,13 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
 export function useTestDatabase(): Db {
   const db = createDb(testDatabaseUrl());
   beforeEach(async () => {
-    await db.$executeRawUnsafe(
-      'TRUNCATE TABLE sessions, household_invitations, household_members, households, users RESTART IDENTITY CASCADE',
-    );
+    // DELETE, not TRUNCATE … CASCADE: since spec 16 `recipes` references `households`, and a truncate cascade
+    // empties the whole table – also the global test recipes. Deleting the households removes every household's
+    // own data (and own recipes) through the foreign keys; deleting the users removes sessions and the rest.
+    await db.$transaction([
+      db.$executeRawUnsafe('DELETE FROM households'),
+      db.$executeRawUnsafe('DELETE FROM users'),
+    ]);
   });
   afterAll(async () => {
     await db.$disconnect();

@@ -157,6 +157,15 @@ Se [api-documentation.md](../api-documentation.md).
 - **Omregning med skjeer:** salt, krydder og noen sauser fikk ml-omregning (anslag) i KI-utkastet, slik at teamet
   kan skrive «1 ts salt».
 
+## Endret i fase 15 (spesifikasjon 16)
+
+- **Allergiene** legges inn under **Innstillinger → Allergier og matvarer**, ikke på profilen. Profilen har en lenke dit.
+  I tillegg kan brukeren registrere matvarer fra ingredienslisten de ikke tåler. Se
+  [spesifikasjon 16](16-egne-oppskrifter-allergier-priser.md).
+- **Oppskriftene er ikke lenger bare globale:** husholdninger kan lage egne (ADR-0023). Det står over at «Det finnes
+  ingen endepunkter som skriver dem». Det gjelder fortsatt globale oppskrifter og ingredienser.
+- Bryteren heter nå «Vis oppskrifter med registrerte allergener og matvarer».
+
 ## Utenfor fasen
 Skalering av porsjoner (fase 9), «legg manglende i handlelisten» (fase 6), produktkatalog og strekkode (fase 7),
 allergener for hele husholdningen (fase 10), oppskrifter på engelsk, bilder, brukerens egne oppskrifter.

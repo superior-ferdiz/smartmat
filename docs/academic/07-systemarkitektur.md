@@ -6,6 +6,8 @@
 > (2026-10-27, fase 10, 11 og 13). Arkitekturen og teksten er laget av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides når flere deler kommer til. Offisielle APP2000-krav til rapporten er
 > ikke verifisert.
+> Fase 15 (2026-10-30): avsnittet «Egne oppskrifter» er skrevet av KI (Claude) og kontrollert mot koden og de lagrede utdataene i
+> `docs/evidence/test-results/fase-15/`. Ikke godkjent av teamet.
 
 ## Oversikt
 
@@ -193,6 +195,30 @@ Lagt til i fase 14. Ingen av delene trengte en ny tjeneste eller prosess.
 - **Varsler (ADR-0019)** lagres ikke som rader. De regnes ut ved hver forespørsel fra matlageret, budsjettet og
   handlelisten. Bare hva brukeren har sett og avvist, lagres. Nettleseren spør på nytt hvert 60. sekund. Det finnes
   ingen e-post eller push.
+
+## Egne oppskrifter (fase 15, ADR-0023)
+
+Lagt til i fase 15. Husholdningens egne oppskrifter ligger i samme tabell som de globale (`source = household` og
+`household_id`), så matching, rangering, allergener, måltidsplan, handleliste og prisanslag virker uten en ny kilde.
+Prisen er at grensen mellom husholdninger nå gjelder oppskrifter også. Den håndheves i tre lag:
+
+```mermaid
+flowchart LR
+  R[Rute med :householdId] --> H[householdAccess<br/>medlemskap i databasen]
+  H --> S[Tjeneste]
+  S -- "recipes(householdId)<br/>recipe(householdId, id)" --> Repo[recipes/repo.ts<br/>global ELLER denne husholdningen]
+  Repo --> DB[(recipes)]
+  M[meal_plan_entries<br/>shopping_list_item_recipes] -- "trigger:<br/>samme husholdning" --> DB
+```
+
+1. **Repoet** er det eneste stedet som spør oppskriftstabellen. Husholdningen er et påkrevd argument, så typesjekken
+   stopper et kall som glemmer den, og en statisk test (`recipeQueries.test.ts`) stopper spørringer andre steder.
+2. **Databasen** har en CHECK som binder `source` og `household_id`, og en trigger som stopper måltider og
+   handlelistebidrag som peker på en annen husholdnings oppskrift.
+3. **Testene** viser 404 for en annen husholdning på hver rute (`ownRecipes.security.api.test.ts`).
+
+Allergier og matvarer brukeren ikke tåler, tilhører fortsatt brukeren (`/me/…`) og redigeres under Innstillinger.
+Prisanslaget for en oppskrift bruker samme beregning som handlelisten og spør aldri Kassalapp.
 
 ## Sikkerhetsgrenser
 

@@ -4,6 +4,8 @@
 > er sjekket mot repoet og de lagrede utdataene, og det som var utdatert, er rettet. Se kapittel 20.)
 > Historikk: Skrevet etter fase 1, 2 (2026-10-20), 3 og 4 (2026-10-21), utvidet til og med fase 13 (2026-10-27). Koden og teksten er skrevet av KI (Claude) og
 > ikke gjennomgått av teamet ennå. Kapittelet utvides i senere faser. Offisielle APP2000-krav til rapporten er ikke verifisert.
+> Fase 15 (2026-10-30): eksempel 53–55 er skrevet av KI (Claude) og kontrollert mot koden og de lagrede utdataene i
+> `docs/evidence/test-results/fase-15/`. Ikke godkjent av teamet.
 
 ## Oversikt (fase 1)
 
@@ -726,6 +728,30 @@ leter etter innholdet med en gang.
 - `"sideEffects": false` på den delte pakken lar Vite droppe moduler webappen ikke bruker.
 - Resultat: hovedfilen gikk fra 881 kB (265 kB gzip) til 608 kB (192 kB gzip, [`20-bundle-after.txt`](../evidence/test-results/fase-13/20-bundle-after.txt)). Det som er igjen, er stort sett
   React, React Router, Zod, i18next og norsk tekst, som alle sider trenger.
+
+## Eksempel 53: ett sted for oppskriftsspørringer (FR-REC-009, ADR-0023)
+
+Da husholdningene fikk egne oppskrifter, ble det farlig at oppskriftene hadde vært globale: alle spørringer var
+skrevet uten husholdning. Metodene i `RecipeRepo` tar derfor husholdningen som påkrevd argument
+(`recipes(householdId)`, `recipe(householdId, id)`). Da signaturen ble endret, viste typesjekken alle stedene som
+måtte endres (måltidsplanen, handlelisten, prisene). Filteret «global eller denne husholdningen» finnes bare i én
+funksjon (`visibleTo`). En statisk test leser alle kildefilene og feiler hvis noen andre enn repoet, seed-skriptet og
+et ytelsesskript spør tabellen direkte. Mutasjonssjekken fjernet filteret (runde 1–3), og testene fanget det.
+
+## Eksempel 54: en trunkering som tømte for mye (testoppsett)
+
+API-testene tømte databasen før hver test med `TRUNCATE households … CASCADE`. Da `recipes` fikk en fremmednøkkel til
+`households`, tømte Postgres hele oppskriftstabellen, også de globale testoppskriftene, fordi `CASCADE` ved `TRUNCATE`
+gjelder hele tabeller som peker på den, ikke bare radene. 32 handlelistetester feilet med «no recipe». Oppsettet
+bruker nå `DELETE FROM households` og `DELETE FROM users`, så fremmednøklene sletter bare husholdningenes egne rader.
+Det gikk også raskere (handlelistetestene: 11 s mot 34 s).
+
+## Eksempel 55: fritekst som ikke kan telles ved en feil (FR-REC-008)
+
+Fritekstlinjer i egne oppskrifter har ingen ingrediens. I stedet for å sjekke `ingredientId !== null` overalt deler
+repoet linjene i to lister: `lines` (bare ingredienslinjer, typen sier at `ingredientId` alltid finnes) og
+`freeTextLines`. Matching, poengsum, måltidsplan, handleliste og priser bruker `lines` som før, og kan ikke telle
+fritekst uten at noen skriver kode for det. Siden og allergiboksen viser `freeTextLines` og sier at de ikke er sjekket.
 
 ## Lagring i nettleseren
 

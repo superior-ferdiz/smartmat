@@ -1,0 +1,97 @@
+/* Spec 16 (FR-ALG-001): allergies and foods in the settings (moved from the profile page). */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.text {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.note {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Allergens: two columns of checkboxes from 600px. */
+.allergens {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@media (min-width: 600px) {
+  .allergens {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.foods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.foodList {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.foodList li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+}
+
+.foodList li + li {
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* The picker and its button: stacked on phones, side by side (button at the bottom) from 600px. */
+.addRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 600px) {
+  .addRow {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .addRow > :first-child {
+    flex: 1;
+  }
+}
+
+/* Sharing with the household, under the form. */
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-border);
+}

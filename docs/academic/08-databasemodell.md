@@ -5,6 +5,8 @@
 > Historikk: Skrevet etter fase 2 (2026-10-20), fase 3 og fase 4 (2026-10-21), utvidet i fase 5–13 (fase 13 lagt inn i fase 14). Skjemaet og teksten er laget
 > av KI (Claude) og ikke gjennomgått av teamet ennå. Kapittelet utvides med tabellene for oppskrifter i senere faser.
 > Offisielle APP2000-krav til rapporten er ikke verifisert.
+> Fase 15 (2026-10-30): avsnittet «Egne oppskrifter og matvarer» er skrevet av KI (Claude) og kontrollert mot koden og de lagrede utdataene i
+> `docs/evidence/test-results/fase-15/`. Ikke godkjent av teamet.
 
 Fasiten er [`prisma/schema.prisma`](../../prisma/schema.prisma) og migreringene i
 [`prisma/migrations/`](../../prisma/migrations/). Planen for hele modellen står i
@@ -388,6 +390,27 @@ Lagt til i fase 14 etter en kontroll mot migreringene. I fase 13 ble dette ikke 
   den ble brukt. Primærnøkkel (`user_id`, `code_hash`), slettes med brukeren.
 - **`login_challenges`:** steg to i innloggingen. Bare hashen av utfordringen lagres (unik), med utløpstid. Slettes
   med brukeren, og workeren sletter utløpte utfordringer hver natt.
+
+### Egne oppskrifter og matvarer (fase 15)
+
+Lagt til i fase 15 (migrering `20261030120000_household_recipes`, ADR-0023).
+
+- **`recipes`** fikk `household_id` (CASCADE), `created_by` (SET NULL), `version` og `dedupe_key`, og `source` kan
+  være `household`. `slug` og `license` ble nullable.
+  - CHECK `recipes_household_source`: `(source = 'household') = (household_id IS NOT NULL)`.
+  - CHECK `recipes_household_fields`: en egen oppskrift har ingen slug, lisens, forfattere, kildefelt eller
+    `reviewed_by`. En global har slug, lisens og minst én forfatter, som før (den gamle `recipes_has_authors` er
+    erstattet av denne).
+- **`recipe_ingredients`:** `ingredient_id` kan være tom (fritekstlinje). `household_id` fylles alltid av triggeren
+  `recipe_ingredients_household` fra oppskriften, også om koden prøver å sette noe annet. CHECK: fritekst bare i
+  egne oppskrifter og aldri med mengde. `input_amount` og `input_unit` er det brukeren skrev (bare egne oppskrifter).
+- **Triggeren `recipe_household_guard`** på `meal_plan_entries` og `shopping_list_item_recipes` stopper en rad som
+  peker på en annen husholdnings oppskrift. Feilen er en `check_violation`.
+- **`user_avoided_ingredients`** (`user_id`, `ingredient_id`): matvarer brukeren ikke tåler. CASCADE fra brukeren,
+  RESTRICT fra ingrediensen, så seed-skriptet ikke kan slette en ingrediens noen har registrert.
+- **Hvorfor ikke en sammensatt fremmednøkkel** (`recipe_id`, `household_id`) som for andre barnetabeller (fase 3):
+  globale oppskrifter har ingen husholdning, og med `MATCH SIMPLE` sjekkes ikke en nøkkel der én kolonne er tom.
+  Derfor en trigger.
 
 ## Viktige begrensninger
 

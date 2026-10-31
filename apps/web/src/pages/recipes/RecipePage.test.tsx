@@ -176,11 +176,11 @@ describe('FR-REC-004 allergen box', () => {
     expect(screen.getByText(DISCLAIMER)).toBeInTheDocument();
   });
 
-  it('without registered allergens it links to the profile', async () => {
+  it('without registered allergens it links to the allergies in the settings (spec 16)', async () => {
     show(recipe);
     expect(await screen.findByRole('link', { name: 'Registrer allergener' })).toHaveAttribute(
       'href',
-      '/profil',
+      '/innstillinger#allergier',
     );
     expect(screen.getByText(DISCLAIMER)).toBeInTheDocument();
   });

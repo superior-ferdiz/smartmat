@@ -18,6 +18,8 @@ export const pages = {
     'RecipeSourcesPage',
   ),
   RecipePage: lazyPage(() => import('../pages/recipes/RecipePage'), 'RecipePage'),
+  NewRecipePage: lazyPage(() => import('../pages/recipes/RecipeFormPages'), 'NewRecipePage'),
+  EditRecipePage: lazyPage(() => import('../pages/recipes/RecipeFormPages'), 'EditRecipePage'),
   ShoppingListPage: lazyPage(
     () => import('../pages/shopping/ShoppingListPage'),
     'ShoppingListPage',

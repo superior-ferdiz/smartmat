@@ -18,12 +18,12 @@ eller skriver at dere ikke har brukt andre. -->
 
 ## 2. Hva KI-verktøyet gjorde
 
-Dette står i KI-loggen (55 rader per 2026-10-29) og i utviklingsloggen. Det gjelder fase 0–14:
+Dette står i KI-loggen (66 rader per 2026-10-30) og i utviklingsloggen. Det gjelder fase 0–15:
 
 - **All programkode og alle automatiske tester** i repoet (nettappen, API-et, databasen, skriptene og Docker-oppsettet).
   Alle commits har `Co-Authored-By: Claude`.
-- **Planer, spesifikasjoner og beslutninger:** fasemalen for hver fase, kravoversikten, de 13 fasespesifikasjonene og
-  ADR-0001–0022 (alle foreslått av KI).
+- **Planer, spesifikasjoner og beslutninger:** fasemalen for hver fase, kravoversikten, de 14 fasespesifikasjonene og
+  ADR-0001–0023 (ADR-0023 bygger på en løsning Ferdinand foreslo i prompten for fase 15; resten foreslått av KI).
 - **Dokumentasjon:** CLAUDE.md, veikartet, utviklingsloggen, endringsloggen, KI-loggen og rapportkapitlene i
   `docs/academic/`. Kapittel 02, 03 og 18, og de delene som er merket «Teamet skriver», er ikke skrevet av KI.
 - **Innhold i appen:** 27 oppskrifter oversatt og tilpasset fra Wikibooks, ingredienslisten med allergener og
@@ -34,6 +34,8 @@ Dette står i KI-loggen (55 rader per 2026-10-29) og i utviklingsloggen. Det gje
 - **Kjøring og bevis:** alle testkjøringer, mutasjonskontroller, målinger og skjermbilder i `docs/evidence/`.
 - **Drift:** oppsett av testmiljøet på serveren, eget Docker-nett, sikkerhetskopi og Caddy-blokken, etter godkjente
   planer, og kontoene til teamet i testmiljøet (2026-10-29).
+- **Fase 15:** egne oppskrifter, allergier og matvarer i Innstillinger og prisanslag på oppskrifter, etter teamets
+  beslutninger i prompten. KI skrev ingen oppskrifter (testene bruker oppdiktede).
 - **Fase 14:** bevisoversikten, sporbarhetsmatrisen, utkastene til rapportkapitlene, denne erklæringen, forslaget til
   presentasjon og sjekklisten for merge og innlevering.
 

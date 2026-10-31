@@ -1074,3 +1074,36 @@ det ble stoppet og fjernet, og workeren var tilbake på normalt minne.
 lagret som bevisfil). Kjent begrensning: en skrått fotografert kvittering gir beløp på feil linje.
 
 **Neste:** Teamet bør prøve kameraet og kvitteringene på egne telefoner og avgjøre ADR-0017.
+
+## 2026-10-30 – Fase 15: egne oppskrifter, allergier i Innstillinger og priser på oppskrifter
+
+**Bakgrunn:** Ferdinand ga prompten for fase 15 med teamets beslutninger (2026-10-30): egne oppskrifter per
+husholdning, allergier og matvarer i Innstillinger, og priser på oppskrifter etter at Kassalapps søk var undersøkt.
+Git: `fase-14` var rent og pushet (logo og favicon var committet i eebc39d), og grenen `fase-15` ble laget fra den.
+KI (Claude) la fram fasemalen med ni åpne spørsmål. Ferdinand svarte «godkjent vennligst fortsett». Spørsmålene ble
+ikke besvart enkeltvis, så anbefalingene gjelder (spesifikasjon 16).
+
+**Gjort (KI):**
+- Spesifikasjon 16 og ADR-0023 skrevet før koden.
+- Migrering `household_recipes`: `recipes.household_id`, `created_by`, `version`, `dedupe_key`, `source = household`,
+  nullable `slug`/`license`, fritekstlinjer, `user_avoided_ingredients`, CHECK-er og to triggere.
+- API: oppskriftsrepoet tar husholdningen på alle lesinger, nye ruter for egne oppskrifter, matvarer og prisanslag,
+  seed-skriptet begrenset til globale oppskrifter, eksporten utvidet. Ukjent oppskrift i måltidsplanen gir 404.
+- Web: skjema for egne oppskrifter, «Egen oppskrift» og «Lagt inn av», filter, endre og slette, fritekst vist for
+  seg, priskort, allergikortet flyttet til Innstillinger med matvarer og delingen.
+- Kassalapps FAQ og API-dokumentasjon lest om søk etter navn. Ikke bygd (se `integrations/kassalapp.md`).
+
+**Underveis:**
+- Testoppsettet tømte databasen med `TRUNCATE households … CASCADE`, som etter migreringen også tømte alle globale
+  testoppskrifter. Byttet til `DELETE`.
+- Mutasjonskontrollen (21 av 21 fanget) viste at en ny webtest var for treg under last. Den ble delt i to.
+
+**Resultat (lagret i `docs/evidence/test-results/fase-15/`):** typesjekk og lint rene, 1412/1412 enhetstester,
+538/538 API-tester, 215/215 Playwright på første forsøk, bygg OK, 0 sårbarheter. Formatsjekken feiler på
+`scripts/check-files.mjs` fra fase 14 (ikke endret).
+
+**Ikke gjort:** ingen commit eller push (ikke bedt om). Testmiljøet er ikke oppdatert (migreringen er ikke kjørt
+der). Ingen test på ekte telefon. Teamet har ikke vurdert GDPR art. 9 for matvarene eller delingen.
+
+**Neste:** teamets gjennomgang, og eventuelt referanse-strekkoder per ingrediens hvis teamet vil ha priser fra
+Kassalapp uten søk.

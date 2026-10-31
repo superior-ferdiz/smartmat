@@ -20,7 +20,11 @@ import {
   type OwnPriceEntry,
   type OwnPrices,
   type PriceObservation,
+  type RecipePriceEstimate,
+  type RecipePriceLine,
   type ShoppingPriceEstimateResponse,
+  type BaseUnit,
+  type LineEstimate,
 } from '@smartmat/shared';
 import type { Clock } from '../../lib/clock';
 import { notFound } from '../../lib/errors';
@@ -28,6 +32,7 @@ import type { WindowLimiter } from '../../lib/windowLimiter';
 import type { UnavailableReason } from '../../providers/barcode/types';
 import type { PriceLookupResult, PriceProvider } from '../../providers/prices/types';
 import type { ParsedGtin } from '../barcodes/service';
+import type { RecipeRepo } from '../recipes/repo';
 import type { PriceItem, PriceRepo, PricedBatch, StoredObservation } from './repo';
 
 const HOUR = 60 * 60_000;
@@ -42,7 +47,11 @@ export interface PriceServiceDeps {
   repo: PriceRepo;
   provider: PriceProvider;
   /** The ingredient catalogue, to link shopping lines to items with the rules from phase 5. */
-  ingredients: { catalog(): Promise<MatchableIngredient[]> };
+  ingredients: {
+    catalog(): Promise<(MatchableIngredient & { baseUnit: BaseUnit; isStaple: boolean })[]>;
+  };
+  /** Spec 16 (FR-PRICE-007): the recipes the household can see – global and its own, never another's. */
+  recipes: Pick<RecipeRepo, 'recipe'>;
   /** External lookups per logged-in user (spec 12: 30 per minute). */
   userLimiter: WindowLimiter;
   now: Clock;
@@ -64,6 +73,14 @@ function batchDate(batch: PricedBatch): string {
 function newestFirst(a: PricedBatch, b: PricedBatch) {
   const byDate = batchDate(b).localeCompare(batchDate(a));
   return byDate !== 0 ? byDate : b.createdAt.getTime() - a.createdAt.getTime();
+}
+
+/** What the estimator needs of a line: a shopping list line or a recipe line. */
+interface EstimatedLine {
+  ingredientId: string | null;
+  text: string;
+  quantityBase: number | null;
+  unit: BaseUnit | null;
 }
 
 /** Lower-case and single spaces, for matching a shopping line to an item with exactly the same name. */
@@ -128,9 +145,78 @@ export class PriceService {
    * Kassalapp: a list of 40 lines must not use 40 of the 60 calls a minute.
    */
   async shoppingEstimate(householdId: string): Promise<ShoppingPriceEstimateResponse> {
+    const lines = await this.deps.repo.openShoppingLines(householdId);
+    const estimate = await this.estimator(householdId);
+    const estimates = lines.map((line) => ({ shoppingItemId: line.id, ...estimate(line) }));
+    return { lines: estimates, summary: summarizeEstimates(estimates) };
+  }
+
+  /**
+   * FR-PRICE-007 (spec 16): an estimate per ingredient line of a recipe, with the same rules as the shopping list.
+   * Free text, staples and lines without an amount are skipped and counted apart; nothing is called at Kassalapp.
+   */
+  async recipeEstimate(householdId: string, recipeId: string): Promise<RecipePriceEstimate> {
+    const recipe = await this.deps.recipes.recipe(householdId, recipeId);
+    if (!recipe) throw notFound();
+    const [estimate, catalog] = await Promise.all([
+      this.estimator(householdId),
+      this.deps.ingredients.catalog(),
+    ]);
+    const byId = new Map(catalog.map((i) => [i.id, i]));
+    const skipped = (position: number, text: string, reason: RecipePriceLine['skipped']) => ({
+      position,
+      text,
+      estimateOre: null,
+      source: null,
+      basis: null,
+      date: null,
+      missing: null,
+      skipped: reason,
+    });
+    const lines: RecipePriceLine[] = [
+      ...recipe.lines.map((line) => {
+        const ingredient = byId.get(line.ingredientId);
+        if (!ingredient || ingredient.isStaple)
+          return skipped(line.position, line.displayText, 'staple');
+        if (line.quantityBase === null) return skipped(line.position, line.displayText, 'noAmount');
+        return {
+          position: line.position,
+          text: line.displayText,
+          skipped: null,
+          ...estimate({
+            ingredientId: line.ingredientId,
+            text: ingredient.name,
+            quantityBase: line.quantityBase,
+            unit: ingredient.baseUnit,
+          }),
+        };
+      }),
+      ...recipe.freeTextLines.map((line) => skipped(line.position, line.displayText, 'freeText')),
+    ].sort((a, b) => a.position - b.position);
+    const tried = lines.filter((l) => l.skipped === null) as (RecipePriceLine & LineEstimate)[];
+    const summary = summarizeEstimates(tried);
+    return {
+      externalEnabled: this.deps.provider.enabled,
+      lines,
+      summary: {
+        pricedLines: summary.openLines,
+        estimatedLines: summary.estimatedLines,
+        missingLines: summary.missingLines,
+        skippedLines: lines.length - tried.length,
+        estimatedOre: summary.estimatedOre,
+        fromOwn: summary.fromOwn,
+        fromKassalapp: summary.fromKassalapp,
+      },
+    };
+  }
+
+  /**
+   * Reads the household's items, priced batches and stored fresh observations once, and gives a function that
+   * estimates one line (own price first, then Kassalapp). Never calls the provider.
+   */
+  private async estimator(householdId: string) {
     const { repo, provider } = this.deps;
-    const [lines, items, batches, barcodes, catalog] = await Promise.all([
-      repo.openShoppingLines(householdId),
+    const [items, batches, barcodes, catalog] = await Promise.all([
       repo.items(householdId),
       repo.pricedBatches(householdId),
       provider.enabled
@@ -154,12 +240,12 @@ export class PriceService {
       freshByGtin.set(o.gtin, [...(freshByGtin.get(o.gtin) ?? []), o]);
     }
 
-    const matchItems = (line: (typeof lines)[number]): PriceItem[] =>
+    const matchItems = (line: EstimatedLine): PriceItem[] =>
       line.ingredientId
         ? items.filter((i) => ingredientOf.get(i.id) === line.ingredientId)
         : items.filter((i) => sameName(i.name) === sameName(line.text));
 
-    const estimates = lines.map((line) => {
+    return (line: EstimatedLine): LineEstimate => {
       const matched = matchItems(line);
       const ownBatch = matched
         .map((i) => newestBatch.get(i.id))
@@ -182,12 +268,8 @@ export class PriceService {
           packageUnit: o.packageUnit,
           date: osloDate(o.observedAt),
         }));
-      return {
-        shoppingItemId: line.id,
-        ...estimateLine(line, matched.length > 0, own, external),
-      };
-    });
-    return { lines: estimates, summary: summarizeEstimates(estimates) };
+      return estimateLine(line, matched.length > 0, own, external);
+    };
   }
 
   private async own(

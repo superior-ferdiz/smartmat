@@ -1,15 +1,21 @@
-import { useParams, useSearchParams } from 'react-router';
+import { useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { SERVINGS_MAX, SERVINGS_MIN, type RecipeDetail, type RecipeLine } from '@smartmat/shared';
 import { ApiError } from '../../api/client';
-import { LinkButton } from '../../components/Button/Button';
+import { Alert } from '../../components/Alert/Alert';
+import { Button, LinkButton } from '../../components/Button/Button';
+import { Dialog } from '../../components/Dialog/Dialog';
 import { EmptyState } from '../../components/EmptyState/EmptyState';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
 import { Icon, type IconName } from '../../components/Icon/Icon';
 import { LoadingState } from '../../components/LoadingState/LoadingState';
 import { Select } from '../../components/Select/Select';
 import { Tag } from '../../components/Tag/Tag';
-import { RECIPES_PATH } from '../../app/navigation';
+import { useToast } from '../../components/Toast/toastContext';
+import { RECIPES_PATH, editRecipePath } from '../../app/navigation';
+import { useCreatorName } from '../../household/format';
+import { useValidationMessage } from '../../i18n/useValidationMessage';
 import { useFormatQuantity } from '../../inventory/formatHooks';
 import { Page } from '../../layout/Page';
 import { AllergenBox } from '../../recipes/AllergenNotice';
@@ -17,13 +23,18 @@ import { AddToMealPlan } from '../../recipes/AddToMealPlan';
 import { AddToShoppingList } from '../../recipes/AddToShoppingList';
 import { RecipeOriginNote } from '../../recipes/RecipeOriginNote';
 import { RecipeBadge } from '../../recipes/RecipeBadge';
-import { useRecipe } from '../../recipes/api';
+import { RecipePriceCard } from '../../recipes/RecipePriceCard';
+import { useDeleteRecipe, useRecipe } from '../../recipes/api';
 import { useFormatMinutes, useJoinList, useReasonText } from '../../recipes/formatHooks';
 import { LINE_GROUPS, lineGroup, type LineGroup } from '../../recipes/lines';
 import { scaleLines, type ScaledLine } from '../../recipes/scale';
 import styles from '../../recipes/recipes.module.css';
 
-/** FR-REC-001/002/003/004: one recipe, with what the household has, what is missing and why it ranks. */
+/**
+ * FR-REC-001/002/003/004: one recipe, with what the household has, what is missing and why it ranks. Spec 16: a
+ * household's own recipe can be changed and deleted here, its free-text lines are shown apart (they never count),
+ * and every recipe has a price estimate (FR-PRICE-007).
+ */
 export function RecipePage() {
   const { t } = useTranslation();
   const { recipeId = '' } = useParams();
@@ -85,6 +96,9 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
   const reasonText = useReasonText();
   const minutes = useFormatMinutes();
   const join = useJoinList();
+  const creatorName = useCreatorName();
+  const [deleting, setDeleting] = useState(false);
+  const own = recipe.source === 'household';
   const [params, setParams] = useSearchParams();
   const servings = servingsFromUrl(params.get('porsjoner'), recipe.servings);
   const scaled = servings !== recipe.servings;
@@ -92,10 +106,28 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
 
   return (
     <Page title={recipe.title} lead={recipe.description} badge={<RecipeBadge recipe={recipe} />}>
-      <div>
+      <div className={styles.pageActions}>
         <LinkButton to={RECIPES_PATH} variant="ghost" icon={<Icon name="chevronLeft" size={20} />}>
           {t('recipes.backToList')}
         </LinkButton>
+        {own && (
+          <>
+            <LinkButton
+              to={editRecipePath(recipe.id)}
+              variant="secondary"
+              icon={<Icon name="edit" size={20} />}
+            >
+              {t('recipes.own.edit')}
+            </LinkButton>
+            <Button
+              variant="ghost"
+              icon={<Icon name="trash" size={20} />}
+              onClick={() => setDeleting(true)}
+            >
+              {t('recipes.own.delete')}
+            </Button>
+          </>
+        )}
       </div>
 
       <dl className={styles.facts}>
@@ -162,6 +194,22 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
               </div>
             );
           })}
+          {recipe.freeTextLines.length > 0 && (
+            <div className={styles.group}>
+              <h3 className={styles.groupTitle}>
+                <Icon name="info" size={18} />
+                {t('recipes.freeText.title')}
+              </h3>
+              <ul role="list" className={styles.lines}>
+                {recipe.freeTextLines.map((line) => (
+                  <li key={line.position} className={styles.line}>
+                    <span className={styles.lineText}>{line.displayText}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className={styles.meta}>{t('recipes.freeText.neverCounts')}</p>
+            </div>
+          )}
           <AddToShoppingList recipe={{ ...recipe, lines }} />
         </section>
 
@@ -202,16 +250,70 @@ function RecipeView({ recipe }: { recipe: RecipeDetail }) {
         </ol>
       </section>
 
-      {recipe.origin ? (
+      <RecipePriceCard recipeId={recipe.id} />
+
+      {own && recipe.createdBy ? (
+        <p className={styles.meta}>
+          {t('recipes.own.addedBy', { name: creatorName(recipe.createdBy) })}
+        </p>
+      ) : recipe.origin ? (
         <RecipeOriginNote origin={recipe.origin} authors={recipe.authors} />
       ) : (
         <p className={styles.meta}>
           {t('recipes.writtenBy', { names: join(recipe.authors) })}
           {' · '}
-          {t('recipes.license', { license: recipe.license })}
+          {t('recipes.license', { license: recipe.license ?? '' })}
         </p>
       )}
+
+      {own && (
+        <Dialog
+          open={deleting}
+          onClose={() => setDeleting(false)}
+          title={t('recipes.own.deleteTitle')}
+          description={t('recipes.own.deleteText', { title: recipe.title })}
+        >
+          {deleting && <DeleteRecipe recipeId={recipe.id} onCancel={() => setDeleting(false)} />}
+        </Dialog>
+      )}
     </Page>
+  );
+}
+
+/** Spec 16: removes the household's own recipe. Planned meals keep the title (spec 09). */
+function DeleteRecipe({ recipeId, onCancel }: { recipeId: string; onCancel: () => void }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const message = useValidationMessage();
+  const { show } = useToast();
+  const remove = useDeleteRecipe(recipeId);
+  return (
+    <div className={styles.dialogBody}>
+      {remove.isError && (
+        <Alert variant="error" live>
+          {message(remove.error instanceof ApiError ? remove.error.code : 'errors.internal')}
+        </Alert>
+      )}
+      <div className={styles.formActions}>
+        <Button
+          variant="danger"
+          loading={remove.isPending}
+          onClick={() =>
+            remove.mutate(undefined, {
+              onSuccess: () => {
+                show({ variant: 'success', message: t('recipes.own.deleted') });
+                void navigate(RECIPES_PATH, { replace: true });
+              },
+            })
+          }
+        >
+          {t('recipes.own.deleteConfirm')}
+        </Button>
+        <Button variant="ghost" onClick={onCancel}>
+          {t('common.cancel')}
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -232,10 +334,16 @@ function IngredientLine({
     line.approximate
       ? t('recipes.line.approx', { amount: formatQuantity(base, line.baseUnit) })
       : formatQuantity(base, line.baseUnit);
-  // The user's own and the household's shared allergens (spec 10) are both marked on the line.
+  // The user's own and the household's shared allergens (spec 10) are both marked on the line, and so are
+  // avoided ingredients (spec 16) – by "registered", never by whom.
   const userAllergens = line.allergens.filter(
     (a) => recipe.userAllergens.includes(a) || recipe.householdAllergens.includes(a),
   );
+  const avoided = recipe.avoidedIngredients.includes(line.ingredientName)
+    ? 'own'
+    : recipe.householdAvoidedIngredients.includes(line.ingredientName)
+      ? 'household'
+      : null;
 
   let detail: string | null = null;
   if (line.status === 'enough' && line.haveBase !== null && line.quantityBase !== null)
@@ -255,6 +363,7 @@ function IngredientLine({
         {line.displayText}
         {line.optional && <Tag>{t('recipes.line.optional')}</Tag>}
         {userAllergens.length > 0 && <AllergenTag allergens={userAllergens} />}
+        {avoided && <Tag tone="danger">{t(`recipes.avoided.lineTag.${avoided}`)}</Tag>}
       </span>
       {servings !== null && line.quantityBase !== null && (
         <span className={styles.meta}>

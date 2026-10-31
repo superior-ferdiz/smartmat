@@ -6,6 +6,8 @@
 > oppdatert i fase 14 (2026-10-27) slik at det stemmer med appen etter fase 13. Skrevet av KI (Claude) og ikke
 > gjennomgått av teamet ennå.
 > Brukertesting med ekte personer er ikke gjort. Offisielle APP2000-krav til rapporten er ikke verifisert.
+> Fase 15 (2026-10-30): avsnittet «Egne oppskrifter og allergier» er skrevet av KI (Claude) og kontrollert mot koden og de lagrede utdataene i
+> `docs/evidence/test-results/fase-15/`. Ikke godkjent av teamet.
 
 ## Designprinsipper
 
@@ -159,6 +161,20 @@ Lagt til i fase 14. Detaljene og bevisene står i kapittel 11 og i [tilgjengelig
   fantes, så hooken venter nå på `<h1>`.
 - **Ny kontroll (fase 13):** `e2e/a11y.spec.ts` går gjennom hvert tabulatorstopp på alle sider, tester 200 % zoom,
   320 px, tekstavstand og redusert bevegelse.
+
+### Egne oppskrifter og allergier (fase 15)
+
+- **Skjemaet for egne oppskrifter** (`/oppskrifter/ny`) har én kolonne, med tallfeltene side om side fra 600 px. Hver
+  linje er et eget kort med ingrediens (nedtrekksliste), mengde, enhet og tekst. Enhetene er bare de som kan regnes
+  om for ingrediensen. Fritekstlinjer har et eget varsel om at de ikke telles, og en oppsummering under linjene sier
+  hvor mange det er. Feil fra serveren vises ved riktig felt (`lines.0.unit`).
+- **Allergier** ligger i Innstillinger («Allergier og matvarer»), ikke på profilen. Matvarer velges fra
+  ingredienslisten og vises som en liste med «Fjern». Delingen har én bryter for allergener og matvarer, og en
+  forklaring av hva andre ser. Har husholdningen flere medlemmer og ingenting deles, står det at de andre ikke får
+  varsel. Bryteren slås aldri på av appen.
+- **Prisanslaget** på en oppskrift sier hvor mange ingredienser som har pris, hvor mange som mangler, og at
+  basisvarer, fritekst og linjer uten mengde ikke er med. Det står aldri «Totalt» eller «koster».
+- Alle sidene er sjekket med axe og tab-gjennomgang i Playwright, på 360 px og på skrivebord.
 
 ## Hvordan designet ble testet og forbedret
 

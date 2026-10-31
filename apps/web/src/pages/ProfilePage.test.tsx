@@ -115,62 +115,13 @@ describe('FR-AUTH-002 log out', () => {
   });
 });
 
-describe('FR-REC-004 allergies on the profile', () => {
-  it('shows the saved allergies and saves the new list in the fixed order', async () => {
-    const requests = mockApi((r) =>
-      r.path === '/me/allergens'
-        ? r.method === 'GET'
-          ? { status: 200, body: { allergens: ['milk'] } }
-          : { status: 200, body: r.body }
-        : undefined,
-    );
-    const user = userEvent.setup();
-    const { container } = renderApp('/profil');
-    const section = card('Allergier');
-    expect(await within(section).findByLabelText('melk')).toBeChecked();
-    expect(
-      within(section).getByText(/Det er frivillig, og slettes sammen med kontoen/),
-    ).toBeInTheDocument();
-    expect(within(section).getByText(/Allergeninformasjonen er veiledende/)).toBeInTheDocument();
-    await user.click(within(section).getByLabelText('gluten'));
-    await user.click(within(section).getByRole('button', { name: 'Lagre allergier' }));
-    expect(await screen.findByText('Allergiene er lagret')).toBeInTheDocument();
-    expect(changes(requests)).toEqual([
-      expect.objectContaining({
-        method: 'PUT',
-        path: '/me/allergens',
-        body: { allergens: ['gluten', 'milk'] },
-      }),
-    ]);
-    await expectNoAxeViolations(container);
-  });
-});
-
-describe('spec 10 FR-HH-006 sharing allergies with the household', () => {
-  it('is off by default, explains what others see, and sends only the choice', async () => {
-    const requests = mockApi((r) =>
-      r.method === 'PATCH' && r.path.endsWith('/members/me')
-        ? {
-            status: 200,
-            body: {
-              id: TEST_SESSION.user.householdId,
-              name: 'Kari',
-              role: 'owner',
-              memberCount: 2,
-              shareAllergens: true,
-            },
-          }
-        : undefined,
-    );
-    const user = userEvent.setup();
+describe('spec 16 FR-ALG-001 the allergies moved to the settings', () => {
+  it('the profile has a card that links to them', async () => {
     renderApp('/profil');
-    const toggle = await screen.findByLabelText('Ta hensyn til allergiene mine i «Kari»');
-    expect(toggle).not.toBeChecked();
-    expect(screen.getByText(/men ikke hvem som har dem/)).toBeInTheDocument();
-    await user.click(toggle);
-    expect(await screen.findByText('Allergiene dine deles nå med «Kari».')).toBeInTheDocument();
-    const patch = changes(requests).find((r) => r.path.endsWith('/members/me'))!;
-    expect(patch.path).toBe(`/households/${TEST_SESSION.user.householdId}/members/me`);
-    expect(patch.body).toEqual({ shareAllergens: true });
+    const section = await screen.findByRole('region', { name: 'Allergier' });
+    expect(within(section).getByRole('link', { name: 'Gå til allergier' })).toHaveAttribute(
+      'href',
+      '/innstillinger#allergier',
+    );
   });
 });

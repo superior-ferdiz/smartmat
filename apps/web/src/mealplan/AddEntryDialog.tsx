@@ -97,7 +97,11 @@ function AddEntryForm({
 
   const { shown, hiddenByAllergens } = useMemo(
     () =>
-      filterRecipes(recipes, { q: query, tag: '', showAllergens }, i18n.resolvedLanguage ?? 'nb'),
+      filterRecipes(
+        recipes,
+        { q: query, tag: '', showAllergens, ownOnly: false },
+        i18n.resolvedLanguage ?? 'nb',
+      ),
     [recipes, query, showAllergens, i18n.resolvedLanguage],
   );
   const chosen = recipes.find((r) => r.id === recipeId);
@@ -201,10 +205,7 @@ function AddEntryForm({
                         {recipe.score.reasons[0] && ` · ${reasonText(recipe.score.reasons[0])}`}
                       </span>
                       <span>
-                        <AllergenWarningTag
-                          allergens={recipe.allergenWarnings}
-                          household={recipe.householdAllergenWarnings}
-                        />
+                        <AllergenWarningTag warnings={recipe} />
                         <RecipeBadge recipe={recipe} />
                       </span>
                     </label>

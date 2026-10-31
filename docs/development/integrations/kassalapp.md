@@ -90,6 +90,33 @@ genererte OpenAPI-beskrivelsen (`api.json`, versjon 0.0.1) sier at de er lister 
 godta begge deler, og formatet bør sjekkes med ett manuelt oppslag når teamet har en nøkkel (som for Open Food Facts).
 Vi har ikke sett et ekte svar.
 
+## Søk etter navn (lest 2026-10-30)
+
+Teamet ba i prompten for fase 15 om å undersøke om ingredienser uten strekkode kan prises med Kassalapps søk på
+navn. KI (Claude) leste disse sidene 2026-10-30, før noe ble bygd. Sidene har ingen dato for siste endring.
+
+| Side | Hva som ble lest |
+|---|---|
+| [kassal.app/api/faq](https://kassal.app/api/faq) | Hobby og Bedrift, logging, lagring, dekning, allergener, rate limit, publisering |
+| [kassal.app/api/docs](https://kassal.app/api/docs) | `GET /api/v1/products` med parametere og svarfelt |
+
+| Tema | Hva Kassalapp sier | Tolkning for SmartMat |
+|---|---|---|
+| Søk på Hobby | «Begge nivåene har tilgang til alle endepunkter og de samme produktene og prisene.» `GET /api/v1/products?search=…` «gir fritekstsøk med filtre på butikk, pris og merke.» | Søket er tilgjengelig uten Bedrift. |
+| Hvordan søket virker | API-dokumentasjonen: `search` gjør et uskarpt søk i produktnavn («fuzzy matches»). Andre parametere: `size` (høyst 100), `unique` (ett produkt per EAN), `exclude_without_ean`, `sort`, `price_min`/`price_max`, `brand`, `vendor`, `category`. Svaret har `current_price`, `weight`, `weight_unit`, `ean` (kan være tom) og `store`. | Et søk på «melk» gir mange forskjellige produkter (lettmelk, kokosmelk, sjokolademelk). Å velge ett av dem som prisen på ingrediensen er gjetning. |
+| Logging | «Søkeord og strekkoder inngår i loggen.» | Ville vi sendt det brukeren har skrevet, havner det hos Kassalapp. Søker vi bare på navnene i ingredienslisten (ikke brukerens tekst), sendes ingen personopplysninger. |
+| Bruk til anslag | FAQ-en sier ingenting om å bruke søketreff til prisanslag eller automatisk kobling. | Ikke forbudt, men heller ikke beskrevet. |
+| Dekning | Rema 1000, Kiwi og Coop: «Disse kjedene har ingen nettbutikk med åpne priser, og vi har ikke funnet en lovlig måte å hente prisene deres på.» | Uendret fra 2026-10-25. |
+
+**Avgjørelse (spesifikasjon 16, avgjørelse 5):** søk etter navn bygges ikke i fase 15. Grunnene er at koblingen fra
+en ingrediens til ett produkt ville vært gjetning, og at teamet ikke har nøkkel. Prisanslaget for en oppskrift bruker
+egne priser fra partiene og Kassalapp-priser som allerede er lagret for strekkoder husholdningen har lagt på varene,
+uten nye kall (FR-PRICE-007). Et mulig senere alternativ er at teamet kobler hver ingrediens til én eller flere
+kontrollerte strekkoder (referanse-GTIN-er), slik at det oppslaget som finnes, kan brukes uten gjetning.
+
+**Hva som virker uten nøkkel:** egne priser (andel av det husholdningen har betalt for samme vare) på handlelisten
+og på oppskrifter. Kortet sier at eksterne priser er slått av, og at Rema 1000, Kiwi og Coop uansett ikke er med.
+
 ## Uklart eller ikke avklart
 
 1. **Ingen egen avtale for Hobby.** Vilkårene står i en FAQ som kan endres uten varsel. Det er mulig at kontoen har

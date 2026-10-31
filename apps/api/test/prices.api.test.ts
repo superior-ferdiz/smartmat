@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
-import { osloDate } from '@smartmat/shared';
+import { osloDate, type RecipePriceEstimate } from '@smartmat/shared';
 import { createPriceRepo } from '../src/modules/prices/repo';
 import {
   STORE_CODE,
@@ -39,6 +39,7 @@ import {
   testPriceProvider,
 } from './priceHelpers';
 import { budgetPath, createPurchase, milkLine } from './purchaseHelpers';
+import { createOwnRecipe, ingredientIdsByKey, ownRecipeBody } from './recipeHelpers';
 import { addLine, shoppingPath } from './shoppingHelpers';
 
 /*
@@ -627,5 +628,125 @@ describe('spec 12 cleanup (worker)', () => {
     expect(await db.priceObservation.findMany({ select: { gtin: true } })).toEqual([
       { gtin: LIST_FORMAT },
     ]);
+  });
+});
+
+describe('FR-PRICE-007 (spec 16) the estimate for a recipe', () => {
+  const recipeEstimate = async (client: Client, recipeId: string) => {
+    const response = await call(
+      app,
+      'GET',
+      `/households/${client.user.householdId}/recipes/${recipeId}/price-estimate`,
+      { client },
+    );
+    expect(response.statusCode).toBe(200);
+    return response.json<RecipePriceEstimate>();
+  };
+
+  async function omelette() {
+    const ids = await ingredientIdsByKey(app, kari);
+    const id = (key: string) => ids.get(key) ?? '';
+    return createOwnRecipe(
+      app,
+      kari,
+      ownRecipeBody(ids, {
+        lines: [
+          { kind: 'ingredient', ingredientId: id('egg'), amount: '3', unit: 'stk' },
+          { kind: 'ingredient', ingredientId: id('melk'), amount: '1', unit: 'dl' },
+          { kind: 'ingredient', ingredientId: id('salt'), amount: '1', unit: 'ts' },
+          { kind: 'ingredient', ingredientId: id('tomat') },
+          { kind: 'freeText', text: 'Litt gressløk fra hagen' },
+        ],
+      }),
+    );
+  }
+
+  it('own price as a share of what was paid; free text, staples and lines without an amount are left out', async () => {
+    await createItem(app, kari, {
+      name: 'Lettmelk',
+      priceOre: 2490,
+      quantityBase: 1000,
+      unit: 'ml',
+    });
+    const { id } = await omelette();
+    const before = await Promise.all([db.purchase.count(), db.inventoryBatch.count()]);
+
+    const estimate = await recipeEstimate(kari, id);
+    expect(
+      estimate.lines.map((l) => [l.text, l.estimateOre, l.source, l.basis, l.missing, l.skipped]),
+    ).toEqual([
+      ['3 stk Egg', null, null, null, 'noMatch', null],
+      ['1 dl Melk', 249, 'own', 'scaled', null, null],
+      ['1 ts Salt', null, null, null, null, 'staple'],
+      ['Tomat', null, null, null, null, 'noAmount'],
+      ['Litt gressløk fra hagen', null, null, null, null, 'freeText'],
+    ]);
+    expect(estimate.lines[1]?.date).toBe(today());
+    // Never a total: the sum is only of the lines that have an estimate, and the rest are counted.
+    expect(estimate.summary).toEqual({
+      pricedLines: 2,
+      estimatedLines: 1,
+      missingLines: 1,
+      skippedLines: 3,
+      estimatedOre: 249,
+      fromOwn: 1,
+      fromKassalapp: 0,
+    });
+    expect(estimate.externalEnabled).toBe(true);
+    // FR-PRICE-005: an estimate is not spending – nothing was written.
+    expect(await Promise.all([db.purchase.count(), db.inventoryBatch.count()])).toEqual(before);
+    expect(kassalapp.calls).toHaveLength(0);
+  });
+
+  it('Kassalapp prices already stored are used without an own price – and Kassalapp is not asked', async () => {
+    await scanIn(kari, PRICED, { name: 'Lettmelk', categoryKey: 'dairy', unit: 'ml' });
+    await barcodePrices(app, kari, PRICED); // stores Meny 26,90 and Spar 24,90 (fresh) for 1000 ml
+    kassalapp.calls.length = 0;
+    const { id } = await omelette();
+    const estimate = await recipeEstimate(kari, id);
+    // Lower median of two fresh prices = the cheaper one: 24,90 kr per litre → 1 dl = 2,49 kr.
+    expect(estimate.lines[1]).toMatchObject({
+      estimateOre: 249,
+      source: 'kassalapp',
+      basis: 'scaled',
+    });
+    expect(estimate.summary).toMatchObject({ estimatedLines: 1, fromKassalapp: 1, fromOwn: 0 });
+    expect(kassalapp.calls).toHaveLength(0);
+  });
+
+  it('without a Kassalapp key the estimate says external prices are off', async () => {
+    const offApp = await createTestApp(db, { now: clock.now });
+    try {
+      const { id } = await omelette();
+      const response = await call(
+        offApp,
+        'GET',
+        `/households/${kari.user.householdId}/recipes/${id}/price-estimate`,
+        { client: kari },
+      );
+      expect(response.json<RecipePriceEstimate>()).toMatchObject({
+        externalEnabled: false,
+        summary: { estimatedLines: 0, estimatedOre: 0 },
+      });
+    } finally {
+      await offApp.close();
+    }
+  });
+
+  it('a global recipe has an estimate too; an unknown recipe is 404', async () => {
+    const list = await call(app, 'GET', `/households/${kari.user.householdId}/recipes`, {
+      client: kari,
+    });
+    const pancakes = (list.json().recipes as { id: string; slug: string }[]).find(
+      (r) => r.slug === 'testrett-pannekaker',
+    );
+    expect((await recipeEstimate(kari, pancakes?.id ?? '')).lines.length).toBeGreaterThan(0);
+    const unknown = await call(
+      app,
+      'GET',
+      `/households/${kari.user.householdId}/recipes/0199f0a0-0000-7000-8000-000000000001/price-estimate`,
+      { client: kari },
+    );
+    expect(unknown.statusCode).toBe(404);
   });
 });

@@ -49,17 +49,19 @@ model User {
   /// The time step of the last code used: the same (or an older) code is refused (no replay).
   totpLastStep      Int?      @map("totp_last_step")
 
-  activeHousehold      Household?            @relation("ActiveHousehold", fields: [activeHouseholdId], references: [id], onDelete: SetNull)
+  activeHousehold      Household?              @relation("ActiveHousehold", fields: [activeHouseholdId], references: [id], onDelete: SetNull)
   sessions             Session[]
   memberships          HouseholdMember[]
   inventoryEvents      InventoryEvent[]
   purchases            Purchase[]
   allergens            UserAllergen[]
+  avoidedIngredients   UserAvoidedIngredient[]
+  recipesCreated       Recipe[]
   shoppingItems        ShoppingListItem[]
   mealEntries          MealPlanEntry[]
   receipts             Receipt[]
-  invitationsMade      HouseholdInvitation[] @relation("InvitationCreatedBy")
-  invitationsUsed      HouseholdInvitation[] @relation("InvitationUsedBy")
+  invitationsMade      HouseholdInvitation[]   @relation("InvitationCreatedBy")
+  invitationsUsed      HouseholdInvitation[]   @relation("InvitationUsedBy")
   notificationSettings NotificationSettings?
   recoveryCodes        UserRecoveryCode[]
   loginChallenges      LoginChallenge[]
@@ -92,6 +94,8 @@ model Household {
   receiptExtracts  ReceiptExtraction[]
   invitations      HouseholdInvitation[]
   activeFor        User[]                   @relation("ActiveHousehold")
+  recipes          Recipe[]
+  recipeLines      RecipeIngredient[]
 
   @@map("households")
 }
@@ -510,6 +514,8 @@ enum RecipeSource {
   /// From an openly licensed source, translated (ADR-0016, spec 09)
   external
   test
+  /// A household's own recipe (ADR-0023, spec 16). Never written by the seed script.
+  household
 
   @@map("recipe_source")
 }
@@ -534,7 +540,7 @@ model Ingredient {
   isStaple    Boolean  @default(false) @map("is_staple")
   categoryKey String?  @map("category_key") @db.VarChar(32)
 
-  category      Category?            @relation(fields: [categoryKey], references: [key], onDelete: SetNull)
+  category      Category?               @relation(fields: [categoryKey], references: [key], onDelete: SetNull)
   aliases       IngredientAlias[]
   allergens     IngredientAllergen[]
   conversions   UnitConversion[]
@@ -542,6 +548,7 @@ model Ingredient {
   items         InventoryItem[]
   barcodes      HouseholdBarcode[]
   shoppingItems ShoppingListItem[]
+  avoidedBy     UserAvoidedIngredient[]
 
   @@map("ingredients")
 }
@@ -580,8 +587,9 @@ model UnitConversion {
 
 model Recipe {
   id             String            @id @default(uuid(7)) @db.Uuid
-  /// Stable id in the seed files; the seed script upserts on it, so the id survives a re-seed.
-  slug           String            @unique @db.VarChar(80)
+  /// Stable id in the seed files; the seed script upserts on it, so the id survives a re-seed. Null for a
+  /// household's own recipe (CHECK, ADR-0023).
+  slug           String?           @unique @db.VarChar(80)
   title          String            @db.VarChar(120)
   description    String            @db.VarChar(500)
   servings       Int
@@ -590,8 +598,9 @@ model Recipe {
   steps          String[]
   tags           String[]
   source         RecipeSource
-  license        String            @db.VarChar(50)
-  /// Who really wrote the recipe (ADR-0009); for an external recipe, the original's authors. Never empty (CHECK).
+  license        String?           @db.VarChar(50)
+  /// Who really wrote the recipe (ADR-0009); for an external recipe, the original's authors. Never empty for a
+  /// global recipe, always empty for a household's own (CHECK) – who added it is `created_by`.
   authors        String[]
   /// ADR-0016 (spec 09): the original of an external recipe, when it was fetched and what was done to it.
   sourceTitle    String?           @map("source_title") @db.VarChar(200)
@@ -603,27 +612,45 @@ model Recipe {
   /// Team members who checked the recipe. Empty = an AI draft ("KI-utkast – ikke kontrollert av teamet").
   reviewedBy     String[]          @default([]) @map("reviewed_by")
   reviewedOn     DateTime?         @map("reviewed_on") @db.Date
+  /// ADR-0023: set for (and only for) a household's own recipe, `source = household` (CHECK). Global otherwise.
+  householdId    String?           @map("household_id") @db.Uuid
+  createdById    String?           @map("created_by") @db.Uuid
+  /// Spec 16: a PUT must send the version it opened (409 on a stale edit), like purchases.
+  version        Int               @default(1)
+  dedupeKey      String?           @map("dedupe_key") @db.Uuid
   createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
 
+  household      Household?               @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdBy      User?                    @relation(fields: [createdById], references: [id], onDelete: SetNull)
   ingredients    RecipeIngredient[]
   shoppingShares ShoppingListItemRecipe[]
   mealEntries    MealPlanEntry[]
 
+  @@unique([id, householdId])
+  @@unique([householdId, dedupeKey])
+  @@index([householdId])
   @@map("recipes")
 }
 
 model RecipeIngredient {
-  recipeId     String     @map("recipe_id") @db.Uuid
+  recipeId     String      @map("recipe_id") @db.Uuid
   position     Int
-  ingredientId String     @map("ingredient_id") @db.Uuid
+  /// Null = a free-text line, allowed only in a household's own recipe (CHECK, ADR-0023). It never counts.
+  ingredientId String?     @map("ingredient_id") @db.Uuid
   /// In the ingredient's base unit; null = no amount ("etter smak").
-  quantityBase Int?       @map("quantity_base")
+  quantityBase Int?        @map("quantity_base")
   /// What the recipe says ("2 dl melk").
-  displayText  String     @map("display_text") @db.VarChar(120)
-  optional     Boolean    @default(false)
-  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  displayText  String      @map("display_text") @db.VarChar(120)
+  optional     Boolean     @default(false)
+  /// The recipe's household, copied by the trigger `recipe_ingredients_household` (never set by the code).
+  householdId  String?     @map("household_id") @db.Uuid
+  /// What the user typed ("1,5" + "dl"), so the form can be opened again. Household recipes only.
+  inputAmount  String?     @map("input_amount") @db.VarChar(12)
+  inputUnit    String?     @map("input_unit") @db.VarChar(8)
+  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  household    Household?  @relation(fields: [householdId], references: [id], onDelete: Cascade)
 
   @@id([recipeId, position])
   @@unique([recipeId, ingredientId])
@@ -639,6 +666,19 @@ model UserAllergen {
 
   @@id([userId, allergen])
   @@map("user_allergens")
+}
+
+/// Spec 16 (FR-ALG-001): ingredients a user does not tolerate ("kiwi"). Treated like allergies (GDPR art. 9):
+/// voluntary, deleted with the account, never logged. RESTRICT: the seed script keeps an ingredient someone has.
+model UserAvoidedIngredient {
+  userId       String     @map("user_id") @db.Uuid
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@id([userId, ingredientId])
+  @@index([ingredientId])
+  @@map("user_avoided_ingredients")
 }
 
 // ---------------------------------------------------------------------------------------------------------

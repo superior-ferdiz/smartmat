@@ -35,6 +35,7 @@ export function ingredient(
     isStaple: false,
     categoryKey: null,
     aliases: [],
+    units: ['g', 'kg'],
     ...overrides,
   };
 }

@@ -3,10 +3,16 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import {
   allergensBodySchema,
+  avoidedIngredientsBodySchema,
+  avoidedIngredientsResponseSchema,
+  createHouseholdRecipeSchema,
+  householdRecipeEditSchema,
+  householdRecipeSavedSchema,
   ingredientResponseSchema,
   recipeDetailSchema,
   recipeListQuerySchema,
   recipeListResponseSchema,
+  updateHouseholdRecipeSchema,
 } from '@smartmat/shared';
 import { householdOf } from '../../authz/household';
 import { authOf } from '../../plugins/auth';
@@ -23,9 +29,10 @@ const recipeParams = household.extend({ recipeId: z.uuid() });
 const BASE = '/households/:householdId/recipes';
 
 /**
- * FR-REC-001–004 (spec 05). The recipes are global, but they are always served together with how well they
- * fit the household's inventory, so they live under the household (logged in + member, NFR-SEC-001).
- * Allergies belong to the user and are only reachable as /me/allergens.
+ * FR-REC-001–004 (spec 05) and spec 16. The recipes are the global ones and the household's own (ADR-0023);
+ * they are always served together with how well they fit the household's inventory, so they live under the
+ * household (logged in + member, NFR-SEC-001). Another household's own recipe is 404 on every route
+ * (FR-REC-009). Allergies and avoided ingredients belong to the user and are only reachable under /me.
  */
 export const recipeRoutes: FastifyPluginAsyncZod<RecipeRoutesOptions> = async (app, options) => {
   const { service, requireAuth, householdAccess } = options;
@@ -52,6 +59,56 @@ export const recipeRoutes: FastifyPluginAsyncZod<RecipeRoutesOptions> = async (a
       service.get(householdOf(request).id, authOf(request).userId, request.params.recipeId),
   );
 
+  app.post(
+    BASE,
+    {
+      preHandler,
+      schema: {
+        params: household,
+        body: createHouseholdRecipeSchema,
+        response: { 200: householdRecipeSavedSchema, 201: householdRecipeSavedSchema },
+      },
+    },
+    async (request, reply) => {
+      const { created, saved } = await service.create(
+        householdOf(request).id,
+        authOf(request).userId,
+        request.body,
+      );
+      // 200 when the same form was sent before (NFR-DATA-002): nothing new was created.
+      return reply.status(created ? 201 : 200).send(saved);
+    },
+  );
+
+  app.get(
+    `${BASE}/:recipeId/edit`,
+    { preHandler, schema: { params: recipeParams, response: { 200: householdRecipeEditSchema } } },
+    async (request) => service.edit(householdOf(request).id, request.params.recipeId),
+  );
+
+  app.put(
+    `${BASE}/:recipeId`,
+    {
+      preHandler,
+      schema: {
+        params: recipeParams,
+        body: updateHouseholdRecipeSchema,
+        response: { 200: householdRecipeSavedSchema },
+      },
+    },
+    async (request) =>
+      service.update(householdOf(request).id, request.params.recipeId, request.body),
+  );
+
+  app.delete(
+    `${BASE}/:recipeId`,
+    { preHandler, schema: { params: recipeParams } },
+    async (request, reply) => {
+      await service.remove(householdOf(request).id, request.params.recipeId);
+      return reply.status(204).send();
+    },
+  );
+
   app.get(
     '/ingredients',
     { preHandler: requireAuth, schema: { response: { 200: z.array(ingredientResponseSchema) } } },
@@ -71,5 +128,23 @@ export const recipeRoutes: FastifyPluginAsyncZod<RecipeRoutesOptions> = async (a
       schema: { body: allergensBodySchema, response: { 200: allergensBodySchema } },
     },
     async (request) => service.setAllergens(authOf(request).userId, request.body.allergens),
+  );
+
+  app.get(
+    '/me/avoided-ingredients',
+    { preHandler: requireAuth, schema: { response: { 200: avoidedIngredientsResponseSchema } } },
+    async (request) => service.avoided(authOf(request).userId),
+  );
+
+  app.put(
+    '/me/avoided-ingredients',
+    {
+      preHandler: requireAuth,
+      schema: {
+        body: avoidedIngredientsBodySchema,
+        response: { 200: avoidedIngredientsResponseSchema },
+      },
+    },
+    async (request) => service.setAvoided(authOf(request).userId, request.body.ingredientIds),
   );
 };
