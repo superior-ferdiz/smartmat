@@ -2,6 +2,21 @@
 
 ## [Ikke utgitt]
 
+### Fase 16 – 2026-10-31 (grenen `fase-16`)
+- **Glemt passord** (FR-AUTH-006a–e, spesifikasjon 17, ADR-0024): «Glemt passordet?» på innloggingssiden, siden
+  `/glemt-passord` og siden `/nytt-passord#<token>`. Samme svar uansett om adressen har en konto. Engangslenke på
+  30 minutter, bare SHA-256 lagret, laget av `mailer` når e-posten sendes. Nytt passord etter samme regler (12 tegn,
+  Pwned Passwords); alle økter og tofaktor-utfordringer slettes, sperren nullstilles, tofaktor gjelder fortsatt, og
+  kontoen får en e-post om at passordet er endret. Grenser: 5 per IP-adresse per 15 minutter, 3 e-poster per konto i
+  timen.
+- **E-post:** ny prosess `mailer` (`npm run mailer -w @smartmat/api`) og ny container i testmiljøet, med eget nett ut.
+  SMTP med nodemailer 10.1.7 (eldre versjoner har kjente sårbarheter). Av uten `SMTP_HOST`/`SMTP_USER`/`SMTP_PASSWORD`/
+  `MAIL_FROM`. Avsender i testmiljøet: Gmail-kontoen `Ghostnetwork.bot@gmail.com` (samme app-passord som Risan Solutions, Ferdinands valg).
+- **Database:** tabellen `password_reset_tokens` (migrering `20261031120000_password_reset`); nattjobben sletter rader
+  eldre enn et døgn.
+- **Personvernerklæringen:** Google som mottaker ved «Glemt passord» (uten databehandleravtale) og lagringstid for
+  lenkene.
+
 ### Dokumentasjon – 2026-10-31 (grenen `fase-14`, Ferdinands forespørsel)
 - **README og veikart:** status oppdatert til fase 15 (pågår); fase 15 lagt inn i veikartet.
 - **Teamet:** Hasan Alhafni lagt til der teamet nevnes (README, CLAUDE.md, behandlingsansvarlige, kapittel 15,

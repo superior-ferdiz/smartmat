@@ -65,6 +65,7 @@ model User {
   notificationSettings NotificationSettings?
   recoveryCodes        UserRecoveryCode[]
   loginChallenges      LoginChallenge[]
+  passwordResetTokens  PasswordResetToken[]
 
   @@map("users")
 }
@@ -197,6 +198,24 @@ model LoginChallenge {
   @@index([userId])
   @@index([expiresAt])
   @@map("login_challenges")
+}
+
+/// Spec 17 (FR-AUTH-006b): a one-time link to set a new password, valid for 30 minutes. Made by the mailer when the
+/// e-mail is sent; only the SHA-256 of the token is stored, so a copy of the database cannot be used to reset anyone.
+/// Rows are deleted by the nightly cleanup after 24 hours (they also count the e-mails per hour, FR-AUTH-006a).
+model PasswordResetToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@map("password_reset_tokens")
 }
 
 // ─── Phase 3: inventory (spec 03) ──────────────────────────────────────────────────────────────

@@ -52,6 +52,21 @@ HouseholdResponse = { id: uuid, name: string, role: 'owner' | 'member', memberCo
 ### `GET /auth/session`
 - **Svar:** `200 SessionResponse`, eller 401 hvis ingen er innlogget.
 
+### `POST /auth/password-reset` (FR-AUTH-006a, fase 16)
+- **Kropp:** `{ email }`. Ikke innlogget.
+- **Svar:** alltid `202` uten innhold, enten adressen har en konto eller ikke. Har den det, legges en jobb i køen
+  `mail` med bare konto-id og tidspunkt; `mailer` lager lenken og sender e-posten (høyst 3 per konto i timen).
+- **Feil:** 400 validering (`fields.email`), 503 `errors.auth.passwordResetUnavailable` uten SMTP-oppsett, 429.
+- **Rate limit:** 5 per 15 min per IP (`RATE_LIMIT_PASSWORD_RESET_MAX`).
+
+### `POST /auth/password-reset/confirm` (FR-AUTH-006c/d, fase 16)
+- **Kropp:** `{ token, newPassword }`. Tokenet kommer fra `#`-delen av lenken `/nytt-passord#<token>`.
+- **Svar:** `204`. Passordet byttes, **alle** sesjoner og tofaktor-utfordringer slettes, sperren nullstilles, og
+  kontoen får e-posten «Passordet ditt i SmartMat er endret». Ingen ny sesjon: brukeren logger inn på vanlig måte.
+- **Feil:** 400 `errors.auth.resetLinkInvalid` (ukjent, brukt eller utløpt – samme svar), 400 med
+  `fields.newPassword` (lengde, `errors.auth.passwordPwned`), 503 `errors.auth.passwordResetUnavailable`, 429.
+- **Rate limit:** 5 per 15 min per IP.
+
 ### `GET /me` · `PATCH /me` (FR-AUTH-004)
 - **GET:** `200 SessionUser`
 - **PATCH kropp:** `{ displayName?, locale? }`, minst ett av feltene. Svaret er `200 SessionUser`.

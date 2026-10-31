@@ -11,8 +11,8 @@ import styles from './PrivacyPage.module.css';
 
 const SECTIONS = {
   data: ['account', 'sessions', 'content', 'allergies', 'receipts', 'household'],
-  recipients: ['off', 'kassalapp', 'hibp', 'host', 'none'],
-  retention: ['account', 'sessions', 'receipts', 'backups', 'logs'],
+  recipients: ['off', 'kassalapp', 'hibp', 'mail', 'host', 'none'],
+  retention: ['account', 'sessions', 'resetLinks', 'receipts', 'backups', 'logs'],
   rights: ['access', 'rectify', 'erase', 'portability', 'withdraw', 'complain'],
 } as const;
 

@@ -1,11 +1,22 @@
 import { execFileSync } from 'node:child_process';
+import { mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { COOP_RECEIPT } from '@smartmat/shared/test-fixtures/receipts';
 import { buildApp } from '../src/app';
 import { loadConfig } from '../src/config';
 import { createDb } from '../src/db';
-import { pgBossReceiptQueue, RECEIPT_OCR_QUEUE, startJobs } from '../src/lib/receiptQueue';
+import {
+  MAIL_QUEUE,
+  pgBossMailQueue,
+  pgBossReceiptQueue,
+  RECEIPT_OCR_QUEUE,
+  startJobs,
+} from '../src/lib/receiptQueue';
+import type { MailJob } from '../src/modules/passwordReset/jobs';
+import { MailProcessor } from '../src/modules/passwordReset/processor';
+import { createPasswordResetRepo } from '../src/modules/passwordReset/repo';
+import type { MailSender } from '../src/providers/mail/types';
 import { ReceiptProcessor } from '../src/modules/receipts/processor';
 import { createReceiptRepo } from '../src/modules/receipts/repo';
 import type { OcrProvider } from '../src/providers/ocr/types';
@@ -47,6 +58,12 @@ const config = loadConfig({
   PWNED_PASSWORDS: 'on',
   // Spec 13: a made-up key for the e2e database only, so two-factor can be set up in the tests.
   TOTP_ENCRYPTION_KEY: Buffer.alloc(32, 9).toString('base64'),
+  // Spec 17: made-up settings so "Glemt passord" is on. Nothing connects to them: the sender below writes files.
+  SMTP_HOST: 'smtp.example.test',
+  SMTP_USER: 'smartmat@example.test',
+  SMTP_PASSWORD: 'not-a-real-password',
+  MAIL_FROM: 'smartmat@example.test',
+  RATE_LIMIT_PASSWORD_RESET_MAX: '10000',
 });
 const db = createDb(databaseUrl);
 await db.$executeRawUnsafe(
@@ -97,6 +114,33 @@ await jobs.work<{ receiptId: string }>(
   },
 );
 
+// Spec 17: never a real SMTP server. Each e-mail is written to e2e/.mail/<address>.txt (the latest one wins), where
+// the Playwright test reads the link. Only made-up addresses from the tests ever end up there.
+const mailDir = fileURLToPath(new URL('../../../e2e/.mail', import.meta.url));
+rmSync(mailDir, { recursive: true, force: true });
+mkdirSync(mailDir, { recursive: true });
+const fileSender: MailSender = {
+  async send(message) {
+    const file = `${mailDir}/${message.to.replace(/[^a-z0-9@._-]/gi, '_')}.txt`;
+    writeFileSync(`${file}.tmp`, `Subject: ${message.subject}\n\n${message.text}`);
+    renameSync(`${file}.tmp`, file);
+  },
+};
+const mailer = new MailProcessor({
+  repo: createPasswordResetRepo(db),
+  sender: fileSender,
+  now: () => new Date(),
+  linkOrigin: 'http://127.0.0.1:4173',
+  perHour: 3,
+});
+await jobs.work<MailJob>(
+  MAIL_QUEUE,
+  { batchSize: 1, pollingIntervalSeconds: 0.5 },
+  async ([job]) => {
+    if (job) await mailer.process(job.data);
+  },
+);
+
 const app = await buildApp({
   config,
   db,
@@ -104,6 +148,7 @@ const app = await buildApp({
   // Spec 12: never the real Kassalapp. The fake one has made-up prices for the codes in test/fakeKassalapp.ts.
   priceProvider: testPriceProvider(fakeKassalappFetch().fetchFn as typeof fetch),
   receiptQueue: pgBossReceiptQueue(jobs),
+  mailQueue: pgBossMailQueue(jobs),
   // Spec 13: never the real Have I Been Pwned. The fake one lists only the made-up passwords in test/fakePwned.ts.
   pwnedPasswords: fakePwnedCheck(),
 });

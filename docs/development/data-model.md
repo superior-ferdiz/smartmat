@@ -156,11 +156,12 @@ Prinsipper: [ADR-0006](architecture-decisions/0006-penger-og-mengder-som-heltall
 [ADR-0007](architecture-decisions/0007-kjop-som-eneste-utgiftskilde.md) (kjøp som eneste utgiftskilde),
 [ADR-0008](architecture-decisions/0008-husholdning-fra-start.md) (husholdning på alle data).
 
-## Kjernemodell (fase 2–15)
+## Kjernemodell (fase 2–16)
 
 ```mermaid
 erDiagram
   User ||--o{ Session : har
+  User ||--o{ PasswordResetToken : får_lenke
   User ||--o{ HouseholdMember : er
   Household ||--o{ HouseholdMember : har
   Household ||--o{ HouseholdInvitation : inviterer
@@ -209,6 +210,7 @@ erDiagram
 |---|---|---|---|
 | `User` | email (unik), password_hash, display_name, locale, currency, created_at | Allergier/kosthold i egen tabell når de trengs | 2 |
 | `Session` | token_hash, user_id, expires_at, last_seen_at | Bare hash av token lagres | 2 |
+| `PasswordResetToken` | user_id, token_hash (unik), created_at, expires_at, used_at? | Engangslenke for nytt passord (spesifikasjon 17): 30 minutter, bare SHA-256 lagret, lages av `mailer`. CHECK på utløp og bruk. Slettes med kontoen og av nattjobben etter et døgn. Ikke i eksporten. | 16 |
 | `Household` | name | Én opprettes automatisk ved registrering | 2 |
 | `HouseholdMember` | household_id, user_id, role (`owner`/`member`), share_allergens, shopping_seen_at | Unik (household_id, user_id). Én eier per husholdning (fase 10). | 2/10/11 |
 | `NotificationSettings` | user_id (PK), use_by, best_before, days_before (0–7), budget, shopping | Per bruker, gjelder alle husholdningene | 11 |

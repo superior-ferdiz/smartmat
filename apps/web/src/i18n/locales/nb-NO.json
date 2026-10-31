@@ -105,7 +105,8 @@
     "password": {
       "required": "Skriv inn passordet.",
       "tooShort": "Passordet må være minst 12 tegn.",
-      "tooLong": "Passordet kan være høyst 128 tegn."
+      "tooLong": "Passordet kan være høyst 128 tegn.",
+      "mismatch": "Passordene er ikke like."
     },
     "profile": {
       "nothingToUpdate": "Det er ingenting å lagre."
@@ -540,6 +541,7 @@
         "off": "Open Food Facts får strekkoden du skanner, fra serveren vår, ikke fra telefonen din.",
         "kassalapp": "Kassalapp får strekkoden, bare hvis prisoppslag er slått på.",
         "hibp": "Have I Been Pwned får de 5 første tegnene i en hash av et nytt passord, så vi kan avvise passord fra kjente datalekkasjer. Ut fra det kan ingen finne passordet.",
+        "mail": "Google (Gmail) får e-postadressen din, navnet ditt og innholdet i e-posten når du ber om nytt passord, fordi e-posten sendes fra en Gmail-konto. Vi har ingen databehandleravtale med Google; det er godtatt bare for testmiljøet.",
         "host": "Serveren står i Tyskland (EØS) hos en leverandør som drifter maskinen.",
         "none": "Vi bruker ingen analyseverktøy, sporing eller annonsenettverk."
       },
@@ -549,7 +551,8 @@
         "sessions": "Innlogginger: utløper etter 14 dager uten bruk og senest etter 30 dager, og slettes hver natt.",
         "receipts": "Kvitteringsbilder og teksten som ble lest av dem: til kjøpet er bekreftet eller forkastet, høyst 7 dager.",
         "backups": "Sikkerhetskopier: hver natt, kryptert, de siste 7 dagene. Noe du har slettet, kan derfor ligge i en kopi i opptil 7 dager. Kvitteringsbilder er aldri med.",
-        "logs": "Serverens logg: hva slags forespørsel og når, uten e-post, navn, IP-adresse eller det du har lagt inn."
+        "logs": "Serverens logg: hva slags forespørsel og når, uten e-post, navn, IP-adresse eller det du har lagt inn.",
+        "resetLinks": "Lenker for nytt passord: virker i 30 minutter, bare en hash lagres, og de slettes etter et døgn."
       },
       "rights": {
         "title": "Rettighetene dine",
@@ -581,7 +584,8 @@
       "lead": "Velkommen tilbake til SmartMat.",
       "submit": "Logg inn",
       "noAccount": "Har du ikke konto?",
-      "createAccount": "Opprett konto"
+      "createAccount": "Opprett konto",
+      "forgot": "Glemt passordet?"
     },
     "register": {
       "title": "Opprett konto",
@@ -601,6 +605,25 @@
       "codeHint": "6 sifre fra appen. Har du mistet telefonen, bruk en av gjenopprettingskodene dine.",
       "submit": "Bekreft",
       "back": "Tilbake"
+    },
+    "forgot": {
+      "title": "Glemt passord",
+      "lead": "Skriv inn e-postadressen til kontoen din, så sender vi en lenke der du kan velge et nytt passord.",
+      "submit": "Send lenke",
+      "sent": "Hvis adressen har en konto, har vi sendt en lenke til den. Lenken virker i {{minutes}} minutter og kan brukes én gang. Finner du ikke e-posten, se i søppelpost.",
+      "again": "Send en ny lenke",
+      "back": "Tilbake til innlogging"
+    },
+    "reset": {
+      "title": "Velg nytt passord",
+      "lead": "Når passordet er byttet, blir kontoen logget ut på alle enheter. Har du tofaktorinnlogging, trenger du fortsatt koden.",
+      "newPassword": "Nytt passord",
+      "repeatPassword": "Gjenta nytt passord",
+      "submit": "Lagre nytt passord",
+      "noLink": "Lenken mangler eller er ufullstendig. Åpne lenken fra e-posten på nytt, eller be om en ny.",
+      "askNew": "Be om en ny lenke",
+      "done": "Passordet er endret. Logg inn med det nye passordet.",
+      "login": "Logg inn"
     }
   },
   "errors": {
@@ -616,7 +639,9 @@
       "twoFactorUnavailable": "Tofaktorinnlogging er ikke tilgjengelig på denne serveren akkurat nå. Si fra til teamet.",
       "twoFactorAlreadyOn": "Tofaktorinnlogging er allerede slått på.",
       "twoFactorNotSetUp": "Start på nytt med «Slå på tofaktorinnlogging».",
-      "twoFactorChallengeInvalid": "Innloggingen tok for lang tid eller ble avbrutt. Logg inn på nytt."
+      "twoFactorChallengeInvalid": "Innloggingen tok for lang tid eller ble avbrutt. Logg inn på nytt.",
+      "resetLinkInvalid": "Lenken virker ikke lenger. Den kan være brukt, eldre enn 30 minutter eller erstattet av en nyere lenke. Be om en ny.",
+      "passwordResetUnavailable": "Tilbakestilling av passord er ikke tilgjengelig på denne serveren akkurat nå. Si fra til teamet."
     },
     "security": {
       "forbiddenOrigin": "Forespørselen ble stoppet av sikkerhetshensyn. Last inn siden på nytt og prøv igjen.",

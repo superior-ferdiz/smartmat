@@ -239,5 +239,6 @@ function testLimits() {
     sensitive: { max: 1000, windowMs: 60_000 },
     invitation: { max: 1000, windowMs: 60_000 },
     export: { max: 1000, windowMs: 60_000 },
+    passwordReset: { max: 1000, windowMs: 60_000 },
   };
 }

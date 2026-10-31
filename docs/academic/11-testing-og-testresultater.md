@@ -1328,6 +1328,54 @@ webpakken besto 3 av 3 ganger etterpå. Hver mutasjon ble regnet som fanget bare
 
 Ikke testet: ekte telefon, skjermleser, og priser fra Kassalapp mot et ekte svar (ingen nøkkel).
 
+## Fase 16: «Glemt passord» med e-post (kjørt 2026-10-31)
+
+Utdata i [`docs/evidence/test-results/fase-16/`](../evidence/test-results/fase-16/). Kjørt av KI (Claude).
+
+| Kontroll | Resultat | Fil |
+|---|---|---|
+| Typesjekk, lint, formatering | 0 feil | `01`–`03` |
+| Enhetstester | 1435 av 1435 | `04` |
+| API-tester mot testdatabasen | 565 av 565 | `05` |
+| Bygg | OK, hovedfilen 619 kB (616 kB i fase 15) | `06` |
+| Playwright (360 px og skrivebord) | 217 av 217 (7 skjermbildetester hoppet over). Første fullkjøring: 216 av 217 (`07-e2e-forsok1`) | `07` |
+| `npm audit --omit=dev` | 3 moderate (glob og minimatch via `@fastify/static`, nye siden fase 15; ikke fra nodemailer) | `08` |
+| Migreringsstatus | oppdatert (17 migreringer) | `09` |
+| Mutasjonskontroll | 14 av 14 fanget | `10` |
+| Sporbarhet | 107 krav, 6 uten testfil (FR-AUTH-006 har nå tester) | `11` |
+
+**Nye tester og hva de viser (sporbarhet til spesifikasjon 17):**
+- `passwordReset.api.test.ts` (27 tester): samme 202 for kjent og ukjent adresse, jobben har bare konto-id, grense per
+  IP (429) og per konto (3 i timen), gamle jobber droppes, lenken har tokenet etter `#` og bare hashen lagres,
+  en ny lenke stopper de eldre, utløp etter 30 minutter, mislykket sending fjerner lenken, samme 400 for ukjent,
+  brukt og utløpt lenke, passordreglene og Pwned Passwords med lenken fortsatt ubrukt, alle økter og
+  tofaktor-utfordringer slettes, sperren nullstilles, tofaktor gjelder fortsatt, to samtidige forsøk gir ett bytte,
+  e-post om at passordet er endret, eksport, `CASCADE`, 503 uten oppsett, og ingen adresse, token eller passord i
+  loggen (FR-AUTH-006a–e).
+- `smtp.test.ts`: kryptering kreves, tidsavbrudd, ren tekst uten HTML og at et linjeskift i emnet ikke gir en ny
+  topptekst (med nodemailers `streamTransport`, uten nettverk). `config.test.ts`: av uten alle fire innstillinger,
+  og passordet skrives aldri ut. `auth.test.ts` (delt): lenke og token fra `#`.
+- Web: `PasswordReset.test.tsx` (12 tester: lenken fra innloggingen, feltene, feil, svaret, død lenke, axe).
+  E2E: `passwordReset.spec.ts` (hele flyten med en falsk SMTP-server som skriver filer) og de to nye sidene i
+  `a11y.spec.ts`.
+
+**Mutasjonskontrollen** endret 14 regler én om gangen (engangsbruk, utløp, eldre lenker, økter, tofaktor-utfordringer,
+sperren, svar for ukjent adresse, Pwned Passwords, av uten oppsett, grensene per konto og IP, gamle jobber og opprydding
+etter mislykket sending). Alle ble fanget av en test i `passwordReset.api.test.ts`. Runde 1 (engangsbruken fjernet bare i
+transaksjonen) ble bare fanget av testen med to samtidige forsøk.
+
+**Feil og funn i fase 16:**
+1. nodemailer 10.0.5 hadde sju kjente sårbarheter; byttet til 10.1.7 før koden ble tatt i bruk.
+2. `queryClient.clear()` ville tømt mutasjonene og kunne mistet sidens `onSuccess` (kapittel 10, eksempel 57).
+3. Å åpne samme lenke på nytt fra `/nytt-passord` laster ikke siden på nytt (bare `#` endres). Testen går via en
+   annen side, slik en lenke fra e-post gjør.
+4. **Ustabil test fra før:** `recipes.spec.ts` (oppskriftssiden på 360 px, lyst tema) fikk et axe-funn
+   (`target-size` på et `summary`-element) i første fullkjøring og i 1 av 10 gjentakelser
+   (`07-e2e-recipes-gjentatt.txt`). Siden og testen er uendret siden `main`; ikke rettet i fase 16.
+
+Ikke testet: ekte sending gjennom Gmail (app-passordet ble fylt inn etter testene, og testmiljøet er ikke bygd på nytt), at e-posten havner i innboksen og ikke i
+søppelpost, ekte telefon og skjermleser.
+
 ## Begrensninger
 
 - axe og andre automatiske verktøy finner bare en del av tilgjengelighetsproblemene. **Manuell test med skjermleser

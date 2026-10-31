@@ -80,7 +80,8 @@ Gå gjennom commit for commit og skriv funnene i pull requesten, så gjennomgang
       (art. 9).
 - [ ] Backup-passfrasen og `TOTP_ENCRYPTION_KEY` er tatt vare på utenfor serveren.
 - [x] Kontoer i testmiljøet til demoen. Laget av Claude 2026-10-29 på Ferdinands forespørsel (`ferdinand@smartmat.test`,
-      `linus@smartmat.test`, passord i `smartmat-private/kontoer-testmiljo.txt`).
+      `linus@smartmat.test`; `hasan@smartmat.test` laget 2026-10-31. Alle tre slettet 2026-10-31 fordi teamet har
+      registrert egne kontoer. Passord i `smartmat-private/kontoer-testmiljo.txt`).
 - [ ] ADR-0017 er godkjent eller avvist, og pilotdataene i `smartmat-private` er slettet, **senest 2026-11-23**.
       Bildene (3 kvitteringer, 3 utsnitt) er slettet 2026-10-29 av Claude på Ferdinands forespørsel. `fasit/` og
       `pilot-ut/` (tekst) gjenstår.

@@ -8,7 +8,7 @@ import { Button } from '../../components/Button/Button';
 import { FormErrorSummary } from '../../components/FormError/FormError';
 import { TextField } from '../../components/TextField/TextField';
 import { isRegistrationOpen } from '../../app/environment';
-import { REGISTER_PATH } from '../../app/navigation';
+import { FORGOT_PASSWORD_PATH, REGISTER_PATH } from '../../app/navigation';
 import { useLogin, useLoginSecondStep } from '../../auth/session';
 import { fieldErrorsFromZod, summaryItems, type FieldErrors } from '../../forms/fieldErrors';
 import { useValidationMessage } from '../../i18n/useValidationMessage';
@@ -102,10 +102,13 @@ export function LoginPage() {
           onChange={(e) => setValues({ ...values, password: e.target.value })}
           error={message(errors.password)}
         />
-        <div>
+        <div className={styles.actions}>
           <Button type="submit" loading={login.isPending} fullWidth>
             {t('auth.login.submit')}
           </Button>
+          <Link className={styles.forgot} to={FORGOT_PASSWORD_PATH}>
+            {t('auth.login.forgot')}
+          </Link>
         </div>
       </form>
       {isRegistrationOpen() && (

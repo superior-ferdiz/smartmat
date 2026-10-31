@@ -43,6 +43,8 @@ export interface AppConfig {
     invitation: RateLimitRule;
     /** Spec 13 (FR-PRIV-001): data exports, per IP address. */
     export: RateLimitRule;
+    /** Spec 17 (FR-AUTH-006a): asking for a reset link and setting the new password, per IP address. */
+    passwordReset: RateLimitRule;
   };
   /** Spec 10 (FR-HH-002): invitation previews and accepts per logged-in user, in 15 minutes. */
   invitationAttemptsPerUser: number;
@@ -79,6 +81,13 @@ export interface AppConfig {
   totpEncryptionKey: Buffer | null;
   /** Spec 13 (FR-AUTH-008): Pwned Passwords at registration and password change. Off unless switched on. */
   pwnedPasswords: { enabled: boolean; baseUrl: string; timeoutMs: number };
+  /**
+   * Spec 17 (ADR-0024): e-mail through SMTP, sent by the mailer (src/mailer.ts). Null unless host, user, password and
+   * sender are all set – then "Glemt passord" answers 503 and nothing is sent.
+   */
+  mail: MailSettings | null;
+  /** FR-AUTH-006a: e-mails with a reset link per account per hour. Requests over it get the same answer, no e-mail. */
+  passwordResetsPerHour: number;
   /** Prices (spec 12, ADR-0020). Without an API key, Kassalapp is never asked and only own prices are shown. */
   prices: {
     kassalappBaseUrl: string;
@@ -89,6 +98,25 @@ export interface AppConfig {
     kassalappMaxPerMinute: number;
     lookupsPerUserPerMinute: number;
   };
+}
+
+export interface MailSettings {
+  host: string;
+  port: number;
+  user: string;
+  /** Secret (an app password): only in the env file, never logged or shown. */
+  password: string;
+  from: { address: string; name: string };
+  /** Where the links in e-mails point: the first of APP_ORIGINS. */
+  linkOrigin: string;
+}
+
+/** Spec 17: all four are needed for e-mail to be on. */
+export const MAIL_VARIABLES = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'MAIL_FROM'] as const;
+
+/** The names (never the values) of the mail settings that are missing, for the mailer's start-up log. */
+export function missingMailVariables(env: NodeJS.ProcessEnv = process.env): string[] {
+  return MAIL_VARIABLES.filter((name) => !env[name]?.trim());
 }
 
 const MINUTE = 60_000;
@@ -164,6 +192,15 @@ const envSchema = z.object({
     .optional(),
   PWNED_PASSWORDS_URL: z.url({ protocol: /^https$/ }).default('https://api.pwnedpasswords.com'),
   PWNED_PASSWORDS_TIMEOUT_MS: z.coerce.number().int().min(100).max(10_000).default(2000),
+  // Spec 17 (ADR-0024). The password is an app password; it is only read here and handed to the SMTP client.
+  SMTP_HOST: z.string().trim().min(1).optional(),
+  SMTP_PORT: z.coerce.number().int().min(1).max(65_535).default(587),
+  SMTP_USER: z.string().trim().min(1).optional(),
+  SMTP_PASSWORD: z.string().min(1).optional(),
+  MAIL_FROM: z.email().optional(),
+  MAIL_FROM_NAME: z.string().trim().min(1).max(60).default('SmartMat'),
+  RATE_LIMIT_PASSWORD_RESET_MAX: z.coerce.number().int().positive().default(5),
+  PASSWORD_RESET_PER_HOUR: z.coerce.number().int().positive().default(3),
 });
 
 /** "172.26.0.0/16" or "127.0.0.1". */
@@ -211,6 +248,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       sensitive: { max: e.RATE_LIMIT_SENSITIVE_MAX, windowMs: 15 * MINUTE },
       invitation: { max: e.RATE_LIMIT_INVITATION_MAX, windowMs: 15 * MINUTE },
       export: { max: e.RATE_LIMIT_EXPORT_MAX, windowMs: 60 * MINUTE },
+      passwordReset: { max: e.RATE_LIMIT_PASSWORD_RESET_MAX, windowMs: 15 * MINUTE },
     },
     invitationAttemptsPerUser: e.INVITATION_ATTEMPTS_PER_USER,
     barcode: {
@@ -236,6 +274,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       baseUrl: e.PWNED_PASSWORDS_URL,
       timeoutMs: e.PWNED_PASSWORDS_TIMEOUT_MS,
     },
+    mail:
+      e.SMTP_HOST && e.SMTP_USER && e.SMTP_PASSWORD && e.MAIL_FROM
+        ? {
+            host: e.SMTP_HOST,
+            port: e.SMTP_PORT,
+            user: e.SMTP_USER,
+            password: e.SMTP_PASSWORD,
+            from: { address: e.MAIL_FROM, name: e.MAIL_FROM_NAME },
+            linkOrigin: e.APP_ORIGINS[0] ?? '',
+          }
+        : null,
+    passwordResetsPerHour: e.PASSWORD_RESET_PER_HOUR,
     prices: {
       kassalappBaseUrl: e.KASSALAPP_BASE_URL,
       kassalappApiKey: e.KASSALAPP_API_KEY ?? null,

@@ -7,6 +7,7 @@ import { pages } from './pages';
 import {
   BUDGET_PATH,
   DESIGN_SYSTEM_PATH,
+  FORGOT_PASSWORD_PATH,
   HOUSEHOLD_PATH,
   JOIN_PATH,
   LOCATIONS_PATH,
@@ -17,6 +18,7 @@ import {
   NEW_PURCHASE_PATH,
   NEW_RECIPE_PATH,
   NOTIFICATIONS_PATH,
+  PASSWORD_RESET_PATH,
   PRIVACY_PATH,
   PROFILE_PATH,
   RECEIPTS_PATH,
@@ -50,6 +52,17 @@ export const routes: RouteObject[] = [
           </GuestOnly>
         ),
       },
+      // Spec 17 (FR-AUTH-006a): someone who is logged in changes the password on the profile page instead.
+      {
+        path: FORGOT_PASSWORD_PATH.slice(1),
+        element: (
+          <GuestOnly>
+            <pages.ForgotPasswordPage />
+          </GuestOnly>
+        ),
+      },
+      // Not GuestOnly: a redirect would lose the token in the fragment. A session here ends with the change anyway.
+      { path: PASSWORD_RESET_PATH.slice(1), element: <pages.ResetPasswordPage /> },
       // Spec 10: open both logged in and out (the page itself asks the logged-out visitor to log in).
       { path: JOIN_PATH.slice(1), element: <pages.JoinPage /> },
     ],

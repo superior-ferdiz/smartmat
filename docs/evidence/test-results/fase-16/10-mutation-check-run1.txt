@@ -1,0 +1,75 @@
+$ bash docs/evidence/test-results/fase-16/10-mutation-check.sh
+# 2026-10-31T14:17:08Z
+1. FR-AUTH-006b: en brukt lenke kan brukes igjen (bare i transaksjonen)
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006d after the change > two requests with the same link at the same time: one change, one refusal
+2. FR-AUTH-006b: en brukt lenke kan brukes igjen (begge steder)
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  3 failed | 53 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006b the one-time link > a new link makes the older ones stop working
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006c setting the new password > unknown, malformed, used and expired links all get the same 400
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006d after the change > two requests with the same link at the same time: one change, one refusal
+3. FR-AUTH-006b: lenken utløper aldri
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006b the one-time link > stops working after 30 minutes
+4. FR-AUTH-006b: en ny lenke stopper ikke de eldre
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006b the one-time link > a new link makes the older ones stop working
+5. FR-AUTH-006d: øktene beholdes
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006d after the change > every session is logged out, also the one in this browser
+6. FR-AUTH-006d: tofaktor-utfordringene beholdes
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006d after the change > FR-AUTH-010: two-factor stays on, and a pending challenge stops working
+7. FR-AUTH-006d: sperren etter feil passord nullstilles ikke
+    endret: apps/api/src/modules/passwordReset/repo.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006d after the change > FR-AUTH-003: a locked account can log in with the new password at once
+8. FR-AUTH-006a: jobb også for en adresse uten konto
+    endret: apps/api/src/modules/passwordReset/service.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006a asking for a link > answers 202 the same way whether the address has an account; only an account gets a job
+9. FR-AUTH-008: lekket passord godtas ved tilbakestilling
+    endret: apps/api/src/modules/passwordReset/service.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006c setting the new password > FR-AUTH-008: a leaked password is refused at the field, and the link still works afterwards
+10. FR-AUTH-006e: bekreftelsen virker uten e-postoppsett
+    endret: apps/api/src/modules/passwordReset/service.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006e off without e-mail settings > without SMTP settings both steps answer 503, and login still works
+11. FR-AUTH-006a: ingen grense per konto
+    endret: apps/api/src/modules/passwordReset/processor.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006a asking for a link > sends at most 3 e-mails per account per hour; more requests get the same 202 and no e-mail
+12. FR-AUTH-006b: gamle jobber sendes likevel
+    endret: apps/api/src/modules/passwordReset/processor.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006a asking for a link > a job not sent within 30 minutes of the request is dropped (nobody is waiting for it)
+13. FR-AUTH-006b: lenken blir liggende når sendingen feiler
+    endret: apps/api/src/modules/passwordReset/processor.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006b the one-time link > a failed send removes the link (nobody has it, it does not count) and fails the job so it is tried again
+14. FR-AUTH-006a: ingen grense per IP-adresse
+    endret: apps/api/src/modules/passwordReset/routes.ts
+    enhetstester: Tests  913 passed (913)
+    API-tester:   Tests  1 failed | 55 passed (56)
+      feilet: |api-db| test/passwordReset.api.test.ts > FR-AUTH-006a asking for a link > is limited per IP address (429)
+exit=0

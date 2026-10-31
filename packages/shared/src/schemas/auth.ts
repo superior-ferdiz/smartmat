@@ -79,3 +79,41 @@ export const deleteAccountSchema = z.object({
 });
 export type DeleteAccountInput = z.input<typeof deleteAccountSchema>;
 export type DeleteAccountBody = z.output<typeof deleteAccountSchema>;
+
+/** Spec 17 (FR-AUTH-006a): asking for a link. Only the address; the answer is the same whether it has an account. */
+export const passwordResetRequestSchema = z.object({ email: emailSchema });
+export type PasswordResetRequestInput = z.input<typeof passwordResetRequestSchema>;
+export type PasswordResetRequestBody = z.output<typeof passwordResetRequestSchema>;
+
+/** Spec 17 (FR-AUTH-006a): the page where a link is asked for. */
+export const FORGOT_PASSWORD_PATH = '/glemt-passord';
+/** The page /nytt-passord#<token>. The token is in the fragment, so a browser never sends it to the server. */
+export const PASSWORD_RESET_PATH = '/nytt-passord';
+/** FR-AUTH-006b: a link works for 30 minutes after it was made. */
+export const PASSWORD_RESET_TTL_MINUTES = 30;
+
+const RESET_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+
+export function passwordResetLink(origin: string, token: string): string {
+  return `${origin.replace(/\/+$/, '')}${PASSWORD_RESET_PATH}#${token}`;
+}
+
+/** The fragment of the link ("#abc…" or "abc…"), or null when it is not a token. */
+export function tokenFromResetHash(hash: string): string | null {
+  const candidate = hash.startsWith('#') ? hash.slice(1) : hash;
+  return RESET_TOKEN_PATTERN.test(candidate) ? candidate : null;
+}
+
+/**
+ * FR-AUTH-006c: the new password. A malformed token gets the same answer as an unknown one
+ * (errors.auth.resetLinkInvalid), so the schema only checks that there is one.
+ */
+export const passwordResetConfirmSchema = z.object({
+  token: z
+    .string({ error: 'errors.auth.resetLinkInvalid' })
+    .min(1, { error: 'errors.auth.resetLinkInvalid' })
+    .max(64, { error: 'errors.auth.resetLinkInvalid' }),
+  newPassword: newPasswordSchema,
+});
+export type PasswordResetConfirmInput = z.input<typeof passwordResetConfirmSchema>;
+export type PasswordResetConfirmBody = z.output<typeof passwordResetConfirmSchema>;

@@ -38,6 +38,8 @@ export const API_ERRORS = {
   recipeChangedMeanwhile: 'errors.recipe.changedMeanwhile',
   recipeTooMany: 'errors.recipe.tooMany',
   registrationClosed: 'errors.auth.registrationClosed',
+  resetLinkInvalid: 'errors.auth.resetLinkInvalid',
+  passwordResetUnavailable: 'errors.auth.passwordResetUnavailable',
   receiptTooLarge: 'errors.receipt.tooLarge',
   receiptUnsupportedType: 'errors.receipt.unsupportedType',
   receiptUnreadable: 'errors.receipt.unreadable',
